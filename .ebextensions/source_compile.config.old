@@ -1,5 +1,0 @@
-commands:
-  compile:
-    command: npm run build
-    env:
-      PATH: /opt/elasticbeanstalk/node-install/node-v14.16.1-linuxT-x64/bin/
