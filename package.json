@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf ./node_modules && rm -rf ./dist && tsc -p . && mv ./dist/src/* ./dist/ ** rmdir ./dist/src",
+    "install": "rm -rf ./node_modules && npm i",
+    "build": "rm -rf ./dist && tsc -p . && mv ./dist/src/* ./dist/ && rmdir ./dist/src",
     "dev": "nodemon -e ts,.env --exec ./node_modules/.bin/ts-node ./src/server.ts",
     "start": "node ./build/server.js",
     "test": "echo \"Error: no test specified\" && exit 0"
