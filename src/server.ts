@@ -16,7 +16,7 @@ import express from "express";
     res.send("HELLO");
   });
 
-  app.listen(8081, () => {
+  app.listen(8080, () => {
     console.log("SERVER STARTED");
   });
 })();
