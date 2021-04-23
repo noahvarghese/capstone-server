@@ -71,3 +71,38 @@ CREATE TRIGGER content_update
 BEFORE UPDATE
 ON content FOR EACH ROW
 SET NEW.updated_on = NOW();
+
+CREATE TRIGGER quiz_update
+BEFORE UPDATE
+ON quiz FOR EACH ROW
+SET NEW.updated_on = NOW();
+
+CREATE TRIGGER quiz_section_update
+BEFORE UPDATE
+ON quiz_section FOR EACH ROW
+SET NEW.updated_on = NOW();
+
+CREATE TRIGGER quiz_question_update
+BEFORE UPDATE
+ON quiz_question FOR EACH ROW
+SET NEW.updated_on = NOW();
+
+CREATE TRIGGER quiz_answer_update
+BEFORE UPDATE
+ON quiz_answer FOR EACH ROW
+SET NEW.updated_on = NOW();
+
+CREATE TRIGGER quiz_attempt_update
+BEFORE UPDATE
+ON quiz_attempt FOR EACH ROW
+SET NEW.updated_on = NOW();
+
+CREATE TRIGGER quiz_result_update
+BEFORE UPDATE
+ON quiz_result FOR EACH ROW
+SET NEW.updated_on = NOW();
+
+CREATE TRIGGER policy_read_update
+BEFORE UPDATE
+ON policy_read FOR EACH ROW
+SET NEW.updated_on = NOW();

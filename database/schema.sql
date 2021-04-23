@@ -222,6 +222,9 @@ CREATE TABLE quiz_result (
     /* If value is null, then incorrect */
     /* Else check corresponding quiz_answer.correct */
     quiz_answer_id INT DEFAULT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
     FOREIGN KEy (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id),
@@ -233,6 +236,9 @@ CREATE TABLE policy_read (
     policy_id INT NOT NULL,
     user_id INT NOT NULL,
     read TINYINT(1) NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (policy_id) REFERENCES policy(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
     PRIMARY KEY (id)
