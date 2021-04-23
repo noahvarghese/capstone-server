@@ -20,6 +20,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
 
 - Node / Express
 - TypeScript
+- CI/CD
 - AWS (Elastic Beanstalk, CodeDeploy, CodeBuild, CodePipeline, EC2, ACM)
 
 ## Environment
