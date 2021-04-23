@@ -17,6 +17,6 @@ import express from "express";
   });
 
   app.listen(8080, () => {
-    console.log("SERVER STARTED");
+    console.log("SERVER STARTED ON PORT 8080");
   });
 })();
