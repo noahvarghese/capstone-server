@@ -1,4 +1,5 @@
 import { createConnection, ConnectionOptions, Connection } from "typeorm";
+import Business from "../models/business";
 import DBLogger from "../util/logs/db_logger";
 
 const connection: ConnectionOptions = {
@@ -9,7 +10,7 @@ const connection: ConnectionOptions = {
     // enforce strict typing by only applying
     // a small subset of the potential database types
     type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities: [],
+    entities: [Business],
     logging: true,
     logger: new DBLogger(),
 };
