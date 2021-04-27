@@ -15,7 +15,7 @@ BEFORE UPDATE
 ON users FOR EACH ROW
 BEGIN
     IF NEW.token IS NOT NULL THEN
-        SET NEW.token_expiry_date = NOW() + INTERVAL 1 HOUR;
+        SET NEW.token_expiry = NOW() + INTERVAL 1 HOUR;
     END IF;
 END;
 
@@ -26,7 +26,7 @@ BEFORE INSERT
 ON users FOR EACH ROW
 BEGIN
     IF NEW.token IS NOT NULL THEN
-        SET NEW.token_expiry_date = NOW() + INTERVAL 1 DAY;
+        SET NEW.token_expiry = NOW() + INTERVAL 1 DAY;
     END IF;
 END;
 
