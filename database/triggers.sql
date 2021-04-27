@@ -8,6 +8,32 @@ BEFORE UPDATE
 ON user FOR EACH ROW
 SET NEW.updated_on = NOW();
 
+DELIMITER //
+
+CREATE TRIGGER users_forgot_password_token_created
+BEFORE UPDATE
+ON users FOR EACH ROW
+BEGIN
+    IF NEW.token IS NOT NULL THEN
+        SET NEW.token_expiry_date = NOW() + INTERVAL 1 HOUR;
+    END IF;
+END;
+
+//
+
+CREATE TRIGGER users_created_token_expiry
+BEFORE INSERT
+ON users FOR EACH ROW
+BEGIN
+    IF NEW.token IS NOT NULL THEN
+        SET NEW.token_expiry_date = NOW() + INTERVAL 1 DAY;
+    END IF;
+END;
+
+//
+
+DELIMITER ;
+
 CREATE TRIGGER department_update
 BEFORE UPDATE
 ON department FOR EACH ROW
@@ -40,6 +66,7 @@ BEGIN
         signal sqlstate '45000' set message_text = msg;
     END IF;
 END
+
 //
 
 CREATE TRIGGER manual_update
@@ -53,6 +80,7 @@ BEGIN
     END IF;
     SET NEW.updated_on = NOW();
 END
+
 //
 
 CREATE TRIGGER manual_assignment_insert
@@ -65,6 +93,7 @@ BEGIN
         signal sqlstate '45000' set message_text = msg;
     END IF;
 END
+
 //
 
 CREATE TRIGGER manual_assignment_update
@@ -78,6 +107,7 @@ BEGIN
     END IF;
     SET NEW.updated_on = NOW();
 END
+
 //
 
 DELIMITER ;
