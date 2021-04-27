@@ -17,6 +17,7 @@ import Question from "../models/quiz/question";
 import Answer from "../models/quiz/answer";
 import Attempt from "../models/quiz/attempt";
 import Result from "../models/quiz/result";
+import Read from "../models/manual/read";
 
 const connection: ConnectionOptions = {
     database: process.env.DB ?? "",
@@ -44,6 +45,7 @@ const connection: ConnectionOptions = {
         Answer,
         Attempt,
         Result,
+        Read,
     ],
     logging: true,
     logger: new DBLogger(),
