@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryColumn } from "typeorm";
-import EventDates from "./abstract/event_dates";
+import EventDates from "../abstract/event_dates";
 
 interface UserRoleAttributes {
     user_id: number;

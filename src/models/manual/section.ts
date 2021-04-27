@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "./abstract/base_model";
+import PrimaryKey from "../abstract/base_model";
 
 interface SectionAttributes {
     title: string;
