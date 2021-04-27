@@ -2,12 +2,12 @@
   "name": "capstone-server",
   "version": "1.0.0",
   "description": "My Capstone",
-  "main": "./src/server.ts",
+  "main": "./src/index.ts",
   "scripts": {
     "prebuild": "rm -rf ./node_modules && npm i",
     "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
-    "dev": "nodemon -e ts,.env --exec ./node_modules/.bin/ts-node ./src/server.ts",
-    "start": "node ./build/server.js",
+    "dev": "nodemon -e ts,.env --exec ./node_modules/.bin/ts-node ./src/index.ts",
+    "start": "node ./build/index.js",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "repository": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/noahvarghese/capstone-server#readme",
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.10",
     "@types/csurf": "^1.11.1",
     "@types/express": "^4.17.11",
