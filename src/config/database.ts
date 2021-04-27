@@ -12,6 +12,7 @@ import User from "../models/user/user";
 import UserRole from "../models/user/user_role";
 import DBLogger from "../util/logs/db_logger";
 import Quiz from "../models/quiz/quiz";
+import QuizSection from "../models/quiz/section";
 
 const connection: ConnectionOptions = {
     database: process.env.DB ?? "",
@@ -34,6 +35,7 @@ const connection: ConnectionOptions = {
         Policy,
         Content,
         Quiz,
+        QuizSection,
     ],
     logging: true,
     logger: new DBLogger(),
