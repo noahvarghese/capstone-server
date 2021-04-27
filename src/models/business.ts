@@ -1,6 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import applyMixins from "../util/mixins";
-import EventDates from "./abstract/event_dates";
+import { Entity, Column } from "typeorm";
 import PrimaryKey from "./abstract/base_model";
 
 interface BusinessAttributes {
