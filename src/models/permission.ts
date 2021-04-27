@@ -22,7 +22,7 @@ const PermissionBuilder = <T extends Partial<PermissionAttributes>>(
 ): PermissionAttributes & T =>
     Object.assign(EmptyPermissionAttributes(), options);
 
-@Entity()
+@Entity({ name: "permission" })
 export default class Permission
     extends EditableContentModel
     implements PermissionAttributes {

@@ -19,7 +19,7 @@ const ContentBuilder = <T extends Partial<ContentAttributes>>(
     options?: T
 ): ContentAttributes & T => Object.assign(EmptyContentAttributes(), options);
 
-@Entity()
+@Entity({ name: "content" })
 export default class Content
     extends EditableContentModel
     implements ContentAttributes {

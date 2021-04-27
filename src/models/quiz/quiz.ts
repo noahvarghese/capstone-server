@@ -19,7 +19,7 @@ const QuizBuilder = <T extends Partial<QuizAttributes>>(
     options?: T
 ): QuizAttributes & T => Object.assign(EmptyQuizAttributes(), options);
 
-@Entity()
+@Entity({ name: "quiz" })
 export default class Quiz
     extends EditableContentModel
     implements QuizAttributes {

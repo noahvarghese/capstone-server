@@ -15,7 +15,7 @@ const AttemptBuilder = <T extends Partial<AttemptAttributes>>(
     options?: T
 ): AttemptAttributes & T => Object.assign(EmptyAttemptAttributes(), options);
 
-@Entity()
+@Entity({ name: "quiz_attempt" })
 export default class Attempt extends BaseModel implements AttemptAttributes {
     @Column()
     public user_id!: number;

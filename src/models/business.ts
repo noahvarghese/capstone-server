@@ -25,7 +25,7 @@ const BusinessBuilder = <T extends Partial<BusinessAttributes>>(
     return Object.assign(EmptyBusiness(), options);
 };
 
-@Entity()
+@Entity({ name: "business" })
 export default class Business extends BaseModel implements BusinessAttributes {
     @Column()
     public name!: string;

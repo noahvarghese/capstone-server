@@ -18,7 +18,7 @@ const DepartmentBuilder = <T extends Partial<DepartmentAttributes>>(
 ): DepartmentAttributes & T =>
     Object.assign(EmptyDeparmentAttributes(), options);
 
-@Entity()
+@Entity({ name: "department" })
 export default class Department
     extends BaseModel
     implements DepartmentAttributes {

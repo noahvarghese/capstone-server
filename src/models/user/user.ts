@@ -37,7 +37,7 @@ const UserBuilder = <T extends Partial<UserAttributes>>(
     options?: T
 ): UserAttributes & T => Object.assign(EmptyUserAttributes(), options);
 
-@Entity()
+@Entity({ name: "user" })
 export default class User extends BaseModel implements UserAttributes {
     @Column()
     public first_name!: string;

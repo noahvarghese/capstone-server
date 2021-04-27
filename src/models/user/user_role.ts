@@ -17,7 +17,7 @@ const UserRoleBuilder = <T extends Partial<UserRoleAttributes>>(
     options?: T
 ): UserRoleAttributes & T => Object.assign(EmptyUserRoleAttributes(), options);
 
-@Entity()
+@Entity({ name: "user_role" })
 export default class UserRole extends EventDates implements UserRoleAttributes {
     @PrimaryColumn()
     public user_id!: number;

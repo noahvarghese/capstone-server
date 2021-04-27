@@ -19,7 +19,7 @@ const QuestionBuilder = <T extends Partial<QuestionAttributes>>(
     options?: T
 ): QuestionAttributes & T => Object.assign(EmptyQuestionAttributes(), options);
 
-@Entity()
+@Entity({ name: "quiz_question" })
 export default class Question
     extends EditableContentModel
     implements QuestionAttributes {

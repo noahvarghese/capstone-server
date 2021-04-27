@@ -22,7 +22,7 @@ const ManualAssignmentBuilder = <T extends Partial<ManualAssignmentAttributes>>(
 ): ManualAssignmentAttributes & T =>
     Object.assign(EmptyManualAssignmentAttributes(), options);
 
-@Entity()
+@Entity({ name: "manual_assignment" })
 export default class ManualAssignment
     extends EditableContentModel
     implements ManualAssignmentAttributes {

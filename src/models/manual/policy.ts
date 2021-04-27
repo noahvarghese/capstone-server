@@ -17,7 +17,7 @@ const PolicyBuilder = <T extends Partial<PolicyAttributes>>(
     options?: T
 ): PolicyAttributes & T => Object.assign(EmptyPolicyAttributes(), options);
 
-@Entity()
+@Entity({ name: "policy" })
 export default class Policy
     extends EditableContentModel
     implements PolicyAttributes {
