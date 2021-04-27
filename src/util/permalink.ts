@@ -2,23 +2,26 @@ import dotenv from "dotenv";
 import Logs, { LogLevels } from "./logs";
 dotenv.config();
 
-const targetEnv = process.env.TARGET_ENV ?? "";
+const { TARGET_ENV } = process.env;
 
-const client = process.env[`ENV_${targetEnv}_CLIENT`] ?? "";
-const server = process.env[`ENV_${targetEnv}_SERVER`] ?? "";
+let client: string = process.env[`ENV_${TARGET_ENV}_CLIENT`] ?? "";
+let server: string = process.env[`ENV_${TARGET_ENV}_SERVER`] ?? "";
 
-if (client === "") {
+if (client !== "") {
+    client = `http${TARGET_ENV !== "LOCAL" ? "s" : ""}://${client}/`;
+} else {
     Logs.addLog(
-        `No client origin found for environment ${targetEnv}`,
+        `No client origin found for environment ${TARGET_ENV}`,
         LogLevels.ERROR
     );
 }
 
-if (server === "") {
+if (server !== "") {
+    server = `http${TARGET_ENV !== "LOCAL" ? "s" : ""}://${server}/`;
+} else {
     Logs.addLog(
-        `No server origin found for environment ${targetEnv}`,
+        `No server origin found for environment ${TARGET_ENV}`,
         LogLevels.ERROR
     );
 }
-
 export { client, server };

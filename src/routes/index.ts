@@ -8,9 +8,7 @@ const router = Router();
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {
-    res.redirect(
-        `https://${client + (req.originalUrl !== "/" ? req.originalUrl : "")}`
-    );
+    res.redirect(client + (req.originalUrl !== "/" ? req.originalUrl : ""));
 });
 
 export default router;

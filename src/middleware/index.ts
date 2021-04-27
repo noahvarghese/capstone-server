@@ -22,7 +22,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (requestedPublicResource === false && !req.session.user_id) {
-        res.redirect(`https://${client}`);
+        res.redirect(client);
         return;
     }
 
