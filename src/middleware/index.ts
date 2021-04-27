@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import Logs, { LogLevels } from "../util/logs";
+import Logs from "../util/logs";
 import { client } from "../util/permalink";
 
 const clearCookie = (req: Request, res: Response, next: NextFunction) => {
     if (req.cookies.sid && !req.session.user_id) {
-        Logs.addLog("Cleared cookie", LogLevels.EVENT);
+        Logs.Event("Cleared cookie");
         res.clearCookie(process.env.SESSION_ID ?? "sid");
     }
     next();

@@ -2,7 +2,7 @@ import cors from "./cors";
 import cookieParser from "cookie-parser";
 import cluster from "cluster";
 import express from "express";
-import Logs, { LogLevels } from "./logs";
+import Logs from "./logs";
 import middlewares from "../middleware";
 import router from "../routes";
 import { createSession } from "./session";
@@ -36,15 +36,14 @@ const setupServer = async (): Promise<void> => {
 
     /* Start the application already!!! */
     app.listen(port, () => {
-        Logs.addLog(
+        Logs.Event(
             `Server started on port: ${port} using ${
                 cluster.isMaster
                     ? "parent process"
                     : cluster.isWorker
                     ? `child process ${cluster.worker.process.pid}`
                     : undefined
-            }`,
-            LogLevels.EVENT
+            }`
         );
     });
 };

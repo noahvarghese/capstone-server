@@ -1,7 +1,7 @@
 import cluster, { Worker } from "cluster";
 import dotenv from "dotenv";
 import os from "os";
-import Logs, { LogLevels } from "./logs";
+import Logs from "./logs";
 
 dotenv.config();
 
@@ -13,22 +13,22 @@ enableMultiThreading = enableMultiThreading && cluster.isMaster;
 
 export const setupMultiThreading = (): void => {
     const cpuCount = os.cpus().length;
-    Logs.addLog(`${cpuCount} CPUs found.`, LogLevels.EVENT);
+    Logs.Event(`${cpuCount} CPUs found.`);
 
     for (let i = 0; i < cpuCount; i++) {
         cluster.fork();
     }
 
     cluster.on("fork", (worker: Worker) => {
-        Logs.addLog(`Forked process: ${worker.process.pid}`, LogLevels.EVENT);
+        Logs.Event(`Forked process: ${worker.process.pid}`);
     });
 
     cluster.on("online", (worker: Worker) => {
-        Logs.addLog(`Worker ${worker.process.pid} is online`, LogLevels.EVENT);
+        Logs.Event(`Worker ${worker.process.pid} is online`);
     });
 
     cluster.on("exit", (worker: Worker) => {
-        Logs.addLog(`Worker ${worker.process.pid} died.`, LogLevels.EVENT);
+        Logs.Event(`Worker ${worker.process.pid} died.`);
     });
 };
 

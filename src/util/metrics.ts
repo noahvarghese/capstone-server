@@ -1,4 +1,4 @@
-import Logs, { LogLevels } from "./logs";
+import Logs from "./logs";
 
 interface Metrics {
     start: number;
@@ -17,11 +17,10 @@ export const timedFunc = (
     const metrics = newMetrics();
     const result = await func(...params);
     metrics.end = new Date().getTime();
-    Logs.addLog(
+    Logs.Metric(
         `Function ${functionName ? `${functionName} ` : ""} runtime: ${
             metrics.end - metrics.start
-        } milliseconds.`,
-        LogLevels.METRICS
+        } milliseconds.`
     );
     return result;
 };
