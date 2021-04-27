@@ -5,8 +5,6 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     DeleteDateColumn,
-    OneToMany,
-    ManyToOne,
 } from "typeorm";
 
 interface BusinessAttributes {
