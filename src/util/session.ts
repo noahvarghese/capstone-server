@@ -7,18 +7,6 @@ import Logs from "./logs/logs";
 
 dotenv.config();
 
-export interface SessionData {
-    // TODO Replacewith user model
-    user: unknown;
-}
-
-declare module "express-session" {
-    export interface SessionData {
-        user_id: number;
-        long_term_care_home_id: number;
-    }
-}
-
 const mySQLSessionStore = new (MySQLStore(session))({
     database: process.env.DB ?? "",
     host: process.env.DB_URL ?? "",
