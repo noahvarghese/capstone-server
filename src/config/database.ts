@@ -14,6 +14,7 @@ import DBLogger from "../util/logs/db_logger";
 import Quiz from "../models/quiz/quiz";
 import QuizSection from "../models/quiz/section";
 import Question from "../models/quiz/question";
+import Answer from "../models/quiz/answer";
 
 const connection: ConnectionOptions = {
     database: process.env.DB ?? "",
@@ -38,6 +39,7 @@ const connection: ConnectionOptions = {
         Quiz,
         QuizSection,
         Question,
+        Answer,
     ],
     logging: true,
     logger: new DBLogger(),
