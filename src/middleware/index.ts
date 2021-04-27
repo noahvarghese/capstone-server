@@ -11,7 +11,7 @@ const clearCookie = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-    const publicRoutes = ["login", "signup"];
+    const publicRoutes = ["/", "login", "signup"];
     let requestedPublicResource = false;
 
     for (const route of publicRoutes) {
@@ -22,7 +22,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (requestedPublicResource === false && !req.session.user_id) {
-        res.redirect(client);
+        res.redirect(`https://${client}`);
         return;
     }
 
