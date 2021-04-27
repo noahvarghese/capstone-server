@@ -1,11 +1,7 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import applyMixins from "../util/mixins";
+import EventDates from "./abstract/event_dates";
+import PrimaryKey from "./abstract/base_model";
 
 interface BusinessAttributes {
     name: string;
@@ -32,9 +28,7 @@ const BusinessBuilder = <T extends Partial<BusinessAttributes>>(
 };
 
 @Entity()
-export default class Business implements BusinessAttributes {
-    @PrimaryGeneratedColumn()
-    public id!: number;
+export default class Business extends PrimaryKey implements BusinessAttributes {
     @Column()
     public name!: string;
     @Column()
@@ -47,14 +41,9 @@ export default class Business implements BusinessAttributes {
     public province!: string;
     @Column()
     public country!: string;
-    @CreateDateColumn()
-    public readonly created_on!: Date;
-    @UpdateDateColumn()
-    public readonly updated_on!: Date;
-    @DeleteDateColumn()
-    public readonly deleted_on!: Date;
 
     public constructor(options?: Partial<BusinessAttributes>) {
+        super();
         const businessAttr = BusinessBuilder(options);
         Object.assign(this, businessAttr);
     }

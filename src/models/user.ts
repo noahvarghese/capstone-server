@@ -1,11 +1,7 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import applyMixins from "../util/mixins";
+import EventDates from "./abstract/event_dates";
+import PrimaryKey from "./abstract/base_model";
 
 interface UserAttributes {
     first_name: string;
@@ -44,9 +40,7 @@ const UserBuilder = <T extends Partial<UserAttributes>>(
 ): UserAttributes & T => Object.assign(EmptyUserAttributes(), options);
 
 @Entity()
-export default class User implements UserAttributes {
-    @PrimaryGeneratedColumn()
-    public id!: number;
+export default class User extends PrimaryKey implements UserAttributes {
     @Column()
     public first_name!: string;
     @Column()
@@ -73,14 +67,9 @@ export default class User implements UserAttributes {
     public password!: string;
     @Column()
     public business_id!: number;
-    @CreateDateColumn()
-    public readonly created_on!: Date;
-    @UpdateDateColumn()
-    public readonly updated_on!: Date;
-    @DeleteDateColumn()
-    public readonly deleted_on!: Date;
 
     public constructor(options?: Partial<UserAttributes>) {
+        super();
         const userAttr = UserBuilder(options);
         Object.assign(this, userAttr);
     }
