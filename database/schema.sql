@@ -110,8 +110,9 @@ CREATE TABLE manual (
 );
 
 CREATE TABLE manual_assignment (
-    role_id INT NOT NULL,
-    department_id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
+    role_id INT,
+    department_id INT,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
@@ -121,6 +122,7 @@ CREATE TABLE manual_assignment (
     FOREIGN KEY (department_id) REFERENCES department(id),
     FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    PRIMARY KEY (id)
 )
 
 CREATE TABLE section (
