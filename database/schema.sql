@@ -82,8 +82,8 @@ CREATE TABLE role (
 );
 
 CREATE TABLE user_role (
-    role_id INT NOT NULL,
     user_id INT NOT NULL,
+    role_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
