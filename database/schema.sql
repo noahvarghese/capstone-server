@@ -53,6 +53,8 @@ CREATE TABLE department (
     PRIMARY KEY (id)
 );
 
+/* Each role will have a set of permissions */
+
 CREATE TABLE permission (
     id INT NOT NULL AUTO_INCREMENT,
     view_users TINYINT(1) NOT NULL,
@@ -80,7 +82,6 @@ CREATE TABLE role (
 );
 
 CREATE TABLE user_role (
-    id INT NOT NULL AUTO_INCREMENT,
     role_id INT NOT NULL,
     user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
@@ -88,7 +89,7 @@ CREATE TABLE user_role (
     deleted_on DATETIME DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    PRIMARY KEY (id)
+    PRIMARY KEY (user_id, role_id)
 );
 
 CREATE TABLE manual (
@@ -116,7 +117,7 @@ CREATE TABLE section (
     deleted_on DATETIME DEFAULT NULL,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY manual_id REFERENCES manual(id),
+    FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -129,7 +130,7 @@ CREATE TABLE policy (
     deleted_on DATETIME DEFAULT NULL,
     section_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY section_id REFERENCES section(id),
+    FOREIGN KEY (section_id) REFERENCES section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -143,7 +144,7 @@ CREATE TABLE content (
     deleted_on DATETIME DEFAULT NULL,
     policy_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY policy_id REFERENCES policy(id),
+    FOREIGN KEY (policy_id) REFERENCES policy(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -157,7 +158,7 @@ CREATE TABLE quiz (
     deleted_on DATETIME DEFAULT NULL,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY manual_id REFERENCES manual(id),
+    FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY(id)
 );
@@ -170,7 +171,7 @@ CREATE TABLE quiz_section (
     deleted_on DATETIME DEFAULT NULL,
     quiz_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY quiz_id REFERENCES quiz(id),
+    FOREIGN KEY (quiz_id) REFERENCES quiz(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY(id)
 );
@@ -184,7 +185,7 @@ CREATE TABLE quiz_question (
     deleted_on DATETIME DEFAULT NULL,
     quiz_section_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY quiz_section_id REFERENCES quiz_section(id),
+    FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -198,7 +199,7 @@ CREATE TABLE quiz_answer (
     deleted_on DATETIME DEFAULT NULL,
     quiz_question_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY quiz_question_id REFERENCES quiz_question(id),
+    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -232,14 +233,12 @@ CREATE TABLE quiz_result (
 );
 
 CREATE TABLE policy_read (
-    id INT NOT NULL AUTO_INCREMENT,
     policy_id INT NOT NULL,
     user_id INT NOT NULL,
-    read TINYINT(1) NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (policy_id) REFERENCES policy(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
-    PRIMARY KEY (id)
+    PRIMARY KEY (user_id, policy_id)
 );

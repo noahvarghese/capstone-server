@@ -35,7 +35,7 @@ BEFORE INSERT
 ON manual FOR EACH ROW
 BEGIN
     declare msg varchar(128);
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '')
+    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
         set msg = concat('ManualInsertError: Trying to add a manual without a role or department ', cast(new.id as char));
         signal sqlstate '45000' set message_text = msg;
     END IF;
@@ -47,7 +47,7 @@ BEFORE UPDATE
 ON manual FOR EACH ROW
 BEGIN
     declare msg varchar(128);
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '')
+    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
         set msg = concat('ManualUpdateError: Trying to update a manual without a role or department ', cast(new.id as char));
         signal sqlstate '45000' set message_text = msg;
     END IF;
@@ -64,7 +64,7 @@ SET NEW.updated_on = NOW();
 
 CREATE TRIGGER policy_update
 BEFORE UPDATE
-ON update FOR EACH ROW
+ON policy FOR EACH ROW
 SET NEW.updated_on = NOW();
 
 CREATE TRIGGER content_update
