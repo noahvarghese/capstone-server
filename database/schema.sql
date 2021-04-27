@@ -109,6 +109,20 @@ CREATE TABLE manual (
     PRIMARY KEY (id)
 );
 
+CREATE TABLE manual_assignment (
+    role_id INT NOT NULL,
+    department_id INT NOT NULL,
+    manual_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    FOREIGN KEY (role_id) REFERENCES role(id),
+    FOREIGN KEY (department_id) REFERENCES department(id),
+    FOREIGN KEY (manual_id) REFERENCES manual(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+)
+
 CREATE TABLE section (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,

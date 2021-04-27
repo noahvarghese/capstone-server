@@ -55,6 +55,31 @@ BEGIN
 END
 //
 
+CREATE TRIGGER manual_assignment_insert
+BEFORE INSERT
+ON manual FOR EACH ROW
+BEGIN
+    declare msg varchar(128);
+    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
+        set msg = concat('ManualAssignmentInsertError: Trying to add a manual_assignment without a role or department ', cast(new.id as char));
+        signal sqlstate '45000' set message_text = msg;
+    END IF;
+END
+//
+
+CREATE TRIGGER manual_assignment_update
+BEFORE UPDATE
+ON manual FOR EACH ROW
+BEGIN
+    declare msg varchar(128);
+    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
+        set msg = concat('ManualAssignmentUpdateError: Trying to update a manual_assignment without a role or department ', cast(new.id as char));
+        signal sqlstate '45000' set message_text = msg;
+    END IF;
+    SET NEW.updated_on = NOW();
+END
+//
+
 DELIMITER ;
 
 CREATE TRIGGER section_update
