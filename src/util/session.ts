@@ -3,7 +3,7 @@ import { RequestHandler } from "express";
 import * as core from "express-serve-static-core";
 import MySQLStore from "express-mysql-session";
 import * as session from "express-session";
-import Logs from "./logs";
+import Logs from "./logs/logs";
 
 dotenv.config();
 

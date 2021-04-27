@@ -1,7 +1,7 @@
 import cluster, { Worker } from "cluster";
 import dotenv from "dotenv";
 import os from "os";
-import Logs from "./logs";
+import Logs from "./logs/logs";
 
 dotenv.config();
 

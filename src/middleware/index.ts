@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Logs from "../util/logs";
+import Logs from "../util/logs/logs";
 import { client } from "../util/permalink";
 
 const clearCookie = (req: Request, res: Response, next: NextFunction) => {

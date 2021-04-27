@@ -2,7 +2,7 @@ import cors from "./cors";
 import cookieParser from "cookie-parser";
 import cluster from "cluster";
 import express from "express";
-import Logs from "./logs";
+import Logs from "./logs/logs";
 import middlewares from "../middleware";
 import router from "../routes";
 import { createSession } from "./session";

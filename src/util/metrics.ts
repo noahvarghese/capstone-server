@@ -1,4 +1,4 @@
-import Logs from "./logs";
+import Logs from "./logs/logs";
 
 interface Metrics {
     start: number;

@@ -8,7 +8,7 @@ import Logs from "./logs";
 
 export default class DBLogger implements Logger {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    logQuery(query: string, parameters?: any[], _?: QueryRunner): void {
+    logQuery(query: string, parameters?: unknown[], _?: QueryRunner): void {
         const message = `Query executing: ${query}\nParams: ${parameters}`;
         Logs.SQL(message);
     }
