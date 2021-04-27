@@ -1,3 +1,4 @@
+import { uid } from "rand-token";
 import { Entity, Column } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
@@ -15,6 +16,8 @@ interface UserAttributes {
     birthday: Date;
     password: string;
     business_id: number;
+    token?: string | undefined;
+    token_expiry?: Date | undefined;
 }
 
 const EmptyUserAttributes = () => ({
@@ -31,6 +34,8 @@ const EmptyUserAttributes = () => ({
     birthday: "",
     password: "",
     business_id: -1,
+    token: undefined,
+    token_expiry: undefined,
 });
 
 const UserBuilder = <T extends Partial<UserAttributes>>(
@@ -65,10 +70,18 @@ export default class User extends BaseModel implements UserAttributes {
     public password!: string;
     @Column()
     public business_id!: number;
+    @Column()
+    public token?: string;
+    @Column()
+    public token_expiry?: Date;
 
     public constructor(options?: Partial<UserAttributes>) {
         super();
         const userAttr = UserBuilder(options);
         Object.assign(this, userAttr);
     }
+
+    public createToken = (): void => {
+        this.token = uid(32);
+    };
 }

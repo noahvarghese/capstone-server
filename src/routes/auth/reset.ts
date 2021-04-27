@@ -1,41 +1,86 @@
 import { Request, Response, Router } from "express";
 import bcrypt from "bcrypt";
 import User from "../../models/user/user";
+import { UpdateResult } from "typeorm";
 
 const router = Router();
 
-router.post("/reset", async (request: Request, response: Response) => {
+router.post("/", async (request: Request, response: Response) => {
     const { email } = request.body;
-    const user = new User({ email });
-    if (await user.createToken()) {
-        // await user.connection.close();
-        response.sendStatus(200);
+    const { SqlConnection: connection } = request;
+    const users = await connection.manager.find(User, { where: { email } });
+
+    if (users.length !== 1) {
+        response.status(400).json({ message: "Invalid email." });
         return;
     }
 
-    // await user.connection.close();
-    response.sendStatus(400);
+    const user = users[0];
+
+    user.createToken();
+
+    const result: UpdateResult = await connection.manager.update(
+        User,
+        user.id,
+        user
+    );
+
+    if (result.affected !== 1) {
+        response.sendStatus(500);
+        return;
+    }
+
+    // Send password reset email
+
+    response.sendStatus(200);
     return;
 });
 
-router.post("/reset/:token", async (request: Request, response: Response) => {
+router.post("/:token", async (request: Request, response: Response) => {
+    const { SqlConnection: connection } = request;
     const { token } = request.params;
     const { password, confirmPassword } = request.body;
 
-    if (password === confirmPassword) {
-        const hashed_password = bcrypt.hashSync(password, 12);
+    if (password !== confirmPassword) {
+        response.sendStatus(400);
+        return;
+    }
 
-        const user = new User({ token });
-        if (await user.resetPassword(hashed_password)) {
-            await passwordSuccesfullyReset(user);
-            response.sendStatus(200);
-            // await user.connection.close();
+    try {
+        const hashed_password: string = await new Promise((res, rej) => {
+            bcrypt.hash(password, 12, (err, encrypted) => {
+                if (err) {
+                    rej(err);
+                }
+                res(encrypted);
+            });
+        });
+
+        const users = await connection.manager.find(User, { where: { token } });
+
+        if (users.length !== 1) {
+            response.status(400).json({ message: "Invalid token." });
             return;
         }
-        // await user.connection.close();
+
+        const user = users[0];
+        user.password = hashed_password;
+
+        const result = await connection.manager.update(User, user.id, user);
+
+        if (result.affected !== 1) {
+            response.sendStatus(500);
+            return;
+        }
+
+        // send password succesfully reset email
+
+        response.sendStatus(200);
+        return;
+    } catch (e) {
+        response.sendStatus(500);
+        return;
     }
-    response.sendStatus(400);
-    return;
 });
 
 export default router;
