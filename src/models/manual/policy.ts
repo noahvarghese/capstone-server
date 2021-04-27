@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
 interface PolicyAttributes {
     title: string;
@@ -18,13 +18,13 @@ const PolicyBuilder = <T extends Partial<PolicyAttributes>>(
 ): PolicyAttributes & T => Object.assign(EmptyPolicyAttributes(), options);
 
 @Entity()
-export default class Policy extends PrimaryKey implements PolicyAttributes {
+export default class Policy
+    extends EditableContentModel
+    implements PolicyAttributes {
     @Column()
     public title!: string;
     @Column()
     public section_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<PolicyAttributes>) {
         super();

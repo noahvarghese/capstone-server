@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import BaseModel from "../abstract/base_model";
 
 interface UserAttributes {
     first_name: string;
@@ -38,7 +38,7 @@ const UserBuilder = <T extends Partial<UserAttributes>>(
 ): UserAttributes & T => Object.assign(EmptyUserAttributes(), options);
 
 @Entity()
-export default class User extends PrimaryKey implements UserAttributes {
+export default class User extends BaseModel implements UserAttributes {
     @Column()
     public first_name!: string;
     @Column()

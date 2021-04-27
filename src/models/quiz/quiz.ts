@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
 interface QuizAttributes {
     title: string;
@@ -20,15 +20,15 @@ const QuizBuilder = <T extends Partial<QuizAttributes>>(
 ): QuizAttributes & T => Object.assign(EmptyQuizAttributes(), options);
 
 @Entity()
-export default class Quiz extends PrimaryKey implements QuizAttributes {
+export default class Quiz
+    extends EditableContentModel
+    implements QuizAttributes {
     @Column()
     public title!: string;
     @Column()
     public max_attempts!: number;
     @Column()
     public manual_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<QuizAttributes>) {
         super();

@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
 interface SectionAttributes {
     title: string;
@@ -18,13 +18,13 @@ const SectionBuilder = <T extends Partial<SectionAttributes>>(
 ): SectionAttributes & T => Object.assign(EmptySectionAttributes(), options);
 
 @Entity()
-export default class Section extends PrimaryKey implements SectionAttributes {
+export default class Section
+    extends EditableContentModel
+    implements SectionAttributes {
     @Column()
     public title!: string;
     @Column()
     public quiz_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<SectionAttributes>) {
         super();

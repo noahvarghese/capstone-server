@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "./abstract/base_model";
+import EditableContentModel from "./abstract/editable_content_model";
 
 interface RoleAttributes {
     name: string;
@@ -20,15 +20,15 @@ const RoleBuilder = <T extends Partial<RoleAttributes>>(
 ): RoleAttributes & T => Object.assign(EmptyRoleAttributes(), options);
 
 @Entity()
-export default class Role extends PrimaryKey implements RoleAttributes {
+export default class Role
+    extends EditableContentModel
+    implements RoleAttributes {
     @Column()
     public name!: string;
     @Column()
     public department_id!: number;
     @Column()
     public permission_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<RoleAttributes>) {
         super();

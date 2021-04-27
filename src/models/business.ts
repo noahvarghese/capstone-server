@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "./abstract/base_model";
+import BaseModel from "./abstract/base_model";
 
 interface BusinessAttributes {
     name: string;
@@ -26,7 +26,7 @@ const BusinessBuilder = <T extends Partial<BusinessAttributes>>(
 };
 
 @Entity()
-export default class Business extends PrimaryKey implements BusinessAttributes {
+export default class Business extends BaseModel implements BusinessAttributes {
     @Column()
     public name!: string;
     @Column()

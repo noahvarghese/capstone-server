@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "./abstract/base_model";
+import BaseModel from "./abstract/base_model";
 
 interface DepartmentAttributes {
     name: string;
@@ -20,7 +20,7 @@ const DepartmentBuilder = <T extends Partial<DepartmentAttributes>>(
 
 @Entity()
 export default class Department
-    extends PrimaryKey
+    extends BaseModel
     implements DepartmentAttributes {
     @Column()
     public name!: string;

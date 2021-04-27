@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
 interface ContentAttributes {
     title: string;
@@ -20,15 +20,15 @@ const ContentBuilder = <T extends Partial<ContentAttributes>>(
 ): ContentAttributes & T => Object.assign(EmptyContentAttributes(), options);
 
 @Entity()
-export default class Content extends PrimaryKey implements ContentAttributes {
+export default class Content
+    extends EditableContentModel
+    implements ContentAttributes {
     @Column()
     public title!: string;
     @Column()
     public content!: string;
     @Column()
     public policy_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<ContentAttributes>) {
         super();

@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
 interface QuestionAttributes {
     question: string;
@@ -20,15 +20,15 @@ const QuestionBuilder = <T extends Partial<QuestionAttributes>>(
 ): QuestionAttributes & T => Object.assign(EmptyQuestionAttributes(), options);
 
 @Entity()
-export default class Question extends PrimaryKey implements QuestionAttributes {
+export default class Question
+    extends EditableContentModel
+    implements QuestionAttributes {
     @Column()
     public question!: string;
     @Column()
     public type!: string;
     @Column()
     public section_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<QuestionAttributes>) {
         super();

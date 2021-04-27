@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "./abstract/base_model";
+import EditableContentModel from "./abstract/editable_content_model";
 
 interface PermissionAttributes {
     view_users: boolean;
@@ -24,7 +24,7 @@ const PermissionBuilder = <T extends Partial<PermissionAttributes>>(
 
 @Entity()
 export default class Permission
-    extends PrimaryKey
+    extends EditableContentModel
     implements PermissionAttributes {
     @Column()
     public view_users!: boolean;
@@ -34,8 +34,6 @@ export default class Permission
     public remove_users!: boolean;
     @Column()
     public edit_policies!: boolean;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<PermissionAttributes>) {
         super();

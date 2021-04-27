@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import PrimaryKey from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
 interface ManualAssignmentAttributes {
     title: string;
@@ -24,7 +24,7 @@ const ManualAssignmentBuilder = <T extends Partial<ManualAssignmentAttributes>>(
 
 @Entity()
 export default class ManualAssignment
-    extends PrimaryKey
+    extends EditableContentModel
     implements ManualAssignmentAttributes {
     @Column()
     public title!: string;
@@ -34,8 +34,6 @@ export default class ManualAssignment
     public role_id!: number;
     @Column()
     public department_id!: number;
-    @Column()
-    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<ManualAssignmentAttributes>) {
         super();
