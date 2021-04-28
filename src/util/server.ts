@@ -7,6 +7,7 @@ import Logs from "./logs/logs";
 import middlewares from "../middleware";
 import router from "../routes";
 import { createSession } from "./session";
+import { getLocationData } from "./geolocation";
 
 const port = process.env.PORT ?? 8080;
 
@@ -47,6 +48,8 @@ const setupServer = async (): Promise<void> => {
 
         Logs.Event(`Server started on port: ${port} using ${pid}`);
     });
+
+    await getLocationData();
 };
 
 export default setupServer;

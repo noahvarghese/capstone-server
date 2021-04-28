@@ -1,3 +1,6 @@
+import fetch from "node-fetch";
+import Logs from "./logs/logs";
+
 interface HereApiParams {
     app_id: string;
     app_code: string;
@@ -13,35 +16,62 @@ interface LocationParams {
     country: string;
 }
 
-const getLocationData = async (options: LocationParams): Promise<any> => {
+export const getLocationData = async (
+    options: LocationParams = {
+        street: "1245 Sixth Line",
+        city: "Oakville",
+        postal_code: "L6H 1X1",
+        province: "ON",
+        country: "CA",
+    }
+): Promise<any> => {
     const params: HereApiParams = {
         app_id: process.env.HERE_APP_ID ?? "",
         app_code: process.env.HERE_ACCESS_KEY_ID ?? "",
-        searchtext: `${options.street} ${options.city} ${options.province} ${options.postal_code} ${options.country}`,
+        // Postal code messes up the query
+        // The returned values are only the first 3 digits
+        // So not optimal to search by
+        searchtext: `${options.street} ${options.city} ${options.province} ${options.country}`,
     };
 
-    const res = await fetch("https://geocoder.api.here.com/6.2/geocode.json", {
-        body: JSON.stringify({ params }),
-    });
+    const url = `https://autocomplete.geocoder.ls.hereapi.com/6.2/suggest.json?apiKey=${
+        process.env.HERE_API_KEY ?? ""
+    }&query=${encodeURIComponent(params.searchtext ?? "")}`;
+    console.log(url);
 
+    const res = await fetch(url);
+    // const body = await res.text();
+
+    // console.log(body);
     const data = await res.json();
-    const view = data.Response.View;
-    return view;
+    // const view = data.Response.View;
+    // Logs.Log(view);
+    return data.suggestions;
+    // return view;
 };
 
 // https://developer.here.com/blog/street-address-validation-with-reactjs-and-here-geocoder-autocomplete
 export const getFirstLocation = async (
     options: LocationParams
 ): Promise<any> => {
-    const view = await getLocationData(options);
-    if (view.length > 0 && view[0].Result.length > 0) {
-        const location = view[0].Result[0].Location;
-        return location.Address;
+    const locations = await getLocationData(options);
+    if (locations.length > 1) {
+        const loc = locations.find(
+            (location: any) => location.matchLevel === "houseNumber"
+        );
+        return loc.address;
+    } else if (locations.length > 0) {
+        return locations[0].address;
     }
+
     return undefined;
 };
 
 // Need to test this out to check how the locations are sent back
-// export const getLocationList = async (options: LocationParams): Promise<void> => {
-// const view = await getLocationData(options);
-// };
+export const getLocationList = async (
+    options: LocationParams
+): Promise<any[]> => {
+    const locations: any[] = await getLocationData(options);
+    const addresses = locations.map((loc: any) => loc.address);
+    return addresses;
+};
