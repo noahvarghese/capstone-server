@@ -1,11 +1,12 @@
+// Unsure of why I have to declare it twice
 export interface SessionData {
-    // TODO Replacewith user model
-    user: User;
+    user_id: number;
+    business_id: number;
 }
 
 declare module "express-session" {
-    export interface SessionData {
+    interface SessionData {
         user_id: number;
-        long_term_care_home_id: number;
+        business_id: number;
     }
 }
