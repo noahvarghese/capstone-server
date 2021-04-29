@@ -19,7 +19,7 @@ import Attempt from "../models/quiz/attempt";
 import Result from "../models/quiz/result";
 import Read from "../models/manual/read";
 
-const connection: ConnectionOptions = {
+export const connection: ConnectionOptions = {
     database: process.env.DB ?? "",
     host: process.env.DB_URL ?? "",
     username: process.env.DB_USER ?? "",

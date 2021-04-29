@@ -1,24 +1,7 @@
-import { BeforeAll, AfterAll } from "@cucumber/cucumber";
-import { Server } from "node:http";
-import Logs from "../../src/util/logs/logs";
-import setupServer from "../../src/util/server";
+import { Before } from "@cucumber/cucumber";
+import { Connection, getConnection } from "typeorm";
+import BaseWorld from "../support/base_world";
 
-let server: Server;
-
-BeforeAll(async function () {
-    const disableLogs = true;
-    server = await setupServer(disableLogs);
-});
-
-AfterAll(async function () {
-    Logs.Log(server);
-    return await new Promise<void>((res, rej) => {
-        server.close((err) => {
-            if (err) {
-                Logs.Test(err);
-                rej(err);
-            }
-            res();
-        });
-    });
+Before({ tags: "@Model" }, async function (this: BaseWorld) {
+    this.setCustomProp<Connection>("connection", getConnection());
 });

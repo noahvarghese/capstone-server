@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import BaseModel from "./abstract/base_model";
 
-interface BusinessAttributes {
+export interface BusinessAttributes {
     name: string;
     address: string;
     city: string;
