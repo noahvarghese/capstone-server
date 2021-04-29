@@ -3,13 +3,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 enum LogLevels {
-    EVENT = 0,
-    ERROR = 1,
-    WARN = 2,
-    DEBUG = 3,
-    LOG = 4,
-    METRICS = 5,
-    SQL = 6,
+    TEST = 0,
+    EVENT = 1,
+    ERROR = 2,
+    WARN = 3,
+    DEBUG = 4,
+    LOG = 5,
+    METRICS = 6,
+    SQL = 7,
 }
 
 interface LogData {
@@ -34,6 +35,10 @@ const createLogData = <T extends Partial<LogData>>(
 };
 
 const LogDataTypes = {
+    [LogLevels.TEST]: createLogData({
+        prefix: "[ TEST ]: ",
+        consoleFunction: console.log,
+    }),
     [LogLevels.EVENT]: createLogData({
         prefix: "[ EVENT ]: ",
         consoleFunction: console.log,
@@ -66,6 +71,12 @@ const LogDataTypes = {
 
 export default class Logs {
     static logLevel: LogLevels = Number(process.env.LOG_LEVEL) ?? Infinity;
+
+    public static configureLogs = (disableLogs: boolean): void => {
+        if (disableLogs) {
+            Logs.logLevel = 0;
+        }
+    };
 
     private static getLogData = (logLevel: LogLevels): LogData => {
         return LogDataTypes[logLevel] ?? emptyLogData();
@@ -102,6 +113,17 @@ export default class Logs {
                 console.error(e.message);
             }
         }
+    };
+
+    static Test = (
+        message?: string | unknown,
+        ...optionalParams: unknown[]
+    ): void => {
+        Logs.add(
+            LogLevels.TEST,
+            message,
+            optionalParams.length > 0 ? optionalParams : undefined
+        );
     };
 
     static Event = (

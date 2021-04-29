@@ -7,11 +7,12 @@ import Logs from "./logs/logs";
 import middlewares from "../middleware";
 import router from "../routes";
 import { createSession } from "./session";
-import { getLocationData } from "./geolocation";
+import { Server } from "http";
 
 const port = process.env.PORT ?? 8080;
 
-const setupServer = async (): Promise<void> => {
+const setupServer = async (disableLogs = false): Promise<Server> => {
+    Logs.configureLogs(disableLogs);
     /* Connect to database */
     /* No try catch cuz if it fails theres a bigger issue */
     await createConnection();
@@ -41,12 +42,15 @@ const setupServer = async (): Promise<void> => {
     app.use("/", router);
 
     /* Start the application already!!! */
-    app.listen(port, () => {
-        const pid = cluster.isMaster
-            ? "parent process"
-            : `child process ${cluster.worker.process.pid}`;
+    return await new Promise((res, _) => {
+        const server = app.listen(port, () => {
+            const pid = cluster.isMaster
+                ? "parent process"
+                : `child process ${cluster.worker.process.pid}`;
 
-        Logs.Event(`Server started on port: ${port} using ${pid}`);
+            Logs.Event(`Server started on port: ${port} using ${pid}`);
+            res(server);
+        });
     });
 };
 
