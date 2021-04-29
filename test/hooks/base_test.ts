@@ -1,8 +1,7 @@
-import { BeforeAll, AfterAll, Before } from "@cucumber/cucumber";
+import { BeforeAll, AfterAll } from "@cucumber/cucumber";
 import { Server } from "node:http";
 import Logs from "../../src/util/logs/logs";
 import setupServer from "../../src/util/server";
-import BaseWorld from "../support/base_world";
 
 let server: Server;
 

@@ -1,7 +1,7 @@
 import { setWorldConstructor, World, IWorldOptions } from "@cucumber/cucumber";
-import Logs from "../../src/util/logs/logs";
 
 export default class BaseWorld extends World {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _props: any;
 
     constructor(options: IWorldOptions) {
