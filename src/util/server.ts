@@ -42,7 +42,7 @@ const setupServer = async (disableLogs = false): Promise<Server> => {
     app.use("/", router);
 
     /* Start the application already!!! */
-    return await new Promise((res, _) => {
+    return await new Promise((res) => {
         const server = app.listen(port, () => {
             const pid = cluster.isMaster
                 ? "parent process"
