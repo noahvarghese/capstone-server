@@ -48,8 +48,6 @@ const setupServer = async (): Promise<void> => {
 
         Logs.Event(`Server started on port: ${port} using ${pid}`);
     });
-
-    await getLocationData();
 };
 
 export default setupServer;

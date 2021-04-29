@@ -6,14 +6,9 @@
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
         "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
-        "dev": "nodemon -e ts,.env,json --exec ./node_modules/.bin/ts-node ./src/index.ts",
+        "dev": "nodemon -e ts,.env,json --ignore build/ --ignore test/ --exec ./node_modules/.bin/ts-node ./src/index.ts",
         "start": "node ./build/index.js",
-        "test": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter",
-        "posttest": "kill $(lsof -t -i:8080)",
-        "pretest-js": "npm run build && npm run start &",
-        "test-js": "npm run test",
-        "pretest-ts": "npm run dev",
-        "test-ts": "npm run test"
+        "test": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter"
     },
     "repository": {
         "type": "git",
