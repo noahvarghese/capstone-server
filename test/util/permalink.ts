@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import Logs from "../../../src/util/logs/logs";
+import Logs from "../../src/util/logs/logs";
 dotenv.config();
 
 const { TARGET_ENV } = process.env;

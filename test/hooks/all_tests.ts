@@ -1,7 +1,7 @@
 import { BeforeAll, AfterAll } from "@cucumber/cucumber";
 import { Server } from "node:http";
-import Logs from "../../../src/util/logs/logs";
-import setupServer from "../../../src/util/server";
+import Logs from "../../src/util/logs/logs";
+import setupServer from "../../src/util/server";
 
 let server: Server;
 
