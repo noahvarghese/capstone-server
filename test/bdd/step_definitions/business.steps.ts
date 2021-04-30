@@ -2,7 +2,7 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "chai";
 import BaseWorld from "../support/base_world";
 import { Connection } from "typeorm";
-import Business, { BusinessAttributes } from "../../src/models/business";
+import Business, { BusinessAttributes } from "../../../src/models/business";
 
 Given(
     "the new business {string}",

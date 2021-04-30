@@ -17,5 +17,12 @@ Feature: Business Model CRUD
     @Update
     Scenario: Update Business
         Given there is an existing business "Oakville Windows and Doors"
-        When the "postal code" is updated
-        Then the field should be updated
+        When the "postal code" field is updated
+        Then the business should be updated
+    
+    @Delete
+    Scenario: Delete Business
+        Given there is an existing business "Oakville Windows and Doors"
+        When the business is deleted
+        Then it should not exist
+
