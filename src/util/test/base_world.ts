@@ -3,7 +3,8 @@ import { Connection } from "typeorm";
 export default class BaseWorld {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public connection: Connection;
-    public static Error: Error = new Error("Base world not instantiated.");
+    // public static Error: Error = new Error("Base world not instantiated.");
+    public static errorMessage = "Base world not instantiated.";
     private _props: any;
 
     constructor(_connection: Connection) {
