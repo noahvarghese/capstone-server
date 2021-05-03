@@ -2,13 +2,11 @@ import Business, { BusinessAttributes } from "./business";
 import BaseWorld from "../util/test/base_world";
 import DBConnection from "../util/test/db_connection";
 import { createModel, deleteModel } from "../util/test/model";
+import Logs from "../util/logs/logs";
+import BaseModel from "./abstract/base_model";
 
 // State management
 let baseWorld: BaseWorld | undefined;
-
-const checkBaseWorldInstantiated = () => {
-    if (!baseWorld) throw new Error(BaseWorld.errorMessage);
-};
 
 // Configuration
 const businessAttr: BusinessAttributes = {
@@ -20,17 +18,16 @@ const businessAttr: BusinessAttributes = {
     postal_code: "L6H 1X1",
 };
 
-const modelMatchesInterface = (
-    attr: BusinessAttributes,
-    model: Business
-): boolean => {
+const modelMatchesInterface = <T, X extends T>(attr: T, model: X): boolean => {
     let matches = true;
 
     for (const key of Object.keys(attr)) {
-        if (
-            model[key as keyof BusinessAttributes] !==
-            businessAttr[key as keyof BusinessAttributes]
-        ) {
+        const modelVal = model[key as keyof X];
+        const attrVal = attr[key as keyof T];
+
+        if ((modelVal as any) !== (attrVal as any)) {
+            Logs.Test(modelVal);
+            Logs.Test(attrVal);
             matches = false;
             break;
         }
@@ -95,6 +92,29 @@ describe("Business tests that require a preexisting business", () => {
     });
 
     describe("business tests that require the business to be deleted", () => {
+        afterEach(async () => {
+            if (!baseWorld) {
+                throw new Error(BaseWorld.errorMessage);
+            }
+            await deleteModel(baseWorld, Business);
+        });
+
+        test("read business", async () => {
+            if (!baseWorld) {
+                throw new Error(BaseWorld.errorMessage);
+            }
+            const { connection } = baseWorld;
+
+            const business = await connection.manager.find(Business, {
+                where: { name: businessAttr.name },
+            });
+            Logs.Test(businessAttr);
+            Logs.Test(business);
+
+            expect(business.length).toBe(1);
+            expect(modelMatchesInterface(businessAttr, business[0])).toBe(true);
+        });
+
         test("update business", async () => {
             if (!baseWorld) {
                 throw new Error(BaseWorld.errorMessage);
@@ -109,27 +129,6 @@ describe("Business tests that require a preexisting business", () => {
             business = await connection.manager.save(business);
 
             expect(modelMatchesInterface(businessAttr, business)).toBe(true);
-        });
-
-        test("read business", async () => {
-            if (!baseWorld) {
-                throw new Error(BaseWorld.errorMessage);
-            }
-            const { connection } = baseWorld;
-
-            const business = await connection.manager.find(Business, {
-                where: { name: businessAttr.name },
-            });
-
-            expect(business.length).toBe(1);
-            expect(modelMatchesInterface(businessAttr, business[0])).toBe(true);
-        });
-
-        afterEach(async () => {
-            if (!baseWorld) {
-                throw new Error(BaseWorld.errorMessage);
-            }
-            await deleteModel(baseWorld, Business);
         });
     });
 });
