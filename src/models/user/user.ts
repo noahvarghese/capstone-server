@@ -2,7 +2,7 @@ import { uid } from "rand-token";
 import { Entity, Column } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
-interface UserAttributes {
+export interface UserAttributes {
     first_name: string;
     last_name: string;
     email: string;

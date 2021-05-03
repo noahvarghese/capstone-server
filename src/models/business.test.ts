@@ -1,39 +1,23 @@
 import Business, { BusinessAttributes } from "./business";
 import BaseWorld from "../util/test/base_world";
 import DBConnection from "../util/test/db_connection";
-import { createModel, deleteModel } from "../util/test/model";
-import Logs from "../util/logs/logs";
-import BaseModel from "./abstract/base_model";
+import {
+    createModel,
+    deleteModel,
+    modelMatchesInterface,
+} from "../util/test/model";
 
 // State management
 let baseWorld: BaseWorld | undefined;
 
 // Configuration
-const businessAttr: BusinessAttributes = {
+export const businessAttr: BusinessAttributes = {
     name: "Oakville Windows and Doors",
     address: "1380 Speers Rd",
     city: "Oakville",
     province: "ON",
     country: "CA",
     postal_code: "L6H1X1",
-};
-
-const modelMatchesInterface = <T, X extends T>(attr: T, model: X): boolean => {
-    let matches = true;
-
-    for (const key of Object.keys(attr)) {
-        const modelVal = model[key as keyof X];
-        const attrVal = attr[key as keyof T];
-
-        if ((modelVal as any) !== (attrVal as any)) {
-            Logs.Test(modelVal);
-            Logs.Test(attrVal);
-            matches = false;
-            break;
-        }
-    }
-
-    return matches;
 };
 
 beforeAll(DBConnection.InitConnection);
