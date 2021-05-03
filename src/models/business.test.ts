@@ -15,7 +15,7 @@ const businessAttr: BusinessAttributes = {
     city: "Oakville",
     province: "ON",
     country: "CA",
-    postal_code: "L6H 1X1",
+    postal_code: "L6H1X1",
 };
 
 const modelMatchesInterface = <T, X extends T>(attr: T, model: X): boolean => {
@@ -108,8 +108,6 @@ describe("Business tests that require a preexisting business", () => {
             const business = await connection.manager.find(Business, {
                 where: { name: businessAttr.name },
             });
-            Logs.Test(businessAttr);
-            Logs.Test(business);
 
             expect(business.length).toBe(1);
             expect(modelMatchesInterface(businessAttr, business[0])).toBe(true);
