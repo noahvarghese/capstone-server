@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "../abstract/editable_content_model";
 
-interface SectionAttributes {
+export interface SectionAttributes {
     title: string;
     manual_id: number;
     updated_by_user_id: number;

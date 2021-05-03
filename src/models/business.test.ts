@@ -1,116 +1,69 @@
 import Business, { BusinessAttributes } from "./business";
 import BaseWorld from "../util/test/base_world";
 import DBConnection from "../util/test/db_connection";
+import { businessAttributes } from "../util/test/attributes";
 import {
-    createModel,
-    deleteModel,
-    modelMatchesInterface,
-} from "../util/test/model";
+    testCreateModel,
+    testUpdateModel,
+    testDeleteModel,
+    testReadModel,
+} from "../util/test/model_compare";
 
 // State management
 let baseWorld: BaseWorld | undefined;
+const key = "business";
 
-// Configuration
-export const businessAttr: BusinessAttributes = {
-    name: "Oakville Windows and Doors",
-    address: "1380 Speers Rd",
-    city: "Oakville",
-    province: "ON",
-    country: "CA",
-    postal_code: "L6H1X1",
-};
-
+// Database Setup
 beforeAll(DBConnection.InitConnection);
 afterAll(DBConnection.CloseConnection);
 
+// State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    baseWorld.setCustomProp<BusinessAttributes>("attributes", businessAttr);
+    baseWorld.setCustomProp<BusinessAttributes>(
+        "attributes",
+        businessAttributes
+    );
 });
 
 afterEach(() => {
     baseWorld = undefined;
 });
 
-test("Create business", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
+// Tests
 
-    const business = await createModel<Business, BusinessAttributes>(
+test("Create Business", async () => {
+    await testCreateModel<Business, BusinessAttributes>(
         baseWorld,
-        Business
+        Business,
+        key
     );
-
-    expect(business.id).toBeGreaterThan(0);
-    expect(modelMatchesInterface(businessAttr, business)).toBe(true);
-
-    // Cleanup
-    await deleteModel(baseWorld, Business);
 });
 
-describe("Business tests that require a preexisting business", () => {
-    beforeEach(async () => {
-        if (!baseWorld) {
-            throw new Error(BaseWorld.errorMessage);
-        }
+test("Update Business", async () => {
+    await testUpdateModel<Business, BusinessAttributes>(
+        baseWorld,
+        Business,
+        key,
+        "name",
+        "TEST"
+    );
+});
 
-        await createModel<Business, BusinessAttributes>(baseWorld, Business);
-    });
+test("Delete Business", async () => {
+    await testDeleteModel<Business, BusinessAttributes>(
+        baseWorld,
+        Business,
+        key,
+        "id"
+    );
+});
 
-    test("delete business", async () => {
-        if (!baseWorld) {
-            throw new Error(BaseWorld.errorMessage);
-        }
-
-        await deleteModel(baseWorld, Business);
-
-        const { connection } = baseWorld;
-        const model = baseWorld.getCustomProp<Business>("model");
-
-        const business = await connection.manager.find(Business, {
-            where: { id: model.id },
-        });
-
-        expect(business.length).toBe(0);
-    });
-
-    describe("business tests that require the business to be deleted", () => {
-        afterEach(async () => {
-            if (!baseWorld) {
-                throw new Error(BaseWorld.errorMessage);
-            }
-            await deleteModel(baseWorld, Business);
-        });
-
-        test("read business", async () => {
-            if (!baseWorld) {
-                throw new Error(BaseWorld.errorMessage);
-            }
-            const { connection } = baseWorld;
-
-            const business = await connection.manager.find(Business, {
-                where: { name: businessAttr.name },
-            });
-
-            expect(business.length).toBe(1);
-            expect(modelMatchesInterface(businessAttr, business[0])).toBe(true);
-        });
-
-        test("update business", async () => {
-            if (!baseWorld) {
-                throw new Error(BaseWorld.errorMessage);
-            }
-
-            const { connection } = baseWorld;
-            let business = baseWorld.getCustomProp<Business>("model");
-
-            business.name = "TEST";
-            businessAttr.name = "TEST";
-
-            business = await connection.manager.save(business);
-
-            expect(modelMatchesInterface(businessAttr, business)).toBe(true);
-        });
-    });
+test("Read Business", async () => {
+    await testReadModel<Business, BusinessAttributes>(
+        baseWorld,
+        Business,
+        key,
+        "name"
+    );
 });

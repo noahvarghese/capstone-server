@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "./abstract/editable_content_model";
 
-interface RoleAttributes {
+export interface RoleAttributes {
     name: string;
     department_id: number;
     permission_id: number;

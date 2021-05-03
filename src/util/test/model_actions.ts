@@ -4,32 +4,33 @@ import BaseModel from "../../models/abstract/base_model";
 import Logs from "../logs/logs";
 import BaseWorld from "./base_world";
 
-export const deleteModel = async <T extends BaseModel>(
+export const deleteModel = async <T extends BaseModel | undefined>(
     that: BaseWorld,
     type: any,
-    stateModel?: T
+    key: string
 ): Promise<void> => {
     const { connection } = that;
-    const model = stateModel ?? that.getCustomProp<T>("model");
+    const model = that.getCustomProp<T>(key);
 
-    await connection.manager.delete(type, model.id);
+    if (model) {
+        await connection.manager.delete(type, model.id);
+    }
+
+    that.setCustomProp<undefined>(key, undefined);
 };
 
-export const createModel = async <T extends BaseModel, X>(
+export const createModel = async <T extends BaseModel | undefined, X>(
     that: BaseWorld,
     type: any,
-    addToState = true,
-    attr?: any
+    key: string
 ): Promise<T> => {
     const { connection } = that;
-    const attributes = addToState ? that.getCustomProp<X>("attributes") : attr;
+    const attributes = that.getCustomProp<X>(`${key}Attributes`);
 
     let model = connection.manager.create<T>(type, attributes);
     model = await connection.manager.save<T>(model);
 
-    if (addToState) {
-        that.setCustomProp<T>("model", model);
-    }
+    that.setCustomProp<T | typeof type>(key, model);
 
     return model;
 };

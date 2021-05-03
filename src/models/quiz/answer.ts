@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "../abstract/editable_content_model";
 
-interface AnswerAttributes {
+export interface AnswerAttributes {
     answer: string;
     correct: boolean;
     question_id: number;

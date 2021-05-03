@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from "typeorm";
 import EventDates from "../abstract/event_dates";
 
-interface UserRoleAttributes {
+export interface UserRoleAttributes {
     user_id: number;
     role_id: number;
     updated_by_user_id: number;

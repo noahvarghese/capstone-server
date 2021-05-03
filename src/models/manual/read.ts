@@ -1,7 +1,7 @@
 import { Entity, PrimaryColumn } from "typeorm";
 import EventDates from "../abstract/event_dates";
 
-interface ReadAttributes {
+export interface ReadAttributes {
     user_id: number;
     policy_id: number;
 }

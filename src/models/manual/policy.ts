@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "../abstract/editable_content_model";
 
-interface PolicyAttributes {
+export interface PolicyAttributes {
     title: string;
     section_id: number;
     updated_by_user_id: number;

@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "../abstract/editable_content_model";
 
-interface QuizAttributes {
+export interface QuizAttributes {
     title: string;
     max_attempts: number;
     manual_id: number;

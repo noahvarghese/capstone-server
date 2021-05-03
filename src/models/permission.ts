@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "./abstract/editable_content_model";
 
-interface PermissionAttributes {
+export interface PermissionAttributes {
     view_users: boolean;
     edit_users: boolean;
     remove_users: boolean;

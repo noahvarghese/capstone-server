@@ -1,7 +1,7 @@
 import { Entity, Column } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
-interface AttemptAttributes {
+export interface AttemptAttributes {
     user_id: number;
     quiz_id: number;
 }
