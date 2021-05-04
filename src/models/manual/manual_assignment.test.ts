@@ -2,6 +2,7 @@
 import {
     businessAttributes,
     departmentAttributes,
+    manualAssignmentAttributes,
     manualAttributes,
     permissionAttributes,
     roleAttributes,
@@ -22,9 +23,12 @@ import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
+import ManualAssignment, {
+    ManualAssignmentAttributes,
+} from "./manual_assignment";
 
 let baseWorld: BaseWorld | undefined;
-const key = "manual";
+const key = "manualAssignment";
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -50,6 +54,10 @@ beforeEach(async () => {
     baseWorld.setCustomProp<ManualAttributes>(
         "manualAttributes",
         manualAttributes
+    );
+    baseWorld.setCustomProp<ManualAssignmentAttributes>(
+        "manualAssignmentAttributes",
+        manualAssignmentAttributes
     );
 });
 afterEach(() => {
@@ -125,12 +133,32 @@ beforeEach(async () => {
         role_id: role.id,
         updated_by_user_id: user.id,
     });
+
+    const manual = await createModel<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        "manual"
+    );
+
+    baseWorld.setCustomProp<ManualAssignmentAttributes>(
+        "manualAssignmentAttributes",
+        {
+            ...baseWorld.getCustomProp<ManualAssignmentAttributes>(
+                "manualAssignmentAttributes"
+            ),
+            department_id: department.id,
+            manual_id: manual.id,
+            role_id: role.id,
+            updated_by_user_id: user.id,
+        }
+    );
 });
 afterEach(async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
+    await deleteModel<Manual>(baseWorld, Manual, "manual");
     await deleteModel<Role>(baseWorld, Role, "role");
     await deleteModel<Permission>(baseWorld, Permission, "permission");
     await deleteModel<Department>(baseWorld, Department, "department");
@@ -139,22 +167,35 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Manual", async () => {
-    await testCreateModel<Manual, ManualAttributes>(baseWorld, Manual, key);
+test("Create Manual Assignment", async () => {
+    await testCreateModel<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key
+    );
 });
 
 // Should fail
-test("Create Manual Without Department Or Role", async () => {
+test("Create Manual Assignment Without Department Or Role", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
-    baseWorld.setCustomProp<ManualAttributes>("manualAttributes", {
-        ...baseWorld.getCustomProp<ManualAttributes>("manualAttributes"),
-        department_id: null as any,
-        role_id: null as any,
-    });
+    baseWorld.setCustomProp<ManualAssignmentAttributes>(
+        "manualAssignmentAttributes",
+        {
+            ...baseWorld.getCustomProp<ManualAssignmentAttributes>(
+                "manualAssignmentAttributes"
+            ),
+            department_id: null as any,
+            role_id: null as any,
+        }
+    );
     try {
-        await testCreateModel<Manual, ManualAttributes>(baseWorld, Manual, key);
+        await testCreateModel<ManualAssignment, ManualAssignmentAttributes>(
+            baseWorld,
+            ManualAssignment,
+            key
+        );
     } catch (e) {
         expect(e).toBeTruthy();
     }
@@ -163,26 +204,32 @@ test("Create Manual Without Department Or Role", async () => {
 /* Dont test update as it is a concatenated primary key */
 /* Meaning that an update should be treated as a DELETE and INSERT */
 
-test("Update Manual", async () => {
-    await testUpdateModel<Manual, ManualAttributes>(
+test("Update Manual Assignment", async () => {
+    await testUpdateModel<ManualAssignment, ManualAssignmentAttributes>(
         baseWorld,
-        Manual,
+        ManualAssignment,
         key,
-        "title",
-        "TEST"
+        "role_id",
+        null
     );
 });
 
-test("Delete Manual", async () => {
-    await testDeleteModel<Manual, ManualAttributes>(baseWorld, Manual, key, [
-        "id",
-    ]);
+test("Delete Manual Assignment", async () => {
+    await testDeleteModel<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key,
+        ["id"]
+    );
 });
 
-test("Read User Role", async () => {
-    await testReadModel<Manual, ManualAttributes>(baseWorld, Manual, key, [
-        "id",
-    ]);
+test("Read Manual Assignment", async () => {
+    await testReadModel<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key,
+        ["id"]
+    );
 });
 
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

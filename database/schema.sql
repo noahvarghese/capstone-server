@@ -118,8 +118,8 @@ CREATE TABLE manual (
 
 CREATE TABLE manual_assignment (
     id INT NOT NULL AUTO_INCREMENT,
-    role_id INT,
-    department_id INT,
+    role_id INT DEFAULT NULL,
+    department_id INT DEFAULT NULL,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),

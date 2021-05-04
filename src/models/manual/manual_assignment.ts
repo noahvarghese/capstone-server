@@ -2,7 +2,6 @@ import { Entity, Column } from "typeorm";
 import EditableContentModel from "../abstract/editable_content_model";
 
 export interface ManualAssignmentAttributes {
-    title: string;
     role_id: number;
     department_id: number;
     manual_id: number;
@@ -10,7 +9,6 @@ export interface ManualAssignmentAttributes {
 }
 
 const EmptyManualAssignmentAttributes = (): ManualAssignmentAttributes => ({
-    title: "",
     department_id: -1,
     role_id: -1,
     manual_id: -1,
@@ -26,8 +24,6 @@ const ManualAssignmentBuilder = <T extends Partial<ManualAssignmentAttributes>>(
 export default class ManualAssignment
     extends EditableContentModel
     implements ManualAssignmentAttributes {
-    @Column()
-    public title!: string;
     @Column()
     public manual_id!: number;
     @Column()
