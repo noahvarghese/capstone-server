@@ -86,6 +86,16 @@ export default class User extends BaseModel implements UserAttributes {
         this.token = uid(32);
     };
 
+    public compareToken = (_token: string): boolean => {
+        if (
+            this.token_expiry &&
+            this.token_expiry.getTime() > new Date().getTime()
+        ) {
+            return this.token === _token;
+        }
+        return false;
+    };
+
     public comparePassword = async (_password: string): Promise<boolean> => {
         return await new Promise((res, rej) => {
             bcrypt.compare(_password, this.password, (err, same) => {
