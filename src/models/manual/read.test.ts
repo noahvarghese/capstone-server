@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     businessAttributes,
-    contentAttributes,
     departmentAttributes,
     manualAttributes,
     permissionAttributes,
     policyAttributes,
+    readAttributes,
     roleAttributes,
     sectionAttributes,
     userAttributes,
@@ -24,13 +24,13 @@ import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
-import Content, { ContentAttributes } from "./content";
+import Read, { ReadAttributes } from "./read";
 import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
 import Section, { SectionAttributes } from "./section";
 
 let baseWorld: BaseWorld | undefined;
-const key = "content";
+const key = "read";
 const attrKey = `${key}Attributes`;
 
 // Database setup
@@ -66,7 +66,7 @@ beforeEach(async () => {
         "policyAttributes",
         policyAttributes
     );
-    baseWorld.setCustomProp<ContentAttributes>(attrKey, contentAttributes);
+    baseWorld.setCustomProp<ReadAttributes>(attrKey, readAttributes);
 });
 afterEach(() => {
     baseWorld = undefined;
@@ -172,10 +172,10 @@ beforeEach(async () => {
         "policy"
     );
 
-    baseWorld.setCustomProp<ContentAttributes>(attrKey, {
-        ...baseWorld.getCustomProp<ContentAttributes>("contentAttributes"),
+    baseWorld.setCustomProp<ReadAttributes>(attrKey, {
+        ...baseWorld.getCustomProp<ReadAttributes>(attrKey),
         policy_id: policy.id,
-        updated_by_user_id: user.id,
+        user_id: user.id,
     });
 });
 afterEach(async () => {
@@ -194,28 +194,30 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Content", async () => {
-    await testCreateModel<Content, ContentAttributes>(baseWorld, Content, key);
+test("Create Policy Read", async () => {
+    await testCreateModel<Read, ReadAttributes>(baseWorld, Read, key);
 });
 
-test("Update Content", async () => {
-    await testUpdateModel<Content, ContentAttributes>(
-        baseWorld,
-        Content,
-        key,
-        "title",
-        "TEST"
-    );
-});
+// test("Update Policy Read", async () => {
+//     await testUpdateModel<Content, ContentAttributes>(
+//         baseWorld,
+//         Content,
+//         key,
+//         "title",
+//         "TEST"
+//     );
+// });
 
-test("Delete Content", async () => {
-    await testDeleteModel<Content, ContentAttributes>(baseWorld, Content, key, [
-        "id",
+test("Delete Policy Read", async () => {
+    await testDeleteModel<Read, ReadAttributes>(baseWorld, Read, key, [
+        "policy_id",
+        "user_id",
     ]);
 });
 
-test("Read Content", async () => {
-    await testReadModel<Content, ContentAttributes>(baseWorld, Content, key, [
-        "id",
+test("Read Policy Read", async () => {
+    await testReadModel<Read, ReadAttributes>(baseWorld, Read, key, [
+        "user_id",
+        "policy_id",
     ]);
 });

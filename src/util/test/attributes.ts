@@ -4,6 +4,7 @@ import { ContentAttributes } from "../../models/manual/content";
 import { ManualAttributes } from "../../models/manual/manual";
 import { ManualAssignmentAttributes } from "../../models/manual/manual_assignment";
 import { PolicyAttributes } from "../../models/manual/policy";
+import { ReadAttributes } from "../../models/manual/read";
 import { SectionAttributes } from "../../models/manual/section";
 import { PermissionAttributes } from "../../models/permission";
 import { QuizAttributes } from "../../models/quiz/quiz";
@@ -95,4 +96,9 @@ export const contentAttributes: ContentAttributes = {
     content: "Here are some words",
     policy_id: -1,
     updated_by_user_id: -1,
+};
+
+export const readAttributes: ReadAttributes = {
+    policy_id: -1,
+    user_id: -1,
 };
