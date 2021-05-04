@@ -1,4 +1,5 @@
 import { uid } from "rand-token";
+import bcrypt from "bcrypt";
 import { Entity, Column } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
@@ -83,5 +84,16 @@ export default class User extends BaseModel implements UserAttributes {
 
     public createToken = (): void => {
         this.token = uid(32);
+    };
+
+    public comparePassword = async (_password: string): Promise<boolean> => {
+        return await new Promise((res, rej) => {
+            bcrypt.compare(_password, this.password, (err, same) => {
+                if (err) {
+                    rej(err);
+                }
+                res(same);
+            });
+        });
     };
 }
