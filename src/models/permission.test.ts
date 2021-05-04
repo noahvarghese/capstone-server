@@ -1,6 +1,5 @@
 import {
     businessAttributes,
-    departmentAttributes,
     permissionAttributes,
     userAttributes,
 } from "../util/test/attributes";
@@ -94,8 +93,8 @@ test("Update Permission", async () => {
         baseWorld,
         Permission,
         key,
-        "name",
-        "TEST"
+        "edit_policies",
+        false
     );
 });
 
