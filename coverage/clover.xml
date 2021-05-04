@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1619788522101" clover="3.2.0">
-  <project timestamp="1619788522101" name="All files">
-    <metrics statements="326" coveredstatements="299" conditionals="44" coveredconditionals="10" methods="77" coveredmethods="60" elements="447" coveredelements="369" complexity="0" loc="326" ncloc="326" packages="7" files="24" classes="24"/>
+<coverage generated="1620096877128" clover="3.2.0">
+  <project timestamp="1620096877128" name="All files">
+    <metrics statements="448" coveredstatements="400" conditionals="82" coveredconditionals="33" methods="94" coveredmethods="73" elements="624" coveredelements="506" complexity="0" loc="448" ncloc="448" packages="8" files="29" classes="29"/>
     <package name="config">
       <metrics statements="23" coveredstatements="22" conditionals="10" coveredconditionals="5" methods="1" coveredmethods="0"/>
       <file name="database.ts" path="/home/user/build/capstone-server/src/config/database.ts">
         <metrics statements="23" coveredstatements="22" conditionals="10" coveredconditionals="5" methods="1" coveredmethods="0"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="13" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="22" count="1" type="stmt"/>
-        <line num="54" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="5" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="12" count="6" type="stmt"/>
+        <line num="13" count="6" type="stmt"/>
+        <line num="14" count="6" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="17" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="22" count="6" type="stmt"/>
+        <line num="54" count="6" type="stmt"/>
         <line num="55" count="0" type="stmt"/>
       </file>
     </package>
@@ -35,332 +35,343 @@
       <metrics statements="52" coveredstatements="52" conditionals="0" coveredconditionals="0" methods="12" coveredmethods="12"/>
       <file name="business.ts" path="/home/user/build/capstone-server/src/models/business.ts">
         <metrics statements="15" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="13" count="2" type="stmt"/>
-        <line num="22" count="1" type="stmt"/>
-        <line num="25" count="2" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="37" count="1" type="stmt"/>
-        <line num="39" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
-        <line num="44" count="2" type="stmt"/>
-        <line num="45" count="2" type="stmt"/>
-        <line num="46" count="2" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="13" count="54" type="stmt"/>
+        <line num="22" count="6" type="stmt"/>
+        <line num="25" count="54" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="33" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="37" count="6" type="stmt"/>
+        <line num="39" count="6" type="stmt"/>
+        <line num="41" count="6" type="stmt"/>
+        <line num="44" count="54" type="stmt"/>
+        <line num="45" count="54" type="stmt"/>
+        <line num="46" count="54" type="stmt"/>
       </file>
       <file name="department.ts" path="/home/user/build/capstone-server/src/models/department.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="22" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="10" count="30" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="19" count="30" type="stmt"/>
+        <line num="22" count="6" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="33" count="30" type="stmt"/>
+        <line num="34" count="30" type="stmt"/>
+        <line num="35" count="30" type="stmt"/>
       </file>
       <file name="permission.ts" path="/home/user/build/capstone-server/src/models/permission.ts">
         <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="39" count="1" type="stmt"/>
-        <line num="40" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="12" count="30" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="30" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="39" count="30" type="stmt"/>
+        <line num="40" count="30" type="stmt"/>
+        <line num="41" count="30" type="stmt"/>
       </file>
       <file name="role.ts" path="/home/user/build/capstone-server/src/models/role.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="11" count="22" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="22" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="22" type="stmt"/>
+        <line num="35" count="22" type="stmt"/>
+        <line num="36" count="22" type="stmt"/>
       </file>
     </package>
     <package name="models.abstract">
       <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="base_model.ts" path="/home/user/build/capstone-server/src/models/abstract/base_model.ts">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
       </file>
       <file name="editable_content_model.ts" path="/home/user/build/capstone-server/src/models/abstract/editable_content_model.ts">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
       </file>
       <file name="event_dates.ts" path="/home/user/build/capstone-server/src/models/abstract/event_dates.ts">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="5" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
       </file>
     </package>
     <package name="models.manual">
       <metrics statements="70" coveredstatements="70" conditionals="0" coveredconditionals="0" methods="18" coveredmethods="18"/>
       <file name="content.ts" path="/home/user/build/capstone-server/src/models/manual/content.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
       </file>
       <file name="manual.ts" path="/home/user/build/capstone-server/src/models/manual/manual.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
       </file>
       <file name="manual_assignment.ts" path="/home/user/build/capstone-server/src/models/manual/manual_assignment.ts">
         <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="39" count="1" type="stmt"/>
-        <line num="40" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="12" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="39" count="6" type="stmt"/>
+        <line num="40" count="6" type="stmt"/>
+        <line num="41" count="6" type="stmt"/>
       </file>
       <file name="policy.ts" path="/home/user/build/capstone-server/src/models/manual/policy.ts">
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
       </file>
       <file name="read.ts" path="/home/user/build/capstone-server/src/models/manual/read.ts">
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="14" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
       </file>
       <file name="section.ts" path="/home/user/build/capstone-server/src/models/manual/section.ts">
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
       </file>
     </package>
     <package name="models.quiz">
       <metrics statements="70" coveredstatements="70" conditionals="0" coveredconditionals="0" methods="18" coveredmethods="18"/>
       <file name="answer.ts" path="/home/user/build/capstone-server/src/models/quiz/answer.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
       </file>
       <file name="attempt.ts" path="/home/user/build/capstone-server/src/models/quiz/attempt.ts">
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="14" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
       </file>
       <file name="question.ts" path="/home/user/build/capstone-server/src/models/quiz/question.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
       </file>
       <file name="quiz.ts" path="/home/user/build/capstone-server/src/models/quiz/quiz.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="20" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
       </file>
       <file name="result.ts" path="/home/user/build/capstone-server/src/models/quiz/result.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
       </file>
       <file name="section.ts" path="/home/user/build/capstone-server/src/models/quiz/section.ts">
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
       </file>
     </package>
     <package name="models.user">
-      <metrics statements="39" coveredstatements="38" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="6"/>
+      <metrics statements="50" coveredstatements="41" conditionals="6" coveredconditionals="0" methods="11" coveredmethods="6"/>
       <file name="user.ts" path="/home/user/build/capstone-server/src/models/user/user.ts">
-        <metrics statements="27" coveredstatements="26" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
-        <line num="43" count="1" type="stmt"/>
-        <line num="46" count="1" type="stmt"/>
-        <line num="48" count="1" type="stmt"/>
-        <line num="50" count="1" type="stmt"/>
-        <line num="52" count="1" type="stmt"/>
-        <line num="54" count="1" type="stmt"/>
-        <line num="56" count="1" type="stmt"/>
-        <line num="58" count="1" type="stmt"/>
-        <line num="60" count="1" type="stmt"/>
-        <line num="62" count="1" type="stmt"/>
-        <line num="64" count="1" type="stmt"/>
-        <line num="66" count="1" type="stmt"/>
-        <line num="68" count="1" type="stmt"/>
-        <line num="70" count="1" type="stmt"/>
-        <line num="72" count="1" type="stmt"/>
-        <line num="74" count="1" type="stmt"/>
-        <line num="76" count="1" type="stmt"/>
-        <line num="79" count="1" type="stmt"/>
-        <line num="80" count="1" type="stmt"/>
-        <line num="81" count="1" type="stmt"/>
-        <line num="84" count="1" type="stmt"/>
-        <line num="85" count="0" type="stmt"/>
+        <metrics statements="38" coveredstatements="29" conditionals="6" coveredconditionals="0" methods="8" coveredmethods="3"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="24" count="46" type="stmt"/>
+        <line num="42" count="6" type="stmt"/>
+        <line num="44" count="46" type="stmt"/>
+        <line num="47" count="6" type="stmt"/>
+        <line num="49" count="6" type="stmt"/>
+        <line num="51" count="6" type="stmt"/>
+        <line num="53" count="6" type="stmt"/>
+        <line num="55" count="6" type="stmt"/>
+        <line num="57" count="6" type="stmt"/>
+        <line num="59" count="6" type="stmt"/>
+        <line num="61" count="6" type="stmt"/>
+        <line num="63" count="6" type="stmt"/>
+        <line num="65" count="6" type="stmt"/>
+        <line num="67" count="6" type="stmt"/>
+        <line num="69" count="6" type="stmt"/>
+        <line num="71" count="6" type="stmt"/>
+        <line num="73" count="6" type="stmt"/>
+        <line num="75" count="6" type="stmt"/>
+        <line num="77" count="6" type="stmt"/>
+        <line num="80" count="46" type="stmt"/>
+        <line num="81" count="46" type="stmt"/>
+        <line num="82" count="46" type="stmt"/>
+        <line num="85" count="46" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="89" count="46" type="stmt"/>
+        <line num="90" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="96" count="0" type="stmt"/>
+        <line num="99" count="46" type="stmt"/>
+        <line num="100" count="0" type="stmt"/>
+        <line num="101" count="0" type="stmt"/>
+        <line num="102" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="103" count="0" type="stmt"/>
+        <line num="105" count="0" type="stmt"/>
       </file>
       <file name="user_role.ts" path="/home/user/build/capstone-server/src/models/user/user_role.ts">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="21" count="1" type="stmt"/>
-        <line num="23" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="10" count="13" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="13" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="30" count="13" type="stmt"/>
+        <line num="31" count="13" type="stmt"/>
+        <line num="32" count="13" type="stmt"/>
       </file>
     </package>
     <package name="util.logs">
       <metrics statements="59" coveredstatements="34" conditionals="34" coveredconditionals="5" methods="21" coveredmethods="6"/>
       <file name="db_logger.ts" path="/home/user/build/capstone-server/src/util/logs/db_logger.ts">
         <metrics statements="13" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="1"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="12" count="4" type="stmt"/>
-        <line num="13" count="4" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="12" count="632" type="stmt"/>
+        <line num="13" count="632" type="stmt"/>
         <line num="21" count="0" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
         <line num="30" count="0" type="stmt"/>
@@ -373,52 +384,181 @@
       </file>
       <file name="logs.ts" path="/home/user/build/capstone-server/src/util/logs/logs.ts">
         <metrics statements="46" coveredstatements="30" conditionals="34" coveredconditionals="5" methods="15" coveredmethods="5"/>
-        <line num="2" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="5" count="1" type="cond" truecount="2" falsecount="0"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="12" count="1" type="stmt"/>
-        <line num="13" count="1" type="stmt"/>
-        <line num="25" count="8" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="8" type="stmt"/>
-        <line num="37" count="1" type="stmt"/>
-        <line num="72" count="1" type="stmt"/>
-        <line num="73" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="75" count="1" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="5" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+        <line num="12" count="6" type="stmt"/>
+        <line num="13" count="6" type="stmt"/>
+        <line num="25" count="48" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="34" count="48" type="stmt"/>
+        <line num="37" count="6" type="stmt"/>
+        <line num="72" count="6" type="stmt"/>
+        <line num="73" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="75" count="6" type="stmt"/>
         <line num="76" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="77" count="0" type="stmt"/>
-        <line num="81" count="1" type="stmt"/>
+        <line num="81" count="6" type="stmt"/>
         <line num="82" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="85" count="1" type="stmt"/>
-        <line num="90" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="85" count="6" type="stmt"/>
+        <line num="90" count="632" type="cond" truecount="1" falsecount="1"/>
         <line num="91" count="0" type="stmt"/>
         <line num="92" count="0" type="stmt"/>
         <line num="96" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="97" count="0" type="stmt"/>
         <line num="105" count="0" type="stmt"/>
         <line num="113" count="0" type="stmt"/>
-        <line num="118" count="1" type="stmt"/>
+        <line num="118" count="6" type="stmt"/>
         <line num="122" count="0" type="stmt"/>
-        <line num="129" count="1" type="stmt"/>
+        <line num="129" count="6" type="stmt"/>
         <line num="133" count="0" type="stmt"/>
-        <line num="140" count="1" type="stmt"/>
+        <line num="140" count="6" type="stmt"/>
         <line num="144" count="0" type="stmt"/>
-        <line num="151" count="1" type="stmt"/>
+        <line num="151" count="6" type="stmt"/>
         <line num="155" count="0" type="stmt"/>
-        <line num="162" count="1" type="stmt"/>
+        <line num="162" count="6" type="stmt"/>
         <line num="166" count="0" type="stmt"/>
-        <line num="173" count="1" type="stmt"/>
+        <line num="173" count="6" type="stmt"/>
         <line num="177" count="0" type="stmt"/>
-        <line num="184" count="1" type="stmt"/>
-        <line num="188" count="4" type="stmt"/>
-        <line num="195" count="1" type="stmt"/>
+        <line num="184" count="6" type="stmt"/>
+        <line num="188" count="632" type="stmt"/>
+        <line num="195" count="6" type="stmt"/>
         <line num="199" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="util.test">
+      <metrics statements="111" coveredstatements="98" conditionals="32" coveredconditionals="23" methods="13" coveredmethods="13"/>
+      <file name="attributes.ts" path="/home/user/build/capstone-server/src/util/test/attributes.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="40" count="6" type="stmt"/>
+        <line num="48" count="6" type="stmt"/>
+        <line num="55" count="6" type="stmt"/>
+      </file>
+      <file name="base_world.ts" path="/home/user/build/capstone-server/src/util/test/base_world.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="11" count="23" type="stmt"/>
+        <line num="12" count="23" type="stmt"/>
+        <line num="15" count="23" type="stmt"/>
+        <line num="16" count="278" type="stmt"/>
+        <line num="17" count="278" type="stmt"/>
+        <line num="20" count="23" type="stmt"/>
+        <line num="21" count="215" type="stmt"/>
+      </file>
+      <file name="db_connection.ts" path="/home/user/build/capstone-server/src/util/test/db_connection.ts">
+        <metrics statements="14" coveredstatements="12" conditionals="4" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+        <line num="14" count="6" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="21" count="23" type="cond" truecount="1" falsecount="1"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="26" count="23" type="cond" truecount="1" falsecount="1"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="30" count="23" type="stmt"/>
+      </file>
+      <file name="model_actions.ts" path="/home/user/build/capstone-server/src/util/test/model_actions.ts">
+        <metrics statements="38" coveredstatements="31" conditionals="18" coveredconditionals="15" methods="3" coveredmethods="3"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="11" count="74" type="stmt"/>
+        <line num="12" count="74" type="stmt"/>
+        <line num="14" count="74" type="stmt"/>
+        <line num="16" count="74" type="stmt"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="24" count="74" type="stmt"/>
+        <line num="25" count="74" type="stmt"/>
+        <line num="27" count="74" type="stmt"/>
+        <line num="28" count="74" type="stmt"/>
+        <line num="30" count="74" type="stmt"/>
+        <line num="32" count="74" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="39" count="17" type="stmt"/>
+        <line num="41" count="17" type="stmt"/>
+        <line num="42" count="128" type="stmt"/>
+        <line num="43" count="128" type="stmt"/>
+        <line num="45" count="128" type="cond" truecount="2" falsecount="0"/>
+        <line num="47" count="125" type="cond" truecount="2" falsecount="0"/>
+        <line num="49" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="13" type="stmt"/>
+        <line num="53" count="13" type="stmt"/>
+        <line num="55" count="13" type="cond" truecount="1" falsecount="1"/>
+        <line num="56" count="13" type="stmt"/>
+        <line num="61" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="65" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="71" count="2" type="cond" truecount="3" falsecount="1"/>
+        <line num="72" count="2" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="84" count="0" type="stmt"/>
+        <line num="89" count="17" type="stmt"/>
+      </file>
+      <file name="model_compare.ts" path="/home/user/build/capstone-server/src/util/test/model_compare.ts">
+        <metrics statements="44" coveredstatements="40" conditionals="10" coveredconditionals="6" methods="4" coveredmethods="4"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="14" count="6" type="stmt"/>
+        <line num="19" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="25" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="5" type="stmt"/>
+        <line num="29" count="6" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="39" count="6" type="stmt"/>
+        <line num="46" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="50" count="5" type="stmt"/>
+        <line num="51" count="5" type="stmt"/>
+        <line num="53" count="5" type="stmt"/>
+        <line num="55" count="5" type="stmt"/>
+        <line num="60" count="5" type="stmt"/>
+        <line num="61" count="5" type="stmt"/>
+        <line num="63" count="5" type="stmt"/>
+        <line num="70" count="5" type="stmt"/>
+        <line num="73" count="6" type="stmt"/>
+        <line num="79" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="83" count="6" type="stmt"/>
+        <line num="85" count="6" type="stmt"/>
+        <line num="87" count="6" type="stmt"/>
+        <line num="89" count="6" type="stmt"/>
+        <line num="90" count="7" type="stmt"/>
+        <line num="93" count="6" type="stmt"/>
+        <line num="97" count="6" type="stmt"/>
+        <line num="98" count="6" type="stmt"/>
+        <line num="100" count="6" type="stmt"/>
+        <line num="103" count="6" type="stmt"/>
+        <line num="109" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="110" count="0" type="stmt"/>
+        <line num="113" count="6" type="stmt"/>
+        <line num="115" count="6" type="stmt"/>
+        <line num="117" count="6" type="stmt"/>
+        <line num="118" count="6" type="stmt"/>
+        <line num="120" count="6" type="stmt"/>
+        <line num="121" count="7" type="stmt"/>
+        <line num="124" count="6" type="stmt"/>
+        <line num="128" count="6" type="stmt"/>
       </file>
     </package>
   </project>
