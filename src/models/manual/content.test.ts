@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     businessAttributes,
+    contentAttributes,
     departmentAttributes,
     manualAttributes,
     permissionAttributes,
@@ -23,12 +24,13 @@ import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
+import Content, { ContentAttributes } from "./content";
 import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
 import Section, { SectionAttributes } from "./section";
 
 let baseWorld: BaseWorld | undefined;
-const key = "policy";
+const key = "content";
 const attrKey = `${key}Attributes`;
 
 // Database setup
@@ -61,6 +63,7 @@ beforeEach(async () => {
         sectionAttributes
     );
     baseWorld.setCustomProp<PolicyAttributes>(attrKey, policyAttributes);
+    baseWorld.setCustomProp<ContentAttributes>(attrKey, contentAttributes);
 });
 afterEach(() => {
     baseWorld = undefined;
@@ -154,9 +157,21 @@ beforeEach(async () => {
         "section"
     );
 
-    baseWorld.setCustomProp<PolicyAttributes>(attrKey, {
-        ...baseWorld.getCustomProp<PolicyAttributes>(attrKey),
+    baseWorld.setCustomProp<PolicyAttributes>("policyAttributes", {
+        ...baseWorld.getCustomProp<PolicyAttributes>("policyAttributes"),
         section_id: section.id,
+        updated_by_user_id: user.id,
+    });
+
+    const policy = await createModel<Policy, PolicyAttributes>(
+        baseWorld,
+        Policy,
+        "policy"
+    );
+
+    baseWorld.setCustomProp<ContentAttributes>(attrKey, {
+        ...baseWorld.getCustomProp<ContentAttributes>("contentAttributes"),
+        policy_id: policy.id,
         updated_by_user_id: user.id,
     });
 });
@@ -165,6 +180,7 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
+    await deleteModel<Policy>(baseWorld, Policy, "policy");
     await deleteModel<Section>(baseWorld, Section, "section");
     await deleteModel<Manual>(baseWorld, Manual, "manual");
     await deleteModel<Role>(baseWorld, Role, "role");
@@ -175,30 +191,28 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Policy", async () => {
-    await testCreateModel<Policy, PolicyAttributes>(baseWorld, Policy, key);
+test("Create Content", async () => {
+    await testCreateModel<Content, ContentAttributes>(baseWorld, Content, key);
 });
 
-test("Update Policy", async () => {
-    await testUpdateModel<Policy, PolicyAttributes>(
+test("Update Content", async () => {
+    await testUpdateModel<Content, ContentAttributes>(
         baseWorld,
-        Policy,
+        Content,
         key,
         "title",
         "TEST"
     );
 });
 
-test("Delete Policy", async () => {
-    await testDeleteModel<Policy, PolicyAttributes>(baseWorld, Policy, key, [
+test("Delete Content", async () => {
+    await testDeleteModel<Content, ContentAttributes>(baseWorld, Content, key, [
         "id",
     ]);
 });
 
-test("Read Policy", async () => {
-    await testReadModel<Policy, PolicyAttributes>(baseWorld, Policy, key, [
+test("Read Content", async () => {
+    await testReadModel<Content, ContentAttributes>(baseWorld, Content, key, [
         "id",
     ]);
 });
-
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

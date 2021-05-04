@@ -1,5 +1,6 @@
 import { BusinessAttributes } from "../../models/business";
 import { DepartmentAttributes } from "../../models/department";
+import { ContentAttributes } from "../../models/manual/content";
 import { ManualAttributes } from "../../models/manual/manual";
 import { ManualAssignmentAttributes } from "../../models/manual/manual_assignment";
 import { PolicyAttributes } from "../../models/manual/policy";
@@ -86,5 +87,12 @@ export const sectionAttributes: SectionAttributes = {
 export const policyAttributes: PolicyAttributes = {
     title: "Policy",
     section_id: -1,
+    updated_by_user_id: -1,
+};
+
+export const contentAttributes: ContentAttributes = {
+    title: "Content",
+    content: "Here are some words",
+    policy_id: -1,
     updated_by_user_id: -1,
 };
