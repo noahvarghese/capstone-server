@@ -104,7 +104,7 @@ test("Delete Department", async () => {
         baseWorld,
         Department,
         key,
-        "id"
+        ["id"]
     );
 });
 
@@ -113,6 +113,6 @@ test("Read Department", async () => {
         baseWorld,
         Department,
         key,
-        "id"
+        ["id"]
     );
 });

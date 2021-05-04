@@ -55,7 +55,7 @@ test("Read Business", async () => {
         baseWorld,
         Business,
         key,
-        "name"
+        ["name"]
     );
 });
 
@@ -64,6 +64,6 @@ test("Delete Business", async () => {
         baseWorld,
         Business,
         key,
-        "id"
+        ["id"]
     );
 });

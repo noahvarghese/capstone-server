@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import BaseModel from "../../models/abstract/base_model";
 import BaseWorld from "./base_world";
 import {
     createModel,
@@ -8,7 +7,11 @@ import {
     modelMatchesInterface,
 } from "./model_actions";
 
-export const testCreateModel = async <T extends BaseModel, X>(
+interface WhereClause {
+    [index: string]: any;
+}
+
+export const testCreateModel = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string
@@ -19,17 +22,21 @@ export const testCreateModel = async <T extends BaseModel, X>(
 
     const model = await createModel<T, X>(baseWorld, type, key);
 
-    expect(model.id).toBeGreaterThan(0);
+    if (model["id" as keyof T]) {
+        expect(model["id" as keyof T]).toBeGreaterThan(0);
+    }
+
     expect(
         modelMatchesInterface(
             baseWorld.getCustomProp<any>(`${key}Attributes`),
             model
         )
     ).toBe(true);
+
     await deleteModel<T>(baseWorld, type, key);
 };
 
-export const testUpdateModel = async <T extends BaseModel, X>(
+export const testUpdateModel = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string,
@@ -63,11 +70,11 @@ export const testUpdateModel = async <T extends BaseModel, X>(
     await deleteModel<T>(baseWorld, type, key);
 };
 
-export const testReadModel = async <T extends BaseModel, X>(
+export const testReadModel = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string,
-    attrKey: string
+    attrKey: string[]
 ) => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
@@ -77,8 +84,14 @@ export const testReadModel = async <T extends BaseModel, X>(
 
     const model = await createModel<T, X>(baseWorld, type, key);
 
+    const where: WhereClause = {};
+
+    for (const attr of attrKey) {
+        where[attr] = model[attr as keyof T];
+    }
+
     const foundModels = await connection.manager.find(type, {
-        where: { [attrKey]: model[attrKey as keyof T] },
+        where,
     });
 
     expect(foundModels.length).toBe(1);
@@ -87,11 +100,11 @@ export const testReadModel = async <T extends BaseModel, X>(
     await deleteModel(baseWorld, type, key);
 };
 
-export const testDeleteModel = async <T extends BaseModel, X>(
+export const testDeleteModel = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string,
-    attrKey: string
+    attrKey: string[]
 ) => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
@@ -102,9 +115,14 @@ export const testDeleteModel = async <T extends BaseModel, X>(
     const model = await createModel<T, X>(baseWorld, type, key);
 
     await deleteModel<T>(baseWorld, type, key);
+    const where: WhereClause = {};
+
+    for (const attr of attrKey) {
+        where[attr] = model[attr as keyof T];
+    }
 
     const result = await connection.manager.find(type, {
-        where: { [attrKey]: model[attrKey as keyof T] },
+        where,
     });
 
     expect(result.length).toBe(0);

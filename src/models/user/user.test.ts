@@ -73,11 +73,11 @@ test("Update User", async () => {
 });
 
 test("Delete User", async () => {
-    await testDeleteModel<User, UserAttributes>(baseWorld, User, key, "id");
+    await testDeleteModel<User, UserAttributes>(baseWorld, User, key, ["id"]);
 });
 
 test("Read User", async () => {
-    await testReadModel<User, UserAttributes>(baseWorld, User, key, "email");
+    await testReadModel<User, UserAttributes>(baseWorld, User, key, ["email"]);
 });
 
 // TODO: Test token creation and trigger that creates expiration date

@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import BaseModel from "../../models/abstract/base_model";
 import Logs from "../logs/logs";
 import BaseWorld from "./base_world";
 
-export const deleteModel = async <T extends BaseModel>(
+export const deleteModel = async <T>(
     that: BaseWorld,
     type: any,
-    key: string,
-    primaryKey = "id"
+    key: string
 ): Promise<void> => {
     const { connection } = that;
     const model = that.getCustomProp<T>(key);
 
-    await connection.manager.delete<T>(type, model[primaryKey as keyof T]);
+    await connection.manager.remove<T>(model);
 
     that.setCustomProp<undefined>(key, undefined);
 };
 
-export const createModel = async <T extends BaseModel, X>(
+export const createModel = async <T, X>(
     that: BaseWorld,
     type: any,
     key: string

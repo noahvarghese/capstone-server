@@ -4,24 +4,26 @@ import {
     permissionAttributes,
     roleAttributes,
     userAttributes,
-} from "../util/test/attributes";
-import BaseWorld from "../util/test/base_world";
-import DBConnection from "../util/test/db_connection";
-import { createModel, deleteModel } from "../util/test/model_actions";
+    userRoleAttributes,
+} from "../../util/test/attributes";
+import BaseWorld from "../../util/test/base_world";
+import DBConnection from "../../util/test/db_connection";
+import { createModel, deleteModel } from "../../util/test/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
     testUpdateModel,
-} from "../util/test/model_compare";
-import Business, { BusinessAttributes } from "./business";
-import Department, { DepartmentAttributes } from "./department";
-import Permission, { PermissionAttributes } from "./permission";
-import Role, { RoleAttributes } from "./role";
-import User, { UserAttributes } from "./user/user";
+} from "../../util/test/model_compare";
+import Business, { BusinessAttributes } from "../business";
+import Department, { DepartmentAttributes } from "../department";
+import Permission, { PermissionAttributes } from "../permission";
+import Role, { RoleAttributes } from "../role";
+import User, { UserAttributes } from "../user/user";
+import UserRole, { UserRoleAttributes } from "./user_role";
 
 let baseWorld: BaseWorld | undefined;
-const key = "role";
+const key = "userRole";
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -44,6 +46,10 @@ beforeEach(async () => {
         departmentAttributes
     );
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", roleAttributes);
+    baseWorld.setCustomProp<UserRoleAttributes>(
+        "userRoleAttributes",
+        userRoleAttributes
+    );
 });
 afterEach(() => {
     baseWorld = undefined;
@@ -105,12 +111,26 @@ beforeEach(async () => {
         permission_id: permission.id,
         department_id: department.id,
     });
+
+    const role = await createModel<Role, RoleAttributes>(
+        baseWorld,
+        Role,
+        "role"
+    );
+
+    baseWorld.setCustomProp<UserRoleAttributes>("userRoleAttributes", {
+        ...baseWorld.getCustomProp<UserRoleAttributes>("userRoleAttributes"),
+        user_id: user.id,
+        role_id: role.id,
+        updated_by_user_id: user.id,
+    });
 });
 afterEach(async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
+    await deleteModel<Role>(baseWorld, Role, "role");
     await deleteModel<Permission>(baseWorld, Permission, "permission");
     await deleteModel<Department>(baseWorld, Department, "department");
     await deleteModel<User>(baseWorld, User, "user");
@@ -118,24 +138,43 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Role", async () => {
-    await testCreateModel<Role, RoleAttributes>(baseWorld, Role, key);
-});
-
-test("Update Role", async () => {
-    await testUpdateModel<Role, RoleAttributes>(
+test("Create User Role", async () => {
+    await testCreateModel<UserRole, UserRoleAttributes>(
         baseWorld,
-        Role,
-        key,
-        "name",
-        "TEST"
+        UserRole,
+        key
     );
 });
 
-test("Delete Role", async () => {
-    await testDeleteModel<Role, RoleAttributes>(baseWorld, Role, key, ["id"]);
+/* Dont test update as it is a concatenated primary key */
+/* Meaning that an update should be treated as a DELETE and INSERT */
+
+// test("Update User Role", async () => {
+//     await testUpdateModel<UserRole, UserRoleAttributes>(
+//         baseWorld,
+//         UserRole,
+//         key,
+//         "name",
+//         "TEST"
+//     );
+// });
+
+test("Delete User Role", async () => {
+    await testDeleteModel<UserRole, UserRoleAttributes>(
+        baseWorld,
+        UserRole,
+        key,
+        ["user_id", "role_id"]
+    );
 });
 
-test("Read Role", async () => {
-    await testReadModel<Role, RoleAttributes>(baseWorld, Role, key, ["id"]);
+test("Read User Role", async () => {
+    await testReadModel<UserRole, UserRoleAttributes>(
+        baseWorld,
+        UserRole,
+        key,
+        ["user_id", "role_id"]
+    );
 });
+
+// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

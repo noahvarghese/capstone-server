@@ -94,6 +94,8 @@ CREATE TABLE user_role (
     deleted_on DATETIME DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    FOREIGN KEY(user_id) REFERENCES user(id),
+    FOREIGN KEY(role_id) REFERENCES role(id),
     PRIMARY KEY (user_id, role_id)
 );
 

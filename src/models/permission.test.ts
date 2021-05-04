@@ -103,7 +103,7 @@ test("Delete Permission", async () => {
         baseWorld,
         Permission,
         key,
-        "id"
+        ["id"]
     );
 });
 
@@ -112,6 +112,6 @@ test("Read Permission", async () => {
         baseWorld,
         Permission,
         key,
-        "id"
+        ["id"]
     );
 });
