@@ -64,6 +64,9 @@ CREATE TABLE permission (
     remove_users TINYINT(1) NOT NULL,
     edit_policies TINYINT(1) NOT NULL,
     updated_by_user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );

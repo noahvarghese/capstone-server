@@ -1,5 +1,7 @@
 import { BusinessAttributes } from "../../models/business";
 import { DepartmentAttributes } from "../../models/department";
+import { PermissionAttributes } from "../../models/permission";
+import { RoleAttributes } from "../../models/role";
 import { UserAttributes } from "../../models/user/user";
 
 // Configuration
@@ -31,5 +33,20 @@ export const userAttributes: UserAttributes = {
 export const departmentAttributes: DepartmentAttributes = {
     name: "Management",
     business_id: 1,
+    updated_by_user_id: -1,
+};
+
+export const permissionAttributes: PermissionAttributes = {
+    edit_policies: true,
+    edit_users: true,
+    remove_users: true,
+    updated_by_user_id: -1,
+    view_users: true,
+};
+
+export const roleAttributes: RoleAttributes = {
+    name: "Manager",
+    department_id: -1,
+    permission_id: -1,
     updated_by_user_id: -1,
 };

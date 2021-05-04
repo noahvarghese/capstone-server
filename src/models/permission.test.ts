@@ -1,6 +1,7 @@
 import {
     businessAttributes,
     departmentAttributes,
+    permissionAttributes,
     userAttributes,
 } from "../util/test/attributes";
 import BaseWorld from "../util/test/base_world";
@@ -13,11 +14,11 @@ import {
     testUpdateModel,
 } from "../util/test/model_compare";
 import Business, { BusinessAttributes } from "./business";
-import Department, { DepartmentAttributes } from "./department";
+import Permission, { PermissionAttributes } from "./permission";
 import User, { UserAttributes } from "./user/user";
 
 let baseWorld: BaseWorld | undefined;
-const key = "department";
+const key = "permission";
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -26,14 +27,14 @@ afterAll(DBConnection.CloseConnection);
 // State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    baseWorld.setCustomProp<UserAttributes>("userAttributes", userAttributes);
     baseWorld.setCustomProp<BusinessAttributes>(
         "businessAttributes",
         businessAttributes
     );
-    baseWorld.setCustomProp<DepartmentAttributes>(
-        "departmentAttributes",
-        departmentAttributes
+    baseWorld.setCustomProp<UserAttributes>("userAttributes", userAttributes);
+    baseWorld.setCustomProp<PermissionAttributes>(
+        "permissionAttributes",
+        permissionAttributes
     );
 });
 afterEach(() => {
@@ -63,12 +64,11 @@ beforeEach(async () => {
         "user"
     );
 
-    baseWorld.setCustomProp<DepartmentAttributes>("departmentAttributes", {
-        ...baseWorld.getCustomProp<DepartmentAttributes>(
-            "departmentAttributes"
+    baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
+        ...baseWorld.getCustomProp<PermissionAttributes>(
+            "permissionAttributes"
         ),
         updated_by_user_id: user.id,
-        business_id: business.id,
     });
 });
 afterEach(async () => {
@@ -81,37 +81,37 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Department", async () => {
-    await testCreateModel<Department, DepartmentAttributes>(
+test("Create Permission", async () => {
+    await testCreateModel<Permission, PermissionAttributes>(
         baseWorld,
-        Department,
+        Permission,
         key
     );
 });
 
-test("Update Department", async () => {
-    await testUpdateModel<Department, DepartmentAttributes>(
+test("Update Permission", async () => {
+    await testUpdateModel<Permission, PermissionAttributes>(
         baseWorld,
-        Department,
+        Permission,
         key,
         "name",
         "TEST"
     );
 });
 
-test("Delete Department", async () => {
-    await testDeleteModel<Department, DepartmentAttributes>(
+test("Delete Permission", async () => {
+    await testDeleteModel<Permission, PermissionAttributes>(
         baseWorld,
-        Department,
+        Permission,
         key,
         "id"
     );
 });
 
-test("Read Department", async () => {
-    await testReadModel<Department, DepartmentAttributes>(
+test("Read Permission", async () => {
+    await testReadModel<Permission, PermissionAttributes>(
         baseWorld,
-        Department,
+        Permission,
         key,
         "id"
     );
