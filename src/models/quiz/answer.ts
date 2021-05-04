@@ -4,14 +4,14 @@ import EditableContentModel from "../abstract/editable_content_model";
 export interface AnswerAttributes {
     answer: string;
     correct: boolean;
-    question_id: number;
+    quiz_question_id: number;
     updated_by_user_id: number;
 }
 
 const EmptyAnswerAttributes = (): AnswerAttributes => ({
     answer: "",
     correct: false,
-    question_id: -1,
+    quiz_question_id: -1,
     updated_by_user_id: -1,
 });
 
@@ -28,7 +28,7 @@ export default class Answer
     @Column()
     public correct!: boolean;
     @Column()
-    public question_id!: number;
+    public quiz_question_id!: number;
 
     public constructor(options?: Partial<AnswerAttributes>) {
         super();

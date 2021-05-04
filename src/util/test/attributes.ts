@@ -13,6 +13,7 @@ import { QuizAttributes } from "../../models/quiz/quiz";
 import { RoleAttributes } from "../../models/role";
 import { UserAttributes } from "../../models/user/user";
 import { UserRoleAttributes } from "../../models/user/user_role";
+import { AnswerAttributes } from "../../models/quiz/answer";
 
 // Configuration
 export const businessAttributes: BusinessAttributes = {
@@ -122,5 +123,12 @@ export const questionAttributes: QuestionAttributes = {
     question: "Question",
     type: "radio",
     quiz_section_id: -1,
+    updated_by_user_id: -1,
+};
+
+export const answerAttributes: AnswerAttributes = {
+    answer: "Answer",
+    correct: false,
+    quiz_question_id: -1,
     updated_by_user_id: -1,
 };
