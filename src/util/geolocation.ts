@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from "node-fetch";
-import Logs from "./logs/logs";
 
 interface HereApiParams {
     app_id: string;
