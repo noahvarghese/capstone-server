@@ -2,6 +2,7 @@ import { BusinessAttributes } from "../../models/business";
 import { DepartmentAttributes } from "../../models/department";
 import { ManualAttributes } from "../../models/manual/manual";
 import { ManualAssignmentAttributes } from "../../models/manual/manual_assignment";
+import { SectionAttributes } from "../../models/manual/section";
 import { PermissionAttributes } from "../../models/permission";
 import { QuizAttributes } from "../../models/quiz/quiz";
 import { RoleAttributes } from "../../models/role";
@@ -72,5 +73,11 @@ export const manualAssignmentAttributes: ManualAssignmentAttributes = {
     department_id: -1,
     manual_id: -1,
     role_id: -1,
+    updated_by_user_id: -1,
+};
+
+export const sectionAttributes: SectionAttributes = {
+    title: "Section",
+    manual_id: -1,
     updated_by_user_id: -1,
 };
