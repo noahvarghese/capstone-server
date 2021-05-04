@@ -13,7 +13,7 @@ import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
-    testUpdateModel,
+    // testUpdateModel,
 } from "../../util/test/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
