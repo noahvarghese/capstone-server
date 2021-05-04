@@ -16,7 +16,6 @@ import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
-    testUpdateModel,
 } from "../../util/test/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
