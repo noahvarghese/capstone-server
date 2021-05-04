@@ -4,14 +4,14 @@ import EditableContentModel from "../abstract/editable_content_model";
 export interface QuestionAttributes {
     question: string;
     type: string;
-    section_id: number;
+    quiz_section_id: number;
     updated_by_user_id: number;
 }
 
 const EmptyQuestionAttributes = (): QuestionAttributes => ({
     question: "",
     type: "",
-    section_id: -1,
+    quiz_section_id: -1,
     updated_by_user_id: -1,
 });
 
@@ -28,7 +28,7 @@ export default class Question
     @Column()
     public type!: string;
     @Column()
-    public section_id!: number;
+    public quiz_section_id!: number;
 
     public constructor(options?: Partial<QuestionAttributes>) {
         super();

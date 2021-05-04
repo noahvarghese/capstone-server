@@ -6,7 +6,9 @@ import { ManualAssignmentAttributes } from "../../models/manual/manual_assignmen
 import { PolicyAttributes } from "../../models/manual/policy";
 import { ReadAttributes } from "../../models/manual/read";
 import { SectionAttributes } from "../../models/manual/section";
+import { SectionAttributes as QuizSectionAttributes } from "../../models/quiz/section";
 import { PermissionAttributes } from "../../models/permission";
+import { QuestionAttributes } from "../../models/quiz/question";
 import { QuizAttributes } from "../../models/quiz/quiz";
 import { RoleAttributes } from "../../models/role";
 import { UserAttributes } from "../../models/user/user";
@@ -101,4 +103,24 @@ export const contentAttributes: ContentAttributes = {
 export const readAttributes: ReadAttributes = {
     policy_id: -1,
     user_id: -1,
+};
+
+export const quizAttributes: QuizAttributes = {
+    title: "Quiz",
+    max_attempts: 5,
+    manual_id: -1,
+    updated_by_user_id: -1,
+};
+
+export const quizSectionAttributes: QuizSectionAttributes = {
+    title: "Section",
+    updated_by_user_id: -1,
+    quiz_id: -1,
+};
+
+export const questionAttributes: QuestionAttributes = {
+    question: "Question",
+    type: "radio",
+    quiz_section_id: -1,
+    updated_by_user_id: -1,
 };
