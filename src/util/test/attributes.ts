@@ -15,6 +15,7 @@ import { UserAttributes } from "../../models/user/user";
 import { UserRoleAttributes } from "../../models/user/user_role";
 import { AnswerAttributes } from "../../models/quiz/answer";
 import { AttemptAttributes } from "../../models/quiz/attempt";
+import { ResultAttributes } from "../../models/quiz/result";
 
 // Configuration
 export const businessAttributes: BusinessAttributes = {
@@ -137,4 +138,10 @@ export const answerAttributes: AnswerAttributes = {
 export const attemptAttributes: AttemptAttributes = {
     quiz_id: -1,
     user_id: -1,
+};
+
+export const resultAttributes: ResultAttributes = {
+    quiz_answer_id: -1,
+    quiz_attempt_id: -1,
+    quiz_question_id: -1,
 };
