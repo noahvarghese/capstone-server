@@ -47,7 +47,7 @@ export const testUpdateModel = async <T extends BaseModel, X>(
 
     baseWorld.setCustomProp<X>(modelAttributesName, {
         ...baseWorld.getCustomProp<X>(modelAttributesName),
-        attrKey: attrVal,
+        [attrKey]: attrVal,
     });
 
     model[attrKey as keyof T] = attrVal;
@@ -55,7 +55,7 @@ export const testUpdateModel = async <T extends BaseModel, X>(
 
     expect(
         modelMatchesInterface(
-            baseWorld.getCustomProp(modelAttributesName),
+            baseWorld.getCustomProp<any>(modelAttributesName),
             model
         )
     ).toBe(true);
@@ -78,7 +78,7 @@ export const testReadModel = async <T extends BaseModel, X>(
     const model = await createModel<T, X>(baseWorld, type, key);
 
     const foundModels = await connection.manager.find(type, {
-        where: { attrKey: model[attrKey as keyof T] },
+        where: { [attrKey]: model[attrKey as keyof T] },
     });
 
     expect(foundModels.length).toBe(1);
@@ -101,10 +101,10 @@ export const testDeleteModel = async <T extends BaseModel, X>(
 
     const model = await createModel<T, X>(baseWorld, type, key);
 
-    await deleteModel(baseWorld, model, key);
+    await deleteModel<T>(baseWorld, type, key);
 
     const result = await connection.manager.find(type, {
-        where: { attrKey: model[attrKey as keyof T] },
+        where: { [attrKey]: model[attrKey as keyof T] },
     });
 
     expect(result.length).toBe(0);

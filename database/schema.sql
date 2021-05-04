@@ -125,7 +125,7 @@ CREATE TABLE manual_assignment (
     FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE section (
     id INT NOT NULL AUTO_INCREMENT,

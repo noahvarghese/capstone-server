@@ -9,7 +9,7 @@
         "dev": "nodemon -e ts,.env,json --ignore build/ --ignore test/ --exec ./node_modules/.bin/ts-node ./src/index.ts",
         "start": "node ./build/index.js",
         "bdd-test": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter",
-        "unit-test": "jest",
+        "unit-test": "jest --maxConcurrency=1 --runInBand",
         "coverage": "jest --coverage"
     },
     "repository": {

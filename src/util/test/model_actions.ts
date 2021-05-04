@@ -4,22 +4,21 @@ import BaseModel from "../../models/abstract/base_model";
 import Logs from "../logs/logs";
 import BaseWorld from "./base_world";
 
-export const deleteModel = async <T extends BaseModel | undefined>(
+export const deleteModel = async <T extends BaseModel>(
     that: BaseWorld,
     type: any,
-    key: string
+    key: string,
+    primaryKey = "id"
 ): Promise<void> => {
     const { connection } = that;
     const model = that.getCustomProp<T>(key);
 
-    if (model) {
-        await connection.manager.delete(type, model.id);
-    }
+    await connection.manager.delete<T>(type, model[primaryKey as keyof T]);
 
     that.setCustomProp<undefined>(key, undefined);
 };
 
-export const createModel = async <T extends BaseModel | undefined, X>(
+export const createModel = async <T extends BaseModel, X>(
     that: BaseWorld,
     type: any,
     key: string
@@ -30,7 +29,7 @@ export const createModel = async <T extends BaseModel | undefined, X>(
     let model = connection.manager.create<T>(type, attributes);
     model = await connection.manager.save<T>(model);
 
-    that.setCustomProp<T | typeof type>(key, model);
+    that.setCustomProp<T>(key, model);
 
     return model;
 };
@@ -45,11 +44,47 @@ export const modelMatchesInterface = <T, X extends T>(
         const modelVal = model[key as keyof X];
         const attrVal = attr[key as keyof T];
 
-        if ((modelVal as any) !== (attrVal as any)) {
-            Logs.Test(modelVal);
-            Logs.Test(attrVal);
-            matches = false;
-            break;
+        if (typeof modelVal !== "function") {
+            // Loose equals
+            if ((modelVal as any) !== (attrVal as any)) {
+                // Handle Dates
+                if (
+                    Object.prototype.toString.call(modelVal) === "[object Date]"
+                ) {
+                    const d1 = new Date(modelVal as any);
+                    const d2 = new Date(attrVal as any);
+
+                    if (d1.getTime() === d2.getTime()) {
+                        continue;
+                    }
+                }
+
+                // Handle numbers
+                if (
+                    typeof modelVal === "number" ||
+                    typeof attrVal === "number"
+                ) {
+                    if (Number(modelVal) === Number(attrVal)) {
+                        continue;
+                    }
+                }
+
+                // handle undefined and null
+                if (!modelVal && !attrVal) {
+                    continue;
+                }
+
+                // Debug
+                Logs.Test(key);
+                Logs.Test(typeof modelVal);
+                Logs.Test(modelVal);
+                Logs.Test(typeof attrVal);
+                Logs.Test(attrVal);
+
+                matches = false;
+
+                break;
+            }
         }
     }
 

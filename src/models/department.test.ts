@@ -62,11 +62,12 @@ beforeEach(async () => {
         "user"
     );
 
-    baseWorld.setCustomProp<DepartmentAttributes>("dpeartmentAttributes", {
+    baseWorld.setCustomProp<DepartmentAttributes>("departmentAttributes", {
         ...baseWorld.getCustomProp<DepartmentAttributes>(
             "departmentAttributes"
         ),
         updated_by_user_id: user.id,
+        business_id: business.id,
     });
 });
 afterEach(async () => {

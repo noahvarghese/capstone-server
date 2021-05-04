@@ -21,7 +21,7 @@ afterAll(DBConnection.CloseConnection);
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
     baseWorld.setCustomProp<BusinessAttributes>(
-        "attributes",
+        `${key}Attributes`,
         businessAttributes
     );
 });
@@ -50,20 +50,20 @@ test("Update Business", async () => {
     );
 });
 
-test("Delete Business", async () => {
-    await testDeleteModel<Business, BusinessAttributes>(
-        baseWorld,
-        Business,
-        key,
-        "id"
-    );
-});
-
 test("Read Business", async () => {
     await testReadModel<Business, BusinessAttributes>(
         baseWorld,
         Business,
         key,
         "name"
+    );
+});
+
+test("Delete Business", async () => {
+    await testDeleteModel<Business, BusinessAttributes>(
+        baseWorld,
+        Business,
+        key,
+        "id"
     );
 });
