@@ -67,6 +67,10 @@ export const testUpdateModel = async <T, X>(
         )
     ).toBe(true);
 
+    if (model["updated_on" as keyof T]) {
+        expect(model["updated_on" as keyof T]).toBeTruthy();
+    }
+
     await deleteModel<T>(baseWorld, type, key);
 };
 
