@@ -1,6 +1,8 @@
 import { BusinessAttributes } from "../../models/business";
 import { DepartmentAttributes } from "../../models/department";
+import { ManualAttributes } from "../../models/manual/manual";
 import { PermissionAttributes } from "../../models/permission";
+import { QuizAttributes } from "../../models/quiz/quiz";
 import { RoleAttributes } from "../../models/role";
 import { UserAttributes } from "../../models/user/user";
 import { UserRoleAttributes } from "../../models/user/user_role";
@@ -55,5 +57,12 @@ export const roleAttributes: RoleAttributes = {
 export const userRoleAttributes: UserRoleAttributes = {
     user_id: -1,
     role_id: -1,
+    updated_by_user_id: -1,
+};
+
+export const manualAttributes: ManualAttributes = {
+    title: "Manual",
+    role_id: -1,
+    department_id: -1,
     updated_by_user_id: -1,
 };

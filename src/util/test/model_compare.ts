@@ -40,7 +40,7 @@ export const testUpdateModel = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string,
-    attrKey: string,
+    attrKey: keyof T,
     attrVal: any
 ) => {
     if (!baseWorld) {
@@ -57,7 +57,7 @@ export const testUpdateModel = async <T, X>(
         [attrKey]: attrVal,
     });
 
-    model[attrKey as keyof T] = attrVal;
+    model[attrKey] = attrVal;
     model = await connection.manager.save(model);
 
     expect(

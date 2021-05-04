@@ -107,8 +107,8 @@ CREATE TABLE manual (
     deleted_on DATETIME DEFAULT NULL,
     /* NEEDS DEPARTMENT OR ROLE */
     /* THIS IS FOR THE OWNER OF the MANUAL */
-    role_id INT,
-    department_id INT,
+    role_id INT DEFAULT NULL,
+    department_id INT DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (role_id) REFERENCES role(id),
     FOREIGN KEY (department_id) REFERENCES department(id),
