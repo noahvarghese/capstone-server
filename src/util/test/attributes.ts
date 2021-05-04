@@ -2,6 +2,7 @@ import { BusinessAttributes } from "../../models/business";
 import { DepartmentAttributes } from "../../models/department";
 import { ManualAttributes } from "../../models/manual/manual";
 import { ManualAssignmentAttributes } from "../../models/manual/manual_assignment";
+import { PolicyAttributes } from "../../models/manual/policy";
 import { SectionAttributes } from "../../models/manual/section";
 import { PermissionAttributes } from "../../models/permission";
 import { QuizAttributes } from "../../models/quiz/quiz";
@@ -79,5 +80,11 @@ export const manualAssignmentAttributes: ManualAssignmentAttributes = {
 export const sectionAttributes: SectionAttributes = {
     title: "Section",
     manual_id: -1,
+    updated_by_user_id: -1,
+};
+
+export const policyAttributes: PolicyAttributes = {
+    title: "Policy",
+    section_id: -1,
     updated_by_user_id: -1,
 };
