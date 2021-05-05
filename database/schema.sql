@@ -13,6 +13,7 @@ CREATE TABLE business (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    UNIQUE(name),
     PRIMARY KEY(id)
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE user (
     deleted_on DATETIME DEFAULT NULL,
     business_id INT NOT NULL,
     /* access_level_id INT NOT NULL, */
+    UNIQUE (email),
     FOREIGN KEY (business_id) REFERENCES business(id),
     /* FOREIGN KEY (access_level_id) REFERENCES access_level(id), */
     PRIMARY KEY (id)

@@ -12,7 +12,7 @@ DELIMITER //
 
 CREATE TRIGGER users_forgot_password_token_created
 BEFORE UPDATE
-ON users FOR EACH ROW
+ON user FOR EACH ROW
 BEGIN
     IF NEW.token IS NOT NULL THEN
         SET NEW.token_expiry = NOW() + INTERVAL 1 HOUR;
@@ -23,7 +23,7 @@ END;
 
 CREATE TRIGGER users_created_token_expiry
 BEFORE INSERT
-ON users FOR EACH ROW
+ON user FOR EACH ROW
 BEGIN
     IF NEW.token IS NOT NULL THEN
         SET NEW.token_expiry = NOW() + INTERVAL 1 DAY;

@@ -1,6 +1,6 @@
 import { uid } from "rand-token";
 import bcrypt from "bcrypt";
-import { Entity, Column } from "typeorm";
+import { Entity, Column, getConnection } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
 export interface UserAttributes {
@@ -105,5 +105,34 @@ export default class User extends BaseModel implements UserAttributes {
                 res(same);
             });
         });
+    };
+
+    private hashPassword = async (_password: string): Promise<void> => {
+        const hash = await new Promise<string>((res, rej) => {
+            bcrypt.hash(_password, 12, (err, hash) => {
+                if (err) {
+                    rej(err);
+                }
+
+                res(hash);
+            });
+        });
+
+        this.password = hash;
+    };
+
+    public resetPassword = async (
+        password: string,
+        token: string
+    ): Promise<boolean> => {
+        if (this.compareToken(token)) {
+            await this.hashPassword(password);
+            this.token = undefined;
+            this.token_expiry = undefined;
+            await getConnection().manager.save(this);
+            return true;
+        }
+
+        return false;
     };
 }

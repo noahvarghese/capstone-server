@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import Logs from "../logs/logs";
 import BaseWorld from "./base_world";
 import {
     createModel,
@@ -56,6 +57,13 @@ export const testUpdateModel = async <T, X>(
         ...baseWorld.getCustomProp<X>(modelAttributesName),
         [attrKey]: attrVal,
     });
+
+    if (
+        model[attrKey] ===
+        (baseWorld.getCustomProp<X>(modelAttributesName) as any)[attrKey]
+    ) {
+        throw new Error("Object hasn't changed");
+    }
 
     model[attrKey] = attrVal;
     model = await connection.manager.save(model);
