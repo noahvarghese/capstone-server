@@ -1,6 +1,6 @@
 import { uid } from "rand-token";
 import bcrypt from "bcrypt";
-import { Entity, Column, getConnection } from "typeorm";
+import { Entity, Column } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
 export interface UserAttributes {
