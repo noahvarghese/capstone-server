@@ -8,6 +8,7 @@ export default class DBConnection {
         DBConnection._connection = await createConnection({
             name: "Test",
             ...connection,
+            logging: false,
         });
     };
 

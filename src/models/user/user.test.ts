@@ -249,4 +249,64 @@ test("Wrong token should not match", async () => {
     await connection.manager.remove(user2);
 });
 
+test("Reset Password", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    const { connection } = baseWorld;
+    const attributes = baseWorld.getCustomProp<UserAttributes>(
+        `${key}Attributes`
+    );
+
+    const oldPassword = attributes.password;
+
+    let user = new User(attributes);
+    user.createToken();
+    user = await connection.manager.save(user);
+    user =
+        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
+        user;
+
+    const result = await user.resetPassword(oldPassword, user.token ?? "");
+
+    expect(result).toBe(true);
+    expect(user.token).toBe(undefined);
+    expect(user.token_expiry).toBe(undefined);
+    expect(user.password).not.toBe(oldPassword);
+    expect(await user.comparePassword(oldPassword)).toBe(true);
+
+    await connection.manager.remove(user);
+});
+
+test("Reset password empty", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    const { connection } = baseWorld;
+    const attributes = baseWorld.getCustomProp<UserAttributes>(
+        `${key}Attributes`
+    );
+
+    const oldPassword = attributes.password;
+
+    let user = new User(attributes);
+    user.createToken();
+    user = await connection.manager.save(user);
+    user =
+        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
+        user;
+
+    const result = await user.resetPassword("", user.token ?? "");
+
+    expect(result).toBe(false);
+    expect(user.token).not.toBe(undefined);
+    expect(user.token_expiry).not.toBe(undefined);
+    expect(user.password).toBe(oldPassword);
+    expect(await user.comparePassword(oldPassword)).toBe(false);
+
+    await connection.manager.remove(user);
+});
+
 // TODO: Test token creation and trigger that creates expiration date

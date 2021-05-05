@@ -45,6 +45,7 @@ const UserBuilder = <T extends Partial<UserAttributes>>(
 
 @Entity({ name: "user" })
 export default class User extends BaseModel implements UserAttributes {
+    public static max_password_length = 8;
     @Column()
     public first_name!: string;
     @Column()
@@ -126,11 +127,12 @@ export default class User extends BaseModel implements UserAttributes {
         token: string
     ): Promise<boolean> => {
         if (this.compareToken(token)) {
-            await this.hashPassword(password);
-            this.token = undefined;
-            this.token_expiry = undefined;
-            await getConnection().manager.save(this);
-            return true;
+            if (password.length >= User.max_password_length) {
+                await this.hashPassword(password);
+                this.token = undefined;
+                this.token_expiry = undefined;
+                return true;
+            }
         }
 
         return false;
