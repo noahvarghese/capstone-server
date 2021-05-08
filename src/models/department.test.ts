@@ -3,7 +3,7 @@ import {
     departmentAttributes,
     userAttributes,
 } from "../../test/util/attributes";
-import BaseWorld from "../../test/util/base_world";
+import BaseWorld from "../../test/util/store";
 import DBConnection from "../../test/util/db_connection";
 import { createModel, deleteModel } from "../../test/util/model_actions";
 import {

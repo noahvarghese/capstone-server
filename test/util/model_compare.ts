@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import BaseWorld from "./base_world";
+import BaseWorld from "./store";
 import {
     createModel,
     deleteModel,
