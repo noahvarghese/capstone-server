@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import Logs from "../logs/logs";
+import Logs from "../../src/util/logs/logs";
 import BaseWorld from "./base_world";
 
 export const deleteModel = async <T>(

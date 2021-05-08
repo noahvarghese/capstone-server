@@ -1,13 +1,13 @@
 import Business, { BusinessAttributes } from "./business";
-import BaseWorld from "../util/test/base_world";
-import DBConnection from "../util/test/db_connection";
-import { businessAttributes } from "../util/test/attributes";
+import BaseWorld from "../../test/util/base_world";
+import DBConnection from "../../test/util/db_connection";
+import { businessAttributes } from "../../test/util/attributes";
 import {
     testCreateModel,
     testUpdateModel,
     testDeleteModel,
     testReadModel,
-} from "../util/test/model_compare";
+} from "../../test/util/model_compare";
 
 // State management
 let baseWorld: BaseWorld | undefined;

@@ -1,5 +1,5 @@
 import { Connection, createConnection } from "typeorm";
-import { connection } from "../../config/database";
+import { connection } from "../../src/config/database";
 
 export default class DBConnection {
     private static _connection: Connection | undefined;

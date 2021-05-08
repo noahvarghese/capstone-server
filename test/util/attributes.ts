@@ -1,21 +1,21 @@
-import { BusinessAttributes } from "../../models/business";
-import { DepartmentAttributes } from "../../models/department";
-import { ContentAttributes } from "../../models/manual/content";
-import { ManualAttributes } from "../../models/manual/manual";
-import { ManualAssignmentAttributes } from "../../models/manual/manual_assignment";
-import { PolicyAttributes } from "../../models/manual/policy";
-import { ReadAttributes } from "../../models/manual/read";
-import { SectionAttributes } from "../../models/manual/section";
-import { SectionAttributes as QuizSectionAttributes } from "../../models/quiz/section";
-import { PermissionAttributes } from "../../models/permission";
-import { QuestionAttributes } from "../../models/quiz/question";
-import { QuizAttributes } from "../../models/quiz/quiz";
-import { RoleAttributes } from "../../models/role";
-import { UserAttributes } from "../../models/user/user";
-import { UserRoleAttributes } from "../../models/user/user_role";
-import { AnswerAttributes } from "../../models/quiz/answer";
-import { AttemptAttributes } from "../../models/quiz/attempt";
-import { ResultAttributes } from "../../models/quiz/result";
+import { BusinessAttributes } from "../../src/models/business";
+import { DepartmentAttributes } from "../../src/models/department";
+import { ContentAttributes } from "../../src/models/manual/content";
+import { ManualAttributes } from "../../src/models/manual/manual";
+import { ManualAssignmentAttributes } from "../../src/models/manual/manual_assignment";
+import { PolicyAttributes } from "../../src/models/manual/policy";
+import { ReadAttributes } from "../../src/models/manual/read";
+import { SectionAttributes } from "../../src/models/manual/section";
+import { SectionAttributes as QuizSectionAttributes } from "../../src/models/quiz/section";
+import { PermissionAttributes } from "../../src/models/permission";
+import { QuestionAttributes } from "../../src/models/quiz/question";
+import { QuizAttributes } from "../../src/models/quiz/quiz";
+import { RoleAttributes } from "../../src/models/role";
+import { UserAttributes } from "../../src/models/user/user";
+import { UserRoleAttributes } from "../../src/models/user/user_role";
+import { AnswerAttributes } from "../../src/models/quiz/answer";
+import { AttemptAttributes } from "../../src/models/quiz/attempt";
+import { ResultAttributes } from "../../src/models/quiz/result";
 
 // Configuration
 export const businessAttributes: BusinessAttributes = {

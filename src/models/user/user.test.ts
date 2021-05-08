@@ -1,15 +1,18 @@
-import BaseWorld from "../../util/test/base_world";
-import DBConnection from "../../util/test/db_connection";
-import { createModel, deleteModel } from "../../util/test/model_actions";
+import BaseWorld from "../../../test/util/base_world";
+import DBConnection from "../../../test/util/db_connection";
+import { createModel, deleteModel } from "../../../test/util/model_actions";
 import Business, { BusinessAttributes } from "../business";
-import { businessAttributes, userAttributes } from "../../util/test/attributes";
+import {
+    businessAttributes,
+    userAttributes,
+} from "../../../test/util/attributes";
 import User, { UserAttributes } from "./user";
 import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
     testUpdateModel,
-} from "../../util/test/model_compare";
+} from "../../../test/util/model_compare";
 import dotenv from "dotenv";
 dotenv.config();
 

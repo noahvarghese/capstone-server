@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import Logs from "../logs/logs";
 import BaseWorld from "./base_world";
 import {
     createModel,

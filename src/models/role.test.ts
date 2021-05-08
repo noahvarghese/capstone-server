@@ -4,16 +4,16 @@ import {
     permissionAttributes,
     roleAttributes,
     userAttributes,
-} from "../util/test/attributes";
-import BaseWorld from "../util/test/base_world";
-import DBConnection from "../util/test/db_connection";
-import { createModel, deleteModel } from "../util/test/model_actions";
+} from "../../test/util/attributes";
+import BaseWorld from "../../test/util/base_world";
+import DBConnection from "../../test/util/db_connection";
+import { createModel, deleteModel } from "../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
     testUpdateModel,
-} from "../util/test/model_compare";
+} from "../../test/util/model_compare";
 import Business, { BusinessAttributes } from "./business";
 import Department, { DepartmentAttributes } from "./department";
 import Permission, { PermissionAttributes } from "./permission";
