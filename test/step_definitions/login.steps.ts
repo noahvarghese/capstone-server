@@ -59,6 +59,10 @@ Then("it should be unsuccessful", function (this: BaseWorld) {
     const status = this.getCustomProp<number>("status");
     const cookies = this.getCustomProp<string | null>("cookies");
 
-    expect(status).to.be.within(400, 500);
+    if (user.email !== userAttributes.email) {
+        expect(status).to.be.equal(500);
+    } else {
+        expect(status).to.be.equal(401);
+    }
     expect(cookies).to.be.equal(null);
 });

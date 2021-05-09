@@ -11,7 +11,7 @@ BeforeAll(async function () {
 });
 
 AfterAll(async function () {
-    return await new Promise<void>((res, rej) => {
+    await new Promise<void>((res, rej) => {
         server.close((err) => {
             if (err) {
                 Logs.Test(err);
@@ -20,4 +20,6 @@ AfterAll(async function () {
             res();
         });
     });
+
+    return;
 });

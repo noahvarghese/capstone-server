@@ -26,6 +26,7 @@ BeforeAll(async function () {
     // Reverse order as user needs to be deleted before business
     models.push({ model: user, type: User });
     models.push({ model: business, type: Business });
+    return;
 });
 
 AfterAll({ timeout: 10000 }, async function () {
@@ -36,4 +37,5 @@ AfterAll({ timeout: 10000 }, async function () {
             item.model
         );
     }
+    return;
 });
