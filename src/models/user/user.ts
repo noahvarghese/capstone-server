@@ -108,7 +108,7 @@ export default class User extends BaseModel implements UserAttributes {
         });
     };
 
-    private hashPassword = async (_password: string): Promise<void> => {
+    public hashPassword = async (_password: string): Promise<string> => {
         const hash = await new Promise<string>((res, rej) => {
             bcrypt.hash(_password, 12, (err, hash) => {
                 if (err) {
@@ -120,6 +120,7 @@ export default class User extends BaseModel implements UserAttributes {
         });
 
         this.password = hash;
+        return hash;
     };
 
     public resetPassword = async (

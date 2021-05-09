@@ -13,16 +13,17 @@ router.post("/", async (req: Request, res: Response) => {
     });
 
     if (users.length !== 1) {
-        res.status(500).json({ message: "Invalid login." });
+        res.status(500).json({ message: `Invalid login ${email}.` });
         return;
     }
 
     const user = users[0];
 
     if (user.password) {
-        if (await user.comparePassword(password)) {
+        const success = await user.comparePassword(password);
+        if (success) {
             req.session.user_id = user.id;
-            res.status(202);
+            res.sendStatus(202);
             return;
         }
     }

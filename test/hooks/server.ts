@@ -11,7 +11,6 @@ BeforeAll(async function () {
 });
 
 AfterAll(async function () {
-    Logs.Log(server);
     return await new Promise<void>((res, rej) => {
         server.close((err) => {
             if (err) {

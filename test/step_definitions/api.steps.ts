@@ -1,12 +1,14 @@
-import { Given, Then } from "@cucumber/cucumber";
+import { When, Then } from "@cucumber/cucumber";
 import { expect } from "chai";
 import BaseWorld from "../support/base_world";
-import { server } from "../util/permalink";
+import { server } from "../../src/util/permalink";
 import { getResponseStatus } from "../util/request";
+import Logs from "../../src/util/logs/logs";
 
-Given(
-    "the user has navigated to the root of the backend",
+When(
+    "a user has navigated to the root of the backend",
     async function (this: BaseWorld) {
+        Logs.Error(server);
         const status = await getResponseStatus(server);
         this.setCustomProp<number>("status", status);
     }
