@@ -1,9 +1,6 @@
 import { BeforeAll, AfterAll } from "@cucumber/cucumber";
-import { Server } from "node:http";
 import Business from "../../src/models/business";
 import User from "../../src/models/user/user";
-import Logs from "../../src/util/logs/logs";
-import setupServer from "../../src/util/server";
 import { businessAttributes, userAttributes } from "../util/attributes";
 import DBConnection from "../util/db_connection";
 
@@ -31,10 +28,10 @@ BeforeAll(async function () {
     models.push({ model: business, type: Business });
 });
 
-AfterAll(async function () {
+AfterAll({ timeout: 10000 }, async function () {
     // Delete rows
     for (const item of models) {
-        (await DBConnection.GetConnection()).manager.remove(
+        await (await DBConnection.GetConnection()).manager.remove(
             item.type,
             item.model
         );
