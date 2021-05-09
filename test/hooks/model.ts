@@ -4,6 +4,7 @@ import User from "../../src/models/user/user";
 import { businessAttributes, userAttributes } from "../util/attributes";
 import DBConnection from "../util/db_connection";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const models: any[] = [];
 
 BeforeAll(async function () {
