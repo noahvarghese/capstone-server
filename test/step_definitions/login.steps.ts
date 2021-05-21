@@ -7,8 +7,10 @@ import fetch from "node-fetch";
 import FormData from "form-data";
 import User from "../../src/models/user/user";
 import DBConnection from "../util/db_connection";
+import bcrypt from "bcrypt";
 
 let user: User;
+const newPassword = "secret";
 
 Given("the user has valid credentials", async function (this: BaseWorld) {
     user = (await DBConnection.GetConnection()).manager.create(
@@ -33,8 +35,16 @@ Given("the user has an invalid password", async function () {
 
 Given("the user has requested to reset their password", async function () {
     // Create user in db
+    user = (await DBConnection.GetConnection()).manager.create(
+        User,
+        userAttributes
+    );
+
+    const body = new FormData();
+    body.append("email", user.email);
+
     // Send post request to /auth/requestPasswordReset with email
-    return "pending";
+    await fetch(server + "auth/requestResetPassword", { method: "POST", body });
 });
 
 When("the user logs in", async function (this: BaseWorld) {
@@ -54,14 +64,35 @@ When("the user logs in", async function (this: BaseWorld) {
 
 When("the user requests to reset their password", async function () {
     // Create user in db
+    user = (await DBConnection.GetConnection()).manager.create(
+        User,
+        userAttributes
+    );
+
+    const body = new FormData();
+    body.append("email", user.email);
+
     // Send post request to /auth/requestPasswordReset with email
-    return "pending";
+    await fetch(server + "auth/requestResetPassword", { method: "POST", body });
 });
 
 When("they go to reset their password", async function () {
+    user = (
+        await (await DBConnection.GetConnection()).manager.find(User, user)
+    )[0];
+
+    const { token } = user;
+
+    // With password, confirmPassword as params
+    const body = new FormData();
+    body.append("password", newPassword);
+    body.append("confirmPassword", newPassword);
+
     // Send post request to /auth/resetPassword
-    // With id, password, confirmPassword as params
-    return "pending";
+    await fetch(server + `auth/resetPassword/${token}`, {
+        method: "POST",
+        body,
+    });
 });
 
 Then("a cookie should be returned", function (this: BaseWorld) {
@@ -87,8 +118,14 @@ Then("it should be unsuccessful", function (this: BaseWorld) {
 
 Then("a token is created", async function () {
     // Check a token exists for the user
+    expect(user.token).to.not.be.null;
+
     // And the expiry date is correct
-    return "pending";
+    // We should test the specific time it sets
+    expect(user.token_expiry).to.not.be.null;
+    expect(user.token_expiry?.getUTCMilliseconds()).to.be.greaterThan(
+        new Date().getUTCMilliseconds()
+    );
 });
 
 Then("they are sent a token", async function () {
@@ -98,11 +135,9 @@ Then("they are sent a token", async function () {
 });
 
 Then("the password is reset", async function () {
-    // Send post request to login with new password to confirm the new password works
-    return "pending";
+    expect(await user.comparePassword(newPassword)).to.be.true;
 });
 
 Then("the password is not reset", async function () {
-    // Send post request with new password to confirm it does not work
-    return "pending";
+    expect(await user.comparePassword(newPassword)).to.be.false;
 });
