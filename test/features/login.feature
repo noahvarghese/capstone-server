@@ -15,12 +15,20 @@ Scenario: Invalid Password
     When the user logs in
     Then it should be unsuccessful
 
-Scenario: Request Reset Password
-    Given the user has forgotton their password
-    When they request to reset their password
+Scenario: Request Reset Password Token Created
+    When the user requests to reset their password
+    Then a token is created
+
+Scenario: Request Reset Password Token Sent
+    When the user requests to reset their password
     Then they are sent a token
 
 Scenario: Reset Password Valid Token
     Given the user has requested to reset their password
     When they go to reset their password
-    Then it is reset
+    Then the password is reset
+
+Scenario: Reset Password Invalid Token
+    Given the user has requested to reset their password
+    When they go to reset their password
+    Then the password is not reset

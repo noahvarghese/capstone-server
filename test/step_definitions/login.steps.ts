@@ -31,6 +31,10 @@ Given("the user has an invalid password", async function () {
     });
 });
 
+Given("the user has requested to reset their password", async function () {
+    return "pending";
+});
+
 When("the user logs in", async function (this: BaseWorld) {
     const body = new FormData();
     body.append("email", user.email);
@@ -44,6 +48,14 @@ When("the user logs in", async function (this: BaseWorld) {
     const cookies = res.headers.get("set-cookie");
     this.setCustomProp<string | null>("cookies", cookies);
     this.setCustomProp<number>("status", res.status);
+});
+
+When("the user requests to reset their password", async function () {
+    return "pending";
+});
+
+When("they go to reset their password", async function () {
+    return "pending";
 });
 
 Then("a cookie should be returned", function (this: BaseWorld) {
@@ -65,4 +77,20 @@ Then("it should be unsuccessful", function (this: BaseWorld) {
         expect(status).to.be.equal(401);
     }
     expect(cookies).to.be.equal(null);
+});
+
+Then("a token is created", async function () {
+    return "pending";
+});
+
+Then("they are sent a token", async function () {
+    return "pending";
+});
+
+Then("the password is reset", async function () {
+    return "pending";
+});
+
+Then("the password is not reset", async function () {
+    return "pending";
 });
