@@ -32,6 +32,8 @@ Given("the user has an invalid password", async function () {
 });
 
 Given("the user has requested to reset their password", async function () {
+    // Create user in db
+    // Send post request to /auth/requestPasswordReset with email
     return "pending";
 });
 
@@ -51,10 +53,14 @@ When("the user logs in", async function (this: BaseWorld) {
 });
 
 When("the user requests to reset their password", async function () {
+    // Create user in db
+    // Send post request to /auth/requestPasswordReset with email
     return "pending";
 });
 
 When("they go to reset their password", async function () {
+    // Send post request to /auth/resetPassword
+    // With id, password, confirmPassword as params
     return "pending";
 });
 
@@ -80,17 +86,23 @@ Then("it should be unsuccessful", function (this: BaseWorld) {
 });
 
 Then("a token is created", async function () {
+    // Check a token exists for the user
+    // And the expiry date is correct
     return "pending";
 });
 
 Then("they are sent a token", async function () {
+    // Check that an email was sent (This requires logging of events in the database)
+    // Maybe try login to email to confirm email was sent
     return "pending";
 });
 
 Then("the password is reset", async function () {
+    // Send post request to login with new password to confirm the new password works
     return "pending";
 });
 
 Then("the password is not reset", async function () {
+    // Send post request with new password to confirm it does not work
     return "pending";
 });
