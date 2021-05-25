@@ -7,7 +7,6 @@ import fetch from "node-fetch";
 import FormData from "form-data";
 import User from "../../src/models/user/user";
 import DBConnection from "../util/db_connection";
-import bcrypt from "bcrypt";
 
 let user: User;
 const newPassword = "secret";
