@@ -5,7 +5,7 @@ import Business, { BusinessAttributes } from "../business";
 import {
     businessAttributes,
     userAttributes,
-} from "../../../test/util/attributes";
+} from "../../../test/sample_data.ts/attributes";
 import User, { UserAttributes } from "./user";
 import {
     testCreateModel,
@@ -173,9 +173,8 @@ test("Token Should Be Valid", async () => {
     }
 
     const { connection } = baseWorld;
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        "userAttributes"
-    );
+    const attributes =
+        baseWorld.getCustomProp<UserAttributes>("userAttributes");
     let user = new User(attributes);
     user.createToken();
 
@@ -197,9 +196,8 @@ test("Invalid token expiry", async () => {
     }
 
     const { connection } = baseWorld;
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        "userAttributes"
-    );
+    const attributes =
+        baseWorld.getCustomProp<UserAttributes>("userAttributes");
     let user = new User(attributes);
     user.createToken();
 
@@ -222,12 +220,10 @@ test("Wrong token should not match", async () => {
     }
 
     const { connection } = baseWorld;
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        "userAttributes"
-    );
-    const attributes2 = baseWorld.getCustomProp<UserAttributes>(
-        "userAttributes"
-    );
+    const attributes =
+        baseWorld.getCustomProp<UserAttributes>("userAttributes");
+    const attributes2 =
+        baseWorld.getCustomProp<UserAttributes>("userAttributes");
 
     let user1 = new User(attributes);
     let user2 = new User({ ...attributes2, email: "test@test.com" });

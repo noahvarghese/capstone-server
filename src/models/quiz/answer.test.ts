@@ -10,7 +10,7 @@ import {
     quizSectionAttributes,
     roleAttributes,
     userAttributes,
-} from "../../../test/util/attributes";
+} from "../../../test/sample_data.ts/attributes";
 import BaseWorld from "../../../test/util/store";
 import DBConnection from "../../../test/util/db_connection";
 import { createModel, deleteModel } from "../../../test/util/model_actions";

@@ -1,7 +1,10 @@
 import { BeforeAll, AfterAll } from "@cucumber/cucumber";
 import Business from "../../src/models/business";
 import User from "../../src/models/user/user";
-import { businessAttributes, userAttributes } from "../util/attributes";
+import {
+    businessAttributes,
+    userAttributes,
+} from "../sample_data.ts/attributes";
 import DBConnection from "../util/db_connection";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,10 +15,9 @@ BeforeAll(async function () {
     await DBConnection.InitConnection();
 
     // Create business
-    const business = await (await DBConnection.GetConnection()).manager.save(
-        Business,
-        businessAttributes
-    );
+    const business = await (
+        await DBConnection.GetConnection()
+    ).manager.save(Business, businessAttributes);
 
     // Create user
     let user = new User(userAttributes);
@@ -33,10 +35,9 @@ BeforeAll(async function () {
 AfterAll({ timeout: 10000 }, async function () {
     // Delete rows
     for (const item of models) {
-        await (await DBConnection.GetConnection()).manager.remove(
-            item.type,
-            item.model
-        );
+        await (
+            await DBConnection.GetConnection()
+        ).manager.remove(item.type, item.model);
     }
     return;
 });
