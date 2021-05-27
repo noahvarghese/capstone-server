@@ -61,6 +61,7 @@ CREATE TABLE department (
 
 CREATE TABLE permission (
     id INT NOT NULL AUTO_INCREMENT,
+    add_users TINYINT(1) NOT NULL,
     view_users TINYINT(1) NOT NULL,
     edit_users TINYINT(1) NOT NULL,
     remove_users TINYINT(1) NOT NULL,
