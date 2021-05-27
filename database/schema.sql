@@ -268,3 +268,12 @@ CREATE TABLE policy_read (
     FOREIGN KEY (user_id) REFERENCES user(id),
     PRIMARY KEY (user_id, policy_id)
 );
+
+CREATE TABLE events (
+    id INT NOT NULL AUTO_INCREMENT,
+    event_name VARCHAR(50),
+    event_status TINYINT(1),
+    user_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    PRIMARY KEY (id)
+);
