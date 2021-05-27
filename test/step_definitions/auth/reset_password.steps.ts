@@ -76,7 +76,7 @@ When("they go to reset their password", async function (this: BaseWorld) {
     this.setCustomProp("user", user);
 });
 
-Then("a token is created", async function (this: BaseWorld) {
+Then("a token should be created", async function (this: BaseWorld) {
     const user = this.getCustomProp<User>("user");
     // Check a token exists for the user
     expect(user.token).to.not.be.null;
@@ -89,7 +89,7 @@ Then("a token is created", async function (this: BaseWorld) {
     );
 });
 
-Then("they are sent a token", async function () {
+Then("they are sent a token", async function (this: BaseWorld) {
     // Check that an email was sent (This requires logging of events in the database)
     // Maybe try login to email to confirm email was sent
     return "pending";

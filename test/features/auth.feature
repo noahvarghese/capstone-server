@@ -21,7 +21,7 @@ Scenario: Invalid Password
 
 Scenario: Request Reset Password Token Created
     When the user requests to reset their password
-    Then a token is created
+    Then a token should be created
 
 Scenario: Request Reset Password Token Sent
     When the user requests to reset their password
@@ -46,7 +46,7 @@ Scenario: User Created
 Scenario: User Received Registration Email
     Given an administator is performing this action
     When they go to register a new user
-    Then the user should have been sent a registration email
+    Then the new user should have been sent a registration confirmation 
 
 Scenario: User Created Token Generated
     Given an administator is performing this action

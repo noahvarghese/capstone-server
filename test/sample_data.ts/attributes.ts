@@ -51,6 +51,7 @@ export const departmentAttributes: DepartmentAttributes = {
 
 export const permissionAttributes: PermissionAttributes = {
     edit_policies: true,
+    add_users: true,
     edit_users: true,
     remove_users: true,
     updated_by_user_id: -1,
