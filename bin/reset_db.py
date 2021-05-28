@@ -7,7 +7,7 @@ import mysql.connector
 # python-dotenv
 import dotenv
 
-dotenv_path = abspath(join(dirname(__file__) + "../../../.env"))
+dotenv_path = abspath(join(dirname(__file__), "../.env"))
 dotenv.load_dotenv(dotenv_path)
 
 files = ["schema.sql", "triggers.sql"]
@@ -49,7 +49,7 @@ def get_env():
     return env
 
 def read_file(file_name):
-    path = abspath(os.path.join(__file__, "../..", file_name))
+    path = abspath(os.path.join(dirname(__file__), "../database/", file_name))
 
     with open(path) as file:
         data = file.read()
