@@ -271,9 +271,10 @@ CREATE TABLE policy_read (
 
 CREATE TABLE event (
     id INT NOT NULL AUTO_INCREMENT,
-    event_name VARCHAR(50),
-    event_status TINYINT(1),
+    name VARCHAR(50),
+    status ENUM("PASS", "FAIL"),
     user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
