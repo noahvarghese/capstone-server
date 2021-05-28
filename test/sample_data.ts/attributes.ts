@@ -16,6 +16,7 @@ import { UserRoleAttributes } from "../../src/models/user/user_role";
 import { AnswerAttributes } from "../../src/models/quiz/answer";
 import { AttemptAttributes } from "../../src/models/quiz/attempt";
 import { ResultAttributes } from "../../src/models/quiz/result";
+import { EventAttributes } from "../../src/models/event";
 
 // Configuration
 export const businessAttributes: BusinessAttributes = {
@@ -145,4 +146,10 @@ export const resultAttributes: ResultAttributes = {
     quiz_answer_id: -1,
     quiz_attempt_id: -1,
     quiz_question_id: -1,
+};
+
+export const eventAttributes: EventAttributes = {
+    name: "Event",
+    status: "FAIL",
+    user_id: -1,
 };
