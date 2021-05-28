@@ -161,3 +161,29 @@ CREATE TRIGGER policy_read_update
 BEFORE UPDATE
 ON policy_read FOR EACH ROW
 SET NEW.updated_on = NOW();
+
+DELIMITER //
+
+CREATE TRIGGER event_insert 
+BEFORE UPDATE
+ON event FOR EACH ROW
+BEGIN
+    declare msg varchar(128);
+    set msg = 'EventUpdateError: Cannot update events';
+    signal sqlstate '45000' set message_text = msg;
+END
+
+//
+
+CREATE TRIGGER event_delete
+BEFORE DELETE 
+ON event FOR EACH ROW
+BEGIN
+    declare msg varchar(128);
+    set msg = 'EventDeleteError: Cannot delete events';
+    signal sqlstate '45000' set message_text = msg;
+END
+
+//
+
+DELIMITER ;

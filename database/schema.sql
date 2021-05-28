@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS capstone;
-CREATE DATABASE capstone;
-USE capstone;
+DROP DATABASE IF EXISTS ${DATABASE};
+CREATE DATABASE ${DATABASE};
+USE ${DATABASE};
 
 CREATE TABLE business (
     id INT NOT NULL AUTO_INCREMENT,
@@ -269,7 +269,7 @@ CREATE TABLE policy_read (
     PRIMARY KEY (user_id, policy_id)
 );
 
-CREATE TABLE events (
+CREATE TABLE event (
     id INT NOT NULL AUTO_INCREMENT,
     event_name VARCHAR(50),
     event_status TINYINT(1),
