@@ -73,11 +73,11 @@ export const modelMatchesInterface = <T, X extends T>(
                 }
 
                 // Debug
-                Logs.Test(key);
-                Logs.Test(typeof modelVal);
-                Logs.Test(modelVal);
-                Logs.Test(typeof attrVal);
-                Logs.Test(attrVal);
+                // Logs.Test(key);
+                // Logs.Test(typeof modelVal);
+                // Logs.Test(modelVal);
+                // Logs.Test(typeof attrVal);
+                // Logs.Test(attrVal);
 
                 matches = false;
 

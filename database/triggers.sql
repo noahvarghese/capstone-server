@@ -164,7 +164,7 @@ SET NEW.updated_on = NOW();
 
 DELIMITER //
 
-CREATE TRIGGER event_insert 
+CREATE TRIGGER event_update
 BEFORE UPDATE
 ON event FOR EACH ROW
 BEGIN

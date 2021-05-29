@@ -114,6 +114,8 @@ def execute_sql(db, cursor):
         except:
             print("SQL query failed")
             print(statment, "\n")
+            cursor.close()
+            db.close()
             sys.exit()
 
 def main():
@@ -145,8 +147,6 @@ def main():
         data = parse_sql(data)
 
         execute_sql(db, cursor)
-
-        
 
 
 main()

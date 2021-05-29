@@ -85,7 +85,8 @@ export const testReadModel = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string,
-    attrKey: string[]
+    attrKey: string[],
+    canDelete = true
 ) => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
@@ -108,7 +109,9 @@ export const testReadModel = async <T, X>(
     expect(foundModels.length).toBe(1);
     expect(modelMatchesInterface(model, foundModels[0] as any)).toBe(true);
 
-    await deleteModel(baseWorld, type, key);
+    if (canDelete) {
+        await deleteModel(baseWorld, type, key);
+    }
 };
 
 export const testDeleteModel = async <T, X>(
@@ -137,4 +140,36 @@ export const testDeleteModel = async <T, X>(
     });
 
     expect(result.length).toBe(0);
+};
+
+export const testDeleteModelFail = async <T, X>(
+    baseWorld: BaseWorld | undefined,
+    type: any,
+    key: string,
+    attrKey: string[]
+) => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    const { connection } = baseWorld;
+
+    const model = await createModel<T, X>(baseWorld, type, key);
+
+    try {
+        await deleteModel<T>(baseWorld, type, key);
+    } catch (e) {
+        expect(e).toBeTruthy();
+    }
+
+    const where: WhereClause = {};
+    for (const attr of attrKey) {
+        where[attr] = model[attr as keyof T];
+    }
+
+    const result = await connection.manager.find(type, {
+        where,
+    });
+
+    expect(result.length).toBe(1);
 };
