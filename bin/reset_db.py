@@ -1,57 +1,96 @@
 #!/usr/bin/env python
 
+# Command Examples
+# If there is a specific order you need the files executed in, use a csv string of paths
+# python ./bin/reset_db.py -t --files ./database/ --path .env
+
 import sys, getopt, os, re
-from os.path import join, dirname, abspath
-# mysql-connector-python
+from os import path, listdir
+from os.path import join, dirname, abspath, isdir
 import mysql.connector
-# python-dotenv
 import dotenv
 
-dotenv_path = abspath(join(dirname(__file__), "../.env"))
-dotenv.load_dotenv(dotenv_path)
+files = []
 
-files = ["schema.sql", "triggers.sql"]
+env_message = lambda env_variable_name : "Error: " + env_variable_name + " not set"
 
-help_menu = ("Exactly one argument must be specified\n\n" +
+help_menu = ("Exactly one environment must be specified\n\n" +
             "prod\t--prod/-p\tSelects the production environment\n" +
             "dev\t--dev/-d\tSelects the development environment\n" +
-            "test\t--test/-t\tSelects the QA environment\n" +
+            "test\t--test/-t\tSelects the QA environment\n\n" +
+            "path\t--path\tSets the .env file path [optional]\n" +
+            "files\t--files/-f\tcomma seperated list of sql files, or directories to run, they will be run in order\n\n"
             "help\t--help/-h\tPrints this menu\n")
 
+db = None
+cursor = None
 sql = []
 
-def get_env():
+DB_HOST = ""
+DB_USER = ""
+DB_PWD = ""
+DB = ""
+
+def parse_args():
+    global files
+
     env = "" 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], "dpt")
+        opts, args = getopt.getopt(sys.argv[1:], "dhf:pt", ["dev", "files=", "help", "path=", "prod", "test"])
     except:
         print(help_menu)
         sys.exit()
 
-    # throw error if more than one are set
-    if ( len(opts) != 1 ):
-        print(help_menu)
-        sys.exit()
-
-
     for (opt, arg) in opts:
-        # (--test/-t, --dev/-d, --prod/-p)
         if opt in ('-p', '--prod'):
             env = ""
         elif opt in ('-d', '--dev'):
             env = "_dev"
         elif opt in ('-t', '--test'):
             env = "_test"
+        elif opt == "--path" and arg != "":
+            dotenv.load_dotenv(arg)
+        elif opt in ('-f', '--files'):
+            files = arg.split(",")
         else:
             print(help_menu)
             sys.exit()
-    
+
+    if len(files) < 1:
+        print("Please ")
+
     return env
 
-def read_file(file_name):
-    path = abspath(os.path.join(dirname(__file__), "../database/", file_name))
+def set_env(db_env):
+    global DB_HOST
+    global DB_USER 
+    global DB_PWD
+    global DB
 
-    with open(path) as file:
+    DB_HOST = os.getenv("DB_URL")
+    if (DB_HOST == ""):
+        print(env_message("DB_URL"))
+        sys.exit()
+
+    DB_USER = os.getenv("DB_USER")
+    if (DB_USER == ""):
+        print(env_message("DB_USER"))
+        sys.exit()
+            
+    DB_PWD = os.getenv("DB_PWD")
+    if (DB_PWD == ""):
+        print(env_message("DB_PWD"))
+        sys.exit()
+            
+    DB = os.getenv("DB")
+    if (DB == ""):
+        print(env_message("DB"))
+        sys.exit()
+    else:
+        DB = DB + db_env
+
+def read_file(file_path):
+    with open(file_path) as file:
         data = file.read()
         
     return data
@@ -67,6 +106,8 @@ def format_file(data, dbname):
     return data
 
 def parse_delimited_sql(data):
+    global sql
+
     # Keep these for secondary parsing
     delimiter_changed_regex = r"DELIMITER\s\/\/.*?DELIMITER\s\;"
 
@@ -98,6 +139,7 @@ def parse_delimited_sql(data):
     return data
 
 def parse_sql(data): 
+    global sql
     # Split by ';'
     sql_regex = r".*?\;"
 
@@ -107,6 +149,8 @@ def parse_sql(data):
         sql.append(statement)
 
 def execute_sql(db, cursor): 
+    global sql
+
     for statment in sql:
         try:
             cursor.execute(statment)
@@ -118,35 +162,48 @@ def execute_sql(db, cursor):
             db.close()
             sys.exit()
 
-def main():
-    # get env to use from cli args
+def go_through_files(file_list, prev_path=""):
+    # Loop through array
+    for file in file_list:
+        # Get absolute path
+        # If first time, cwd will work
+        # Otherwise use the previous path
+        if (prev_path == "" ):
+            file_path = abspath(file)
+        else:
+            file_path = abspath(join(prev_path, file))
 
-    env = get_env()
+        if (isdir(file_path)):
+            go_through_files(listdir(file_path), file_path)
+        else:
+            if ( file_path.endswith(".sql") ):
+                execute_file(file_path)
+
+def execute_file(file): 
+    # Read into string
+    data = read_file(file)
+    data = format_file(data, DB)
+    data = parse_delimited_sql(data)
+    data = parse_sql(data)
+    execute_sql(db, cursor)
+
+def init_sql_conn(): 
+    global db
+    global cursor
 
     db = mysql.connector.connect(
-        host = os.getenv("DB_URL"),
-        user = os.getenv("DB_USER"),
-        password = os.getenv("DB_PWD")
+        host = DB_HOST,
+        user = DB_USER,
+        password = DB_PWD
     )
-
-    dbname = os.getenv("DB") + env
-
     cursor = db.cursor()
 
-    for file in files:
-        # Open schema.sql
-        # Read into string
-        data = read_file(file)
 
-        # remove newlines
-        # Replace all occurences of '${DATABASE}' with dbname + env
-        data = format_file(data, dbname)
-
-        data = parse_delimited_sql(data)
-
-        data = parse_sql(data)
-
-        execute_sql(db, cursor)
+def main():
+    db_env = parse_args()
+    set_env(db_env)
+    init_sql_conn()
+    go_through_files(files)
 
 
 main()
