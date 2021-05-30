@@ -3,6 +3,7 @@ import User from "../../../src/models/user/user";
 import { server } from "../../../src/util/permalink";
 import { userAttributes } from "../../sample_data.ts/attributes";
 import DBConnection from "../../util/db_connection";
+import Event from "../../../src/models/event";
 import fetch from "node-fetch";
 import FormData from "form-data";
 import BaseWorld from "../../support/base_world";
@@ -92,7 +93,26 @@ Then("a token should be created", async function (this: BaseWorld) {
 Then("they are sent a token", async function (this: BaseWorld) {
     // Check that an email was sent (This requires logging of events in the database)
     // Maybe try login to email to confirm email was sent
-    return "pending";
+    const user = this.getCustomProp<User>("user");
+
+    try {
+        const event = (
+            await (
+                await DBConnection.GetConnection()
+            ).manager.find(Event, {
+                where: { user_id: user.id },
+                order: { created_on: "DESC" },
+            })
+        )[0];
+
+        expect(event.created_on).to.not.be.null;
+
+        expect(event.created_on?.getUTCMilliseconds()).to.be.lessThan(
+            new Date().getUTCMilliseconds() - 10
+        );
+    } catch (_) {
+        expect.fail();
+    }
 });
 
 Then("the password is reset", async function (this: BaseWorld) {
