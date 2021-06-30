@@ -34,7 +34,9 @@ DB = ""
 def parse_args():
     global files
 
-    env = "" 
+    env = ""
+    path_loaded = False
+    
     try:
         opts, args = getopt.getopt(sys.argv[1:], "dhf:pt", ["dev", "files=", "help", "path=", "prod", "test"])
     except:
@@ -50,14 +52,16 @@ def parse_args():
             env = "_test"
         elif opt == "--path" and arg != "":
             dotenv.load_dotenv(arg)
+            path_loaded = True
         elif opt in ('-f', '--files'):
             files = arg.split(",")
         else:
             print(help_menu)
             sys.exit()
-
-    if len(files) < 1:
-        print("Please ")
+            
+    if env == None or env == "" or len(files) == 0 or path_loaded == False:
+        print(help_menu)
+        sys.exit()
 
     return env
 
