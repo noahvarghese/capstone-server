@@ -7,32 +7,30 @@ export interface UserAttributes {
     first_name: string;
     last_name: string;
     email: string;
-    original_phone: string;
     phone: number;
     address: string;
     city: string;
     postal_code: string;
     province: string;
     country: string;
-    birthday: Date;
+    birthday: Date | undefined;
     password: string;
     business_id: number;
     token?: string | undefined;
     token_expiry?: Date | undefined;
 }
 
-const EmptyUserAttributes = () => ({
+const EmptyUserAttributes = (): UserAttributes => ({
     first_name: "",
     last_name: "",
     email: "",
-    original_phone: "",
     phone: -1,
     address: "",
     city: "",
     postal_code: "",
     province: "",
     country: "",
-    birthday: "",
+    birthday: undefined,
     password: "",
     business_id: -1,
     token: undefined,

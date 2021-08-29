@@ -7,6 +7,7 @@ import {
 import DBConnection from "../../test/util/db_connection";
 import {
     createModel,
+    deleteModel,
     modelMatchesInterface,
 } from "../../test/util/model_actions";
 import {
@@ -73,18 +74,23 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    return await new Promise((res, rej) => {
-        exec("python ./bin/reset_db.py -t", (err, stdout, stderr) => {
-            if (stdout) {
-                console.log(stdout);
-            }
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
 
-            if (err) {
-                rej(`${err}\n${stderr}`);
+    await new Promise((res, rej) => {
+        exec(
+            "python ./bin/reset_db.py -t --files ./database/ --path .env",
+            (err, stdout, stderr) => {
+                if (stdout) {
+                    console.log(stdout);
+                }
+                if (err) {
+                    rej(`${err}\n${stderr}`);
+                }
+                res(stdout);
             }
-
-            res(stdout);
-        });
+        );
     });
 });
 

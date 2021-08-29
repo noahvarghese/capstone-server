@@ -18,7 +18,7 @@ help_menu = ("Exactly one environment must be specified\n\n" +
             "prod\t--prod/-p\tSelects the production environment\n" +
             "dev\t--dev/-d\tSelects the development environment\n" +
             "test\t--test/-t\tSelects the QA environment\n\n" +
-            "path\t--path\tSets the .env file path [optional]\n" +
+            "path\t--path\t\tSets the .env file path [optional]\n" +
             "files\t--files/-f\tcomma seperated list of sql files, or directories to run, they will be run in order\n\n"
             "help\t--help/-h\tPrints this menu\n")
 
@@ -34,7 +34,7 @@ DB = ""
 def parse_args():
     global files
 
-    env = ""
+    env = None
     path_loaded = False
     
     try:
@@ -59,7 +59,7 @@ def parse_args():
             print(help_menu)
             sys.exit()
             
-    if env == None or env == "" or len(files) == 0 or path_loaded == False:
+    if env == None or len(files) == 0 or path_loaded == False:
         print(help_menu)
         sys.exit()
 

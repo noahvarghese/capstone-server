@@ -21,6 +21,9 @@ import { EventAttributes } from "../../src/models/event";
 // Configuration
 export const businessAttributes: BusinessAttributes = {
     name: "Oakville Windows and Doors",
+    code: "Oakville3200",
+    email: "info@oakvillewindows.com",
+    phone: 9058273200,
     address: "1380 Speers Rd",
     city: "Oakville",
     province: "ON",
@@ -39,7 +42,6 @@ export const userAttributes: UserAttributes = {
     province: "ON",
     country: "CA",
     birthday: new Date("1996-08-07"),
-    original_phone: "647 771 5777",
     phone: 6477715777,
     business_id: -1,
 };
