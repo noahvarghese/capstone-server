@@ -1,0 +1,24 @@
+name: Continuous Deployment 
+
+on:
+  push:
+   branches: [main]
+
+jobs:
+  continuous-integration:
+   runs-on: ubuntu-latest
+   if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+   steps: 
+    - name: unit test
+      run: npm run unit-test
+    - name: bdd test
+      run: npm run bdd-test
+  continuous-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: build
+        run: npm build
+      - name: deploy
+        run: yolo
+
+ 

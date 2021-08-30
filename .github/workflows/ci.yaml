@@ -1,0 +1,19 @@
+name: Continuous Integration 
+
+on:
+  push:
+    branches:
+        - "*"
+        - "!main"
+  pull_request:
+    branches: 
+     - '*'
+
+jobs:
+  continuous-integration:
+   runs-on: ubuntu-latest
+   steps: 
+    - name: unit test
+      run: npm run unit-test
+    - name: bdd test
+      run: npm run bdd-test
