@@ -51,8 +51,6 @@ export default class User extends BaseModel implements UserAttributes {
     @Column()
     public email!: string;
     @Column()
-    public original_phone!: string;
-    @Column()
     public phone!: number;
     @Column()
     public address!: string;
