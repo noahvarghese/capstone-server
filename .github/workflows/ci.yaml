@@ -11,9 +11,11 @@ on:
 
 jobs:
   continuous-integration:
-   runs-on: ubuntu-latest
-   steps: 
-    - name: unit test
-      run: npm run unit-test
-    - name: bdd test
-      run: npm run bdd-test
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: unit test
+        run: npm run unit-test
+      - name: bdd test
+        run: npm run bdd-test
