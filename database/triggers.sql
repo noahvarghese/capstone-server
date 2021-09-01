@@ -175,15 +175,15 @@ END
 
 //
 
-CREATE TRIGGER event_delete
-BEFORE DELETE 
-ON event FOR EACH ROW
-BEGIN
-    declare msg varchar(128);
-    set msg = 'EventDeleteError: Cannot delete events';
-    signal sqlstate '45000' set message_text = msg;
-END
+-- CREATE TRIGGER event_delete
+-- BEFORE DELETE 
+-- ON event FOR EACH ROW
+-- BEGIN
+--     declare msg varchar(128);
+--     set msg = 'EventDeleteError: Cannot delete events';
+--     signal sqlstate '45000' set message_text = msg;
+-- END
 
-//
+-- //
 
 DELIMITER ;
