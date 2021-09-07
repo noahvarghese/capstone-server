@@ -11,6 +11,28 @@ on:
 
 jobs:
   continuous-integration:
+    env:
+      DB: ${{ secrets.DB }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_PWD: ${{ secrets.DB_PWD }}
+      DB_TYPE: ${{ secretes.DB_TYPE }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USER: ${{ secrets.DB_USER }}
+      ENABLE_MULTITHREADING: ${{ secrets.ENABLE_MULTITHREADING }}
+      ENV_DEV_CLIENT: ${{ secrets.ENV_DEV_CLIENT }}
+      ENV_LOCAL_CLIENT: ${{ secrets.ENV_LOCAL_CLIENT }}
+      ENV_PROD_CLIENT: ${{ secrets.ENV_PROD_CLIENT }}
+      ENV_LOCAL_SERVER: ${{ secrets.ENV_LOCAL_SERVER }}
+      ENV_DEV_SERVER: ${{ secrets.ENV_DEV_SERVER }}
+      ENV_PROD_SERVER: ${{ secrets.ENV_PROD_SERVER }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      MAIL_PWD: ${{ secrets.MAIL_PWD }}
+      MAIL_USER: ${{ secrets.MAIL_USER }}
+      PORT: ${{ secrets.PORT }}
+      SESSION_ID: ${{ secrets.SESSION_ID }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      TARGET_ENV: ${{ secrets.TARGET_ENV }}
+
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
