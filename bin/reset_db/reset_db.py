@@ -40,8 +40,7 @@ def parse_args():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "dhf:pt", ["dev", "files=", "help", "path=", "prod", "test"])
     except:
-        print(help_menu)
-        sys.exit()
+        sys.exit(help_menu)
 
     for (opt, arg) in opts:
         if opt in ('-p', '--prod'):
@@ -56,12 +55,10 @@ def parse_args():
         elif opt in ('-f', '--files'):
             files = arg.split(",")
         else:
-            print(help_menu)
-            sys.exit()
+            sys.exit(help_menu)
             
     if env == None or len(files) == 0:
-        print(help_menu)
-        sys.exit()
+        sys.exit(help_menu)
 
     return env
 
@@ -73,27 +70,23 @@ def set_env(db_env):
 
     DB_HOST = os.getenv("DB_URL")
     if (DB_HOST == ""):
-        print(env_message("DB_URL"))
-        sys.exit()
+        sys.exit(env_message("DB_URL"))
 
     DB_USER = os.getenv("DB_USER")
     if (DB_USER == ""):
-        print(env_message("DB_USER"))
-        sys.exit()
+        sys.exit(env_message("DB_USER"))
             
     DB_PWD = os.getenv("DB_PWD")
     if (DB_PWD == ""):
-        print(env_message("DB_PWD"))
-        sys.exit()
+        sys.exit(env_message("DB_PWD"))
             
     DB = os.getenv("DB")
     if (DB == ""):
-        print(env_message("DB"))
-        sys.exit()
+        sys.exit(env_message("DB"))
     else:
         DB = DB + db_env
 
-def read_file(file_path):
+def readfile(file_path):
     with open(file_path) as file:
         data = file.read()
         
@@ -160,11 +153,11 @@ def execute_sql(db, cursor):
             cursor.execute(statment)
             db.commit()
         except:
-            print("SQL query failed")
+            print()
             print(statment, "\n")
             cursor.close()
             db.close()
-            sys.exit()
+            sys.exit("SQL query failed" + "\n" + statement, "\n")
 
 def go_through_files(file_list, prev_path=""):
     # Loop through array
