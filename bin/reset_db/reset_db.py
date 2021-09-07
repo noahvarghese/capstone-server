@@ -59,7 +59,7 @@ def parse_args():
             print(help_menu)
             sys.exit()
             
-    if env == None or len(files) == 0 or path_loaded == False:
+    if env == None or len(files) == 0:
         print(help_menu)
         sys.exit()
 
