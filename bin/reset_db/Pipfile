@@ -10,3 +10,6 @@ mysql = "*"
 
 [requires]
 python_version = "3.9"
+
+[scripts]
+reset_test = "python ./reset_db.py --files ../../database -t"
