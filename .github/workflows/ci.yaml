@@ -15,7 +15,7 @@ jobs:
       DB: ${{ secrets.DB }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_PWD: ${{ secrets.DB_PWD }}
-      DB_TYPE: ${{ secretes.DB_TYPE }}
+      DB_TYPE: ${{ secrets.DB_TYPE }}
       DB_URL: ${{ secrets.DB_URL }}
       DB_USER: ${{ secrets.DB_USER }}
       ENABLE_MULTITHREADING: ${{ secrets.ENABLE_MULTITHREADING }}
@@ -32,7 +32,6 @@ jobs:
       SESSION_ID: ${{ secrets.SESSION_ID }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       TARGET_ENV: ${{ secrets.TARGET_ENV }}
-
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
