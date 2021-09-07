@@ -39,7 +39,7 @@ jobs:
       - name: install python dependencies
         run: pip3 install --upgrade pipenv wheel && cd ./bin/reset_db && pipenv install
       - name: reset test DB
-        run: pipenv run python ./reset_db.py -t --files ../../database/ && cd ../..
+        run: cd ./bin/reset_db && pipenv run python ./reset_db.py -t --files ../../database/ && cd ../..
         # run: python ./bin/reset_db/reset_db.py --files ./database/ -t
       - uses: actions/setup-node@v2
       - name: install dependencies
