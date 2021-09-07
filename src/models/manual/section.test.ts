@@ -149,12 +149,12 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Manual>(baseWorld, Manual, "manual");
-    await deleteModel<Role>(baseWorld, Role, "role");
-    await deleteModel<Permission>(baseWorld, Permission, "permission");
-    await deleteModel<Department>(baseWorld, Department, "department");
-    await deleteModel<User>(baseWorld, User, "user");
-    await deleteModel<Business>(baseWorld, Business, "business");
+    await deleteModel<Manual>(baseWorld, "manual");
+    await deleteModel<Role>(baseWorld, "role");
+    await deleteModel<Permission>(baseWorld, "permission");
+    await deleteModel<Department>(baseWorld, "department");
+    await deleteModel<User>(baseWorld, "user");
+    await deleteModel<Business>(baseWorld, "business");
 });
 
 // Tests
@@ -163,13 +163,9 @@ test("Create Section", async () => {
 });
 
 test("Update Section", async () => {
-    await testUpdateModel<Section, SectionAttributes>(
-        baseWorld,
-        Section,
-        key,
-        "title",
-        "TEST"
-    );
+    await testUpdateModel<Section, SectionAttributes>(baseWorld, Section, key, {
+        title: "TEST",
+    });
 });
 
 test("Delete Section", async () => {

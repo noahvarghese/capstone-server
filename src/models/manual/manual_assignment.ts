@@ -2,7 +2,7 @@ import { Entity, Column } from "typeorm";
 import EditableContentModel from "../abstract/editable_content_model";
 
 export interface ManualAssignmentAttributes {
-    role_id: number;
+    role_id: number | null;
     department_id: number;
     manual_id: number;
     updated_by_user_id: number;
@@ -23,11 +23,12 @@ const ManualAssignmentBuilder = <T extends Partial<ManualAssignmentAttributes>>(
 @Entity({ name: "manual_assignment" })
 export default class ManualAssignment
     extends EditableContentModel
-    implements ManualAssignmentAttributes {
+    implements ManualAssignmentAttributes
+{
     @Column()
     public manual_id!: number;
-    @Column()
-    public role_id!: number;
+    @Column({ nullable: true, type: "int" })
+    public role_id!: number | null;
     @Column()
     public department_id!: number;
 

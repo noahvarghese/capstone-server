@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import Logs from "../../src/util/logs/logs";
 import BaseWorld from "./store";
 
 export const deleteModel = async <T>(
     that: BaseWorld,
-    type: any,
     key: string
 ): Promise<void> => {
     const { connection } = that;

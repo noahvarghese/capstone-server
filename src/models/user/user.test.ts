@@ -58,7 +58,7 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Business>(baseWorld, Business, "business");
+    await deleteModel<Business>(baseWorld, "business");
 });
 
 // Tests
@@ -68,13 +68,9 @@ test("Create User", async () => {
 });
 
 test("Update User", async () => {
-    await testUpdateModel<User, UserAttributes>(
-        baseWorld,
-        User,
-        key,
-        "first_name",
-        "TEST"
-    );
+    await testUpdateModel<User, UserAttributes>(baseWorld, User, key, {
+        first_name: "TEST",
+    });
 });
 
 test("Delete User", async () => {

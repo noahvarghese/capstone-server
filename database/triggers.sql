@@ -74,7 +74,7 @@ BEFORE UPDATE
 ON manual FOR EACH ROW
 BEGIN
     declare msg varchar(128);
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
+    IF (NEW.role_id IS NULL OR NEW.role_id = '' OR NEW.role_id = 'null' OR NEW.role_id = 'undefined') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
         set msg = concat('ManualUpdateError: Trying to update a manual without a role or department ', cast(new.id as char));
         signal sqlstate '45000' set message_text = msg;
     END IF;
@@ -174,16 +174,5 @@ BEGIN
 END
 
 //
-
--- CREATE TRIGGER event_delete
--- BEFORE DELETE 
--- ON event FOR EACH ROW
--- BEGIN
---     declare msg varchar(128);
---     set msg = 'EventDeleteError: Cannot delete events';
---     signal sqlstate '45000' set message_text = msg;
--- END
-
--- //
 
 DELIMITER ;

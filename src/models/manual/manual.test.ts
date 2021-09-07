@@ -15,6 +15,7 @@ import {
     testDeleteModel,
     testReadModel,
     testUpdateModel,
+    testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
@@ -131,11 +132,11 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Role>(baseWorld, Role, "role");
-    await deleteModel<Permission>(baseWorld, Permission, "permission");
-    await deleteModel<Department>(baseWorld, Department, "department");
-    await deleteModel<User>(baseWorld, User, "user");
-    await deleteModel<Business>(baseWorld, Business, "business");
+    await deleteModel<Role>(baseWorld, "role");
+    await deleteModel<Permission>(baseWorld, "permission");
+    await deleteModel<Department>(baseWorld, "department");
+    await deleteModel<User>(baseWorld, "user");
+    await deleteModel<Business>(baseWorld, "business");
 });
 
 // Tests
@@ -160,17 +161,25 @@ test("Create Manual Without Department Or Role", async () => {
     }
 });
 
+test("Update Manual Without Department Or Role", async () => {
+    await testUpdateModelFail<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        key,
+        {
+            role_id: null,
+            department_id: null,
+        }
+    );
+});
+
 /* Dont test update as it is a concatenated primary key */
 /* Meaning that an update should be treated as a DELETE and INSERT */
 
 test("Update Manual", async () => {
-    await testUpdateModel<Manual, ManualAttributes>(
-        baseWorld,
-        Manual,
-        key,
-        "title",
-        "TEST"
-    );
+    await testUpdateModel<Manual, ManualAttributes>(baseWorld, Manual, key, {
+        title: "TEST",
+    });
 });
 
 test("Delete Manual", async () => {

@@ -33,38 +33,71 @@ export const testCreateModel = async <T, X>(
         )
     ).toBe(true);
 
-    await deleteModel<T>(baseWorld, type, key);
+    await deleteModel<T>(baseWorld, key);
 };
 
-export const testUpdateModel = async <T, X>(
+export const testUpdateModelFail = async <T extends X, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
-    key: string,
-    attrKey: keyof T,
-    attrVal: any
+    modelName: string,
+    attributesToUpdate: Partial<X>
 ) => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const modelAttributesName = `${key}Attributes`;
-    const { connection } = baseWorld;
+    try {
+        await testUpdateModel<T, X>(
+            baseWorld,
+            type,
+            modelName,
+            attributesToUpdate
+        );
+        throw new Error("Update should not have been succesful");
+    } catch (e) {
+        expect(e.message).not.toBe("Update should not have been succesful");
+        if (
+            (e.message as string).match(
+                /^Update should not have been succesful$/
+            ) === null
+        ) {
+            console.log("DELETING MODEL");
+            await deleteModel<T>(baseWorld, modelName);
+        }
+    }
+};
 
-    let model = await createModel<T, X>(baseWorld, type, key);
-
-    baseWorld.setCustomProp<X>(modelAttributesName, {
-        ...baseWorld.getCustomProp<X>(modelAttributesName),
-        [attrKey]: attrVal,
-    });
-
-    if (
-        model[attrKey] ===
-        (baseWorld.getCustomProp<X>(modelAttributesName) as any)[attrKey]
-    ) {
-        throw new Error("Object hasn't changed");
+export const testUpdateModel = async <T extends X, X>(
+    baseWorld: BaseWorld | undefined,
+    type: any,
+    modelName: string,
+    attributesToUpdate: Partial<X>
+) => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
     }
 
-    model[attrKey] = attrVal;
+    const { connection } = baseWorld;
+    let model = await createModel<T, X>(baseWorld, type, modelName);
+    const modelAttributesName = `${modelName}Attributes`;
+
+    for (const [key, value] of Object.entries(
+        attributesToUpdate as Partial<X>
+    ) as [keyof X, any]) {
+        baseWorld.setCustomProp<X>(modelAttributesName, {
+            ...baseWorld.getCustomProp<X>(modelAttributesName),
+            [key]: value,
+        });
+
+        if (
+            model[key as keyof X] ===
+            (baseWorld.getCustomProp<X>(modelAttributesName) as any)[key]
+        ) {
+            throw new Error("Object hasn't changed");
+        }
+
+        model[key as keyof T] = value;
+    }
     model = await connection.manager.save(model);
 
     expect(
@@ -78,7 +111,7 @@ export const testUpdateModel = async <T, X>(
         expect(model["updated_on" as keyof T]).toBeTruthy();
     }
 
-    await deleteModel<T>(baseWorld, type, key);
+    await deleteModel<T>(baseWorld, modelName);
 };
 
 export const testReadModel = async <T, X>(
@@ -110,7 +143,7 @@ export const testReadModel = async <T, X>(
     expect(modelMatchesInterface(model, foundModels[0] as any)).toBe(true);
 
     if (canDelete) {
-        await deleteModel(baseWorld, type, key);
+        await deleteModel(baseWorld, key);
     }
 };
 
@@ -128,7 +161,7 @@ export const testDeleteModel = async <T, X>(
 
     const model = await createModel<T, X>(baseWorld, type, key);
 
-    await deleteModel<T>(baseWorld, type, key);
+    await deleteModel<T>(baseWorld, key);
     const where: WhereClause = {};
 
     for (const attr of attrKey) {
@@ -157,7 +190,7 @@ export const testDeleteModelFail = async <T, X>(
     const model = await createModel<T, X>(baseWorld, type, key);
 
     try {
-        await deleteModel<T>(baseWorld, type, key);
+        await deleteModel<T>(baseWorld, key);
     } catch (e) {
         expect(e).toBeTruthy();
     }

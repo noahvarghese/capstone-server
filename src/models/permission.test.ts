@@ -75,8 +75,8 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<User>(baseWorld, User, "user");
-    await deleteModel<Business>(baseWorld, Business, "business");
+    await deleteModel<User>(baseWorld, "user");
+    await deleteModel<Business>(baseWorld, "business");
 });
 
 // Tests
@@ -93,8 +93,7 @@ test("Update Permission", async () => {
         baseWorld,
         Permission,
         key,
-        "edit_policies",
-        false
+        { edit_policies: false }
     );
 });
 

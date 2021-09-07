@@ -1,21 +1,16 @@
-import { exec } from "child_process";
 import {
     businessAttributes,
     eventAttributes,
     userAttributes,
 } from "../../test/sample_data.ts/attributes";
 import DBConnection from "../../test/util/db_connection";
-import {
-    createModel,
-    deleteModel,
-    modelMatchesInterface,
-} from "../../test/util/model_actions";
+import { createModel, deleteModel } from "../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
-    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
+    testUpdateModelFail,
 } from "../../test/util/model_compare";
 import BaseWorld from "../../test/util/store";
 import Business, { BusinessAttributes } from "./business";
@@ -81,23 +76,19 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<User>(baseWorld, User, "user");
-    await deleteModel<Business>(baseWorld, Business, "business");
+    await deleteModel<User>(baseWorld, "user");
+    await deleteModel<Business>(baseWorld, "business");
 });
 
 test("Create Event", async () => {
     await testCreateModel<Event, EventAttributes>(baseWorld, Event, key);
 });
 
-// test("Update Event", async () => {
-//     await testUpdateModelFail<Event, EventAttributes>(
-//         baseWorld,
-//         Event,
-//         key,
-//         "name",
-//         "TEST"
-//     );
-// });
+test("Update Event should fail", async () => {
+    await testUpdateModelFail<Event, EventAttributes>(baseWorld, Event, key, {
+        status: "PASS",
+    });
+});
 
 test("Delete Event", async () => {
     jest.setTimeout(10000);

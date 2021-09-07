@@ -45,8 +45,7 @@ test("Update Business", async () => {
         baseWorld,
         Business,
         key,
-        "name",
-        "TEST"
+        { name: "TEST" }
     );
 });
 

@@ -198,15 +198,15 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Question>(baseWorld, Question, "question");
-    await deleteModel<Section>(baseWorld, Section, "quizSection");
-    await deleteModel<Quiz>(baseWorld, Quiz, "quiz");
-    await deleteModel<Manual>(baseWorld, Manual, "manual");
-    await deleteModel<Role>(baseWorld, Role, "role");
-    await deleteModel<Permission>(baseWorld, Permission, "permission");
-    await deleteModel<Department>(baseWorld, Department, "department");
-    await deleteModel<User>(baseWorld, User, "user");
-    await deleteModel<Business>(baseWorld, Business, "business");
+    await deleteModel<Question>(baseWorld, "question");
+    await deleteModel<Section>(baseWorld, "quizSection");
+    await deleteModel<Quiz>(baseWorld, "quiz");
+    await deleteModel<Manual>(baseWorld, "manual");
+    await deleteModel<Role>(baseWorld, "role");
+    await deleteModel<Permission>(baseWorld, "permission");
+    await deleteModel<Department>(baseWorld, "department");
+    await deleteModel<User>(baseWorld, "user");
+    await deleteModel<Business>(baseWorld, "business");
 });
 
 // Tests
@@ -215,13 +215,9 @@ test("Create Quiz Answer", async () => {
 });
 
 test("Update Quiz Answer", async () => {
-    await testUpdateModel<Answer, AnswerAttributes>(
-        baseWorld,
-        Answer,
-        key,
-        "answer",
-        "TEST"
-    );
+    await testUpdateModel<Answer, AnswerAttributes>(baseWorld, Answer, key, {
+        answer: "TEST",
+    });
 });
 
 test("Delete Quiz Answer", async () => {
