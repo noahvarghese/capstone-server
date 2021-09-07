@@ -37,9 +37,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       - name: install python dependencies
-        run: pip3 install --upgrade pipenv wheel && cd ./bin/reset_db && pipenv install
+        run: pip3 install --upgrade mysql 
       - name: reset test DB
-        run: cd ./bin/reset_db && pipenv run python ./reset_db.py -t --files ../../database/ && cd ../..
+        run: python ./reset_db.py -t --files ./database/
         # run: python ./bin/reset_db/reset_db.py --files ./database/ -t
       - uses: actions/setup-node@v2
       - name: install dependencies
