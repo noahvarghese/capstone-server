@@ -153,8 +153,6 @@ def execute_sql(db, cursor):
             cursor.execute(statment)
             db.commit()
         except:
-            print()
-            print(statment, "\n")
             cursor.close()
             db.close()
             sys.exit("SQL query failed" + "\n" + statement, "\n")
