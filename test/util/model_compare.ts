@@ -61,7 +61,6 @@ export const testUpdateModelFail = async <T extends X, X>(
                 /^Update should not have been succesful$/
             ) === null
         ) {
-            console.log("DELETING MODEL");
             await deleteModel<T>(baseWorld, modelName);
         }
     }

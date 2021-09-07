@@ -147,23 +147,41 @@ BEFORE UPDATE
 ON quiz_answer FOR EACH ROW
 SET NEW.updated_on = NOW();
 
+DELIMITER //
+
 CREATE TRIGGER quiz_attempt_update
 BEFORE UPDATE
 ON quiz_attempt FOR EACH ROW
-SET NEW.updated_on = NOW();
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = 'QuizAttemptUpdateError: Cannot update quiz_attempt';
+    signal sqlstate '45000' SET message_text = msg;
+END
+
+//
 
 CREATE TRIGGER quiz_result_update
 BEFORE UPDATE
 ON quiz_result FOR EACH ROW
-SET NEW.updated_on = NOW();
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = 'QuizResultUpdateError: Cannot update quiz_result';
+    signal sqlstate '45000' SET message_text = msg;
+END
+
+//
 
 CREATE TRIGGER policy_read_update
 BEFORE UPDATE
 ON policy_read FOR EACH ROW
-SET NEW.updated_on = NOW();
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = 'PolicyReadUpdateError: Cannot update policy_read';
+    signal sqlstate '45000' SET message_text = msg;
+END
 
-DELIMITER //
-
+//
+    
 CREATE TRIGGER event_update
 BEFORE UPDATE
 ON event FOR EACH ROW

@@ -16,6 +16,7 @@ import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
+    testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
@@ -197,4 +198,11 @@ test("Read Quiz Attempt", async () => {
     ]);
 });
 
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
+test("Update quiz attempt should fail", async () => {
+    await testUpdateModelFail<Attempt, AttemptAttributes>(
+        baseWorld,
+        Attempt,
+        key,
+        { user_id: -1 }
+    );
+});

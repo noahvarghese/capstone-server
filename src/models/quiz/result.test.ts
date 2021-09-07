@@ -20,6 +20,7 @@ import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
+    testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
@@ -252,15 +253,17 @@ test("Create Quiz Result", async () => {
     await testCreateModel<Result, ResultAttributes>(baseWorld, Result, key);
 });
 
-// test("Update Quiz Answer", async () => {
-//     await testUpdateModel<Answer, AnswerAttributes>(
-//         baseWorld,
-//         Answer,
-//         key,
-//         "answer",
-//         "TEST"
-//     );
-// });
+test("Update Quiz Result should fail", async () => {
+    console.log(resultAttributes);
+    await testUpdateModelFail<Result, ResultAttributes>(
+        baseWorld,
+        Result,
+        key,
+        {
+            quiz_attempt_id: -1,
+        }
+    );
+});
 
 test("Delete Quiz Result", async () => {
     await testDeleteModel<Result, ResultAttributes>(baseWorld, Result, key, [

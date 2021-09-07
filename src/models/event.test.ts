@@ -9,7 +9,6 @@ import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
-    testUpdateModel,
     testUpdateModelFail,
 } from "../../test/util/model_compare";
 import BaseWorld from "../../test/util/store";
