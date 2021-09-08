@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import BaseWorld from "./store";
+import JestBaseWorld from "./store";
+import CucumberBaseWorld from "../support/base_world";
+import { Connection } from "typeorm";
+import User from "../../src/models/user/user";
 
 export const deleteModel = async <T>(
-    that: BaseWorld,
+    that: JestBaseWorld | CucumberBaseWorld,
     key: string
 ): Promise<void> => {
-    const { connection } = that;
+    const connection = that instanceof JestBaseWorld ? that.connection : that.getCustomProp<Connection>("connection");
+
     const model = that.getCustomProp<T>(key);
 
     await connection.manager.remove<T>(model);
@@ -15,14 +19,20 @@ export const deleteModel = async <T>(
 };
 
 export const createModel = async <T, X>(
-    that: BaseWorld,
+    that: JestBaseWorld | CucumberBaseWorld,
     type: any,
     key: string
 ): Promise<T> => {
-    const { connection } = that;
+    const connection = that instanceof JestBaseWorld ? that.connection : that.getCustomProp<Connection>("connection");
     const attributes = that.getCustomProp<X>(`${key}Attributes`);
 
     let model = connection.manager.create<T>(type, attributes);
+
+    // handle automatic creation
+    if (model instanceof User) {
+        await model.hashPassword(model.password);
+    }
+
     model = await connection.manager.save<T>(model);
 
     that.setCustomProp<T>(key, model);

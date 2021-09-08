@@ -40,9 +40,9 @@ jobs:
       - name: install dependencies
         run: npm i
       - name: unit test
-        run: npm run unit-test
+        run: npm run test:jest
       - name: bdd test
-        run: npm run bdd-test
+        run: npm run test:cucumber
   continuous-deployment:
     runs-on: ubuntu-latest
     steps:

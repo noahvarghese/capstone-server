@@ -20,6 +20,7 @@ router.post("/", async (req: Request, res: Response) => {
     const user = users[0];
 
     if (user.password) {
+        console.log(user.password, password)
         const success = await user.comparePassword(password);
         if (success) {
             req.session.user_id = user.id;

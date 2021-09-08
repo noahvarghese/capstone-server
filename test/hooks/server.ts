@@ -7,7 +7,7 @@ let server: Server;
 
 BeforeAll(async function () {
     const disableLogs = true;
-    server = await setupServer(disableLogs);
+    server = await setupServer(disableLogs, "test");
 });
 
 AfterAll(async function () {

@@ -12,11 +12,12 @@ import fileUpload from "express-fileupload";
 
 const port = process.env.PORT ?? 8080;
 
-const setupServer = async (disableLogs = false): Promise<Server> => {
+// allows configuration of server for automated testing
+const setupServer = async (disableLogs = false, env?: "test" | "dev"): Promise<Server> => {
     Logs.configureLogs(disableLogs);
     /* Connect to database */
     /* No try catch cuz if it fails theres a bigger issue */
-    await createConnection();
+    await createConnection(env);
 
     const app = express();
 

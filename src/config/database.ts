@@ -119,5 +119,5 @@ export const testConnection: ConnectionOptions = {
     logger: new DBLogger(),
 };
 
-export default async (): Promise<Connection> =>
-    await createConnection(connection);
+export default async (env?: "test" | "dev"): Promise<Connection> =>
+    await createConnection(env === "test" ? testConnection : env === "dev" ? devConnection : connection);

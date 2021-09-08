@@ -8,8 +8,8 @@
         "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
         "dev": "nodemon -e ts,.env,json --ignore build/ --ignore test/ --exec ./node_modules/.bin/ts-node ./src/index.ts",
         "start": "node ./build/index.js",
-        "bdd-test": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter --exit",
-        "unit-test": "jest --maxConcurrency=1 --runInBand --coverage"
+        "test:cucumber": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter --exit",
+        "test:jest": "jest --maxConcurrency=1 --runInBand --coverage"
     },
     "repository": {
         "type": "git",

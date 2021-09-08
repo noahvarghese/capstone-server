@@ -86,7 +86,7 @@ def set_env(db_env):
     else:
         DB = DB + db_env
 
-def readfile(file_path):
+def read_file(file_path):
     with open(file_path) as file:
         data = file.read()
         

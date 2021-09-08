@@ -22,7 +22,30 @@ They may be moved into their own repo at the end of this to showcase all parts o
 -   TypeScript
 -   CI/CD
 -   AWS (Elastic Beanstalk, CodeDeploy, CodeBuild, CodePipeline, EC2, ACM)
+-   Automated Testing
 
 ## Environment
 
 -   Env variables must be loaded into the Elastic Beanstalk (I believe)
+
+## CI/CD
+
+Utilizing GitHub actions for CI currently, can be found in ./github/workflows
+
+## Testing
+
+Test specific utilites are located in the ./test/util directory
+
+Test data is located in the ./test/sample_data directory
+
+A 'bag' is used to hold any data that needs to be passed between test steps, the implementation is located in the ./test/support directory
+
+### Unit tests
+
+All unit tests are located in the same directories as the file(s) being tested using the same name but adding a .test between the file name and extension eg if file.ts is being tested the test name is file.test.ts
+
+### Integration tests
+
+Integration tests are located in the ./test/features directory
+Requires knowledge of cucumber and BDD
+All cleanup is handled within the ./test/hooks directory
