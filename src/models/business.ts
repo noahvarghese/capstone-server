@@ -3,7 +3,7 @@ import BaseModel from "./abstract/base_model";
 
 export interface BusinessAttributes {
     name: string;
-    phone: number;
+    phone: string;
     email: string;
     address: string;
     city: string;
@@ -15,7 +15,7 @@ export interface BusinessAttributes {
 
 const EmptyBusiness = (): BusinessAttributes => ({
     name: "",
-    phone: -1,
+    phone: "",
     email: "",
     address: "",
     city: "",
@@ -36,7 +36,7 @@ export default class Business extends BaseModel implements BusinessAttributes {
     @Column()
     public name!: string;
     @Column()
-    public phone!: number;
+    public phone!: string;
     @Column()
     public email!: string;
     @Column()

@@ -7,7 +7,7 @@ export interface UserAttributes {
     first_name: string;
     last_name: string;
     email: string;
-    phone: number;
+    phone: string;
     address: string;
     city: string;
     postal_code: string;
@@ -24,7 +24,7 @@ const EmptyUserAttributes = (): UserAttributes => ({
     first_name: "",
     last_name: "",
     email: "",
-    phone: -1,
+    phone: "",
     address: "",
     city: "",
     postal_code: "",
@@ -51,7 +51,7 @@ export default class User extends BaseModel implements UserAttributes {
     @Column()
     public email!: string;
     @Column()
-    public phone!: number;
+    public phone!: string;
     @Column()
     public address!: string;
     @Column()
@@ -79,12 +79,15 @@ export default class User extends BaseModel implements UserAttributes {
         Object.assign(this, userAttr);
     }
 
-    public createToken = (): void => {
+    // pass reference back so we can chain it within the connection.manager.save method
+    public createToken = (): User => {
         const tokenExpiry = new Date();
         tokenExpiry.setHours(tokenExpiry.getHours() + 4);
 
         this.token = uid(32);
         this.token_expiry = tokenExpiry;
+
+        return this;
     };
 
     public compareToken = (_token: string): boolean => {
@@ -108,7 +111,8 @@ export default class User extends BaseModel implements UserAttributes {
         });
     };
 
-    public hashPassword = async (_password: string): Promise<string> => {
+    // pass reference back so we can chain it within the connection.manager.save method
+    public hashPassword = async (_password: string): Promise<this> => {
         const hash = await new Promise<string>((res, rej) => {
             bcrypt.hash(_password, 12, (err, hash) => {
                 if (err) {
@@ -120,7 +124,7 @@ export default class User extends BaseModel implements UserAttributes {
         });
 
         this.password = hash;
-        return hash;
+        return this;
     };
 
     public resetPassword = async (
