@@ -10,7 +10,7 @@ import {
     quizSectionAttributes,
     roleAttributes,
     userAttributes,
-} from "../../../test/sample_data.ts/attributes";
+} from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
 import { createModel, deleteModel } from "../../../test/util/model_actions";

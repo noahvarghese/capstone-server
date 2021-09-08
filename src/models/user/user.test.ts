@@ -5,7 +5,7 @@ import Business, { BusinessAttributes } from "../business";
 import {
     businessAttributes,
     userAttributes,
-} from "../../../test/sample_data.ts/attributes";
+} from "../../../test/sample_data/attributes";
 import User, { UserAttributes } from "./user";
 import {
     testCreateModel,

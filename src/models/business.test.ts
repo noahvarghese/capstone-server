@@ -1,7 +1,7 @@
 import Business, { BusinessAttributes } from "./business";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import { businessAttributes } from "../../test/sample_data.ts/attributes";
+import { businessAttributes } from "../../test/sample_data/attributes";
 import {
     testCreateModel,
     testUpdateModel,
