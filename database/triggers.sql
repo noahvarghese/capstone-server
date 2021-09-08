@@ -186,8 +186,8 @@ CREATE TRIGGER event_insert
 BEFORE INSERT
 ON event FOR EACH ROW
 BEGIN
-    IF ((NEW.user_id IS NULL OR NEW.user_id = -1 OR NEW.user_id = '') AND (NEW.business_id IS NULL OR NEW.business_id = -1 OR NEW.business_id = '') THEN
-        declare msg varchar(128);
+    DECLARE msg VARCHAR(128);
+    IF (NEW.user_id IS NULL OR NEW.user_id = -1 OR NEW.user_id = '') AND (NEW.business_id IS NULL OR NEW.business_id = -1 OR NEW.business_id = '') THEN
         set msg = 'EventInsertError: Must have either business_id or user_id';
         signal sqlstate '45000' set message_text = msg;
     END IF;

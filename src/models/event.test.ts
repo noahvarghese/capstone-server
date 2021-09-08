@@ -90,7 +90,7 @@ test("Create Event without user_id or business_id", async () => {
     }
 
     const eventAttrs =
-        baseWorld.getCustomProp<EventAttributes>("eventAttrbutes");
+        baseWorld.getCustomProp<EventAttributes>("eventAttributes");
     eventAttrs.business_id = null;
     eventAttrs.user_id = null;
     baseWorld?.setCustomProp<EventAttributes>("eventAttributes", eventAttrs);

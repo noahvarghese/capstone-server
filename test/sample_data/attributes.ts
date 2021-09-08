@@ -21,8 +21,8 @@ import { EventAttributes } from "../../src/models/event";
 // Configuration
 export const businessAttributes: BusinessAttributes = {
     name: "Oakville Windows and Doors",
-    code: "Oakville3200",
-    email: "info@oakvillewindows.com",
+    code: "Oakville3294",
+    email: "varghese.noah@gmail.com",
     phone: "9053393294",
     address: "1380 Speers Rd",
     city: "Oakville",
@@ -153,5 +153,6 @@ export const resultAttributes: ResultAttributes = {
 export const eventAttributes: EventAttributes = {
     name: "Event",
     status: "FAIL",
-    user_id: -1,
+    user_id: null,
+    business_id: null,
 };

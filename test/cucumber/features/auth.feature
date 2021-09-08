@@ -53,25 +53,29 @@ Scenario: Reset Password Invalid Token
 
 # Signup
 @signup 
+@signup_event_cleanup
 Scenario: Succesful signup sends cookie
     Given the user has valid inputs
     When a new user is registered for an existing business
     Then a cookie should be returned
 
+
 @signup
+@signup_event_cleanup
 Scenario: User Created for existing business
     Given the user has valid inputs
     When a new user is registered for an existing business
-    Then the user should get a welcome email
+    Then the 'user' should get a welcome email
 
+@db
 Scenario: New business sign up
     Given the user has valid inputs
     When a new user registers a new business
-    Then the user should get a welcome email
-    And the business should get a welcome email
+    Then the 'user' should get a welcome email
+    And the 'business' should get a welcome email
 
-@signup
-Scenario: Business gets notified on user register
-    Given the user has valid inputs
-    When a new user is registered for an existing business
-    Then the business should be notified by email
+# @signup
+# Scenario: Business gets notified on user register
+#     Given the user has valid inputs
+#     When a new user is registered for an existing business
+#     Then the business should be notified by email

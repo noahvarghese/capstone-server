@@ -9,13 +9,17 @@ export const deleteModel = async <T>(
     that: JestBaseWorld | CucumberBaseWorld,
     key: string
 ): Promise<void> => {
-    const connection = that instanceof JestBaseWorld ? that.connection : that.getCustomProp<Connection>("connection");
+    const connection =
+        that instanceof JestBaseWorld
+            ? that.connection
+            : that.getCustomProp<Connection>("connection");
 
-    const model = that.getCustomProp<T>(key);
+    const model = that.getCustomProp<T | undefined>(key);
 
-    await connection.manager.remove<T>(model);
-
-    that.setCustomProp<undefined>(key, undefined);
+    if (model !== undefined) {
+        await connection.manager.remove<T>(model);
+        that.setCustomProp<undefined>(key, undefined);
+    }
 };
 
 export const createModel = async <T, X>(
@@ -23,7 +27,10 @@ export const createModel = async <T, X>(
     type: any,
     key: string
 ): Promise<T> => {
-    const connection = that instanceof JestBaseWorld ? that.connection : that.getCustomProp<Connection>("connection");
+    const connection =
+        that instanceof JestBaseWorld
+            ? that.connection
+            : that.getCustomProp<Connection>("connection");
     const attributes = that.getCustomProp<X>(`${key}Attributes`);
 
     let model = connection.manager.create<T>(type, attributes);
@@ -51,7 +58,7 @@ export const modelMatchesInterface = async <T, X extends T>(
         const attrVal = attr[key as keyof T];
 
         if (key === "password" && model instanceof User) {
-            if (await model.comparePassword((attrVal as any) as string)) {
+            if (await model.comparePassword(attrVal as any as string)) {
                 continue;
             }
         }

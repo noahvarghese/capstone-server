@@ -2,7 +2,7 @@ import { Before, After } from "@cucumber/cucumber";
 import { Connection } from "typeorm";
 import Business, { BusinessAttributes } from "../../../src/models/business";
 import User, { UserAttributes } from "../../../src/models/user/user";
-import { businessAttributes, userAttributes } from "../../sample_data.ts/attributes";
+import { businessAttributes, userAttributes } from "../../sample_data/attributes";
 import DBConnection from "../../util/db_connection";
 import { createModel, deleteModel } from "../../util/model_actions";
 import BaseWorld from "../support/base_world";

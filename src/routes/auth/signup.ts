@@ -17,7 +17,7 @@ export interface RegisterProps {
     city: string;
     postal_code: string;
     province: string;
-    birthday: string;
+    birthday: Date | string;
     business_code: string;
     password: string;
     confirm_password: string;
@@ -31,7 +31,6 @@ export interface RegisterProps {
 }
 
 router.post("/", async (req: Request, res: Response) => {
-    console.log(req.body);
     // return;
 
     const {
@@ -40,10 +39,10 @@ router.post("/", async (req: Request, res: Response) => {
         email,
         phone,
         address,
+        birthday,
         city,
         postal_code,
         province,
-        birthday,
         business_code,
         password,
         confirm_password,
@@ -59,8 +58,7 @@ router.post("/", async (req: Request, res: Response) => {
     // checks for empty entries
     // this means that they were explicitly set as empty
 
-    const skipBusinessValues =
-        business_code !== "" && business_code.trim() !== "";
+    const skipBusinessValues = business_code && business_code.trim();
 
     for (const [key, value] of Object.entries(req.body)) {
         if (!skipBusinessValues || !key.includes("business_")) {
@@ -81,7 +79,11 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    if (validator.isDate(birthday) === false) {
+    if (
+        !(birthday instanceof Date) &&
+        validator.isDate(birthday) === false &&
+        isNaN(new Date(birthday).getTime())
+    ) {
         res.status(400).json({
             message: "Invalid birthday",
             field: "birthday",
@@ -105,13 +107,28 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
+    if (password.length < 8) {
+        res.status(400).json({
+            message: "Password must be at least 8 characters",
+            field: "password",
+        });
+        return;
+    }
+
+    if (password !== confirm_password) {
+        res.status(400).json({
+            message: "Passwords do not match",
+            field: "password",
+        });
+        return;
+    }
+
     const { SqlConnection: connection } = req;
     let business;
     let newBusiness;
 
     if (business_code) {
         try {
-            // run business code validator
             business = await connection.manager.findOneOrFail(Business, {
                 where: { code: business_code },
             });
@@ -156,8 +173,10 @@ router.post("/", async (req: Request, res: Response) => {
             phone: business_phone,
             province: business_province,
             address: business_address,
+            city: business_city,
         });
 
+        business.createCode();
         business = await connection.manager.save(business);
         newBusiness = true;
     }
@@ -201,7 +220,9 @@ router.post("/", async (req: Request, res: Response) => {
         html,
     });
 
+    req.session.user_id = user.id;
     res.sendStatus(200);
+    return;
 });
 
 export default router;

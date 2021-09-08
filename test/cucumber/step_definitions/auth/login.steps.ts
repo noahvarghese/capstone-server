@@ -60,7 +60,7 @@ Then("a cookie should be returned", function (this: BaseWorld) {
     const cookies = this.getCustomProp<string | null>("cookies");
     const status = this.getCustomProp<number>("status");
 
-    expect(status).to.be.equal(202);
+    expect(status.toString()).to.match(/^20/);
     expect(cookies).to.not.equal(null);
     expect(cookies?.length).to.be.greaterThan(0);
 });
