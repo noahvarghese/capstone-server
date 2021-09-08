@@ -8,13 +8,15 @@ import {
 export interface EventAttributes {
     name: string;
     status: "PASS" | "FAIL";
-    user_id: number;
+    user_id: number | null;
+    business_id: number | null;
 }
 
 const EmptyEventAttributes = (): EventAttributes => ({
     name: "",
     status: "FAIL",
-    user_id: -1,
+    user_id: null,
+    business_id: null,
 });
 
 const EventBuilder = <T extends Partial<EventAttributes>>(
@@ -29,8 +31,10 @@ export default class Event implements EventAttributes {
     public name!: string;
     @Column()
     public status!: "PASS" | "FAIL";
-    @Column()
+    @Column({ nullable: true })
     public user_id!: number;
+    @Column({ nullable: true })
+    public business_id!: number;
     @CreateDateColumn()
     public created_on!: Date;
 

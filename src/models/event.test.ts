@@ -7,6 +7,7 @@ import DBConnection from "../../test/util/db_connection";
 import { createModel, deleteModel } from "../../test/util/model_actions";
 import {
     testCreateModel,
+    testCreateModelFail,
     testDeleteModel,
     testReadModel,
     testUpdateModelFail,
@@ -81,6 +82,20 @@ afterEach(async () => {
 
 test("Create Event", async () => {
     await testCreateModel<Event, EventAttributes>(baseWorld, Event, key);
+});
+
+test("Create Event without user_id or business_id", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    const eventAttrs =
+        baseWorld.getCustomProp<EventAttributes>("eventAttrbutes");
+    eventAttrs.business_id = null;
+    eventAttrs.user_id = null;
+    baseWorld?.setCustomProp<EventAttributes>("eventAttributes", eventAttrs);
+
+    await testCreateModelFail<Event, EventAttributes>(baseWorld, Event, key);
 });
 
 test("Update Event should fail", async () => {

@@ -2,26 +2,26 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import User from "../../../../src/models/user/user";
 import { server } from "../../../../src/util/permalink";
 import BaseWorld from "../../support/base_world";
-import { userAttributes } from "../../../sample_data.ts/attributes";
+import { userAttributes } from "../../../sample_data/attributes";
 import { expect } from "chai";
 import fetch from "node-fetch";
 import FormData from "form-data";
 
-Given("the user has valid credentials", async function (this: BaseWorld) {
+Given("the user has valid credentials", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
         email: userAttributes.email,
         password: userAttributes.password,
     });
 });
 
-Given("the user has an invalid email", async function (this: BaseWorld) {
+Given("the user has an invalid email", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
         email: "invalid",
         password: userAttributes.password,
     });
 });
 
-Given("the user has an invalid password", async function (this: BaseWorld) {
+Given("the user has an invalid password", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
         email: userAttributes.email,
         password: "invalid",

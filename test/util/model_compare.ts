@@ -36,6 +36,30 @@ export const testCreateModel = async <T, X>(
     await deleteModel<T>(baseWorld, key);
 };
 
+export const testCreateModelFail = async <T extends X, X>(
+    baseWorld: BaseWorld | undefined,
+    type: any,
+    key: string
+) => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    try {
+        await testCreateModel<T, X>(baseWorld, type, key);
+        throw new Error("Create should not have been succesful");
+    } catch (e) {
+        expect(e.message).not.toBe("Create should not have been succesful");
+        if (
+            (e.message as string).match(
+                /^Create should not have been succesful$/
+            ) === null
+        ) {
+            await deleteModel<T>(baseWorld, key);
+        }
+    }
+};
+
 export const testUpdateModelFail = async <T extends X, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
@@ -139,7 +163,9 @@ export const testReadModel = async <T, X>(
     });
 
     expect(foundModels.length).toBe(1);
-    expect(await modelMatchesInterface(model, foundModels[0] as any)).toBe(true);
+    expect(await modelMatchesInterface(model, foundModels[0] as any)).toBe(
+        true
+    );
 
     if (canDelete) {
         await deleteModel(baseWorld, key);

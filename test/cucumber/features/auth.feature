@@ -51,23 +51,27 @@ Scenario: Reset Password Invalid Token
     When they go to reset their password
     Then the password is not reset
 
-# # Signup
-# Scenario: User Created
-#     Given an administator is performing this action
-#     When they go to register a new user
-#     Then a new user should exist
+# Signup
+@signup 
+Scenario: Succesful signup sends cookie
+    Given the user has valid inputs
+    When a new user is registered for an existing business
+    Then a cookie should be returned
 
-# Scenario: User Received Registration Email
-#     Given an administator is performing this action
-#     When they go to register a new user
-#     Then the new user should have been sent a registration confirmation 
+@signup
+Scenario: User Created for existing business
+    Given the user has valid inputs
+    When a new user is registered for an existing business
+    Then the user should get a welcome email
 
-# Scenario: User Created Token Generated
-#     Given an administator is performing this action
-#     When they go to register a new user
-#     Then a token should be created    
+Scenario: New business sign up
+    Given the user has valid inputs
+    When a new user registers a new business
+    Then the user should get a welcome email
+    And the business should get a welcome email
 
-# Scenario: Unauthorized User Creates User
-#     Given a non administrator is performing this action
-#     When they go to register a new user
-#     Then the users should remain the same
+@signup
+Scenario: Business gets notified on user register
+    Given the user has valid inputs
+    When a new user is registered for an existing business
+    Then the business should be notified by email

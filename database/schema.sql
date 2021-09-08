@@ -275,8 +275,10 @@ CREATE TABLE event (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(50),
     status ENUM("PASS", "FAIL"),
-    user_id INT NOT NULL,
+    user_id INT DEFAULT NULL,
+    business_id INT DEFAULT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (business_id) REFERENCES business(id),
     PRIMARY KEY (id)
 );

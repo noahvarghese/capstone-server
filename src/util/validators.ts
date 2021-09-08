@@ -6,7 +6,7 @@ export const postalCodeValidator = (val: string): boolean =>
         val
     );
 
-export const phoneValidator = (val: string) => {
+export const phoneValidator = (val: string): boolean => {
     const phoneUtil = new PhoneNumberUtil();
 
     let phone: string | PhoneNumber = val;
