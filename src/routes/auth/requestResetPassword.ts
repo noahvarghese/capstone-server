@@ -1,6 +1,8 @@
 import { Request, Response, Router } from "express";
 import User from "../../models/user/user";
-import { UpdateResult } from "typeorm";
+import Logs from "../../util/logs/logs";
+import { sendMail } from "../../util/mail";
+import { client } from "../../util/permalink";
 
 const router = Router();
 
@@ -10,7 +12,7 @@ router.post("/", async (request: Request, response: Response) => {
     const users = await connection.manager.find(User, { where: { email } });
 
     if (users.length !== 1) {
-        response.status(400).json({ message: "Invalid email." });
+        response.status(400).json({ message: `Invalid email ${email}.` });
         return;
     }
 
@@ -18,13 +20,23 @@ router.post("/", async (request: Request, response: Response) => {
 
     user.createToken();
 
-    const result: UpdateResult = await connection.manager.update(
-        User,
-        user.id,
-        user
-    );
+    try {
+        await connection.manager.save(User, user);
 
-    if (result.affected !== 1) {
+        const resetPasswordUrl = client + "auth/resetPassword/" + user.token;
+
+        await sendMail(user, {
+            subject: "Reset Password Requested",
+            html: `<div><h1>Reset password requested for user ${
+                user.first_name + " " + user.last_name
+            } : ${
+                user.email
+            }</h1><div>To reset your email please go to <a href="${resetPasswordUrl}">${resetPasswordUrl}</a></div><div>This link will expire at ${
+                user.token_expiry
+            }</div><div><sub><em>Please do not reply to this email. It will not reach the intended recipient. If there are any issues please email <a href="mailto:varghese.noah@gmail.com">Noah Varghese</a></em></sub></div></div>`,
+        });
+    } catch (e) {
+        Logs.Error(e.message);
         response.sendStatus(500);
         return;
     }

@@ -80,7 +80,11 @@ export default class User extends BaseModel implements UserAttributes {
     }
 
     public createToken = (): void => {
+        const tokenExpiry = new Date();
+        tokenExpiry.setHours(tokenExpiry.getHours() + 4);
+
         this.token = uid(32);
+        this.token_expiry = tokenExpiry;
     };
 
     public compareToken = (_token: string): boolean => {

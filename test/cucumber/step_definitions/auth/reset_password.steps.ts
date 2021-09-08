@@ -8,20 +8,21 @@ import fetch from "node-fetch";
 import FormData from "form-data";
 import BaseWorld from "../../support/base_world";
 import { expect } from "chai";
+import { Connection } from "typeorm";
 
 const newPassword = "secret";
+
+Given("the user is registered", function (this: BaseWorld) {
+    this.setCustomProp<{ email: string }>("credentials", {
+        email: userAttributes.email,
+    });
+});
 
 Given(
     "the user has requested to reset their password",
     async function (this: BaseWorld) {
-        // Create user in db
-        const user = (await DBConnection.GetConnection()).manager.create(
-            User,
-            userAttributes
-        );
-
         const body = new FormData();
-        body.append("email", user.email);
+        body.append("email", userAttributes.email);
 
         // Send post request to /auth/requestPasswordReset with email
         await fetch(server + "auth/requestResetPassword", {
@@ -29,29 +30,52 @@ Given(
             body,
         });
 
-        this.setCustomProp("user", user);
+        const connection = this.getCustomProp<Connection>("connection");
+
+        this.setCustomProp<User>(
+            "user",
+            (
+                await connection.manager.find(User, {
+                    where: { email: userAttributes.email },
+                })
+            )[0]
+        );
     }
 );
+
+Given("they have an invalid token", function (this: BaseWorld) {
+    this.setCustomProp<string>("invalid_token", "invalid_token");
+});
 
 When(
     "the user requests to reset their password",
     async function (this: BaseWorld) {
-        // Create user in db
-        const user = (await DBConnection.GetConnection()).manager.create(
-            User,
-            userAttributes
-        );
+        const { email } = this.getCustomProp<{ email: string }>("credentials");
 
         const body = new FormData();
-        body.append("email", user.email);
+        body.append("email", email);
 
         // Send post request to /auth/requestPasswordReset with email
-        await fetch(server + "auth/requestResetPassword", {
+        const res = await fetch(server + "auth/requestResetPassword", {
             method: "POST",
             body,
         });
 
-        this.setCustomProp("user", user);
+        try {
+            this.setCustomProp<string>(
+                "message",
+                ((await res.json()) as any).message
+            );
+        } catch (_) {
+            this.setCustomProp<string>("message", "");
+        }
+
+        const connection = this.getCustomProp<Connection>("connection");
+
+        this.setCustomProp<User>(
+            "user",
+            (await connection.manager.find(User, { where: { email } }))[0]
+        );
     }
 );
 
@@ -59,47 +83,56 @@ When("they go to reset their password", async function (this: BaseWorld) {
     let user = this.getCustomProp<User>("user");
 
     user = (
-        await (await DBConnection.GetConnection()).manager.find(User, user)
+        await (
+            await DBConnection.GetConnection()
+        ).manager.find(User, { where: { email: userAttributes.email } })
     )[0];
 
     const { token } = user;
+    const invalid_token = this.getCustomProp<string>("invalid_token");
 
     // With password, confirmPassword as params
     const body = new FormData();
     body.append("password", newPassword);
     body.append("confirmPassword", newPassword);
 
-    // Send post request to /auth/resetPassword
-    await fetch(server + `auth/resetPassword/${token}`, {
+    // checks if an invalid token was provided for the test
+    await fetch(server + `auth/resetPassword/${invalid_token ?? token}`, {
         method: "POST",
         body,
     });
-    this.setCustomProp("user", user);
+
+    const connection = this.getCustomProp<Connection>("connection");
+
+    this.setCustomProp<User>(
+        "user",
+        (
+            await connection.manager.find(User, {
+                where: { email: userAttributes.email },
+            })
+        )[0]
+    );
 });
 
 Then("a token should be created", async function (this: BaseWorld) {
     const user = this.getCustomProp<User>("user");
-    // Check a token exists for the user
     expect(user.token).to.not.be.null;
 
     // And the expiry date is correct
     // We should test the specific time it sets
     expect(user.token_expiry).to.not.be.null;
-    expect(user.token_expiry?.getUTCMilliseconds()).to.be.greaterThan(
-        new Date().getUTCMilliseconds()
-    );
+    expect(user.token_expiry).to.be.greaterThan(new Date());
 });
 
 Then("they are sent a token", async function (this: BaseWorld) {
     // Check that an email was sent (This requires logging of events in the database)
     // Maybe try login to email to confirm email was sent
     const user = this.getCustomProp<User>("user");
+    const connection = this.getCustomProp<Connection>("connection");
 
     try {
         const event = (
-            await (
-                await DBConnection.GetConnection()
-            ).manager.find(Event, {
+            await connection.manager.find(Event, {
                 where: { user_id: user.id },
                 order: { created_on: "DESC" },
             })

@@ -20,25 +20,36 @@ Scenario: Invalid Password
     When the user logs in
     Then it should be unsuccessful
 
-# # Reset Password
+# Reset Password
 
-# Scenario: Request Reset Password Token Created
-#     When the user requests to reset their password
-#     Then a token should be created
+@reset_password
+@auth
+Scenario: Request Reset Password Token Created
+    Given the user is registered
+    When the user requests to reset their password
+    Then a token should be created
 
-# Scenario: Request Reset Password Token Sent
-#     When the user requests to reset their password
-#     Then they are sent a token
+@reset_password
+@auth
+Scenario: Request Reset Password Token Sent
+    Given the user is registered
+    When the user requests to reset their password
+    Then they are sent a token
 
-# Scenario: Reset Password Valid Token
-#     Given the user has requested to reset their password
-#     When they go to reset their password
-#     Then the password is reset
+@reset_password
+@auth
+Scenario: Reset Password Valid Token
+    Given the user has requested to reset their password
+    When they go to reset their password
+    Then the password is reset
 
-# Scenario: Reset Password Invalid Token
-#     Given the user has requested to reset their password
-#     When they go to reset their password
-#     Then the password is not reset
+@reset_password
+@auth
+Scenario: Reset Password Invalid Token
+    Given the user has requested to reset their password
+    And they have an invalid token
+    When they go to reset their password
+    Then the password is not reset
 
 # # Signup
 # Scenario: User Created
