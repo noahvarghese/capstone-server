@@ -64,6 +64,7 @@ When(
         try {
             this.setCustomProp<string>(
                 "message",
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ((await res.json()) as any).message
             );
         } catch (_) {

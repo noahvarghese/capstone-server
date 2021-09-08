@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import bcrypt from "bcrypt";
 import User from "../../models/user/user";
 import Logs from "../../util/logs/logs";
 import { sendMail } from "../../util/mail";
