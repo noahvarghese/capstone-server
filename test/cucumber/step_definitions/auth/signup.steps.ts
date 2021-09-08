@@ -161,6 +161,22 @@ Then(
 Then(
     "the business should be notified by email",
     async function (this: BaseWorld) {
-        return "pending";
+        const connection = this.getCustomProp<Connection>("connection");
+
+        let model: Business = this.getCustomProp<Business>("business");
+
+        if (!model) {
+            model = await connection.manager.findOneOrFail(Business, {
+                where: { code: businessAttributes.code },
+            });
+        }
+
+        const event = await connection.manager.findOneOrFail(Event, {
+            where: {
+                business_id: model.id,
+            },
+        });
+
+        expect(event.name).to.include("New Employee");
     }
 );

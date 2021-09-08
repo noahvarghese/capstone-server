@@ -47,6 +47,10 @@ Given("they have an invalid token", function (this: BaseWorld) {
     this.setCustomProp<string>("invalid_token", "invalid_token");
 });
 
+Given("the passwords do not match", function (this: BaseWorld) {
+    this.setCustomProp<string>("invalid_password", "invalid_password");
+});
+
 When(
     "the user requests to reset their password",
     async function (this: BaseWorld) {
@@ -91,11 +95,12 @@ When("they go to reset their password", async function (this: BaseWorld) {
 
     const { token } = user;
     const invalid_token = this.getCustomProp<string>("invalid_token");
+    const invalid_password = this.getCustomProp<string>("invalid_password");
 
     // With password, confirmPassword as params
     const body = new FormData();
     body.append("password", newPassword);
-    body.append("confirmPassword", newPassword);
+    body.append("confirmPassword", invalid_password ?? newPassword);
 
     // checks if an invalid token was provided for the test
     await fetch(server + `auth/resetPassword/${invalid_token ?? token}`, {

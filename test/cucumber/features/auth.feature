@@ -51,6 +51,14 @@ Scenario: Reset Password Invalid Token
     When they go to reset their password
     Then the password is not reset
 
+@reset_password
+@auth
+Scenario: Reset Password Passwords do not match
+    Given the user has requested to reset their password
+    And the passwords do not match
+    When they go to reset their password
+    Then the password is not reset
+
 # Signup
 @signup 
 @signup_event_cleanup
@@ -74,8 +82,9 @@ Scenario: New business sign up
     Then the 'user' should get a welcome email
     And the 'business' should get a welcome email
 
-# @signup
-# Scenario: Business gets notified on user register
-#     Given the user has valid inputs
-#     When a new user is registered for an existing business
-#     Then the business should be notified by email
+@signup
+@signup_event_cleanup
+Scenario: Business gets notified on user register
+    Given the user has valid inputs
+    When a new user is registered for an existing business
+    Then the business should be notified by email
