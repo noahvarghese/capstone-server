@@ -254,7 +254,6 @@ test("Create Quiz Result", async () => {
 });
 
 test("Update Quiz Result should fail", async () => {
-    console.log(resultAttributes);
     await testUpdateModelFail<Result, ResultAttributes>(
         baseWorld,
         Result,

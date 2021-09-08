@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import validator from "validator";
-import DBConnection from "../../../test/util/db_connection";
 import Business from "../../models/business";
 import User from "../../models/user/user";
 import { sendMail } from "../../util/mail";
