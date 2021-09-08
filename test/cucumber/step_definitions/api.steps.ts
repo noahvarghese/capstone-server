@@ -1,9 +1,9 @@
 import { When, Then } from "@cucumber/cucumber";
 import { expect } from "chai";
 import BaseWorld from "../support/base_world";
-import { client, server } from "../../src/util/permalink";
-import { getRedirectInfo } from "../util/request";
-import Logs from "../../src/util/logs/logs";
+import { client, server } from "../../../src/util/permalink";
+import { getRedirectInfo } from "../../util/request";
+import Logs from "../../../src/util/logs/logs";
 
 When(
     "a user has navigated to the root of the backend",

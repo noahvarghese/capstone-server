@@ -1,9 +1,9 @@
 import { Given, Then, When } from "@cucumber/cucumber";
-import User from "../../../src/models/user/user";
-import { server } from "../../../src/util/permalink";
-import { userAttributes } from "../../sample_data.ts/attributes";
-import DBConnection from "../../util/db_connection";
-import Event from "../../../src/models/event";
+import User from "../../../../src/models/user/user";
+import { server } from "../../../../src/util/permalink";
+import { userAttributes } from "../../../sample_data.ts/attributes";
+import DBConnection from "../../../util/db_connection";
+import Event from "../../../../src/models/event";
 import fetch from "node-fetch";
 import FormData from "form-data";
 import BaseWorld from "../../support/base_world";

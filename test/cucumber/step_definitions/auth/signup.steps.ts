@@ -1,12 +1,12 @@
 import { Given, Then, When } from "@cucumber/cucumber";
-import Role from "../../../src/models/role";
-import User from "../../../src/models/user/user";
+import Role from "../../../../src/models/role";
+import User from "../../../../src/models/user/user";
 import {
     roleAttributes,
     userAttributes,
-} from "../../sample_data.ts/attributes";
+} from "../../../sample_data.ts/attributes";
 import BaseWorld from "../../support/base_world";
-import DBConnection from "../../util/db_connection";
+import DBConnection from "../../../util/db_connection";
 
 Given(
     "an administrator is performing this action",

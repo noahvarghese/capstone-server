@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import BaseWorld from "./store";
+import BaseWorld from "../jest/support/base_world";
 import {
     createModel,
     deleteModel,
@@ -27,7 +27,7 @@ export const testCreateModel = async <T, X>(
     }
 
     expect(
-        modelMatchesInterface(
+        await modelMatchesInterface(
             baseWorld.getCustomProp<any>(`${key}Attributes`),
             model
         )
@@ -100,7 +100,7 @@ export const testUpdateModel = async <T extends X, X>(
     model = await connection.manager.save(model);
 
     expect(
-        modelMatchesInterface(
+        await modelMatchesInterface(
             baseWorld.getCustomProp<any>(modelAttributesName),
             model
         )
@@ -139,7 +139,7 @@ export const testReadModel = async <T, X>(
     });
 
     expect(foundModels.length).toBe(1);
-    expect(modelMatchesInterface(model, foundModels[0] as any)).toBe(true);
+    expect(await modelMatchesInterface(model, foundModels[0] as any)).toBe(true);
 
     if (canDelete) {
         await deleteModel(baseWorld, key);

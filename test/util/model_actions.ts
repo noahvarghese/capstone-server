@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import JestBaseWorld from "./store";
-import CucumberBaseWorld from "../support/base_world";
+import JestBaseWorld from "../jest/support/base_world";
+import CucumberBaseWorld from "../cucumber/support/base_world";
 import { Connection } from "typeorm";
 import User from "../../src/models/user/user";
 
@@ -40,15 +40,21 @@ export const createModel = async <T, X>(
     return model;
 };
 
-export const modelMatchesInterface = <T, X extends T>(
+export const modelMatchesInterface = async <T, X extends T>(
     attr: T,
     model: X
-): boolean => {
+): Promise<boolean> => {
     let matches = true;
 
     for (const key of Object.keys(attr)) {
         const modelVal = model[key as keyof X];
         const attrVal = attr[key as keyof T];
+
+        if (key === "password" && model instanceof User) {
+            if (await model.comparePassword((attrVal as any) as string)) {
+                continue;
+            }
+        }
 
         if (typeof modelVal !== "function") {
             // Loose equals
@@ -79,13 +85,6 @@ export const modelMatchesInterface = <T, X extends T>(
                 if (!modelVal && !attrVal) {
                     continue;
                 }
-
-                // Debug
-                // Logs.Test(key);
-                // Logs.Test(typeof modelVal);
-                // Logs.Test(modelVal);
-                // Logs.Test(typeof attrVal);
-                // Logs.Test(attrVal);
 
                 matches = false;
 

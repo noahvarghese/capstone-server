@@ -11,7 +11,7 @@ import {
     testReadModel,
     testUpdateModelFail,
 } from "../../test/util/model_compare";
-import BaseWorld from "../../test/util/store";
+import BaseWorld from "../../test/jest/support/base_world";
 import Business, { BusinessAttributes } from "./business";
 import Event, { EventAttributes } from "./event";
 import User, { UserAttributes } from "./user/user";

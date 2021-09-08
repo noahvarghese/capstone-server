@@ -1,15 +1,15 @@
 import { After, AfterAll, Before, BeforeAll, Given, Then, When } from "@cucumber/cucumber";
-import User, { UserAttributes } from "../../../src/models/user/user";
-import { server } from "../../../src/util/permalink";
+import User, { UserAttributes } from "../../../../src/models/user/user";
+import { server } from "../../../../src/util/permalink";
 import BaseWorld from "../../support/base_world";
-import { businessAttributes, userAttributes } from "../../sample_data.ts/attributes";
-import DBConnection from "../../util/db_connection";
+import { businessAttributes, userAttributes } from "../../../sample_data.ts/attributes";
+import DBConnection from "../../../util/db_connection";
 import { expect } from "chai";
 import fetch from "node-fetch";
 import FormData from "form-data";
-import Business, { BusinessAttributes } from "../../../src/models/business";
+import Business, { BusinessAttributes } from "../../../../src/models/business";
 import { Connection } from "typeorm";
-import { createModel, deleteModel } from "../../util/model_actions";
+import { createModel, deleteModel } from "../../../util/model_actions";
 import { stringify } from "node:querystring";
 
 Before("@auth", async function(this: BaseWorld) {
