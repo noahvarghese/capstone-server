@@ -45,6 +45,15 @@ Scenario: Reset Password Valid Token
 
 @reset_password
 @auth
+Scenario: Reset Password Valid Token Resets Token and Expiry
+    Given  the user has requested to reset their password
+    When they go to reset their password
+    Then the password is reset
+    And the token is cleared
+    And the token expiry is cleared
+
+@reset_password
+@auth
 Scenario: Reset Password Invalid Token
     Given the user has requested to reset their password
     And they have an invalid token

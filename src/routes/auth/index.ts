@@ -2,8 +2,8 @@ import { Router } from "express";
 import loginRoute from "./login";
 import logoutRoute from "./logout";
 import signupRoute from "./signup";
-import requestResetRoute from "./requestResetPassword";
-import resetRoute from "./resetPassword";
+import requestResetRoute from "./request_reset_password";
+import resetRoute from "./reset_password";
 
 const router = Router();
 

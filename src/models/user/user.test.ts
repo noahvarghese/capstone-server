@@ -90,39 +90,6 @@ test("Create Token", async () => {
     expect(user.token).not.toBe(initialVal);
 });
 
-test("Created user should have 1 day to set password", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    const { connection } = baseWorld;
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        `${key}Attributes`
-    );
-
-    let user = new User(attributes);
-    user.createToken();
-    user = await connection.manager.save(user);
-    user =
-        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
-        user;
-
-    // Offset to adjust for delays potentially
-    const allowedError = 5000;
-    // 1 day
-    const offset = 24 * 60 * 60 * 1000;
-
-    const tokenExpiry = user.token_expiry?.getTime() ?? 0;
-    const currentTime = new Date().getTime();
-    const expectedExpiry = currentTime + offset;
-
-    const difference = Math.abs(tokenExpiry - expectedExpiry);
-
-    expect(difference).toBeLessThanOrEqual(allowedError);
-
-    await connection.manager.remove(user);
-});
-
 test("Updated user should have 1hr to update password", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
@@ -266,8 +233,8 @@ test("Reset Password", async () => {
     const result = await user.resetPassword(oldPassword, user.token ?? "");
 
     expect(result).toBe(true);
-    expect(user.token).toBe(undefined);
-    expect(user.token_expiry).toBe(undefined);
+    expect(user.token).toBe(null);
+    expect(user.token_expiry).toBe(null);
     expect(user.password).not.toBe(oldPassword);
     expect(await user.comparePassword(oldPassword)).toBe(true);
 

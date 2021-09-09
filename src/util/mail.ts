@@ -4,12 +4,41 @@ import User from "../models/user/user";
 import Event from "../models/event";
 import Logs from "./logs/logs";
 import Business from "../models/business";
+import { client } from "./permalink";
 
 export interface MailOpts {
     to?: string;
     subject: string;
     html: string;
 }
+
+export const requestResetPasswordEmail = async (
+    user: User
+): Promise<boolean> => {
+    const resetPasswordUrl = client + "auth/resetPassword/" + user.token;
+
+    return await sendMail(user, {
+        subject: "Reset Password Requested",
+        html: `<div><h1>Reset password requested for user ${
+            user.first_name + " " + user.last_name
+        } : ${
+            user.email
+        }</h1><div>To reset your email please go to <a href="${resetPasswordUrl}">${resetPasswordUrl}</a></div><div>This link will expire at ${
+            user.token_expiry
+        }</div><div><sub><em>Please do not reply to this email. It will not reach the intended recipient. If there are any issues please email <a href="mailto:varghese.noah@gmail.com">Noah Varghese</a></em></sub></div></div>`,
+    });
+};
+
+export const resetPasswordEmail = async (user: User): Promise<boolean> => {
+    return await sendMail(user, {
+        subject: "Reset Password Requested",
+        html: `<div><h1>Reset password successful for ${
+            user.first_name + " " + user.last_name
+        } : ${
+            user.email
+        }</h1><div>Your password has been reset, please contact support if this was not you.</div><div><sub><em>Please do not reply to this email. It will not reach the intended recipient. If there are any issues please email <a href="mailto:varghese.noah@gmail.com">Noah Varghese</a></em></sub></div></div>`,
+    });
+};
 
 export const sendMail = async (
     model: User | Business,

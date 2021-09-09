@@ -16,8 +16,8 @@ export interface UserAttributes {
     birthday: Date | undefined;
     password: string;
     business_id: number;
-    token?: string | undefined;
-    token_expiry?: Date | undefined;
+    token?: string | undefined | null;
+    token_expiry?: Date | undefined | null;
 }
 
 const EmptyUserAttributes = (): UserAttributes => ({
@@ -68,10 +68,10 @@ export default class User extends BaseModel implements UserAttributes {
     public password!: string;
     @Column()
     public business_id!: number;
-    @Column()
-    public token?: string;
-    @Column()
-    public token_expiry?: Date;
+    @Column({ nullable: true, type: "text", unique: true })
+    public token?: string | null | undefined;
+    @Column({ nullable: true, type: "datetime", unique: false })
+    public token_expiry?: Date | null | undefined;
 
     public constructor(options?: Partial<UserAttributes>) {
         super();
@@ -134,8 +134,8 @@ export default class User extends BaseModel implements UserAttributes {
         if (this.compareToken(token)) {
             if (password.length >= User.max_password_length) {
                 await this.hashPassword(password);
-                this.token = undefined;
-                this.token_expiry = undefined;
+                this.token = null;
+                this.token_expiry = null;
                 return true;
             }
         }
