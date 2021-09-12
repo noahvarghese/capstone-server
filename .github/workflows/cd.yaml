@@ -43,14 +43,59 @@ jobs:
         run: npm run test:jest
       - name: bdd test
         run: npm run test:cucumber
+  bump-version-number:
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    needs: continuous-integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Increment version by one
+        run: |
+          # Gets Whole Version Number
+          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g') 
+          # Gets last digit of version number
+          TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
+          # Adds 1 to last digit of version number
+          TRAILING_VERSION=$((TRAILING_VERSION+1))
+          VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
+          # Apply new version number to package.json
+          sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
+      - name: Commit package.json
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "CD pipeline version bump [skip ci]"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          branch: ${{ github.ref }}
   continuous-deployment:
+    needs: bump-version-number
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - name: build
         run: npm build
-      - name: deploy
-        run: yolo
+      - name: zip package
+        run: zip -r deploy.zip ./build
+      - name: get version number
+        run: |
+          # Gets Whole Version Number
+          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
+          VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v18
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: capstone 
+          environment_name: Capstone-env-1 
+          version_label: ${{ env.VERSION }} 
+          region: ca-central-1
+          deployment_package: deploy.zip
+
 
  
