@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - name: build
-        run: npm run-script build
+        run: npm run-script build && cp package.json ./build
       - name: zip package
         run: zip -r deploy.zip ./build
       - name: get version number
