@@ -64,11 +64,6 @@ jobs:
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GH_TOKEN }}
-      #     branch: ${{ github.ref }}
   continuous-deployment:
     needs: bump-version-number
     runs-on: ubuntu-latest
@@ -83,7 +78,8 @@ jobs:
         run: |
           # Gets Whole Version Number
           VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
-          VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
+          # VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
+          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v18
         with:
