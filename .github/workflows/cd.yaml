@@ -60,17 +60,15 @@ jobs:
           VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
           # Apply new version number to package.json
           sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
-      - name: Commit package.json
-        run: |
-          git config --local user.email "varghese.noah@gmail.com"
-          git config --local user.name "github-actions[bot]"
-          git add -A
-          git commit -m "CD pipeline version bump [skip ci]"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - name: Commit & Push changes
+        uses: actions-js/push@master
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          branch: ${{ github.ref }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GH_TOKEN }}
+      #     branch: ${{ github.ref }}
   continuous-deployment:
     needs: bump-version-number
     runs-on: ubuntu-latest
