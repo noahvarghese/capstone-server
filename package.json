@@ -1,6 +1,6 @@
 {
     "name": "capstone-server",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "description": "My Capstone",
     "main": "./src/index.ts",
     "scripts": {
