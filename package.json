@@ -1,6 +1,6 @@
 {
     "name": "capstone-server",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "My Capstone",
     "main": "./src/index.ts",
     "engines": {"node": "15.11.0"},
