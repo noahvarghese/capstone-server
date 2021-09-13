@@ -74,7 +74,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             {email: string; password: string;}
             ```
 
-            </td>
+</td>
             <td>200</td>
             <td>void</td>
             <td>400, 401</td>
@@ -84,7 +84,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
            {message: string;} | void
             ```
 
-            </td>
+</td>
             <td>logs user in, sets session variable so that a cookie is returned for use</td>
         </tr>
         <tr>
@@ -116,7 +116,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             }
             ```
 
-            </td>
+</td>
             <td>201</td>
             <td>
 
@@ -124,7 +124,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             void
             ```
 
-            </td>
+</td>
             <td>400, 500</td>
             <td>
 
@@ -132,7 +132,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             {message: string; field: string; } | {message: string;}
             ```
 
-            </td>
+</td>
             <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
         </tr>
         <tr>
