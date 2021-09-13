@@ -70,7 +70,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/login</td>
             <td>
 
-            ```ts
+            ```typescript
             {email: string; password: string;}
             ```
 
@@ -80,7 +80,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>400, 401</td>
             <td>
 
-            ```ts
+            ```typescript
            {message: string;} | void
             ```
 
