@@ -69,12 +69,13 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/login</td>
             <td>
+            <pre>
 
             ```typescript
             {email: string; password: string;}
             ```
 
-</td>
+</pre></td>
             <td>200</td>
             <td>void</td>
             <td>400, 401</td>
