@@ -70,7 +70,8 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/login</td>
             <td>
 
-            ```json {email: string; password: string;}
+            ```ts
+            {email: string; password: string;}
             ```
 
             </td>
@@ -79,7 +80,8 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>400, 401</td>
             <td>
 
-            ```json {message: string;} | void
+            ```ts
+           {message: string;} | void
             ```
 
             </td>
@@ -90,7 +92,8 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/signup</td>
             <td>
 
-            ```json {
+            ```ts
+            {
                 first_name: string;
                 last_name: string;
                 email: string;
@@ -111,23 +114,22 @@ They may be moved into their own repo at the end of this to showcase all parts o
                 business_phone: string;
                 business_email: string;
             }
-
             ```
 
             </td>
             <td>201</td>
             <td>
 
-            ```json void
-
+            ```ts
+            void
             ```
 
             </td>
             <td>400, 500</td>
             <td>
 
-            ```json {message: string; field: string; } | {message: string;}
-
+            ```ts
+            {message: string; field: string; } | {message: string;}
             ```
 
             </td>
@@ -138,7 +140,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/logout</td>
             <td>
 
-            ```json
+            ```ts
 
             ```
 
@@ -146,7 +148,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td></td>
             <td>
 
-            ```json
+            ```ts
 
             ```
 
@@ -154,7 +156,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td></td>
             <td>
 
-            ```json
+            ```ts
 
             ```
 
@@ -166,24 +168,24 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/requestResetPassword </td>
             <td>
 
-            ```json {email: string;}
-
+            ```ts
+            {email: string;}
             ```
 
             </td>
             <td>200</td>
             <td>
 
-            ```json void
-
+            ```ts
+            void
             ```
 
             </td>
             <td>401, 500</td>
             <td>
 
-            ```json {message: string;}
-
+            ```ts
+            {message: string;}
             ```
 
             </td>
@@ -194,24 +196,24 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/resetPassword/{token}</td>
             <td>
 
-            ```json {password: string; confirm_password:string;}
-
+            ```ts
+            {password: string; confirm_password:string;}
             ```
 
             </td>
             <td>200</td>
             <td>
 
-            ```json void
-
+            ```ts
+            void
             ```
 
             </td>
             <td>401, 403, 500</td>
             <td>
 
-            ```json  {message: string;} | void
-
+            ```ts
+            {message: string;} | void
             ```
 
             </td>
@@ -222,24 +224,21 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td></td>
             <td>
 
-            ```json
-
+            ```ts
             ```
 
             </td>
             <td></td>
             <td>
 
-            ```json
-
+            ```ts
             ```
 
             </td>
             <td></td>
             <td>
 
-            ```json
-
+            ```ts
             ```
 
             </td>
