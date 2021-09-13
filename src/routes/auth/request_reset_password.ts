@@ -11,7 +11,7 @@ router.post("/", async (request: Request, response: Response) => {
     const users = await connection.manager.find(User, { where: { email } });
 
     if (users.length !== 1) {
-        response.status(400).json({ message: `Invalid email ${email}.` });
+        response.status(401).json({ message: `Invalid email ${email}.` });
         return;
     }
 
@@ -25,7 +25,7 @@ router.post("/", async (request: Request, response: Response) => {
         response.sendStatus(200);
     } catch (e) {
         Logs.Error(e.message);
-        response.sendStatus(500);
+        response.status(500).json({ message: "Unable to send email" });
     }
 });
 

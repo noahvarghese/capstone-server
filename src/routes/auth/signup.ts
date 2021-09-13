@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import validator from "validator";
 import Business from "../../models/business";
 import User from "../../models/user/user";
+import Logs from "../../util/logs/logs";
 import { sendMail } from "../../util/mail";
 import { phoneValidator, postalCodeValidator } from "../../util/validators";
 
@@ -176,7 +177,15 @@ router.post("/", async (req: Request, res: Response) => {
         });
 
         business.createCode();
-        business = await connection.manager.save(business);
+
+        try {
+            business = await connection.manager.save(business);
+        } catch (e) {
+            Logs.Error(e.message);
+            res.status(500).json({ message: "Failed to create business" });
+            return;
+        }
+
         newBusiness = true;
     }
 
@@ -195,12 +204,24 @@ router.post("/", async (req: Request, res: Response) => {
         phone,
     });
 
-    await connection.manager.save(await user.hashPassword(user.password));
+    try {
+        await connection.manager.save(await user.hashPassword(user.password));
+    } catch (e) {
+        Logs.Error(e.message);
+        res.status(500).json({ message: "Failed to create user" });
+        return;
+    }
 
-    await sendMail(user, {
-        subject: "Welcome Onboard",
-        html: `<div><h1>Welcome Onboard</h1><p>thank you ${user.first_name} ${user.last_name} for registering. We have notified ${business.name} that you have signed up.</p></div>`,
-    });
+    try {
+        await sendMail(user, {
+            subject: "Welcome Onboard",
+            html: `<div><h1>Welcome Onboard</h1><p>thank you ${user.first_name} ${user.last_name} for registering. We have notified ${business.name} that you have signed up.</p></div>`,
+        });
+    } catch (e) {
+        Logs.Error(e.message);
+        // Don't fail as the user and business are created and the welcome email is a nice to have
+        // this can be debugged by reviewing the event table in the database
+    }
 
     let html: string;
     let subject: string;
@@ -213,14 +234,20 @@ router.post("/", async (req: Request, res: Response) => {
         html = `<div><h1>New Employee</h1><p>A new employee ${user.first_name} ${user.last_name} : ${user.email} has joined your company.</p></div>`;
     }
 
-    await sendMail(business, {
-        subject,
-        to: business.email,
-        html,
-    });
+    try {
+        await sendMail(business, {
+            subject,
+            to: business.email,
+            html,
+        });
+    } catch (e) {
+        Logs.Error(e.message);
+        // Don't fail as the user and business are created and the welcome email is a nice to have
+        // this can be debugged by reviewing the event table in the database
+    }
 
     req.session.user_id = user.id;
-    res.sendStatus(200);
+    res.sendStatus(201);
     return;
 });
 

@@ -51,6 +51,204 @@ They may be moved into their own repo at the end of this to showcase all parts o
 | SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
 
+## API Documentation
+
+<table>
+    <thead>
+        <th>method</th>
+        <th>route</th>
+        <th>body</th>
+        <th>return status</th>
+        <th>return type</th>
+        <th>error status(es)</th>
+        <th>error type(s)</th>
+        <th>description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>POST</td>
+            <td>/auth/login</td>
+            <td>
+
+            ```json {email: string; password: string;}
+            ```
+
+            </td>
+            <td>200</td>
+            <td>void</td>
+            <td>400, 401</td>
+            <td>
+
+            ```json {message: string;} | void
+            ```
+
+            </td>
+            <td>logs user in, sets session variable so that a cookie is returned for use</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/signup</td>
+            <td>
+
+            ```json {
+                first_name: string;
+                last_name: string;
+                email: string;
+                phone: string;
+                address: string;
+                birthday: Date | string;
+                city: string;
+                postal_code: string;
+                province: string;
+                business_code: string;
+                password: string;
+                confirm_password: string;
+                business_name: string;
+                business_address: string;
+                business_province: string;
+                business_city: string
+                business_postal_code: string;
+                business_phone: string;
+                business_email: string;
+            }
+
+            ```
+
+            </td>
+            <td>201</td>
+            <td>
+
+            ```json void
+
+            ```
+
+            </td>
+            <td>400, 500</td>
+            <td>
+
+            ```json {message: string; field: string; } | {message: string;}
+
+            ```
+
+            </td>
+            <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/logout</td>
+            <td>
+
+            ```json
+
+            ```
+
+            </td>
+            <td></td>
+            <td>
+
+            ```json
+
+            ```
+
+            </td>
+            <td></td>
+            <td>
+
+            ```json
+
+            ```
+
+            </td>
+            <td>Not Implemented</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/requestResetPassword </td>
+            <td>
+
+            ```json {email: string;}
+
+            ```
+
+            </td>
+            <td>200</td>
+            <td>
+
+            ```json void
+
+            ```
+
+            </td>
+            <td>401, 500</td>
+            <td>
+
+            ```json {message: string;}
+
+            ```
+
+            </td>
+            <td>submit email to receive a link to reset password via email</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/resetPassword/{token}</td>
+            <td>
+
+            ```json {password: string; confirm_password:string;}
+
+            ```
+
+            </td>
+            <td>200</td>
+            <td>
+
+            ```json void
+
+            ```
+
+            </td>
+            <td>401, 403, 500</td>
+            <td>
+
+            ```json  {message: string;} | void
+
+            ```
+
+            </td>
+            <td>this is the link sent via email to reset the password</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+
+            ```json
+
+            ```
+
+            </td>
+            <td></td>
+            <td>
+
+            ```json
+
+            ```
+
+            </td>
+            <td></td>
+            <td>
+
+            ```json
+
+            ```
+
+            </td>
+            <td></td>
+        </tr>
+    </tbody>
+
+</table>
+
 ## CI/CD
 
 Utilizing GitHub actions for CI currently, can be found in ./github/workflows

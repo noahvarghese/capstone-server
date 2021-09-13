@@ -8,9 +8,9 @@ const router = Router();
 router.post("/:token", async (request: Request, response: Response) => {
     const { SqlConnection: connection } = request;
     const { token } = request.params;
-    const { password, confirmPassword } = request.body;
+    const { password, confirm_password } = request.body;
 
-    if (password !== confirmPassword || !token) {
+    if (password !== confirm_password || !token) {
         response.sendStatus(400);
         return;
     }
@@ -19,7 +19,7 @@ router.post("/:token", async (request: Request, response: Response) => {
         const users = await connection.manager.find(User, { where: { token } });
 
         if (users.length !== 1) {
-            response.status(400).json({ message: "Invalid token." });
+            response.status(401).json({ message: "Invalid token." });
             return;
         }
 
@@ -30,10 +30,9 @@ router.post("/:token", async (request: Request, response: Response) => {
             await resetPasswordEmail(user);
             response.sendStatus(200);
         } else {
-            response.sendStatus(400);
+            response.status(403).json({ message: "Password not long enough" });
         }
     } catch (e) {
-        console.log(e.message);
         Logs.Error(e.message);
         response.sendStatus(500);
     }
