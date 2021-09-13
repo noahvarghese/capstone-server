@@ -75,6 +75,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: build
         run: npm run-script build && cp package.json ./build
       - name: create dotenv
@@ -102,6 +109,8 @@ jobs:
           envkey_TARGET_ENV: "PROD"
           file_name: .env
           directory: build
+      - name: read dotenv
+        run: cat .env
       - name: zip package
         run: zip -r deploy.zip ./build && ls -la build
       - name: get version number

@@ -3,7 +3,6 @@
     "version": "1.0.8",
     "description": "My Capstone",
     "main": "./src/index.ts",
-    "engines": {"node": "15.11.0"},
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
         "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
