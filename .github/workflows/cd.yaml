@@ -49,6 +49,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - name: Increment version by one
         run: |
           # Gets Whole Version Number
@@ -60,10 +63,13 @@ jobs:
           VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
           # Apply new version number to package.json
           sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
+          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: bump version ${{ env.VERSION }} [skip ci]
+          repository: main
   continuous-deployment:
     needs: bump-version-number
     runs-on: ubuntu-latest
