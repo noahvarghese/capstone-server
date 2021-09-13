@@ -58,6 +58,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         <th>method</th>
         <th>route</th>
         <th>body</th>
+        <th>include credentials</th>
         <th>return status</th>
         <th>return type</th>
         <th>error status(es)</th>
@@ -70,6 +71,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/login</td>
             <td>
             <pre>{email: string; password: string;}</pre></td>
+            <td>false</td>
             <td>200</td>
             <td>void</td>
             <td>400, 401</td>
@@ -101,6 +103,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
                 business_phone: string;
                 business_email: string;
             }</pre></td>
+            <td>false</td>
             <td>201</td>
             <td><pre>void</pre></td>
             <td>400, 500</td>
@@ -111,6 +114,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/logout</td>
             <td><pre></pre></td>
+            <td>true</td>
             <td></td>
             <td><pre></pre></td>
             <td></td>
@@ -121,6 +125,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/requestResetPassword </td>
             <td><pre>{email: string;}</pre></td>
+            <td>false</td>
             <td>200</td>
             <td><pre>void</pre></td>
             <td>401, 500</td>
@@ -131,6 +136,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/resetPassword/{token}</td>
             <td><pre>{password: string; confirm_password:string;}</pre></td>
+            <td>false</td>
             <td>200</td>
             <td><pre>void</pre></td>
             <td>401, 403, 500</td>
@@ -141,6 +147,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td></td>
             <td></td>
             <td><pre></pre></td>
+            <td></td>
             <td></td>
             <td><pre></pre></td>
             <td></td>
