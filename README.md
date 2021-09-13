@@ -69,27 +69,17 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/login</td>
             <td>
-            <pre>
-            {email: string; password: string;}
-</pre></td>
+            <pre>{email: string; password: string;}</pre></td>
             <td>200</td>
             <td>void</td>
             <td>400, 401</td>
-            <td>
-
-            ```typescript
-           {message: string;} | void
-            ```
-
-</td>
+            <td><pre>{message: string;} | void</pre></td>
             <td>logs user in, sets session variable so that a cookie is returned for use</td>
         </tr>
         <tr>
             <td>POST</td>
             <td>/auth/signup</td>
-            <td>
-
-            ```ts
+            <td><pre>
             {
                 first_name: string;
                 last_name: string;
@@ -110,135 +100,51 @@ They may be moved into their own repo at the end of this to showcase all parts o
                 business_postal_code: string;
                 business_phone: string;
                 business_email: string;
-            }
-            ```
-
-</td>
+            }</pre></td>
             <td>201</td>
-            <td>
-
-            ```ts
-            void
-            ```
-
-</td>
+            <td><pre>void</pre></td>
             <td>400, 500</td>
-            <td>
-
-            ```ts
-            {message: string; field: string; } | {message: string;}
-            ```
-
-</td>
+            <td><pre>{message: string; field: string; } | {message: string;}</pre></td>
             <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
         </tr>
         <tr>
             <td>POST</td>
             <td>/auth/logout</td>
-            <td>
-
-            ```ts
-
-            ```
-
-            </td>
+            <td><pre></pre></td>
             <td></td>
-            <td>
-
-            ```ts
-
-            ```
-
-            </td>
+            <td><pre></pre></td>
             <td></td>
-            <td>
-
-            ```ts
-
-            ```
-
-            </td>
+            <td><pre></pre></td>
             <td>Not Implemented</td>
         </tr>
         <tr>
             <td>POST</td>
             <td>/auth/requestResetPassword </td>
-            <td>
-
-            ```ts
-            {email: string;}
-            ```
-
-            </td>
+            <td><pre>{email: string;}</pre></td>
             <td>200</td>
-            <td>
-
-            ```ts
-            void
-            ```
-
-            </td>
+            <td><pre>void</pre></td>
             <td>401, 500</td>
-            <td>
-
-            ```ts
-            {message: string;}
-            ```
-
-            </td>
+            <td><pre>{message: string;}</pre></td>
             <td>submit email to receive a link to reset password via email</td>
         </tr>
         <tr>
             <td>POST</td>
             <td>/auth/resetPassword/{token}</td>
-            <td>
-
-            ```ts
-            {password: string; confirm_password:string;}
-            ```
-
-            </td>
+            <td><pre>{password: string; confirm_password:string;}</pre></td>
             <td>200</td>
-            <td>
-
-            ```ts
-            void
-            ```
-
-            </td>
+            <td><pre>void</pre></td>
             <td>401, 403, 500</td>
-            <td>
-
-            ```ts
-            {message: string;} | void
-            ```
-
-            </td>
+            <td><pre>{message: string;} | void</pre></td>
             <td>this is the link sent via email to reset the password</td>
         </tr>
         <tr>
             <td></td>
             <td></td>
-            <td>
-
-            ```ts
-            ```
-
-            </td>
+            <td><pre></pre></td>
             <td></td>
-            <td>
-
-            ```ts
-            ```
-
-            </td>
+            <td><pre></pre></td>
             <td></td>
-            <td>
-
-            ```ts
-            ```
-
-            </td>
+            <td><pre></pre></td>
             <td></td>
         </tr>
     </tbody>
