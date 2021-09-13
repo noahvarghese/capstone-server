@@ -27,9 +27,29 @@ They may be moved into their own repo at the end of this to showcase all parts o
 ## Environment Variables
 
 -   Env variables must be loaded into the Elastic Beanstalk as well as the job runner for CI/CD
-- copy .env_blank to .env
+-   copy .env_blank to .env and provide your own values
 
-| name | 
+| name                  | type                       | description                                                                                                                      |
+| --------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| DB                    | string                     | the name of the SQL database to be connected to                                                                                  |
+| DB_PORT               | number                     | the port to connect on                                                                                                           |
+| DB_PWD                | string                     | the password to connect to the SQL database                                                                                      |
+| DB_TYPE               | "mysql" \| "postgres"      | the type of SQL database to be connected to                                                                                      |
+| DB_URL                | string                     | the FQDN or IP address of the SQL database                                                                                       |
+| DB_USER               | string                     | the user to connect as                                                                                                           |
+| ENABLE_MULTITHREADING | boolean                    | whether to run on multiple cores                                                                                                 |
+| ENV_LOCAL_CLIENT      | string                     | the url or ip address of the frontend in local development eg. protocol://path:port                                              |
+| ENV_DEV_CLIENT        | string                     | the url or ip address of the frontend in qa eg. protocol://path:port                                                             |
+| ENV_PROD_CLIENT       | string                     | the url or ip address of the frontend in production eg. protocol://path:port                                                     |
+| ENV_LOCAL_SERVER      | string                     | the url or ip address of the backend in local development eg. protocol://path:port                                               |
+| ENV_DEV_SERVER        | string                     | the url or ip address of the backend in qa eg. protocol://path:port                                                              |
+| ENV_PROD_SERVER       | string                     | the url or ip address of the backend in production eg. protocol://path:port                                                      |
+| TARGET_ENV            | "LOCAL" \| "DEV" \| "PROD" | which environment is being targeted                                                                                              |
+| MAIL_USER             | string                     | the email address of the gmail account to be used to send emails                                                                 |
+| MAIL_PWD              | string                     | the password or key for the gmail account (see <a href="https://www.npmjs.com/package/nodemailer">nodemailers</a> documentation) |
+| SESSION_ID            | string                     | id to use for session cookie                                                                                                     |
+| SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
+| LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
 
 ## CI/CD
 
