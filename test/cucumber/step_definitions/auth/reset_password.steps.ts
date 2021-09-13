@@ -103,13 +103,18 @@ When(
         // With password, confirmPassword as params
         const body = new FormData();
         body.append("password", newPassword);
-        body.append("confirmPassword", invalid_password ?? newPassword);
+        body.append("confirm_password", invalid_password ?? newPassword);
 
+        console.log(body);
         // checks if an invalid token was provided for the test
-        await fetch(server + `auth/resetPassword/${invalid_token ?? token}`, {
-            method: "POST",
-            body,
-        });
+        const response = await fetch(
+            server + `auth/resetPassword/${invalid_token ?? token}`,
+            {
+                method: "POST",
+                body,
+            }
+        );
+        console.log(response.status);
 
         const connection = this.getCustomProp<Connection>("connection");
 
@@ -159,7 +164,7 @@ Then("they are sent a token", async function (this: BaseWorld) {
 
 Then("the password is reset", async function (this: BaseWorld) {
     const user = this.getCustomProp<User>("user");
-    // console.log(user);
+    console.log(user);
     expect(await user.comparePassword(newPassword)).to.be.true;
 });
 
