@@ -70,11 +70,9 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/login</td>
             <td>
             <pre>
-
             ```typescript
             {email: string; password: string;}
             ```
-
 </pre></td>
             <td>200</td>
             <td>void</td>
