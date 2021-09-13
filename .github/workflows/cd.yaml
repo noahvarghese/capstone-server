@@ -73,7 +73,7 @@ jobs:
       - name: build
         run: npm run-script build && cp package.json ./build
       - name: zip package
-        run: zip -r deploy.zip ./build
+        run: zip -r deploy.zip ./build && ls -la build
       - name: get version number
         run: |
           # Gets Whole Version Number
