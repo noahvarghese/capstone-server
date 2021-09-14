@@ -52,7 +52,7 @@ jobs:
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - name: install eb dependencies
         run: |
-          apt-get install \
+          sudo apt-get install \
             build-essential zlib1g-dev libssl-dev libncurses-dev \
             libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
       - name: get eb cli source
