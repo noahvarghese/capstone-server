@@ -86,6 +86,12 @@ jobs:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - uses: actions/setup-node@v2
+      - name: get version number
+        run: |
+          # Gets Whole Version Number
+          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
+          # VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
+          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
       - name: build
         run: npm run build
       - name: copy necessary files to build folder
@@ -98,12 +104,6 @@ jobs:
         run: zip -r deploy.zip ./build
       - name: upload artifact
         run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}/deploy_${{ env.VERSION }}.zip
-      - name: get version number
-        run: |
-          # Gets Whole Version Number
-          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
-          # VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
-          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
       - name: create application version
         run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy_${{ env.VERSION }}.zip"
       - name: update application
