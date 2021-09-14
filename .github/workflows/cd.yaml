@@ -109,8 +109,6 @@ jobs:
           envkey_TARGET_ENV: "PROD"
           file_name: .env
           directory: build
-      - name: read dotenv
-        run: cat .env
       - name: zip package
         run: zip -r deploy.zip ./build && ls -la build
       - name: get version number
