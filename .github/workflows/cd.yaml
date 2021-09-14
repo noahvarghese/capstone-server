@@ -97,7 +97,7 @@ jobs:
       - name: create artifact
         run: zip -r deploy.zip ./build
       - name: upload artifact
-        run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}/deploy.zip
+        run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}/deploy_${{ env.VERSION }}.zip
       - name: get version number
         run: |
           # Gets Whole Version Number
@@ -105,7 +105,7 @@ jobs:
           # VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
           echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
       - name: create application version
-        run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy.zip"
+        run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy_${{ env.VERSION }}.zip"
       - name: update application
         run: aws elasticbeanstalk update-environment --application-name ${{ secrets.AWS_APPLICATION_NAME }} --environment-name ${{ secrets.AWS_ENVIRONMENT_NAME }} --version-label ${{ env.VERSION }}
 
