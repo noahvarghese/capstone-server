@@ -47,7 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
+        # https://github.community/t/how-to-share-shell-profile-between-steps-or-how-to-use-nvm-rvm-in-steps/16398/2
+        shell: bash -l {0}
     steps:
       - uses: actions/checkout@v2
         with:
