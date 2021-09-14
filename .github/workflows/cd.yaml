@@ -59,8 +59,8 @@ jobs:
         run: git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
       - name: Full install
         run: ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
-      - name: Partial install
-        run: python aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
+      # - name: Partial install
+        # run: python aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
       - name: cleanup eb
         run: rm -rf ./aws-elastic-beanstalk-cli-setup
       - name: export PATH
