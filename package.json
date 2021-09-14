@@ -1,6 +1,6 @@
 {
     "name": "capstone-server",
-    "version": "1.0.17",
+    "version": "1.0.18",
     "description": "My Capstone",
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
