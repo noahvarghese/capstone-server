@@ -103,7 +103,7 @@ jobs:
       - name: create artifact
         run: zip -r deploy.zip ./build
       - name: upload artifact
-        run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}/deploy_${{ env.VERSION }}.zip
+        run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}deploy_${{ env.VERSION }}.zip
       - name: create application version
         run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy_${{ env.VERSION }}.zip"
       - name: update application
