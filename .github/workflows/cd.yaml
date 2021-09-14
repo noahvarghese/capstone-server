@@ -68,7 +68,7 @@ jobs:
       - name: cleanup eb
         run: rm -rf ./aws-elastic-beanstalk-cli-setup
       - name: export PATH
-        run: echo 'export PATH="/home/runner/.ebcli-virtual-env/executables:$PATH"' >> PATH=/home/runner/.bash_profile
+        run: echo 'export PATH="/home/runner/.ebcli-virtual-env/executables:$PATH"' >> /home/runner/.bash_profile
       - name: print eb version
         run: eb --version
           
