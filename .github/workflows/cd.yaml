@@ -45,6 +45,9 @@ jobs:
   #       run: npm run test:cucumber
   test-eb:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v2
         with:
