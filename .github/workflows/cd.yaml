@@ -90,7 +90,7 @@ jobs:
         run: npm run build
       - name: copy necessary files to build folder
         run: |
-          cp .ebextensions ./build
+          cp -r ./.ebextensions ./build
           cp package.json ./build
       - name: create artifact
         run: zip -r deploy.zip ./build
