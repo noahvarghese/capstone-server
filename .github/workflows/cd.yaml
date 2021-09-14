@@ -92,6 +92,8 @@ jobs:
         run: |
           cp -r ./.ebextensions ./build
           cp package.json ./build
+          cp Buildfile ./build
+          cp Procfile ./build
       - name: create artifact
         run: zip -r deploy.zip ./build
       - name: upload artifact
