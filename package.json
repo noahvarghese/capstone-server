@@ -2,6 +2,7 @@
     "name": "capstone-server",
     "version": "1.0.23",
     "description": "My Capstone",
+    "engines": {"node": "14.17.5"},
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
         "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
