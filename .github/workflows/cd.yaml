@@ -50,20 +50,23 @@ jobs:
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - name: install eb cli
+      - name: install eb dependencies
         run: |
-          git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
-          # Install eb cli only, do not use bundled installer
-          python aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
-          # Cleanup
-          rm -rf ./aws-elastic-beanstalk-cli-setup
-          export PATH=∼/.ebcli-virtual-env/executables:$PATH 
-          # Run deploy
-          # ∼/.ebcli-virtual-env/executables/eb 
-
+          apt-get install \
+            build-essential zlib1g-dev libssl-dev libncurses-dev \
+            libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
+      - name: get eb cli source
+        run: git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
+      - name: Full install
+        run: ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
+      - name: Partial install
+        run: python aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
+      - name: cleanup eb
+        run: rm -rf ./aws-elastic-beanstalk-cli-setup
+      - name: export PATH
+        run: export PATH=∼/.ebcli-virtual-env/executables:$PATH 
       - name: print eb version
-        run: |
-          eb --version
+        run: eb --version
           
 
   # bump-version-number:
