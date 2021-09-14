@@ -2,7 +2,6 @@
     "name": "capstone-server",
     "version": "1.0.12",
     "description": "My Capstone",
-    "main": "./src/index.ts",
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
         "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
