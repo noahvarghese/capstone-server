@@ -10,7 +10,7 @@ import { createSession } from "./session";
 import { Server } from "http";
 import fileUpload from "express-fileupload";
 
-const port = process.env.PORT ?? 8080;
+const port = process.env.PORT || 8081;
 
 // allows configuration of server for automated testing
 const setupServer = async (disableLogs = false, env?: "test" | "dev"): Promise<Server> => {
