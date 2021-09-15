@@ -1,5 +1,11 @@
 import cors from "cors";
-import { client as origin } from "./permalink";
+import { client } from "./permalink";
+
+let origin = client;
+
+if (origin[origin.length - 1] === "/") {
+    origin = origin.substring(0, origin.length - 1);
+}
 
 const corsOptions = {
     origin,
