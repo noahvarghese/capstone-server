@@ -21,7 +21,7 @@ router.post("/", async (request: Request, response: Response) => {
 
     try {
         await connection.manager.save(User, user);
-        await requestResetPasswordEmail(user, connection);
+        await requestResetPasswordEmail(user);
         response.sendStatus(200);
     } catch (e) {
         Logs.Error(e.message);
