@@ -1,6 +1,6 @@
 {
     "name": "capstone-server",
-    "version": "1.0.30",
+    "version": "1.0.31",
     "description": "My Capstone",
     "engines": {"node": "14.17.5"},
     "scripts": {
