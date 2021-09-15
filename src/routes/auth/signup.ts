@@ -216,7 +216,7 @@ router.post("/", async (req: Request, res: Response) => {
         await sendMail(user, {
             subject: "Welcome Onboard",
             html: `<div><h1>Welcome Onboard</h1><p>thank you ${user.first_name} ${user.last_name} for registering. We have notified ${business.name} that you have signed up.</p></div>`,
-        });
+        }, connection);
     } catch (e) {
         Logs.Error(e.message);
         // Don't fail as the user and business are created and the welcome email is a nice to have
@@ -239,7 +239,7 @@ router.post("/", async (req: Request, res: Response) => {
             subject,
             to: business.email,
             html,
-        });
+        }, connection);
     } catch (e) {
         Logs.Error(e.message);
         // Don't fail as the user and business are created and the welcome email is a nice to have

@@ -1,1 +1,1 @@
-make: ls -la && npm i
+make: npm i
