@@ -105,7 +105,7 @@ jobs:
             #       cp Buildfile ./build
             #       cp Procfile ./build
             - name: create artifact
-              run: zip -r deploy.zip ./build/* Procfile Buildfile package.json .ebextensions .platform
+              run: zip -r deploy.zip ./build/* Procfile Buildfile package.json package-lock.json .ebextensions .platform
             - name: upload artifact
               run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}deploy_${{ env.VERSION }}.zip
             - name: create application version
