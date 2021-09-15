@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import DBConnection from "../../test/util/db_connection";
 import User from "../models/user/user";
 import Event from "../models/event";
 import Logs from "./logs/logs";
