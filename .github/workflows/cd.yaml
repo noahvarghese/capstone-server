@@ -1,186 +1,183 @@
-name: Continuous Deployment 
+name: Continuous Deployment
 
 on:
-  push:
-   branches: [main]
+    push:
+        branches: [main]
 
 jobs:
-  # continuous-integration:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     DB: ${{ secrets.DB }}
-  #     DB_PORT: ${{ secrets.DB_PORT }}
-  #     DB_PWD: ${{ secrets.DB_PWD }}
-  #     DB_TYPE: ${{ secrets.DB_TYPE }}
-  #     DB_URL: ${{ secrets.DB_URL }}
-  #     DB_USER: ${{ secrets.DB_USER }}
-  #     ENABLE_MULTITHREADING: ${{ secrets.ENABLE_MULTITHREADING }}
-  #     ENV_DEV_CLIENT: ${{ secrets.ENV_DEV_CLIENT }}
-  #     ENV_LOCAL_CLIENT: ${{ secrets.ENV_LOCAL_CLIENT }}
-  #     ENV_PROD_CLIENT: ${{ secrets.ENV_PROD_CLIENT }}
-  #     ENV_LOCAL_SERVER: ${{ secrets.ENV_LOCAL_SERVER }}
-  #     ENV_DEV_SERVER: ${{ secrets.ENV_DEV_SERVER }}
-  #     ENV_PROD_SERVER: ${{ secrets.ENV_PROD_SERVER }}
-  #     LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-  #     MAIL_PWD: ${{ secrets.MAIL_PWD }}
-  #     MAIL_USER: ${{ secrets.MAIL_USER }}
-  #     PORT: ${{ secrets.PORT }}
-  #     SESSION_ID: ${{ secrets.SESSION_ID }}
-  #     SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-  #     TARGET_ENV: ${{ secrets.TARGET_ENV }}
-  #   if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-  #   steps: 
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #     - name: install python dependencies
-  #       run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
-  #     - name: reset test DB
-  #       run: python ./bin/reset_db/reset_db.py --files ./database/ -t
-  #     - uses: actions/setup-node@v2
-  #     - name: install dependencies
-  #       run: npm i
-  #     - name: unit test
-  #       run: npm run test:jest
-  #     - name: bdd test
-  #       run: npm run test:cucumber
-  bump-version-number:
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-    # needs: continuous-integration
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - name: Increment version by one
-        run: |
-          # Gets Whole Version Number
-          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g') 
-          # Gets last digit of version number
-          TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
-          # Adds 1 to last digit of version number
-          TRAILING_VERSION=$((TRAILING_VERSION+1))
-          VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
-          # Apply new version number to package.json
-          sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
-          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
-      - name: Commit & Push changes
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: bump version ${{ env.VERSION }} [skip ci]
+    # continuous-integration:
+    #   runs-on: ubuntu-latest
+    #   env:
+    #     DB: ${{ secrets.DB }}
+    #     DB_PORT: ${{ secrets.DB_PORT }}
+    #     DB_PWD: ${{ secrets.DB_PWD }}
+    #     DB_TYPE: ${{ secrets.DB_TYPE }}
+    #     DB_URL: ${{ secrets.DB_URL }}
+    #     DB_USER: ${{ secrets.DB_USER }}
+    #     ENABLE_MULTITHREADING: ${{ secrets.ENABLE_MULTITHREADING }}
+    #     ENV_DEV_CLIENT: ${{ secrets.ENV_DEV_CLIENT }}
+    #     ENV_LOCAL_CLIENT: ${{ secrets.ENV_LOCAL_CLIENT }}
+    #     ENV_PROD_CLIENT: ${{ secrets.ENV_PROD_CLIENT }}
+    #     ENV_LOCAL_SERVER: ${{ secrets.ENV_LOCAL_SERVER }}
+    #     ENV_DEV_SERVER: ${{ secrets.ENV_DEV_SERVER }}
+    #     ENV_PROD_SERVER: ${{ secrets.ENV_PROD_SERVER }}
+    #     LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+    #     MAIL_PWD: ${{ secrets.MAIL_PWD }}
+    #     MAIL_USER: ${{ secrets.MAIL_USER }}
+    #     PORT: ${{ secrets.PORT }}
+    #     SESSION_ID: ${{ secrets.SESSION_ID }}
+    #     SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+    #     TARGET_ENV: ${{ secrets.TARGET_ENV }}
+    #   if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    #   steps:
+    #     - uses: actions/checkout@v2
+    #     - uses: actions/setup-python@v2
+    #     - name: install python dependencies
+    #       run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
+    #     - name: reset test DB
+    #       run: python ./bin/reset_db/reset_db.py --files ./database/ -t
+    #     - uses: actions/setup-node@v2
+    #     - name: install dependencies
+    #       run: npm i
+    #     - name: unit test
+    #       run: npm run test:jest
+    #     - name: bdd test
+    #       run: npm run test:cucumber
+    bump-version-number:
+        if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+        # needs: continuous-integration
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+                  fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+            - name: Increment version by one
+              run: |
+                  # Gets Whole Version Number
+                  VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g') 
+                  # Gets last digit of version number
+                  TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
+                  # Adds 1 to last digit of version number
+                  TRAILING_VERSION=$((TRAILING_VERSION+1))
+                  VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
+                  # Apply new version number to package.json
+                  sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
+                  echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
+            - name: Commit & Push changes
+              uses: actions-js/push@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  message: bump version ${{ env.VERSION }} [skip ci]
 
-  aws-cli-deploy:
-    needs: bump-version-number
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-    runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      # Needed to set the region in order for the aws cli not to fail
-      AWS_REGION: "ca-central-1"
-      AWS_DEFAULT_REGION: "ca-central-1"
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - uses: actions/setup-node@v2
-      - name: get version number
-        run: |
-          # Gets Whole Version Number
-          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
-          # Gets last digit of version number
-          TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
-          # Adds 1 to last digit of version number
-          TRAILING_VERSION=$((TRAILING_VERSION+1))
-          VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
-          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
-      - name: build
-        run: npm run build
-      - name: copy necessary files to build folder
-        run: |
-          cp -r ./.ebextensions ./build
-          cp package.json ./build
-          cp Buildfile ./build
-          cp Procfile ./build
-      - name: create artifact
-        run: zip -r deploy.zip ./build
-      - name: upload artifact
-        run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}deploy_${{ env.VERSION }}.zip
-      - name: create application version
-        run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy_${{ env.VERSION }}.zip"
-      - name: update application
-        run: aws elasticbeanstalk update-environment --application-name ${{ secrets.AWS_APPLICATION_NAME }} --environment-name ${{ secrets.AWS_ENVIRONMENT_NAME }} --version-label ${{ env.VERSION }}
+    aws-cli-deploy:
+        needs: bump-version-number
+        if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+        runs-on: ubuntu-latest
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            # Needed to set the region in order for the aws cli not to fail
+            AWS_REGION: "ca-central-1"
+            AWS_DEFAULT_REGION: "ca-central-1"
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+                  fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+            - uses: actions/setup-node@v2
+            - name: get version number
+              run: |
+                  # Gets Whole Version Number
+                  VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
+                  # Gets last digit of version number
+                  TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
+                  # Adds 1 to last digit of version number
+                  TRAILING_VERSION=$((TRAILING_VERSION+1))
+                  VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
+                  echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
+            - name: build
+              run: npm run build
+            # - name: copy necessary files to build folder
+            #   run: |
+            #       cp -r ./.ebextensions ./build
+            #       cp package.json ./build
+            #       cp Buildfile ./build
+            #       cp Procfile ./build
+            - name: create artifact
+              run: zip -r deploy.zip ./build/* Procfile Buildfile package.json .ebextensions
+            - name: upload artifact
+              run: aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_ARTIFACT_BUCKET }}/${{ secrets.AWS_S3_ARTIFACT_LOCATION }}deploy_${{ env.VERSION }}.zip
+            - name: create application version
+              run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy_${{ env.VERSION }}.zip"
+            - name: update application
+              run: aws elasticbeanstalk update-environment --application-name ${{ secrets.AWS_APPLICATION_NAME }} --environment-name ${{ secrets.AWS_ENVIRONMENT_NAME }} --version-label ${{ env.VERSION }}
 
-  # eb-deploy:
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       # https://github.community/t/how-to-share-shell-profile-between-steps-or-how-to-use-nvm-rvm-in-steps/16398/2
-  #       shell: bash -l {0}
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #       with:
-  #         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-  #         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-  #     - name: install eb dependencies
-  #       run: |
-  #         sudo apt-get install \
-  #           build-essential zlib1g-dev libssl-dev libncurses-dev \
-  #           libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
-  #     - name: get eb cli source
-  #       run: git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
-  #     - name: Full install
-  #       run: ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
-  #     # - name: Partial install
-  #       # run: python aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
-  #     - name: cleanup eb
-  #       run: rm -rf ./aws-elastic-beanstalk-cli-setup
-  #     - name: export PATH
-  #       run: echo 'export PATH="/home/runner/.ebcli-virtual-env/executables:$PATH"' >> /home/runner/.bash_profile
-  #     - name: build
-  #       run: npm run build
-  #     - name: copy necessary files to build folder
-  #       run: |
-  #         cp .ebextensions ./build
-  #         cp package.json ./build
-  #     - name: create artifact
-  #       run: zip -r deploy.zip ./build
+    # eb-deploy:
+    #   runs-on: ubuntu-latest
+    #   defaults:
+    #     run:
+    #       # https://github.community/t/how-to-share-shell-profile-between-steps-or-how-to-use-nvm-rvm-in-steps/16398/2
+    #       shell: bash -l {0}
+    #   steps:
+    #     - uses: actions/checkout@v2
+    #       with:
+    #         persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+    #         fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+    #     - name: install eb dependencies
+    #       run: |
+    #         sudo apt-get install \
+    #           build-essential zlib1g-dev libssl-dev libncurses-dev \
+    #           libffi-dev libsqlite3-dev libreadline-dev libbz2-dev
+    #     - name: get eb cli source
+    #       run: git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
+    #     - name: Full install
+    #       run: ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
+    #     # - name: Partial install
+    #       # run: python aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
+    #     - name: cleanup eb
+    #       run: rm -rf ./aws-elastic-beanstalk-cli-setup
+    #     - name: export PATH
+    #       run: echo 'export PATH="/home/runner/.ebcli-virtual-env/executables:$PATH"' >> /home/runner/.bash_profile
+    #     - name: build
+    #       run: npm run build
+    #     - name: copy necessary files to build folder
+    #       run: |
+    #         cp .ebextensions ./build
+    #         cp package.json ./build
+    #     - name: create artifact
+    #       run: zip -r deploy.zip ./build
 
-  # continuous-deployment:
-  #   needs: bump-version-number
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-node@v2
-  #     - name: Cache node modules
-  #       uses: actions/cache@v1
-  #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-node-
-  #     - name: build
-  #       run: npm run-script build && cp package.json ./build
-  #     - name: zip package
-  #       run: zip -r deploy.zip ./build && ls -la build
-  #     - name: get version number
-  #       run: |
-  #         # Gets Whole Version Number
-  #         VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
-  #         # VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3) 
-  #         echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
-  #     - name: Deploy to EB
-  #       uses: einaregilsson/beanstalk-deploy@v18
-  #       with:
-  #         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         application_name: ${{ secrets.AWS_APPLICATION_NAME }} 
-  #         environment_name: ${{ secrets.AWS_ENVIRONMENT_NAME }} 
-  #         version_label: ${{ env.VERSION }} 
-  #         region: ${{ secrets.AWS_REGION }}
-  #         deployment_package: deploy.zip
-
-
- 
+    # continuous-deployment:
+    #   needs: bump-version-number
+    #   runs-on: ubuntu-latest
+    #   steps:
+    #     - uses: actions/checkout@v2
+    #     - uses: actions/setup-node@v2
+    #     - name: Cache node modules
+    #       uses: actions/cache@v1
+    #       with:
+    #         path: ~/.npm
+    #         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    #         restore-keys: |
+    #           ${{ runner.os }}-node-
+    #     - name: build
+    #       run: npm run-script build && cp package.json ./build
+    #     - name: zip package
+    #       run: zip -r deploy.zip ./build && ls -la build
+    #     - name: get version number
+    #       run: |
+    #         # Gets Whole Version Number
+    #         VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g')
+    #         # VERSION=$(echo $VERSION | cut -d . -f 1)$(echo $VERSION | cut -d . -f 2)$(echo $VERSION | cut -d . -f 3)
+    #         echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
+    #     - name: Deploy to EB
+    #       uses: einaregilsson/beanstalk-deploy@v18
+    #       with:
+    #         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #         application_name: ${{ secrets.AWS_APPLICATION_NAME }}
+    #         environment_name: ${{ secrets.AWS_ENVIRONMENT_NAME }}
+    #         version_label: ${{ env.VERSION }}
+    #         region: ${{ secrets.AWS_REGION }}
+    #         deployment_package: deploy.zip
