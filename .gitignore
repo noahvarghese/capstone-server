@@ -2,6 +2,7 @@
 /coverage
 /build
 .env
+.vscode
 *.txt
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
