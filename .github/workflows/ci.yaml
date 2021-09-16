@@ -44,12 +44,11 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - name: install python dependencies
-        run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
-      - name: reset test DB
-        run: python bin/reset_db/reset_db.py -t --files ./database/
-        # run: python ./bin/reset_db/reset_db.py --files ./database/ -t
+      # - uses: actions/setup-python@v2
+      # - name: install python dependencies
+      #   run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
+      # - name: reset test DB
+      #   run: python bin/reset_db/reset_db.py -t --files ./database/
       - uses: actions/setup-node@v2
       - name: install dependencies
         run: npm i
