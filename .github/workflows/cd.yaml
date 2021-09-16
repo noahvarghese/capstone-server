@@ -28,7 +28,7 @@ jobs:
       SESSION_ID: ${{ secrets.SESSION_ID }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       TARGET_ENV: ${{ secrets.TARGET_ENV }}
-    if: "(!contains(github.event.head_commit.message, 'pipeline skip' && !contains(github.event.head_commit.message, 'skip pipeline')) || !contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
+    if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || !contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
     steps:
       - uses: actions/checkout@v2
       # - uses: actions/setup-python@v2
@@ -43,9 +43,8 @@ jobs:
         run: npm run test:jest
       - name: bdd test
         run: npm run test:cucumber
- 
   continuous-deployment:
-    if: "(!contains(github.event.head_commit.message, 'pipeline skip' && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'cd skip') && !contains(github.event.head_commit.message, 'skip cd'))"
+    if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'cd skip') && !contains(github.event.head_commit.message, 'skip cd'))"
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
