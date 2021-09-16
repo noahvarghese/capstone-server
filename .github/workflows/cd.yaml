@@ -5,45 +5,45 @@ on:
         branches: [main]
 
 jobs:
-  # continuous-integration:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     DB: ${{ secrets.DB }}
-  #     DB_PORT: ${{ secrets.DB_PORT }}
-  #     DB_PWD: ${{ secrets.DB_PWD }}
-  #     DB_TYPE: ${{ secrets.DB_TYPE }}
-  #     DB_URL: ${{ secrets.DB_URL }}
-  #     DB_USER: ${{ secrets.DB_USER }}
-  #     ENABLE_MULTITHREADING: ${{ secrets.ENABLE_MULTITHREADING }}
-  #     ENV_DEV_CLIENT: ${{ secrets.ENV_DEV_CLIENT }}
-  #     ENV_LOCAL_CLIENT: ${{ secrets.ENV_LOCAL_CLIENT }}
-  #     ENV_PROD_CLIENT: ${{ secrets.ENV_PROD_CLIENT }}
-  #     ENV_LOCAL_SERVER: ${{ secrets.ENV_LOCAL_SERVER }}
-  #     ENV_DEV_SERVER: ${{ secrets.ENV_DEV_SERVER }}
-  #     ENV_PROD_SERVER: ${{ secrets.ENV_PROD_SERVER }}
-  #     LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-  #     MAIL_PWD: ${{ secrets.MAIL_PWD }}
-  #     MAIL_USER: ${{ secrets.MAIL_USER }}
-  #     PORT: ${{ secrets.PORT }}
-  #     SESSION_ID: ${{ secrets.SESSION_ID }}
-  #     SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-  #     TARGET_ENV: ${{ secrets.TARGET_ENV }}
-  #   if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-python@v2
-  #     - name: install python dependencies
-  #       run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
-  #     - name: reset test DB
-  #       run: python ./bin/reset_db/reset_db.py --files ./database/ -t
-  #     - uses: actions/setup-node@v2
-  #     - name: install dependencies
-  #       run: npm i
-  #     - name: unit test
-  #       run: npm run test:jest
-  #     - name: bdd test
-  #       run: npm run test:cucumber
-  bump-version-number:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    env:
+      DB: ${{ secrets.DB }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_PWD: ${{ secrets.DB_PWD }}
+      DB_TYPE: ${{ secrets.DB_TYPE }}
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USER: ${{ secrets.DB_USER }}
+      ENABLE_MULTITHREADING: ${{ secrets.ENABLE_MULTITHREADING }}
+      ENV_DEV_CLIENT: ${{ secrets.ENV_DEV_CLIENT }}
+      ENV_LOCAL_CLIENT: ${{ secrets.ENV_LOCAL_CLIENT }}
+      ENV_PROD_CLIENT: ${{ secrets.ENV_PROD_CLIENT }}
+      ENV_LOCAL_SERVER: ${{ secrets.ENV_LOCAL_SERVER }}
+      ENV_DEV_SERVER: ${{ secrets.ENV_DEV_SERVER }}
+      ENV_PROD_SERVER: ${{ secrets.ENV_PROD_SERVER }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      MAIL_PWD: ${{ secrets.MAIL_PWD }}
+      MAIL_USER: ${{ secrets.MAIL_USER }}
+      PORT: ${{ secrets.PORT }}
+      SESSION_ID: ${{ secrets.SESSION_ID }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      TARGET_ENV: ${{ secrets.TARGET_ENV }}
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: install python dependencies
+        run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
+      - name: reset test DB
+        run: python ./bin/reset_db/reset_db.py --files ./database/ -t
+      - uses: actions/setup-node@v2
+      - name: install dependencies
+        run: npm i
+      - name: unit test
+        run: npm run test:jest
+      - name: bdd test
+        run: npm run test:cucumber
+  bump-version-number-and-format-files:
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
     # needs: continuous-integration
     runs-on: ubuntu-latest
@@ -52,6 +52,11 @@ jobs:
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - uses: actions/setup-node@v2
+      - name: install dependencies
+        run: npm i
+      - name: format files
+        run: npm run format
       - name: Increment version by one
         run: |
           # Gets Whole Version Number
@@ -70,7 +75,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: bump version ${{ env.VERSION }} [skip ci]
   continuous-deployment:
-    needs: bump-version-number
+    needs: bump-version-number-and-format-files
     if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
     env:
