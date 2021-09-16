@@ -61,17 +61,22 @@ router.post("/", async (req: Request, res: Response) => {
     const skipBusinessValues = business_code && business_code.trim();
 
     for (const [key, value] of Object.entries(req.body)) {
-        if (!skipBusinessValues || !key.includes("business_")) {
+        // if (!skipBusinessValues || !key.includes("business_")) {
+        if (
+            !key.includes("business") ||
+            (!skipBusinessValues && key !== "business_code")
+        ) {
             if (!value || (value as string).trim() === "") {
                 res.status(400).json({
-                    message: `${
-                        key[0].toUpperCase() + key.substring(1)
-                    } cannot be empty`,
+                    message: `${(key[0].toUpperCase() + key.substring(1))
+                        .split("_")
+                        .join(" ")} cannot be empty`,
                     field: key,
                 });
                 return;
             }
         }
+        // }
     }
 
     if (validator.isEmail(email) === false) {
