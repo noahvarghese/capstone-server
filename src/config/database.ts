@@ -120,4 +120,10 @@ export const testConnection: ConnectionOptions = {
 };
 
 export default async (env?: "test" | "dev"): Promise<Connection> =>
-    await createConnection(env === "test" ? testConnection : env === "dev" ? devConnection : connection);
+    await createConnection(
+        env === "test"
+            ? testConnection
+            : env === "dev"
+            ? devConnection
+            : connection
+    );

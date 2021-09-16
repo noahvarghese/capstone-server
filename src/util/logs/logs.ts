@@ -89,9 +89,8 @@ export default class Logs {
     ): void => {
         if (logLevel <= Logs.logLevel) {
             try {
-                const { prefix, consoleFunction }: LogData = Logs.getLogData(
-                    logLevel
-                );
+                const { prefix, consoleFunction }: LogData =
+                    Logs.getLogData(logLevel);
 
                 if (optionalParams.length > 1 || optionalParams[0]) {
                     consoleFunction(

@@ -8,8 +8,8 @@
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
         "build": "rm -rf ./build && tsc -p ./ && mv ./build/src/* ./build/ && rmdir ./build/src",
-        "format": "prettier --write **/*.ts",
-        "format-check": "prettier --check **/*.ts",
+        "format": "prettier --write \"**/*.ts\"",
+        "format-check": "prettier --check \"**/*.ts\"",
         "dev": "nodemon -e ts,.env,json --ignore build/ --ignore test/ --exec ./node_modules/.bin/ts-node ./src/index.ts",
         "start": "node ./index.js",
         "test:cucumber": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter --exit",

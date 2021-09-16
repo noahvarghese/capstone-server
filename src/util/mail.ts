@@ -13,7 +13,7 @@ export interface MailOpts {
 }
 
 export const requestResetPasswordEmail = async (
-    user: User,
+    user: User
 ): Promise<boolean> => {
     const resetPasswordUrl = client + "auth/resetPassword/" + user.token;
 
@@ -42,7 +42,7 @@ export const resetPasswordEmail = async (user: User): Promise<boolean> => {
 
 export const sendMail = async (
     model: User | Business,
-    mailOpts: MailOpts,
+    mailOpts: MailOpts
 ): Promise<boolean> => {
     const transporter = nodemailer.createTransport({
         service: "gmail",

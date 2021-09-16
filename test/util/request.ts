@@ -14,18 +14,27 @@ export const getResponseStatus = async (url: string): Promise<number> => {
     });
 };
 
-export const getRedirectInfo = async (url: string): Promise<{ status: number; location: string }> => {
-    return await new Promise<{ status: number; location: string; }>((res) => {
+export const getRedirectInfo = async (
+    url: string
+): Promise<{ status: number; location: string }> => {
+    return await new Promise<{ status: number; location: string }>((res) => {
         fetch(url, { redirect: "manual" })
             .then(async (response) => {
-                const returnVal: { status: number; location: string } = {status: -1, location: ""};
+                const returnVal: { status: number; location: string } = {
+                    status: -1,
+                    location: "",
+                };
 
                 returnVal.status = response.status;
-                returnVal.location = Array.from(response.headers.entries()).find(([key]) => key === "location")?.[1] ?? "";
+                returnVal.location =
+                    Array.from(response.headers.entries()).find(
+                        ([key]) => key === "location"
+                    )?.[1] ?? "";
                 res(returnVal);
-            }).catch((err) => {
+            })
+            .catch((err) => {
                 Logs.Test(err);
                 res(err);
             });
     });
-}
+};

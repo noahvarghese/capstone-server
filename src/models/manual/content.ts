@@ -22,7 +22,8 @@ const ContentBuilder = <T extends Partial<ContentAttributes>>(
 @Entity({ name: "content" })
 export default class Content
     extends EditableContentModel
-    implements ContentAttributes {
+    implements ContentAttributes
+{
     @Column()
     public title!: string;
     @Column()

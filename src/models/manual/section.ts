@@ -20,7 +20,8 @@ const SectionBuilder = <T extends Partial<SectionAttributes>>(
 @Entity({ name: "section" })
 export default class Section
     extends EditableContentModel
-    implements SectionAttributes {
+    implements SectionAttributes
+{
     @Column()
     public title!: string;
     @Column()

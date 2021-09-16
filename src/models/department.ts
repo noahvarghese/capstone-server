@@ -21,7 +21,8 @@ const DepartmentBuilder = <T extends Partial<DepartmentAttributes>>(
 @Entity({ name: "department" })
 export default class Department
     extends BaseModel
-    implements DepartmentAttributes {
+    implements DepartmentAttributes
+{
     @Column()
     public name!: string;
     @Column()

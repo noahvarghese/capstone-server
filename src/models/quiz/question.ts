@@ -22,7 +22,8 @@ const QuestionBuilder = <T extends Partial<QuestionAttributes>>(
 @Entity({ name: "quiz_question" })
 export default class Question
     extends EditableContentModel
-    implements QuestionAttributes {
+    implements QuestionAttributes
+{
     @Column()
     public question!: string;
     @Column()

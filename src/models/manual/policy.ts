@@ -20,7 +20,8 @@ const PolicyBuilder = <T extends Partial<PolicyAttributes>>(
 @Entity({ name: "policy" })
 export default class Policy
     extends EditableContentModel
-    implements PolicyAttributes {
+    implements PolicyAttributes
+{
     @Column()
     public title!: string;
     @Column()

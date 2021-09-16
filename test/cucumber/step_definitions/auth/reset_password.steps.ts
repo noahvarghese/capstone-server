@@ -106,13 +106,10 @@ When(
         body.append("confirm_password", invalid_password ?? newPassword);
 
         // checks if an invalid token was provided for the test
-        await fetch(
-            server + `auth/resetPassword/${invalid_token ?? token}`,
-            {
-                method: "POST",
-                body,
-            }
-        );
+        await fetch(server + `auth/resetPassword/${invalid_token ?? token}`, {
+            method: "POST",
+            body,
+        });
 
         const connection = this.getCustomProp<Connection>("connection");
 

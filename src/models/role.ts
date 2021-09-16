@@ -22,7 +22,8 @@ const RoleBuilder = <T extends Partial<RoleAttributes>>(
 @Entity()
 export default class Role
     extends EditableContentModel
-    implements RoleAttributes {
+    implements RoleAttributes
+{
     @Column()
     public name!: string;
     @Column()
