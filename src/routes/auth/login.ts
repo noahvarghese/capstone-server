@@ -6,7 +6,6 @@ const router = Router();
 router.post("/", async (req: Request, res: Response) => {
     const { SqlConnection: connection } = req;
 
-    console.log(typeof req.body);
     // because form data gets sent as an object
     // and sending a stringified json results in a string
     const { email, password } = req.body;
