@@ -153,9 +153,11 @@ def execute_sql(db, cursor):
             cursor.execute(statment)
             db.commit()
         except:
+            print()
+            print(statment, "\n")
             cursor.close()
             db.close()
-            sys.exit("SQL query failed" + "\n" + statement, "\n")
+            sys.exit("SQL query failed" + "\n")
 
 def go_through_files(file_list, prev_path=""):
     # Loop through array
