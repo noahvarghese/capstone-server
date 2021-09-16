@@ -6,7 +6,7 @@ import { requestResetPasswordEmail } from "../../util/mail";
 const router = Router();
 
 router.post("/", async (request: Request, response: Response) => {
-    const { email } = JSON.parse(request.body);
+    const { email } = request.body;
     const { SqlConnection: connection } = request;
     const users = await connection.manager.find(User, { where: { email } });
 

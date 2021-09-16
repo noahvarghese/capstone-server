@@ -53,7 +53,7 @@ router.post("/", async (req: Request, res: Response) => {
         business_postal_code,
         business_phone,
         business_email,
-    } = JSON.parse(req.body) as RegisterProps;
+    } = req.body as RegisterProps;
 
     // checks for empty entries
     // this means that they were explicitly set as empty

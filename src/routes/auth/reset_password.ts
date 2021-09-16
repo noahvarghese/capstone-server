@@ -8,7 +8,7 @@ const router = Router();
 router.post("/:token", async (request: Request, response: Response) => {
     const { SqlConnection: connection } = request;
     const { token } = request.params;
-    const { password, confirm_password } = JSON.parse(request.body);
+    const { password, confirm_password } = request.body;
 
     if (password !== confirm_password || !token) {
         response.sendStatus(400);

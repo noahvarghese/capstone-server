@@ -46,10 +46,20 @@ const retrieveConnection = (
     next();
 };
 
+const parseRequestBodyToJSON = (
+    req: Request,
+    _: Response,
+    next: NextFunction
+) => {
+    req.body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    next();
+};
+
 const middlewares = {
     clearCookie,
     requireAuth,
     retrieveConnection,
+    parseRequestBodyToJSON,
 };
 
 export default Object.values(middlewares);
