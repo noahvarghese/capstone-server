@@ -48,11 +48,18 @@ const retrieveConnection = (
 
 const parseRequestBodyToJSON = (
     req: Request,
-    _: Response,
+    res: Response,
     next: NextFunction
 ) => {
-    req.body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-    next();
+    try {
+        req.body =
+            typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+        next();
+    } catch (e) {
+        Logs.Error(e.message);
+        res.sendStatus(500);
+    }
 };
 
 const middlewares = {
