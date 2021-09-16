@@ -28,7 +28,7 @@ jobs:
       SESSION_ID: ${{ secrets.SESSION_ID }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       TARGET_ENV: ${{ secrets.TARGET_ENV }}
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    if: "(!contains(github.event.head_commit.message, 'pipeline skip' && !contains(github.event.head_commit.message, 'skip pipeline')) || !contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
     steps:
       - uses: actions/checkout@v2
       # - uses: actions/setup-python@v2
@@ -43,40 +43,9 @@ jobs:
         run: npm run test:jest
       - name: bdd test
         run: npm run test:cucumber
-  bump-version-number-and-format-files:
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
-    needs: continuous-integration
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - uses: actions/setup-node@v2
-      - name: install dependencies
-        run: npm i
-      - name: format files
-        run: npm run format
-      - name: Increment version by one
-        run: |
-          # Gets Whole Version Number
-          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g') 
-          # Gets last digit of version number
-          TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
-          # Adds 1 to last digit of version number
-          TRAILING_VERSION=$((TRAILING_VERSION+1))
-          VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
-          # Apply new version number to package.json
-          sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
-          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
-      - name: Commit & Push changes
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: bump version ${{ env.VERSION }} [skip ci]
+ 
   continuous-deployment:
-    needs: bump-version-number-and-format-files
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    if: "(!contains(github.event.head_commit.message, 'pipeline skip' && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'cd skip') && !contains(github.event.head_commit.message, 'skip cd'))"
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -110,3 +79,34 @@ jobs:
         run: aws elasticbeanstalk create-application-version --application-name ${{ secrets.AWS_APPLICATION_NAME }} --version-label ${{ env.VERSION }} --source-bundle S3Bucket="noahvarghese.me",S3Key="capstone/artifacts/deploy_${{ env.VERSION }}.zip"
       - name: update application
         run: aws elasticbeanstalk update-environment --application-name ${{ secrets.AWS_APPLICATION_NAME }} --environment-name ${{ secrets.AWS_ENVIRONMENT_NAME }} --version-label ${{ env.VERSION }}
+  bump-version-number-and-format-files:
+    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
+    needs: continuous-deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - uses: actions/setup-node@v2
+      - name: install dependencies
+        run: npm i
+      - name: format files
+        run: npm run format
+      - name: Increment version by one
+        run: |
+          # Gets Whole Version Number
+          VERSION=$(cat ./package.json | grep version | cut -d : -f 2 | sed 's/\",$//g' | sed 's/\"//g') 
+          # Gets last digit of version number
+          TRAILING_VERSION=$(echo $VERSION | cut -d . -f 3)
+          # Adds 1 to last digit of version number
+          TRAILING_VERSION=$((TRAILING_VERSION+1))
+          VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
+          # Apply new version number to package.json
+          sed 's/\"version\":.*/\"version\": '$VERSION',/g' -i package.json 
+          echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: bump version ${{ env.VERSION }} [skip ci]
