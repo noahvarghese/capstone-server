@@ -6,7 +6,7 @@ const router = Router();
 router.post("/", async (req: Request, res: Response) => {
     const { SqlConnection: connection } = req;
 
-    const { email, password } = req.body;
+    const { email, password } = JSON.parse(req.body);
 
     const users = await connection.manager.find(User, {
         where: { email },
