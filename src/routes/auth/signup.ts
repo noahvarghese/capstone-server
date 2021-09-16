@@ -61,7 +61,6 @@ router.post("/", async (req: Request, res: Response) => {
     const skipBusinessValues = business_code && business_code.trim();
 
     for (const [key, value] of Object.entries(req.body)) {
-        // if (!skipBusinessValues || !key.includes("business_")) {
         if (
             !key.includes("business") ||
             (!skipBusinessValues && key !== "business_code")
@@ -76,7 +75,6 @@ router.post("/", async (req: Request, res: Response) => {
                 return;
             }
         }
-        // }
     }
 
     if (validator.isEmail(email) === false) {
