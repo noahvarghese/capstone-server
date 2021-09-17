@@ -22,6 +22,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
 
     if (req.originalUrl === "/") {
         next();
+        return;
     }
 
     for (const route of publicRoutes) {
