@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import Logs from "../util/logs/logs";
 import { client } from "../util/permalink";
 import authRouter from "./auth";
 
@@ -9,7 +10,16 @@ router.use("/auth", authRouter);
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {
-    res.redirect(client + (req.originalUrl !== "/" ? req.originalUrl : ""));
+    Logs.Log("Invalid request to", req.originalUrl);
+
+    let redirectURL = client;
+
+    if (req.originalUrl !== "/") {
+        if (req.originalUrl[0] === "/") {
+            redirectURL += req.originalUrl.substring(1);
+        }
+    }
+    res.redirect(redirectURL);
 });
 
 export default router;

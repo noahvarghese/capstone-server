@@ -12,8 +12,17 @@ const clearCookie = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-    const publicRoutes = ["/", "login", "signup"];
+    const publicRoutes = [
+        "login",
+        "signup",
+        "resetPassword",
+        "requestResetPassword",
+    ];
     let requestedPublicResource = false;
+
+    if (req.originalUrl === "/") {
+        next();
+    }
 
     for (const route of publicRoutes) {
         if (req.originalUrl.includes(route)) {
