@@ -152,8 +152,9 @@ def execute_sql(db, cursor):
         try:
             cursor.execute(statment)
             db.commit()
-        except:
+        except Exception as e:
             print()
+            print(str(e))
             print(statment, "\n")
             cursor.close()
             db.close()
