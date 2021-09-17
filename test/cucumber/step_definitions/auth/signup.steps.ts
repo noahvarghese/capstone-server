@@ -5,7 +5,6 @@ import {
     userAttributes,
 } from "../../../sample_data/attributes";
 import BaseWorld from "../../support/base_world";
-import fetch from "node-fetch";
 import FormData from "form-data";
 import { server } from "../../../../src/util/permalink";
 import { Connection } from "typeorm";
@@ -13,6 +12,8 @@ import User from "../../../../src/models/user/user";
 import Business from "../../../../src/models/business";
 import Event from "../../../../src/models/event";
 import { expect } from "chai";
+import axios from "axios";
+import { getCookie } from "../../../util/request";
 
 Given("the user has valid inputs", function (this: BaseWorld) {
     this.setCustomProp<RegisterProps>("details", {
@@ -59,25 +60,26 @@ When(
             }
         }
 
-        const res = await fetch(server + "auth/signup", {
-            method: "POST",
-            body,
-        });
-
-        const cookies = res.headers.get("set-cookie");
+        let cookies: string | null = null;
+        let message = "";
+        let status: number;
 
         try {
-            this.setCustomProp<string>(
-                "message",
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ((await res.json()) as any).message
-            );
-        } catch (_) {
-            this.setCustomProp<string>("message", "");
+            const res = await axios.post(server("auth/signup"), body, {
+                headers: body.getHeaders(),
+            });
+
+            cookies = getCookie(res.headers);
+            status = res.status;
+            message = res.data.message;
+        } catch (err) {
+            const { response } = err;
+            status = response.status;
         }
 
+        this.setCustomProp<string>("message", message);
         this.setCustomProp<string | null>("cookies", cookies);
-        this.setCustomProp<number>("status", res.status);
+        this.setCustomProp<number>("status", status);
     }
 );
 
@@ -101,25 +103,26 @@ When(
             }
         }
 
-        const res = await fetch(server + "auth/signup", {
-            method: "POST",
-            body,
-        });
-
-        const cookies = res.headers.get("set-cookie");
+        let cookies: string | null = null;
+        let message = "";
+        let status: number;
 
         try {
-            this.setCustomProp<string>(
-                "message",
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ((await res.json()) as any).message
-            );
-        } catch (_) {
-            this.setCustomProp<string>("message", "");
+            const res = await axios.post(server("auth/signup"), body, {
+                headers: body.getHeaders(),
+            });
+
+            cookies = getCookie(res.headers);
+            status = res.status;
+            message = res.data.message;
+        } catch (err) {
+            const { response } = err;
+            status = response.status;
         }
 
+        this.setCustomProp<string>("message", message);
         this.setCustomProp<string | null>("cookies", cookies);
-        this.setCustomProp<number>("status", res.status);
+        this.setCustomProp<number>("status", status);
     }
 );
 

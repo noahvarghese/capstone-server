@@ -140,6 +140,7 @@ export default class Logs {
         message?: string | unknown,
         ...optionalParams: unknown[]
     ): void => {
+        console.trace();
         Logs.add(
             LogLevels.ERROR,
             message,

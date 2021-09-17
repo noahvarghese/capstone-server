@@ -7,18 +7,19 @@ import resetRoute from "./reset_password";
 
 const router = Router();
 
+router.use("/login", loginRoute);
+router.use("/signup", signupRoute);
+router.use("/logout", logoutRoute);
+router.use("/resetPassword", resetRoute);
+router.use("/requestResetPassword", requestResetRoute);
+
 router.post("/", (req: Request, res: Response) => {
+    console.log("received");
     if (req.session.user_id && req.session.business_id) {
         res.sendStatus(200);
     } else {
         res.sendStatus(400);
     }
 });
-
-router.use("/login", loginRoute);
-router.use("/signup", signupRoute);
-router.use("/logout", logoutRoute);
-router.use("/resetPassword", resetRoute);
-router.use("/requestResetPassword", requestResetRoute);
 
 export default router;

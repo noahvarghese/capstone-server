@@ -12,11 +12,12 @@ const clearCookie = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
-    const publicRoutes = [
-        "login",
-        "signup",
-        "resetPassword",
-        "requestResetPassword",
+    const publicRoutes: (string | RegExp)[] = [
+        "/auth",
+        "/auth/login",
+        "/auth/signup",
+        /^\/auth\/resetPassword\//,
+        "/auth/requestResetPassword",
     ];
     let requestedPublicResource = false;
 
@@ -26,14 +27,20 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     }
 
     for (const route of publicRoutes) {
-        if (req.originalUrl.includes(route)) {
-            requestedPublicResource = true;
-            break;
+        if (route instanceof RegExp) {
+            if (route.test(req.originalUrl)) {
+                requestedPublicResource = true;
+            }
+        } else {
+            if (req.originalUrl === route) {
+                requestedPublicResource = true;
+                break;
+            }
         }
     }
 
     if (requestedPublicResource === false && !req.session.user_id) {
-        res.redirect(client + "login");
+        res.redirect(client("login"));
         return;
     }
 

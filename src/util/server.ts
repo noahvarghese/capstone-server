@@ -30,6 +30,7 @@ const setupServer = async (
     /* Configure the formats to receive information */
     app.use(express.text());
     app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
     app.use(express.urlencoded({ extended: true }));
     app.use(fileUpload());
 

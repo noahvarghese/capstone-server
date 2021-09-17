@@ -15,7 +15,7 @@ export interface MailOpts {
 export const requestResetPasswordEmail = async (
     user: User
 ): Promise<boolean> => {
-    const resetPasswordUrl = client + "auth/resetPassword/" + user.token;
+    const resetPasswordUrl = client("auth/resetPassword/" + user.token);
 
     return await sendMail(user, {
         subject: "Reset Password Requested",

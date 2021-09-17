@@ -10,7 +10,7 @@ BeforeAll(async function () {
     server = await setupServer(disableLogs, "test");
 });
 
-AfterAll(async function () {
+AfterAll({ timeout: 20000 }, async function () {
     await new Promise<void>((res, rej) => {
         server.close((err) => {
             if (err) {

@@ -4,11 +4,11 @@ import { server } from "../../../../src/util/permalink";
 import { userAttributes } from "../../../sample_data/attributes";
 import DBConnection from "../../../util/db_connection";
 import Event from "../../../../src/models/event";
-import fetch from "node-fetch";
 import FormData from "form-data";
 import BaseWorld from "../../support/base_world";
 import { expect } from "chai";
 import { Connection } from "typeorm";
+import axios from "axios";
 
 const newPassword = "secret123";
 
@@ -21,13 +21,8 @@ Given("the user is registered", function (this: BaseWorld) {
 Given(
     "the user has requested to reset their password",
     async function (this: BaseWorld) {
-        const body = new FormData();
-        body.append("email", userAttributes.email);
-
-        // Send post request to /auth/requestPasswordReset with email
-        await fetch(server + "auth/requestResetPassword", {
-            method: "POST",
-            body,
+        await axios.post(server("auth/requestResetPassword"), {
+            email: userAttributes.email,
         });
 
         const connection = this.getCustomProp<Connection>("connection");
@@ -56,24 +51,19 @@ When(
     async function (this: BaseWorld) {
         const { email } = this.getCustomProp<{ email: string }>("credentials");
 
-        const body = new FormData();
-        body.append("email", email);
-
-        // Send post request to /auth/requestPasswordReset with email
-        const res = await fetch(server + "auth/requestResetPassword", {
-            method: "POST",
-            body,
-        });
+        let message = "";
 
         try {
-            this.setCustomProp<string>(
-                "message",
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ((await res.json()) as any).message
-            );
-        } catch (_) {
-            this.setCustomProp<string>("message", "");
+            // Send post request to /auth/requestPasswordReset with email
+            const res = await axios.post(server("auth/requestResetPassword"), {
+                email,
+            });
+            message = res.data.message;
+        } catch (err) {
+            fail("Reset password request failed");
         }
+
+        this.setCustomProp<string>("message", message);
 
         const connection = this.getCustomProp<Connection>("connection");
 
@@ -106,10 +96,16 @@ When(
         body.append("confirm_password", invalid_password ?? newPassword);
 
         // checks if an invalid token was provided for the test
-        await fetch(server + `auth/resetPassword/${invalid_token ?? token}`, {
-            method: "POST",
-            body,
-        });
+        try {
+            await axios.post(
+                server(`auth/resetPassword/${invalid_token ?? token}`),
+                body,
+                { headers: body.getHeaders() }
+            );
+        } catch (_) {
+            // We don't care about an error here
+            // as axios throws an error for any non 200 code
+        }
 
         const connection = this.getCustomProp<Connection>("connection");
 

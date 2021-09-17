@@ -1,20 +1,37 @@
 Feature: Auth
 
+@auth
+@revisit
+Scenario: Authenticated User revisiting
+    Given the user has been authenticated within the time limit
+    When the user checks if they are authenticated
+    Then a confirmation is returned
+
+@auth
+@revisit
+Scenario: Authenticated User revisiting
+    Given the user has not been authenticated
+    When the user checks if they are authenticated
+    Then an error is returned
+
 # Login
 
 @auth
+@login
 Scenario: Succesful Login
     Given the user has valid credentials
     When the user logs in
     Then a cookie should be returned
 
 @auth
+@login
 Scenario: Invalid Username
     Given the user has an invalid email
     When the user logs in
     Then it should be unsuccessful
 
 @auth
+@login
 Scenario: Invalid Password
     Given the user has an invalid password
     When the user logs in

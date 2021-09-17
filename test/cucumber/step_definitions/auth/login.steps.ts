@@ -4,8 +4,9 @@ import { server } from "../../../../src/util/permalink";
 import BaseWorld from "../../support/base_world";
 import { userAttributes } from "../../../sample_data/attributes";
 import { expect } from "chai";
-import fetch from "node-fetch";
+import axios from "axios";
 import FormData from "form-data";
+import { getCookie } from "../../../util/request";
 
 Given("the user has valid credentials", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
@@ -32,28 +33,30 @@ When("the user logs in", async function (this: BaseWorld) {
     const { email, password } =
         this.getCustomProp<{ email: string; password: string }>("credentials");
 
-    const body = new FormData();
-    body.append("email", email);
-    body.append("password", password);
+    let cookie = "";
+    let status: number;
+    let message = "";
 
-    const res = await fetch(server + "auth/login", {
-        method: "POST",
-        body,
-    });
-
-    const cookies = res.headers.get("set-cookie");
     try {
-        this.setCustomProp<string>(
-            "message",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ((await res.json()) as any).message
+        const res = await axios.post(
+            server("auth/login"),
+            { email, password },
+            {
+                withCredentials: true,
+            }
         );
-    } catch (_) {
-        this.setCustomProp<string>("message", "");
+        cookie = getCookie(res.headers);
+        message = res.data.message;
+        status = res.status;
+    } catch (err) {
+        const { response } = err;
+        status = response.status;
+        message = response.data.message;
     }
 
-    this.setCustomProp<string | null>("cookies", cookies);
-    this.setCustomProp<number>("status", res.status);
+    this.setCustomProp<string>("message", message);
+    this.setCustomProp<string | null>("cookies", cookie);
+    this.setCustomProp<number>("status", status);
 });
 
 Then("a cookie should be returned", function (this: BaseWorld) {
@@ -80,5 +83,5 @@ Then("it should be unsuccessful", function (this: BaseWorld) {
     } else {
         expect(status).to.be.equal(401);
     }
-    expect(cookies).to.be.equal(null);
+    expect(cookies).to.be.not.ok;
 });

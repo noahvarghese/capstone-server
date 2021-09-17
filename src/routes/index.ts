@@ -12,7 +12,7 @@ router.use("/auth", authRouter);
 router.use("/*", (req: Request, res: Response) => {
     Logs.Log("Invalid request to", req.originalUrl);
 
-    let redirectURL = client;
+    let redirectURL = client();
 
     if (req.originalUrl !== "/") {
         if (req.originalUrl[0] === "/") {

@@ -1,7 +1,7 @@
 import cors from "cors";
 import { client } from "./permalink";
 
-let origin = client;
+let origin = client();
 
 if (origin[origin.length - 1] === "/") {
     origin = origin.substring(0, origin.length - 1);
