@@ -250,6 +250,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     req.session.user_id = user.id;
+    req.session.business_id = user.business_id;
     res.sendStatus(201);
     return;
 });
