@@ -5,7 +5,6 @@ import BaseWorld from "../../support/base_world";
 import { userAttributes } from "../../../sample_data/attributes";
 import { expect } from "chai";
 import axios from "axios";
-import FormData from "form-data";
 import { getCookie } from "../../../util/request";
 
 Given("the user has valid credentials", function (this: BaseWorld) {

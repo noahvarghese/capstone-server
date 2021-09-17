@@ -28,7 +28,7 @@ export const getRedirectInfo = async (
     url: string
 ): Promise<{ status: number; location: string }> =>
     // eslint-disable-next-line no-async-promise-executor
-    new Promise<{ status: number; location: string }>(async (res, rej) => {
+    new Promise<{ status: number; location: string }>(async (res) => {
         const returnVal: { status: number; location: string } = {
             status: -1,
             location: "",
