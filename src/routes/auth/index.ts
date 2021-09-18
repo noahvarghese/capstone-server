@@ -14,7 +14,6 @@ router.use("/resetPassword", resetRoute);
 router.use("/requestResetPassword", requestResetRoute);
 
 router.post("/", (req: Request, res: Response) => {
-    console.log("received");
     if (req.session.user_id && req.session.business_id) {
         res.sendStatus(200);
     } else {

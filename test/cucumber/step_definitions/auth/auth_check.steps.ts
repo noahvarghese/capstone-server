@@ -4,28 +4,19 @@ import axios from "axios";
 import BaseWorld from "../../support/base_world";
 import { userAttributes } from "../../../sample_data/attributes";
 import { expect } from "chai";
+import { getCookie } from "../../../util/request";
 
-Given(
-    "the user has been authenticated within the time limit",
-    async function (this: BaseWorld) {
-        const { email, password } = userAttributes;
-        const response = await axios.post(
-            server("/auth/login"),
-            { email, password },
-            { withCredentials: true }
-        );
+Given("the user has been authenticated", async function (this: BaseWorld) {
+    const { email, password } = userAttributes;
 
-        let cookies = "";
+    const response = await axios.post(
+        server("/auth/login"),
+        { email, password },
+        { withCredentials: true }
+    );
 
-        for (const [key, value] of Object.entries(response.headers)) {
-            if (key === "set-cookie") {
-                cookies = (value as string[])[0];
-            }
-        }
-
-        this.setCustomProp<string>("cookies", cookies);
-    }
-);
+    this.setCustomProp<string>("cookies", getCookie(response.headers));
+});
 
 Given("the user has not been authenticated", async function (this: BaseWorld) {
     this.setCustomProp<string>("cookies", "");
