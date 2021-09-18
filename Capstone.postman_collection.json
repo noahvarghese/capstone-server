@@ -1,0 +1,423 @@
+{
+	"info": {
+		"_postman_id": "965feac0-d4ae-4b41-b5f1-05cd4706748b",
+		"name": "Capstone",
+		"description": "Collection of requests to use to test during development",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "local",
+			"item": [
+				{
+					"name": "Signup New Business",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "Noah",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "Varghese",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "9053393294",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "1273 Rebecca St",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Oakville",
+									"type": "text"
+								},
+								{
+									"key": "postal_code",
+									"value": "L6L 1Z3",
+									"type": "text"
+								},
+								{
+									"key": "province",
+									"value": "ON",
+									"type": "text"
+								},
+								{
+									"key": "birthday",
+									"value": "1996-08-07",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "confirm_password",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "business_name",
+									"value": "Oakville Windows & Doors",
+									"type": "text"
+								},
+								{
+									"key": "business_address",
+									"value": "1380 Speers Rd",
+									"type": "text"
+								},
+								{
+									"key": "business_province",
+									"value": "ON",
+									"type": "text"
+								},
+								{
+									"key": "business_city",
+									"value": "Oakville",
+									"type": "text"
+								},
+								{
+									"key": "business_postal_code",
+									"value": "L6L 1Z3",
+									"type": "text"
+								},
+								{
+									"key": "business_phone",
+									"value": "9058273200",
+									"type": "text"
+								},
+								{
+									"key": "business_email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/requestResetPassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"requestResetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Authenticated",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "prod",
+			"item": [
+				{
+					"name": "Signup New Business",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "Noah",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "Varghese",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "9053393294",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "1273 Rebecca St",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Oakville",
+									"type": "text"
+								},
+								{
+									"key": "postal_code",
+									"value": "L6L 1Z3",
+									"type": "text"
+								},
+								{
+									"key": "province",
+									"value": "ON",
+									"type": "text"
+								},
+								{
+									"key": "birthday",
+									"value": "1996-08-07",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "confirm_password",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "business_name",
+									"value": "Oakville Windows & Doors",
+									"type": "text"
+								},
+								{
+									"key": "business_address",
+									"value": "1380 Speers Rd",
+									"type": "text"
+								},
+								{
+									"key": "business_province",
+									"value": "ON",
+									"type": "text"
+								},
+								{
+									"key": "business_city",
+									"value": "Oakville",
+									"type": "text"
+								},
+								{
+									"key": "business_postal_code",
+									"value": "L6L 1Z3",
+									"type": "text"
+								},
+								{
+									"key": "business_phone",
+									"value": "9058273200",
+									"type": "text"
+								},
+								{
+									"key": "business_email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.capstone.noahvarghese.me/auth/signup",
+							"protocol": "https",
+							"host": [
+								"api",
+								"capstone",
+								"noahvarghese",
+								"me"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.capstone.noahvarghese.me/auth/login",
+							"protocol": "https",
+							"host": [
+								"api",
+								"capstone",
+								"noahvarghese",
+								"me"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "varghese.noah@gmail.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.capstone.noahvarghese.me/auth/requestResetPassword",
+							"protocol": "https",
+							"host": [
+								"api",
+								"capstone",
+								"noahvarghese",
+								"me"
+							],
+							"path": [
+								"auth",
+								"requestResetPassword"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
