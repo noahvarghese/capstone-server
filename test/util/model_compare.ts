@@ -96,44 +96,105 @@ export const testUpdateModel = async <T extends X, X>(
     modelName: string,
     attributesToUpdate: Partial<X>
 ) => {
+    // if it does not have a key of "id" then it is a concatenated key
+    // that means that we will add anything ending in _id to the where caluse if that is the case
+    // otherwise the where clause will just use the id
+
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
     const { connection } = baseWorld;
+
+    // get and set initial model
     let model = await createModel<T, X>(baseWorld, type, modelName);
+
     const modelAttributesName = `${modelName}Attributes`;
+    const modelAttributes = baseWorld.getCustomProp<X>(modelAttributesName);
+
+    const keys = Object.keys(model);
+
+    // generate where clause for updating
+    const whereClause: {
+        placeholder: string;
+        properties: { [x: string]: string };
+    }[] = [];
+
+    if (keys.includes("id")) {
+        whereClause.push({
+            placeholder: "id = :id",
+            properties: {
+                id: (model as unknown as { [name: string]: string })[
+                    "id"
+                ] as string,
+            },
+        });
+    } else {
+        for (const [key, value] of Object.entries(model)) {
+            if (/_id$/.test(key)) {
+                whereClause.push({
+                    placeholder: `${key} = :${key}`,
+                    properties: { [key]: value },
+                });
+            }
+        }
+    }
+
+    // generate query builder
+    let queryBuilder = connection
+        .createQueryBuilder()
+        .update(type)
+        .set(attributesToUpdate);
+
+    for (let i = 0; i < whereClause.length; i++) {
+        const where = whereClause[i];
+        if (i === 0) {
+            queryBuilder = queryBuilder.where(
+                where.placeholder,
+                where.properties
+            );
+        } else {
+            queryBuilder = queryBuilder.andWhere(
+                where.placeholder,
+                where.properties
+            );
+        }
+    }
+
+    // Execute query
+    const result = await queryBuilder.execute();
+
+    // check results
+    expect(result.affected).toBe(1);
+
+    // retrieve updated model
+    model = await connection.manager.findOneOrFail<T>(type, {
+        // reuse where clause for update
+        where: whereClause.map((val) => val.properties),
+    });
+
+    // store updated values
+    baseWorld.setCustomProp<T>(modelName, model);
 
     for (const [key, value] of Object.entries(
         attributesToUpdate as Partial<X>
     ) as [keyof X, any]) {
-        baseWorld.setCustomProp<X>(modelAttributesName, {
-            ...baseWorld.getCustomProp<X>(modelAttributesName),
-            [key]: value,
-        });
-
-        if (
-            model[key as keyof X] ===
-            (baseWorld.getCustomProp<X>(modelAttributesName) as any)[key]
-        ) {
-            throw new Error("Object hasn't changed");
-        }
-
-        model[key as keyof T] = value;
+        (modelAttributes as unknown as { [name: string]: string })[
+            key as string
+        ] = value;
     }
-    model = await connection.manager.save(model);
 
+    baseWorld.setCustomProp<X>(modelAttributesName, modelAttributes);
+
+    // confirm update occurred
     expect(
-        await modelMatchesInterface(
+        await modelMatchesInterface<X, T>(
             baseWorld.getCustomProp<any>(modelAttributesName),
             model
         )
     ).toBe(true);
 
-    if (model["updated_on" as keyof T]) {
-        expect(model["updated_on" as keyof T]).toBeTruthy();
-    }
-
+    // cleanup
     await deleteModel<T>(baseWorld, modelName);
 };
 

@@ -17,6 +17,9 @@ import {
     testCreateModel,
     testDeleteModel,
     testReadModel,
+    testUpdateModel,
+    testUpdateModelFail,
+    testUpdateModelV2,
     // testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
@@ -198,13 +201,19 @@ test("Create Policy Read", async () => {
     await testCreateModel<Read, ReadAttributes>(baseWorld, Read, key);
 });
 
-// TYPEORM treats this as an insert since it has a concatenated primary key
-// Need to write a custom method
-// test("Update Policy Read should fail", async () => {
-//     await testUpdateModelFail<Read, ReadAttributes>(baseWorld, Read, key, {
-//         policy_id: 2,
-//     });
-// });
+test("Update model should fail", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    try {
+        await testUpdateModel(baseWorld, Read, key, { policy_id: 2 });
+    } catch (e) {
+        const errorRegex = /PolicyReadUpdateError/;
+        expect(errorRegex.test(e.message)).toBe(true);
+        await deleteModel<Read>(baseWorld, key);
+    }
+});
 
 test("Delete Policy Read", async () => {
     await testDeleteModel<Read, ReadAttributes>(baseWorld, Read, key, [
