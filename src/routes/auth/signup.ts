@@ -31,8 +31,7 @@ export interface RegisterProps {
 }
 
 router.post("/", async (req: Request, res: Response) => {
-    // return;
-
+    // all possible keys that we could be expecting
     const {
         first_name,
         last_name,
@@ -55,17 +54,17 @@ router.post("/", async (req: Request, res: Response) => {
         business_email,
     } = req.body as RegisterProps;
 
-    // checks for empty entries
-    // this means that they were explicitly set as empty
-
+    // flag for what keys to use
     const skipBusinessValues = business_code && business_code.trim();
 
+    // validate no keys are missing
     for (const [key, value] of Object.entries(req.body)) {
         if (
             !key.includes("business") ||
             (!skipBusinessValues && key !== "business_code")
         ) {
             if (!value || (value as string).trim() === "") {
+                // returns bad field and explanation
                 res.status(400).json({
                     message: `${(key[0].toUpperCase() + key.substring(1))
                         .split("_")
@@ -77,6 +76,7 @@ router.post("/", async (req: Request, res: Response) => {
         }
     }
 
+    // Validate that data is in the expected format
     if (validator.isEmail(email) === false) {
         res.status(400).json({ message: "Invalid email.", field: "email" });
         return;
@@ -127,9 +127,10 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     const { SqlConnection: connection } = req;
-    let business;
-    let newBusiness;
+    let business: Business;
+    let newBusiness: boolean;
 
+    // find business
     if (business_code) {
         try {
             business = await connection.manager.findOneOrFail(Business, {
@@ -143,7 +144,10 @@ router.post("/", async (req: Request, res: Response) => {
             });
             return;
         }
-    } else {
+    }
+    // create business
+    else {
+        // validate business data
         if (validator.isEmail(business_email) === false) {
             res.status(400).json({
                 message: "Invalid business email.",
@@ -167,7 +171,7 @@ router.post("/", async (req: Request, res: Response) => {
             });
             return;
         }
-        // create new business
+
         business = connection.manager.create(Business, {
             name: business_name,
             country: "CA",
@@ -247,6 +251,14 @@ router.post("/", async (req: Request, res: Response) => {
         Logs.Error(e.message);
         // Don't fail as the user and business are created and the welcome email is a nice to have
         // this can be debugged by reviewing the event table in the database
+    }
+
+    if (newBusiness) {
+        // create department "Admin"
+        // create department "Unassigned"
+        // create permission
+        // create role "Admin"
+        // assign user to role
     }
 
     req.session.user_id = user.id;

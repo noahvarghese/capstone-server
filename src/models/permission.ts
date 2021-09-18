@@ -2,20 +2,22 @@ import { Entity, Column } from "typeorm";
 import EditableContentModel from "./abstract/editable_content_model";
 
 export interface PermissionAttributes {
-    add_users: boolean;
-    view_users: boolean;
-    edit_users: boolean;
-    remove_users: boolean;
-    edit_policies: boolean;
+    add_users_to_business: boolean;
+    assign_users_to_department: boolean;
+    assign_users_to_role: boolean;
+    create_resources: boolean;
+    assign_resources_to_department: boolean;
+    assign_resources_to_role: boolean;
     updated_by_user_id: number;
 }
 
 const EmptyPermissionAttributes = (): PermissionAttributes => ({
-    add_users: false,
-    view_users: false,
-    edit_users: false,
-    remove_users: false,
-    edit_policies: false,
+    add_users_to_business: false,
+    assign_users_to_department: false,
+    assign_users_to_role: false,
+    create_resources: false,
+    assign_resources_to_department: false,
+    assign_resources_to_role: false,
     updated_by_user_id: -1,
 });
 
@@ -30,15 +32,17 @@ export default class Permission
     implements PermissionAttributes
 {
     @Column()
-    public add_users!: boolean;
+    public add_users_to_business!: boolean;
     @Column()
-    public view_users!: boolean;
+    public assign_users_to_role!: boolean;
     @Column()
-    public edit_users!: boolean;
+    public assign_users_to_department!: boolean;
     @Column()
-    public remove_users!: boolean;
+    public create_resources!: boolean;
     @Column()
-    public edit_policies!: boolean;
+    public assign_resources_to_department!: boolean;
+    @Column()
+    public assign_resources_to_role!: boolean;
 
     public constructor(options?: Partial<PermissionAttributes>) {
         super();

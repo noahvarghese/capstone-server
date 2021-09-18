@@ -56,6 +56,7 @@ CREATE TABLE user (
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -70,11 +71,12 @@ CREATE TABLE department (
 
 CREATE TABLE permission (
     id INT NOT NULL AUTO_INCREMENT,
-    add_users TINYINT(1) NOT NULL,
-    view_users TINYINT(1) NOT NULL,
-    edit_users TINYINT(1) NOT NULL,
-    remove_users TINYINT(1) NOT NULL,
-    edit_policies TINYINT(1) NOT NULL,
+    add_users_to_business TINYINT(1) NOT NULL,
+    assign_users_to_department TINYINT(1) NOT NULL,
+    assign_users_to_role TINYINT(1) NOT NULL,
+    create_resources TINYINT(1) NOT NULL,
+    assign_resources_to_department TINYINT(1) NOT NULL,
+    assign_resources_to_role TINYINT(1) NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
@@ -86,6 +88,7 @@ CREATE TABLE permission (
 CREATE TABLE role (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -117,6 +120,8 @@ CREATE TABLE manual (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
+    prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
     /* NEEDS DEPARTMENT OR ROLE */
     /* THIS IS FOR THE OWNER OF the MANUAL */
     role_id INT DEFAULT NULL,
@@ -191,6 +196,8 @@ CREATE TABLE quiz (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
+    prevent_edit TINYINT(1) NOT NULL DEFAULT 0,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (manual_id) REFERENCES manual(id),

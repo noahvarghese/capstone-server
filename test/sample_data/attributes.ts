@@ -48,21 +48,24 @@ export const userAttributes: UserAttributes = {
 
 export const departmentAttributes: DepartmentAttributes = {
     name: "Management",
+    prevent_delete: false,
     business_id: 1,
     updated_by_user_id: -1,
 };
 
 export const permissionAttributes: PermissionAttributes = {
-    edit_policies: true,
-    add_users: true,
-    edit_users: true,
-    remove_users: true,
+    add_users_to_business: true,
+    assign_users_to_department: true,
+    assign_users_to_role: true,
+    create_resources: true,
+    assign_resources_to_department: true,
+    assign_resources_to_role: true,
     updated_by_user_id: -1,
-    view_users: true,
 };
 
 export const roleAttributes: RoleAttributes = {
-    name: "Manager",
+    name: "Admin",
+    prevent_delete: false,
     department_id: -1,
     permission_id: -1,
     updated_by_user_id: -1,
@@ -78,6 +81,8 @@ export const manualAttributes: ManualAttributes = {
     title: "Manual",
     role_id: -1,
     department_id: -1,
+    prevent_edit: false,
+    prevent_delete: false,
     updated_by_user_id: -1,
 };
 
@@ -116,6 +121,8 @@ export const quizAttributes: QuizAttributes = {
     title: "Quiz",
     max_attempts: 5,
     manual_id: -1,
+    prevent_edit: false,
+    prevent_delete: false,
     updated_by_user_id: -1,
 };
 

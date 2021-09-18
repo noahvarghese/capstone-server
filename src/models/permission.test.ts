@@ -93,7 +93,7 @@ test("Update Permission", async () => {
         baseWorld,
         Permission,
         key,
-        { edit_policies: false }
+        { assign_resources_to_department: false }
     );
 });
 

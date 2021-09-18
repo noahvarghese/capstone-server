@@ -5,6 +5,7 @@ export interface RoleAttributes {
     name: string;
     department_id: number;
     permission_id: number;
+    prevent_delete: boolean;
     updated_by_user_id: number;
 }
 
@@ -12,6 +13,7 @@ const EmptyRoleAttributes = (): RoleAttributes => ({
     name: "",
     department_id: -1,
     permission_id: -1,
+    prevent_delete: false,
     updated_by_user_id: -1,
 });
 
@@ -30,6 +32,8 @@ export default class Role
     public department_id!: number;
     @Column()
     public permission_id!: number;
+    @Column()
+    public prevent_delete!: boolean;
 
     public constructor(options?: Partial<RoleAttributes>) {
         super();

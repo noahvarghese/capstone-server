@@ -24,6 +24,21 @@ They may be moved into their own repo at the end of this to showcase all parts o
 -   AWS (Elastic Beanstalk, CodeDeploy, CodeBuild, CodePipeline, EC2, ACM)
 -   Automated Testing
 
+## Notes to self
+
+-   use sanitize-markdown before storing handbooks/quizes in database
+-   this way we can just use react-markdown to display in document
+-   using markdown means the content will just be rendered directly
+
+since it is possible that a user may have multiple roles
+
+-   make sure to check for the most authorized permission if applicable
+-   make sure to check what parent the resource being requested belongs to, and then retrieve the corresponding most authorized permission applicable
+
+re removing users from roles / departments
+
+-   must have at least 1 user in the role/department Admin/Admin
+
 ## Environment Variables
 
 -   Env variables must be loaded into the Elastic Beanstalk as well as the job runner for CI/CD
