@@ -1,7 +1,11 @@
 import { Request, Response, Router } from "express";
 import validator from "validator";
 import Business from "../../models/business";
+import Department from "../../models/department";
+import Permission from "../../models/permission";
+import Role from "../../models/role";
 import User from "../../models/user/user";
+import UserRole from "../../models/user/user_role";
 import Logs from "../../util/logs/logs";
 import { sendMail } from "../../util/mail";
 import { phoneValidator, postalCodeValidator } from "../../util/validators";
@@ -219,17 +223,95 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    try {
-        await sendMail(user, {
-            subject: "Welcome Onboard",
-            html: `<div><h1>Welcome Onboard</h1><p>thank you ${user.first_name} ${user.last_name} for registering. We have notified ${business.name} that you have signed up.</p></div>`,
+    // creates necessary admin resources
+    // as well as an unassigned position for users that have not been assigned a role/department yet
+    if (newBusiness) {
+        // create department "Admin"
+        let adminDepartment = new Department({
+            business_id: business.id,
+            updated_by_user_id: user.id,
+            prevent_delete: true,
+            name: "Admin",
         });
-    } catch (e) {
-        Logs.Error(e.message);
-        // Don't fail as the user and business are created and the welcome email is a nice to have
-        // this can be debugged by reviewing the event table in the database
+
+        adminDepartment = await connection.manager.save(
+            Department,
+            adminDepartment
+        );
+
+        let adminPermissions = new Permission({
+            add_users_to_business: true,
+            assign_users_to_department: true,
+            assign_users_to_role: true,
+            create_resources: true,
+            assign_resources_to_department: true,
+            assign_resources_to_role: true,
+            updated_by_user_id: user.id,
+        });
+
+        adminPermissions = await connection.manager.save(
+            Permission,
+            adminPermissions
+        );
+
+        let adminRole = new Role({
+            name: "General",
+            department_id: adminDepartment.id,
+            permission_id: adminPermissions.id,
+            prevent_delete: true,
+            updated_by_user_id: user.id,
+        });
+
+        adminRole = await connection.manager.save(Role, adminRole);
+
+        // create department "Unassigned"
+        let unassignedDepartment = new Department({
+            business_id: business.id,
+            updated_by_user_id: user.id,
+            prevent_delete: true,
+            name: "Unassigned",
+        });
+
+        unassignedDepartment = await connection.manager.save(
+            Department,
+            unassignedDepartment
+        );
+
+        let unassignedPermissions = new Permission({
+            add_users_to_business: false,
+            assign_resources_to_department: false,
+            assign_resources_to_role: false,
+            assign_users_to_department: false,
+            assign_users_to_role: false,
+            create_resources: false,
+            updated_by_user_id: user.id,
+        });
+
+        unassignedPermissions = await connection.manager.save(
+            Permission,
+            unassignedPermissions
+        );
+
+        const unassignedRole = new Role({
+            name: "General",
+            updated_by_user_id: user.id,
+            prevent_delete: true,
+            permission_id: unassignedPermissions.id,
+            department_id: unassignedDepartment.id,
+        });
+
+        await connection.manager.save(Role, unassignedRole);
+
+        const adminAssignnment = new UserRole({
+            user_id: user.id,
+            updated_by_user_id: user.id,
+            role_id: adminRole.id,
+        });
+
+        await connection.manager.save(UserRole, adminAssignnment);
     }
 
+    // send proper registration email
     let html: string;
     let subject: string;
 
@@ -253,12 +335,15 @@ router.post("/", async (req: Request, res: Response) => {
         // this can be debugged by reviewing the event table in the database
     }
 
-    if (newBusiness) {
-        // create department "Admin"
-        // create department "Unassigned"
-        // create permission
-        // create role "Admin"
-        // assign user to role
+    try {
+        await sendMail(user, {
+            subject: "Welcome Onboard",
+            html: `<div><h1>Welcome Onboard</h1><p>thank you ${user.first_name} ${user.last_name} for registering. We have notified ${business.name} that you have signed up.</p></div>`,
+        });
+    } catch (e) {
+        Logs.Error(e.message);
+        // Don't fail as the user and business are created and the welcome email is a nice to have
+        // this can be debugged by reviewing the event table in the database
     }
 
     req.session.user_id = user.id;
