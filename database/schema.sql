@@ -269,7 +269,7 @@ CREATE TABLE quiz_result (
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
-    FOREIGN KEy (quiz_question_id) REFERENCES quiz_question(id),
+    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id),
     PRIMARY KEY (id)
 );
