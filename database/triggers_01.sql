@@ -40,6 +40,24 @@ BEFORE UPDATE
 ON department FOR EACH ROW
 SET NEW.updated_on = NOW();
 
+DELIMITER //
+
+CREATE TRIGGER department_delete
+BEFORE DELETE
+ON department FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+
+    IF OLD.prevent_delete = 1 THEN
+        SET msg = CONCAT('DepartmentDeleteError: Cannot delete department while delete lock is set', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END;
+
+//
+
+DELIMITER ;
+
 CREATE TRIGGER permission_update
 BEFORE UPDATE
 ON permission FOR EACH ROW
@@ -49,6 +67,24 @@ CREATE TRIGGER role_update
 BEFORE UPDATE
 ON role FOR EACH ROW
 SET NEW.updated_on = NOW();
+
+DELIMITER //
+
+CREATE TRIGGER role_delete
+BEFORE DELETE
+ON role FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+
+    IF OLD.prevent_delete = 1 THEN
+        SET msg = CONCAT('RoleDeleteError: Cannot delete role while delete lock is set', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END;
+
+//
+
+DELIMITER ;
 
 CREATE TRIGGER user_role_update
 BEFORE UPDATE
