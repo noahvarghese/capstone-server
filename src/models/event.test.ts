@@ -95,13 +95,24 @@ test("Create Event without user_id or business_id", async () => {
     eventAttrs.user_id = null;
     baseWorld?.setCustomProp<EventAttributes>("eventAttributes", eventAttrs);
 
-    await testCreateModelFail<Event, EventAttributes>(baseWorld, Event, key);
+    await testCreateModelFail<Event, EventAttributes>(
+        baseWorld,
+        Event,
+        key,
+        /EventInsertError: Must have either business_id or user_id/
+    );
 });
 
 test("Update Event should fail", async () => {
-    await testUpdateModelFail<Event, EventAttributes>(baseWorld, Event, key, {
-        status: "PASS",
-    });
+    await testUpdateModelFail<Event, EventAttributes>(
+        baseWorld,
+        Event,
+        key,
+        {
+            status: "PASS",
+        },
+        /EventUpdateError: Cannot update events/
+    );
 });
 
 test("Delete Event", async () => {

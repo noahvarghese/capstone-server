@@ -40,7 +40,8 @@ export const testCreateModel = async <T, X>(
 export const testCreateModelFail = async <T extends X, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
-    key: string
+    key: string,
+    expectedErrorMessage: RegExp | string
 ) => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
@@ -51,11 +52,13 @@ export const testCreateModelFail = async <T extends X, X>(
         throw new Error("Create should not have been succesful");
     } catch (e) {
         expect(e.message).not.toBe("Create should not have been succesful");
-        if (
-            (e.message as string).match(
-                /^Create should not have been succesful$/
-            ) === null
-        ) {
+        expect(
+            expectedErrorMessage instanceof RegExp
+                ? expectedErrorMessage.test(e.message)
+                : e.message === expectedErrorMessage
+        ).toBe(true);
+
+        if (!/^Create should not have been succesful$/.test(e.message)) {
             await deleteModel<T>(baseWorld, key);
         }
     }
@@ -65,8 +68,9 @@ export const testUpdateModelFail = async <T extends X, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     modelName: string,
-    attributesToUpdate: Partial<X>
-) => {
+    attributesToUpdate: Partial<X>,
+    expectedErrorMessage: RegExp | string
+): Promise<void> => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
@@ -81,11 +85,13 @@ export const testUpdateModelFail = async <T extends X, X>(
         throw new Error("Update should not have been succesful");
     } catch (e) {
         expect(e.message).not.toBe("Update should not have been succesful");
-        if (
-            (e.message as string).match(
-                /^Update should not have been succesful$/
-            ) === null
-        ) {
+        expect(
+            expectedErrorMessage instanceof RegExp
+                ? expectedErrorMessage.test(e.message)
+                : e.message === expectedErrorMessage
+        ).toBe(true);
+
+        if (!/^Update should not have been succesful$/.test(e.message)) {
             await deleteModel<T>(baseWorld, modelName);
         }
     }

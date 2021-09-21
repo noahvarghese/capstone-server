@@ -16,6 +16,7 @@ import {
 } from "../../../test/util/model_actions";
 import {
     testCreateModel,
+    testCreateModelFail,
     testDeleteModel,
     testDeleteModelFail,
     testReadModel,
@@ -154,16 +155,19 @@ test("Create Manual Without Department Or Role", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
+
     baseWorld.setCustomProp<ManualAttributes>("manualAttributes", {
         ...baseWorld.getCustomProp<ManualAttributes>("manualAttributes"),
         department_id: null as any,
         role_id: null as any,
     });
-    try {
-        await testCreateModel<Manual, ManualAttributes>(baseWorld, Manual, key);
-    } catch (e) {
-        expect(e).toBeTruthy();
-    }
+
+    await testCreateModelFail(
+        baseWorld,
+        Manual,
+        key,
+        /ManualInsertError: Trying to add a manual without a role or department/
+    );
 });
 
 test("Update Manual Without Department Or Role", async () => {
@@ -174,7 +178,8 @@ test("Update Manual Without Department Or Role", async () => {
         {
             role_id: null,
             department_id: null,
-        }
+        },
+        /ManualUpdateError: Trying to update a manual without a role and department/
     );
 });
 
@@ -230,4 +235,25 @@ test("Prevent Deletion of Manual", async () => {
     }
 });
 
+test("Prevent edit of manual", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    // set prevent delete in environment data
+    baseWorld.setCustomProp<ManualAttributes>("manualAttributes", {
+        ...baseWorld.getCustomProp<ManualAttributes>("manualAttributes"),
+        prevent_edit: true,
+    });
+
+    await testUpdateModelFail<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        key,
+        {
+            title: "YOLO",
+        },
+        /ManualUpdateError: Manual is locked from editing./
+    );
+});
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

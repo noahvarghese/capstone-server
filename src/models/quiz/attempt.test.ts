@@ -203,6 +203,7 @@ test("Update quiz attempt should fail", async () => {
         baseWorld,
         Attempt,
         key,
-        { user_id: -1 }
+        { user_id: -1 },
+        /QuizAttemptUpdateError: Cannot update quiz_attempt/
     );
 });

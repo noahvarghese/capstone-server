@@ -52,7 +52,7 @@ ON manual FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentInsertError: Trying to add a manual_ASsignment without a role or department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualAssignmentInsertError: Trying to add a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;

@@ -260,7 +260,8 @@ test("Update Quiz Result should fail", async () => {
         key,
         {
             quiz_attempt_id: -1,
-        }
+        },
+        /QuizResultUpdateError: Cannot update quiz_result/
     );
 });
 
