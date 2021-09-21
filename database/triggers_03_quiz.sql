@@ -23,7 +23,7 @@ BEGIN
     DECLARE msg VARCHAR(128);
 
     IF OLD.prevent_delete = 1 THEN
-        SET msg = CONCAT('QuizDeleteError: Quiz has delete prevention on.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('QuizDeleteError: Cannot delete quiz while delete lock is set ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -76,8 +76,8 @@ BEGIN
     SET prevent_edit = (
         SELECT q.prevent_edit 
         FROM quiz AS q
-        JOIN quiz_section AS s ON q.id = s.quiz_id
-        HAVING s.id = OLD.quiz_section_id 
+        JOIN quiz_section AS qs ON q.id = qs.quiz_id
+        WHERE qs.id = OLD.quiz_section_id 
     );
 
     IF (prevent_edit = 1) THEN
@@ -100,8 +100,8 @@ BEGIN
     SET prevent_edit = (
         SELECT q.prevent_edit 
         FROM quiz AS q
-        JOIN quiz_section AS s ON q.id = s.quiz_id
-        HAVING s.id = OLD.quiz_section_id 
+        JOIN quiz_section AS qs ON q.id = qs.quiz_id
+        WHERE qs.id = OLD.quiz_section_id 
     );
 
     IF (prevent_edit = 1) THEN
@@ -121,10 +121,10 @@ BEGIN
 
     SET prevent_edit = (
         SELECT q.prevent_edit
-        FROM quiz_question AS qq 
-        JOIN quiz_section AS s ON qq.section_id = s.id
-        JOIN quiz AS q ON q.id = q.quiz_section_id
-        HAVING qq.id = OLD.quiz_question_id
+        FROM quiz AS q
+        JOIN quiz_section AS qs ON q.id = qs.quiz_id
+        JOIN quiz_question AS qq ON qs.id = qq.quiz_section_id
+        WHERE qq.id = OLD.quiz_question_id
     );
 
     IF (prevent_edit = 1) THEN
@@ -146,10 +146,10 @@ BEGIN
 
     SET prevent_edit = (
         SELECT q.prevent_edit
-        FROM quiz_question AS qq 
-        JOIN quiz_section AS s ON qq.section_id = s.id
-        JOIN quiz AS q ON q.id = q.quiz_section_id
-        HAVING qq.id = OLD.quiz_question_id
+        FROM quiz AS q
+        JOIN quiz_section AS qs ON q.id = qs.quiz_id
+        JOIN quiz_question AS qq ON qs.id = qq.quiz_section_id
+        WHERE qq.id = OLD.quiz_question_id
     );
 
     IF (prevent_edit = 1) THEN

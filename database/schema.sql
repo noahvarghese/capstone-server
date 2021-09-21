@@ -149,7 +149,7 @@ CREATE TABLE manual_assignment (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE section (
+CREATE TABLE manual_section (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
@@ -168,9 +168,9 @@ CREATE TABLE policy (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    section_id INT NOT NULL,
+    manual_section_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY (section_id) REFERENCES section(id),
+    FOREIGN KEY (manual_section_id) REFERENCES manual_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );

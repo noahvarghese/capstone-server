@@ -25,7 +25,7 @@ import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
-import Section, { SectionAttributes } from "./section";
+import Section, { SectionAttributes } from "./manual_section";
 
 let baseWorld: BaseWorld | undefined;
 const key = "policy";
@@ -156,7 +156,7 @@ beforeEach(async () => {
 
     baseWorld.setCustomProp<PolicyAttributes>(attrKey, {
         ...baseWorld.getCustomProp<PolicyAttributes>(attrKey),
-        section_id: section.id,
+        manual_section_id: section.id,
         updated_by_user_id: user.id,
     });
 });

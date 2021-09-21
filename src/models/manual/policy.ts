@@ -3,13 +3,13 @@ import EditableContentModel from "../abstract/editable_content_model";
 
 export interface PolicyAttributes {
     title: string;
-    section_id: number;
+    manual_section_id: number;
     updated_by_user_id: number;
 }
 
 const EmptyPolicyAttributes = (): PolicyAttributes => ({
     title: "",
-    section_id: -1,
+    manual_section_id: -1,
     updated_by_user_id: -1,
 });
 
@@ -25,7 +25,7 @@ export default class Policy
     @Column()
     public title!: string;
     @Column()
-    public section_id!: number;
+    public manual_section_id!: number;
 
     public constructor(options?: Partial<PolicyAttributes>) {
         super();

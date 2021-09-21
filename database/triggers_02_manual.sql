@@ -20,7 +20,7 @@ BEGIN
     DECLARE msg VARCHAR(128);
 
     IF (OLD.prevent_delete = 1) THEN
-        SET msg = CONCAT('ManualDeleteError: Manual has delete prevention on.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('ManualDeleteError: Cannot delete manual while delete lock is set ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -73,9 +73,9 @@ END;
 
 //
 
-CREATE TRIGGER section_update
+CREATE TRIGGER manual_section_update
 BEFORE UPDATE
-ON section FOR EACH ROW
+ON manual_section FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     DECLARE prevent_edit TINYINT(1);
@@ -91,9 +91,9 @@ END;
 
 //
 
-CREATE TRIGGER section_delete
+CREATE TRIGGER manual_section_delete
 BEFORE DELETE
-ON section FOR EACH ROW
+ON manual_section FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     DECLARE prevent_edit TINYINT(1);
@@ -116,10 +116,10 @@ BEGIN
 
     SET prevent_edit = (
         SELECT m.prevent_edit 
-        FROM section AS s 
+        FROM manual_section AS ms 
         JOIN manual AS m 
-        ON m.id = s.manual_id
-        HAVING s.id = OLD.id
+        ON m.id = ms.manual_id
+        WHERE ms.id = OLD.manual_section_id
     );
 
     IF prevent_edit = 1 THEN
@@ -141,9 +141,9 @@ BEGIN
 
     SET prevent_edit = (
         SELECT m.prevent_edit 
-        FROM section AS s
-        JOIN manual AS m ON m.id = s.manual_id
-        HAVING s.id = OLD.section_id
+        FROM manual_section AS ms
+        JOIN manual AS m ON m.id = ms.manual_id
+        WHERE ms.id = OLD.manual_section_id
     );
 
     IF (prevent_edit = 1) THEN
@@ -163,9 +163,9 @@ BEGIN
     SET prevent_edit = (
         SELECT m.prevent_edit
         FROM policy AS p 
-        JOIN section AS s ON s.id = p.section_id
-        JOIN manual AS m ON m.id = s.manual_id
-        HAVING p.id = OLD.policy_id
+        JOIN manual_section AS ms ON ms.id = p.manual_section_id
+        JOIN manual AS m ON m.id = ms.manual_id
+        WHERE p.id = OLD.policy_id
     );
 
     IF (prevent_edit = 1) THEN
@@ -187,9 +187,9 @@ BEGIN
     SET prevent_edit = (
         SELECT m.prevent_edit
         FROM policy AS p 
-        JOIN section AS s ON s.id = p.section_id
-        JOIN manual AS m ON m.id = s.manual_id
-        HAVING p.id = OLD.policy_id
+        JOIN manual_section AS ms ON ms.id = p.manual_section_id
+        JOIN manual AS m ON m.id = ms.manual_id
+        WHERE p.id = OLD.policy_id
     );
 
     IF (prevent_edit = 1) THEN

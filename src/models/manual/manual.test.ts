@@ -9,10 +9,15 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
     testUpdateModelFail,
@@ -192,6 +197,37 @@ test("Read User Role", async () => {
     await testReadModel<Manual, ManualAttributes>(baseWorld, Manual, key, [
         "id",
     ]);
+});
+
+test("Prevent Deletion of Manual", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    // set prevent delete in environment data
+    baseWorld.setCustomProp<ManualAttributes>("manualAttributes", {
+        ...baseWorld.getCustomProp<ManualAttributes>("manualAttributes"),
+        prevent_delete: true,
+    });
+
+    try {
+        await testDeleteModelFail(
+            baseWorld,
+            Manual,
+            key,
+            /ManualDeleteError: Cannot delete manual while delete lock is set/
+        );
+
+        await updateModel<Manual, ManualAttributes>(baseWorld, Manual, key, {
+            prevent_delete: false,
+        });
+
+        await deleteModel<Manual>(baseWorld, key);
+    } catch (e) {
+        if (e.deleted !== undefined && e.deleted !== false) {
+            await deleteModel<Manual>(baseWorld, key);
+        }
+    }
 });
 
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

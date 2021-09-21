@@ -10,10 +10,15 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
 } from "../../../test/util/model_compare";
@@ -172,6 +177,37 @@ test("Delete Quiz", async () => {
 
 test("Read Quiz", async () => {
     await testReadModel<Quiz, QuizAttributes>(baseWorld, Quiz, key, ["id"]);
+});
+
+test("Prevent Deletion of Quiz", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    // set prevent delete in environment data
+    baseWorld.setCustomProp<QuizAttributes>("quizAttributes", {
+        ...baseWorld.getCustomProp<QuizAttributes>("quizAttributes"),
+        prevent_delete: true,
+    });
+
+    try {
+        await testDeleteModelFail(
+            baseWorld,
+            Quiz,
+            key,
+            /QuizDeleteError: Cannot delete quiz while delete lock is set/
+        );
+
+        await updateModel<Quiz, QuizAttributes>(baseWorld, Quiz, key, {
+            prevent_delete: false,
+        });
+
+        await deleteModel<Quiz>(baseWorld, key);
+    } catch (e) {
+        if (e.deleted !== undefined && e.deleted !== false) {
+            await deleteModel<Quiz>(baseWorld, key);
+        }
+    }
 });
 
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

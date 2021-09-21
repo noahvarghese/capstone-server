@@ -5,6 +5,7 @@ import {
     createModel,
     deleteModel,
     modelMatchesInterface,
+    updateModel,
 } from "./model_actions";
 
 interface WhereClause {
@@ -96,82 +97,16 @@ export const testUpdateModel = async <T extends X, X>(
     modelName: string,
     attributesToUpdate: Partial<X>
 ) => {
-    // if it does not have a key of "id" then it is a concatenated key
-    // that means that we will add anything ending in _id to the where caluse if that is the case
-    // otherwise the where clause will just use the id
-
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
-
-    // get and set initial model
-    let model = await createModel<T, X>(baseWorld, type, modelName);
-
     const modelAttributesName = `${modelName}Attributes`;
     const modelAttributes = baseWorld.getCustomProp<X>(modelAttributesName);
 
-    const keys = Object.keys(model);
+    let model = await createModel<T, X>(baseWorld, type, modelName);
 
-    // generate where clause for updating
-    const whereClause: {
-        placeholder: string;
-        properties: { [x: string]: string };
-    }[] = [];
-
-    if (keys.includes("id")) {
-        whereClause.push({
-            placeholder: "id = :id",
-            properties: {
-                id: (model as unknown as { [name: string]: string })[
-                    "id"
-                ] as string,
-            },
-        });
-    } else {
-        for (const [key, value] of Object.entries(model)) {
-            if (/_id$/.test(key)) {
-                whereClause.push({
-                    placeholder: `${key} = :${key}`,
-                    properties: { [key]: value },
-                });
-            }
-        }
-    }
-
-    // generate query builder
-    let queryBuilder = connection
-        .createQueryBuilder()
-        .update(type)
-        .set(attributesToUpdate);
-
-    for (let i = 0; i < whereClause.length; i++) {
-        const where = whereClause[i];
-        if (i === 0) {
-            queryBuilder = queryBuilder.where(
-                where.placeholder,
-                where.properties
-            );
-        } else {
-            queryBuilder = queryBuilder.andWhere(
-                where.placeholder,
-                where.properties
-            );
-        }
-    }
-
-    // Execute query
-    const result = await queryBuilder.execute();
-
-    // check results
-    expect(result.affected).toBe(1);
-
-    // retrieve updated model
-    model = await connection.manager.findOneOrFail<T>(type, {
-        // reuse where clause for update
-        where: whereClause.map((val) => val.properties),
-    });
+    model = await updateModel(baseWorld, type, modelName, attributesToUpdate);
 
     // store updated values
     baseWorld.setCustomProp<T>(modelName, model);
@@ -265,30 +200,38 @@ export const testDeleteModelFail = async <T, X>(
     baseWorld: BaseWorld | undefined,
     type: any,
     key: string,
-    attrKey: string[]
-) => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
+    expectedErrorMessage: string | RegExp
+): Promise<void> => {
+    const errorMessage = "Should not be successful";
 
-    const { connection } = baseWorld;
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (res, rej) => {
+        if (!baseWorld) {
+            throw new Error(BaseWorld.errorMessage);
+        }
 
-    const model = await createModel<T, X>(baseWorld, type, key);
+        await createModel<T, X>(baseWorld, type, key);
 
-    try {
-        await deleteModel<T>(baseWorld, key);
-    } catch (e) {
-        expect(e).toBeTruthy();
-    }
+        try {
+            await deleteModel<T>(baseWorld, key);
+            throw new Error(errorMessage);
+        } catch (e) {
+            expect(e).toBeTruthy();
+            expect(e.message).not.toBe(errorMessage);
 
-    const where: WhereClause = {};
-    for (const attr of attrKey) {
-        where[attr] = model[attr as keyof T];
-    }
+            if (expectedErrorMessage instanceof RegExp) {
+                expect(expectedErrorMessage.test(e.message)).toBe(true);
+            } else {
+                expect(e.message).toBe(expectedErrorMessage);
+            }
 
-    const result = await connection.manager.find(type, {
-        where,
+            if (
+                expectedErrorMessage instanceof RegExp
+                    ? expectedErrorMessage.test(e.message)
+                    : e.message === expectedErrorMessage
+            )
+                res();
+            else rej({ deleted: e.message === errorMessage });
+        }
     });
-
-    expect(result.length).toBe(1);
 };

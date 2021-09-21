@@ -6,7 +6,7 @@ import Role from "../models/role";
 import Content from "../models/manual/content";
 import Manual from "../models/manual/manual";
 import Policy from "../models/manual/policy";
-import Section from "../models/manual/section";
+import ManualSection from "../models/manual/manual_section";
 import ManualAssignment from "../models/manual/manual_assignment";
 import User from "../models/user/user";
 import UserRole from "../models/user/user_role";
@@ -20,6 +20,28 @@ import Result from "../models/quiz/result";
 import Read from "../models/manual/read";
 import Event from "../models/event";
 
+const entities = [
+    Business,
+    User,
+    Department,
+    Permission,
+    Role,
+    UserRole,
+    Manual,
+    ManualAssignment,
+    ManualSection,
+    Policy,
+    Content,
+    Quiz,
+    QuizSection,
+    Question,
+    Answer,
+    Attempt,
+    Result,
+    Read,
+    Event,
+];
+
 export const connection: ConnectionOptions = {
     database: process.env.DB ?? "",
     host: process.env.DB_URL ?? "",
@@ -28,27 +50,7 @@ export const connection: ConnectionOptions = {
     // enforce strict typing by only applying
     // a small subset of the potential database types
     type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities: [
-        Business,
-        User,
-        Department,
-        Permission,
-        Role,
-        UserRole,
-        Manual,
-        ManualAssignment,
-        Section,
-        Policy,
-        Content,
-        Quiz,
-        QuizSection,
-        Question,
-        Answer,
-        Attempt,
-        Result,
-        Read,
-        Event,
-    ],
+    entities,
     logging: true,
     logger: new DBLogger(),
 };
@@ -61,27 +63,7 @@ export const devConnection: ConnectionOptions = {
     // enforce strict typing by only applying
     // a small subset of the potential database types
     type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities: [
-        Business,
-        User,
-        Department,
-        Permission,
-        Role,
-        UserRole,
-        Manual,
-        ManualAssignment,
-        Section,
-        Policy,
-        Content,
-        Quiz,
-        QuizSection,
-        Question,
-        Answer,
-        Attempt,
-        Result,
-        Read,
-        Event,
-    ],
+    entities,
     logging: true,
     logger: new DBLogger(),
 };
@@ -94,27 +76,7 @@ export const testConnection: ConnectionOptions = {
     // enforce strict typing by only applying
     // a small subset of the potential database types
     type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities: [
-        Business,
-        User,
-        Department,
-        Permission,
-        Role,
-        UserRole,
-        Manual,
-        ManualAssignment,
-        Section,
-        Policy,
-        Content,
-        Quiz,
-        QuizSection,
-        Question,
-        Answer,
-        Attempt,
-        Result,
-        Read,
-        Event,
-    ],
+    entities,
     logging: true,
     logger: new DBLogger(),
 };

@@ -7,10 +7,15 @@ import {
 } from "../../test/sample_data/attributes";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import { createModel, deleteModel } from "../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
 } from "../../test/util/model_compare";
@@ -134,4 +139,35 @@ test("Delete Role", async () => {
 
 test("Read Role", async () => {
     await testReadModel<Role, RoleAttributes>(baseWorld, Role, key, ["id"]);
+});
+
+test("Prevent Deletion of Role", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    // set prevent delete in environment data
+    baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
+        ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
+        prevent_delete: true,
+    });
+
+    try {
+        await testDeleteModelFail(
+            baseWorld,
+            Role,
+            key,
+            /RoleDeleteError: Cannot delete role while delete lock is set/
+        );
+
+        await updateModel<Role, RoleAttributes>(baseWorld, Role, key, {
+            prevent_delete: false,
+        });
+
+        await deleteModel<Role>(baseWorld, key);
+    } catch (e) {
+        if (e.deleted !== undefined && e.deleted !== false) {
+            await deleteModel<Role>(baseWorld, key);
+        }
+    }
 });

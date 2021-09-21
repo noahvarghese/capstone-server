@@ -5,10 +5,15 @@ import {
 } from "../../test/sample_data/attributes";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import { createModel, deleteModel } from "../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
 } from "../../test/util/model_compare";
@@ -114,4 +119,42 @@ test("Read Department", async () => {
         key,
         ["id"]
     );
+});
+
+test("Prevent Deletion of Department", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    // set prevent delete in environment data
+    baseWorld.setCustomProp<DepartmentAttributes>("departmentAttributes", {
+        ...baseWorld.getCustomProp<DepartmentAttributes>(
+            "departmentAttributes"
+        ),
+        prevent_delete: true,
+    });
+
+    try {
+        await testDeleteModelFail(
+            baseWorld,
+            Department,
+            key,
+            /DepartmentDeleteError: Cannot delete department while delete lock is set/
+        );
+
+        await updateModel<Department, DepartmentAttributes>(
+            baseWorld,
+            Department,
+            key,
+            {
+                prevent_delete: false,
+            }
+        );
+
+        await deleteModel<Department>(baseWorld, key);
+    } catch (e) {
+        if (e.deleted !== undefined && e.deleted !== false) {
+            await deleteModel<Department>(baseWorld, key);
+        }
+    }
 });

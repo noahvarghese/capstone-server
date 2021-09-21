@@ -23,7 +23,7 @@ import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
-import Section, { SectionAttributes } from "./section";
+import Section, { SectionAttributes } from "./manual_section";
 
 let baseWorld: BaseWorld | undefined;
 const key = "section";
