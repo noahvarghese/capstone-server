@@ -11,12 +11,18 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
+    testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
@@ -26,6 +32,8 @@ import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
 import Section, { ManualSectionAttributes } from "./manual_section";
+import ModelError from "../../../test/util/ModelError";
+import Content, { ContentAttributes } from "./content";
 
 let baseWorld: BaseWorld | undefined;
 const key = "policy";
@@ -197,6 +205,76 @@ test("Read Policy", async () => {
     await testReadModel<Policy, PolicyAttributes>(baseWorld, Policy, key, [
         "id",
     ]);
+});
+
+test("Delete Policy while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
+        prevent_edit: true,
+    });
+
+    try {
+        await testDeleteModelFail<Policy, PolicyAttributes>(
+            baseWorld,
+            Policy,
+            key,
+            /PolicyDeleteError: Cannot delete a policy while the manual is locked from editing/
+        );
+
+        await updateModel<Manual, ManualAttributes>(
+            baseWorld,
+            Manual,
+            "manual",
+            { prevent_edit: false }
+        );
+
+        await deleteModel<Policy>(baseWorld, key);
+    } catch (e) {
+        if (e instanceof ModelError) {
+            if (e.deleted !== undefined && e.deleted !== false) {
+                await deleteModel<Policy>(baseWorld, key);
+            }
+        }
+        throw e;
+    }
+});
+
+test("Update Policy while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
+        prevent_edit: true,
+    });
+
+    try {
+        await testUpdateModelFail<Policy, PolicyAttributes>(
+            baseWorld,
+            Policy,
+            key,
+            { title: "YOLO" },
+            /PolicyUpdateError: Cannot update a policy while the manual is locked from editing/
+        );
+    } catch (e) {
+        if (
+            /PolicyDeleteError: Cannot delete a policy while the manual is locked from editing/.test(
+                e.message
+            )
+        ) {
+            await updateModel<Manual, ManualAttributes>(
+                baseWorld,
+                Manual,
+                "manual",
+                { prevent_edit: false }
+            );
+
+            await deleteModel<Policy>(baseWorld, key);
+        }
+    }
 });
 
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

@@ -169,7 +169,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ContentUpdateError: Cannot update a section while the manual is locked ffrom editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ContentUpdateError: Cannot update content while the manual is locked from editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -193,7 +193,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ContentDeleteError: Cannot delete content while the manual is locked ffrom editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('ContentDeleteError: Cannot delete content while the manual is locked from editing.', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;

@@ -230,7 +230,6 @@ test("Delete Section while Manual is locked doesn't work", async () => {
 
         await deleteModel<ManualSection>(baseWorld, key);
     } catch (e) {
-        console.log(e);
         if (e instanceof ModelError) {
             if (e.deleted !== undefined && e.deleted !== false) {
                 await deleteModel<ManualSection>(baseWorld, key);
@@ -258,11 +257,7 @@ test("Update Section while Manual is locked doesn't work", async () => {
             /ManualSectionUpdateError: Cannot update a section while the manual is locked from editing/
         );
     } catch (e) {
-        if (e instanceof ModelError) {
-            if (e.deleted !== undefined && e.deleted !== false) {
-                await deleteModel<ManualSection>(baseWorld, key);
-            }
-        } else if (
+        if (
             /ManualSectionDeleteError: Cannot delete a section while the manual is locked from editing/.test(
                 e.message
             )

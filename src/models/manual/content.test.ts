@@ -12,12 +12,18 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
+    testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
@@ -28,6 +34,7 @@ import Content, { ContentAttributes } from "./content";
 import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
 import Section, { ManualSectionAttributes } from "./manual_section";
+import ModelError from "../../../test/util/ModelError";
 
 let baseWorld: BaseWorld | undefined;
 const key = "content";
@@ -216,4 +223,74 @@ test("Read Content", async () => {
     await testReadModel<Content, ContentAttributes>(baseWorld, Content, key, [
         "id",
     ]);
+});
+
+test("Delete Content while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
+        prevent_edit: true,
+    });
+
+    try {
+        await testDeleteModelFail<Content, ContentAttributes>(
+            baseWorld,
+            Content,
+            key,
+            /ContentDeleteError: Cannot delete content while the manual is locked from editing/
+        );
+
+        await updateModel<Manual, ManualAttributes>(
+            baseWorld,
+            Manual,
+            "manual",
+            { prevent_edit: false }
+        );
+
+        await deleteModel<Content>(baseWorld, key);
+    } catch (e) {
+        if (e instanceof ModelError) {
+            if (e.deleted !== undefined && e.deleted !== false) {
+                await deleteModel<Content>(baseWorld, key);
+            }
+        }
+        throw e;
+    }
+});
+
+test("Update Content while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
+        prevent_edit: true,
+    });
+
+    try {
+        await testUpdateModelFail<Content, ContentAttributes>(
+            baseWorld,
+            Content,
+            key,
+            { title: "YOLO" },
+            /ContentUpdateError: Cannot update content while the manual is locked from editing/
+        );
+    } catch (e) {
+        if (
+            /ContentDeleteError: Cannot delete content while the manual is locked from editing/.test(
+                e.message
+            )
+        ) {
+            await updateModel<Manual, ManualAttributes>(
+                baseWorld,
+                Manual,
+                "manual",
+                { prevent_edit: false }
+            );
+
+            await deleteModel<Content>(baseWorld, key);
+        }
+    }
 });

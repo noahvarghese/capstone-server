@@ -37,10 +37,10 @@ BEGIN
     DECLARE msg VARCHAR(128);
     DECLARE prevent_edit TINYINT(1);
 
-    SET prevent_edit = (SELECT prevent_edit FROM quiz WHERE quiz.id = OLD.quiz_id);
+    SET prevent_edit = (SELECT quiz.prevent_edit FROM quiz WHERE quiz.id = OLD.quiz_id);
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('QuizSectionUpdateError: Trying to update a section while the quiz is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('QuizSectionUpdateError: Cannot update a section while the quiz is locked from editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -56,10 +56,10 @@ BEGIN
     DECLARE msg VARCHAR(128);
     DECLARE prevent_edit TINYINT(1);
 
-    SET prevent_edit = (SELECT prevent_edit FROM quiz AS q WHERE q.id = OLD.quiz_id);
+    SET prevent_edit = (SELECT q.prevent_edit FROM quiz AS q WHERE q.id = OLD.quiz_id);
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('QuizSectionDeleteError: Trying to delete a section while the quiz is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('QuizSectionDeleteError: Cannot delete a section while the quiz is locked from editing.', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -81,7 +81,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('QuestionUpdateError: Trying to update a question while the quiz is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('QuestionUpdateError: Cannot update a question while the quiz is locked from editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -105,7 +105,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('QuestionDeleteError: Trying to delete a question while the quiz is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('QuestionDeleteError: Cannot delete a question while the quiz is locked from editing.', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END
@@ -128,7 +128,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('AnswerUpdateError: Trying to update an answer while the quiz is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('AnswerUpdateError: Cannot update an answer while the quiz is locked from editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -153,7 +153,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('AnswerDeleteError: Trying to delete an answer while the quiz is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('AnswerDeleteError: Cannot delete an answer while the quiz is locked from editing.', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END
