@@ -166,7 +166,7 @@ test("Create Manual Without Department Or Role", async () => {
         baseWorld,
         Manual,
         key,
-        /ManualInsertError: Trying to add a manual without a role or department/
+        /ManualInsertError: Cannot add a manual without a role or department/
     );
 });
 
@@ -179,7 +179,7 @@ test("Update Manual Without Department Or Role", async () => {
             role_id: null,
             department_id: null,
         },
-        /ManualUpdateError: Trying to update a manual without a role and department/
+        /ManualUpdateError: Cannot update a manual without a role and department/
     );
 });
 
@@ -232,6 +232,7 @@ test("Prevent Deletion of Manual", async () => {
         if (e.deleted !== undefined && e.deleted !== false) {
             await deleteModel<Manual>(baseWorld, key);
         }
+        throw e;
     }
 });
 

@@ -6,7 +6,7 @@ ON manual FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualInsertError: Trying to add a manual without a role or department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualInsertError: Cannot add a manual without a role or department ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -34,7 +34,7 @@ BEGIN
     DECLARE msg VARCHAR(128);
 
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualUpdateError: Trying to update a manual without a role and department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualUpdateError: Cannot update a manual without a role and department ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     ELSEIF OLD.prevent_edit = 1 AND NEW.prevent_edit = 1 THEN
         SET msg = CONCAT('ManualUpdateError: Manual is locked from editing. ', CAST(NEW.id AS CHAR));
@@ -52,7 +52,7 @@ ON manual FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentInsertError: Trying to add a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualAssignmentInsertError: Cannot add a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -65,7 +65,7 @@ ON manual FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentUpdateError: Trying to update a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualAssignmentUpdateError: Cannot update a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
     SET NEW.updated_on = NOW();
@@ -79,10 +79,10 @@ ON manual_section FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     DECLARE prevent_edit TINYINT(1);
-    SET prevent_edit = (SELECT prevent_edit FROM manual WHERE manual.id = OLD.manual_id);
+    SET prevent_edit = (SELECT manual.prevent_edit FROM manual WHERE manual.id = OLD.manual_id);
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ManualSectionUpdateError: Trying to update a section while the manual is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualSectionUpdateError: Cannot update a section while the manual is locked from editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -97,10 +97,10 @@ ON manual_section FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     DECLARE prevent_edit TINYINT(1);
-    SET prevent_edit = (SELECT prevent_edit FROM manual WHERE manual.id = OLD.manual_id);
+    SET prevent_edit = (SELECT manual.prevent_edit FROM manual WHERE manual.id = OLD.manual_id);
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ManualSectionDeleteError: Trying to delete a section while the manual is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('ManualSectionDeleteError: Cannot delete a section while the manual is locked from editing. ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -123,7 +123,7 @@ BEGIN
     );
 
     IF prevent_edit = 1 THEN
-        SET msg = CONCAT('PolicyUpdateError: Trying to update a policy while the manual is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('PolicyUpdateError: Cannot update a policy while the manual is locked from editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -147,7 +147,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('PolicyDeleteError: Trying to delete a policy while the manual is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('PolicyDeleteError: Cannot delete a policy while the manual is locked from editing.', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -169,7 +169,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ContentUpdateError: Trying to update a section while the manual is locked ffrom editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ContentUpdateError: Cannot update a section while the manual is locked ffrom editing.', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -193,7 +193,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ContentDeleteError: Trying to delete content while the manual is locked ffrom editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('ContentDeleteError: Cannot delete content while the manual is locked ffrom editing.', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;

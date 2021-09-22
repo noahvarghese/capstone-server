@@ -25,7 +25,7 @@ import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
-import Section, { SectionAttributes } from "./manual_section";
+import Section, { ManualSectionAttributes } from "./manual_section";
 
 let baseWorld: BaseWorld | undefined;
 const key = "policy";
@@ -56,7 +56,7 @@ beforeEach(async () => {
         "manualAttributes",
         manualAttributes
     );
-    baseWorld.setCustomProp<SectionAttributes>(
+    baseWorld.setCustomProp<ManualSectionAttributes>(
         "sectionAttributes",
         sectionAttributes
     );
@@ -142,13 +142,15 @@ beforeEach(async () => {
         "manual"
     );
 
-    baseWorld.setCustomProp<SectionAttributes>("sectionAttributes", {
-        ...baseWorld.getCustomProp<SectionAttributes>("sectionAttributes"),
+    baseWorld.setCustomProp<ManualSectionAttributes>("sectionAttributes", {
+        ...baseWorld.getCustomProp<ManualSectionAttributes>(
+            "sectionAttributes"
+        ),
         manual_id: manual.id,
         updated_by_user_id: user.id,
     });
 
-    const section = await createModel<Section, SectionAttributes>(
+    const section = await createModel<Section, ManualSectionAttributes>(
         baseWorld,
         Section,
         "section"

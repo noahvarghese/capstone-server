@@ -10,12 +10,18 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
+import {
+    createModel,
+    deleteModel,
+    updateModel,
+} from "../../../test/util/model_actions";
 import {
     testCreateModel,
     testDeleteModel,
+    testDeleteModelFail,
     testReadModel,
     testUpdateModel,
+    testUpdateModelFail,
 } from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
@@ -23,7 +29,8 @@ import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
-import Section, { SectionAttributes } from "./manual_section";
+import ManualSection, { ManualSectionAttributes } from "./manual_section";
+import ModelError from "../../../test/util/ModelError";
 
 let baseWorld: BaseWorld | undefined;
 const key = "section";
@@ -53,7 +60,7 @@ beforeEach(async () => {
         "manualAttributes",
         manualAttributes
     );
-    baseWorld.setCustomProp<SectionAttributes>(
+    baseWorld.setCustomProp<ManualSectionAttributes>(
         "sectionAttributes",
         sectionAttributes
     );
@@ -138,8 +145,10 @@ beforeEach(async () => {
         "manual"
     );
 
-    baseWorld.setCustomProp<SectionAttributes>("sectionAttributes", {
-        ...baseWorld.getCustomProp<SectionAttributes>("sectionAttributes"),
+    baseWorld.setCustomProp<ManualSectionAttributes>("sectionAttributes", {
+        ...baseWorld.getCustomProp<ManualSectionAttributes>(
+            "sectionAttributes"
+        ),
         manual_id: manual.id,
         updated_by_user_id: user.id,
     });
@@ -159,25 +168,115 @@ afterEach(async () => {
 
 // Tests
 test("Create Section", async () => {
-    await testCreateModel<Section, SectionAttributes>(baseWorld, Section, key);
+    await testCreateModel<ManualSection, ManualSectionAttributes>(
+        baseWorld,
+        ManualSection,
+        key
+    );
 });
 
 test("Update Section", async () => {
-    await testUpdateModel<Section, SectionAttributes>(baseWorld, Section, key, {
-        title: "TEST",
-    });
+    await testUpdateModel<ManualSection, ManualSectionAttributes>(
+        baseWorld,
+        ManualSection,
+        key,
+        {
+            title: "TEST",
+        }
+    );
 });
 
 test("Delete Section", async () => {
-    await testDeleteModel<Section, SectionAttributes>(baseWorld, Section, key, [
-        "id",
-    ]);
+    await testDeleteModel<ManualSection, ManualSectionAttributes>(
+        baseWorld,
+        ManualSection,
+        key,
+        ["id"]
+    );
 });
 
 test("Read Section", async () => {
-    await testReadModel<Section, SectionAttributes>(baseWorld, Section, key, [
-        "id",
-    ]);
+    await testReadModel<ManualSection, ManualSectionAttributes>(
+        baseWorld,
+        ManualSection,
+        key,
+        ["id"]
+    );
+});
+
+test("Delete Section while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
+        prevent_edit: true,
+    });
+
+    try {
+        await testDeleteModelFail<ManualSection, ManualSectionAttributes>(
+            baseWorld,
+            ManualSection,
+            key,
+            /ManualSectionDeleteError: Cannot delete a section while the manual is locked from editing/
+        );
+
+        await updateModel<Manual, ManualAttributes>(
+            baseWorld,
+            Manual,
+            "manual",
+            { prevent_edit: false }
+        );
+
+        await deleteModel<ManualSection>(baseWorld, key);
+    } catch (e) {
+        console.log(e);
+        if (e instanceof ModelError) {
+            if (e.deleted !== undefined && e.deleted !== false) {
+                await deleteModel<ManualSection>(baseWorld, key);
+            }
+        }
+        throw e;
+    }
+});
+
+test("Update Section while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
+        prevent_edit: true,
+    });
+
+    try {
+        await testUpdateModelFail<ManualSection, ManualSectionAttributes>(
+            baseWorld,
+            ManualSection,
+            key,
+            { title: "YOLO" },
+            /ManualSectionUpdateError: Cannot update a section while the manual is locked from editing/
+        );
+    } catch (e) {
+        if (e instanceof ModelError) {
+            if (e.deleted !== undefined && e.deleted !== false) {
+                await deleteModel<ManualSection>(baseWorld, key);
+            }
+        } else if (
+            /ManualSectionDeleteError: Cannot delete a section while the manual is locked from editing/.test(
+                e.message
+            )
+        ) {
+            await updateModel<Manual, ManualAttributes>(
+                baseWorld,
+                Manual,
+                "manual",
+                { prevent_edit: false }
+            );
+
+            await deleteModel<ManualSection>(baseWorld, key);
+        }
+    }
 });
 
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

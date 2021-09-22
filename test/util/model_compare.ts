@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import BaseWorld from "../jest/support/base_world";
+import ModelError from "./ModelError";
 import {
     createModel,
     deleteModel,
@@ -210,34 +211,35 @@ export const testDeleteModelFail = async <T, X>(
 ): Promise<void> => {
     const errorMessage = "Should not be successful";
 
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (res, rej) => {
-        if (!baseWorld) {
-            throw new Error(BaseWorld.errorMessage);
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await createModel<T, X>(baseWorld, type, key);
+
+    try {
+        await deleteModel<T>(baseWorld, key);
+        throw new Error(errorMessage);
+    } catch (e) {
+        expect(e.message).not.toBe(errorMessage);
+
+        if (expectedErrorMessage instanceof RegExp) {
+            expect(expectedErrorMessage.test(e.message)).toBe(true);
+        } else {
+            expect(e.message).toBe(expectedErrorMessage);
         }
 
-        await createModel<T, X>(baseWorld, type, key);
-
-        try {
-            await deleteModel<T>(baseWorld, key);
-            throw new Error(errorMessage);
-        } catch (e) {
-            expect(e).toBeTruthy();
-            expect(e.message).not.toBe(errorMessage);
-
-            if (expectedErrorMessage instanceof RegExp) {
-                expect(expectedErrorMessage.test(e.message)).toBe(true);
-            } else {
-                expect(e.message).toBe(expectedErrorMessage);
-            }
-
-            if (
-                expectedErrorMessage instanceof RegExp
-                    ? expectedErrorMessage.test(e.message)
-                    : e.message === expectedErrorMessage
-            )
-                res();
-            else rej({ deleted: e.message === errorMessage });
+        if (
+            expectedErrorMessage instanceof RegExp
+                ? expectedErrorMessage.test(e.message)
+                : e.message === expectedErrorMessage
+        ) {
+            return;
+        } else {
+            throw new ModelError(
+                "Unexpected error received \n" + e.message,
+                e.message === errorMessage
+            );
         }
-    });
+    }
 };
