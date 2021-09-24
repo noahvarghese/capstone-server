@@ -10,24 +10,21 @@ import {
     quizSectionAttributes,
     roleAttributes,
     userAttributes,
-} from "../../../test/sample_data/attributes";
-import BaseWorld from "../../../test/jest/support/base_world";
-import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testReadModel,
-    testUpdateModel,
-} from "../../../test/util/model_compare";
-import Business, { BusinessAttributes } from "../business";
-import Department, { DepartmentAttributes } from "../department";
-import Permission, { PermissionAttributes } from "../permission";
-import Role, { RoleAttributes } from "../role";
-import User, { UserAttributes } from "../user/user";
-import Manual, { ManualAttributes } from "../manual/manual";
-import Quiz, { QuizAttributes } from "./quiz";
-import Section, { SectionAttributes } from "./section";
+} from "../../../../test/sample_data/attributes";
+import BaseWorld from "../../../../test/jest/support/base_world";
+import DBConnection from "../../../../test/util/db_connection";
+import ModelActions from "../../../../test/helpers/model/actions";
+import ModelTestPass from "../../../../test/helpers/model/test/pass";
+import ModelTestFail from "../../../../test/helpers/model/test/fail";
+import ModelError from "../../../../test/util/model_error";
+import Business, { BusinessAttributes } from "../../business";
+import Department, { DepartmentAttributes } from "../../department";
+import Permission, { PermissionAttributes } from "../../permission";
+import Role, { RoleAttributes } from "../../role";
+import User, { UserAttributes } from "../../user/user";
+import Manual, { ManualAttributes } from "../../manual/manual";
+import Quiz, { QuizAttributes } from "../quiz";
+import Section, { SectionAttributes } from "../section";
 import Question, { QuestionAttributes } from "./question";
 import Answer, { AnswerAttributes } from "./answer";
 
@@ -81,7 +78,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -92,7 +89,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -106,11 +103,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -119,11 +115,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -132,7 +127,7 @@ beforeEach(async () => {
         department_id: department.id,
     });
 
-    const role = await createModel<Role, RoleAttributes>(
+    const role = await ModelActions.create<Role, RoleAttributes>(
         baseWorld,
         Role,
         "role"
@@ -145,7 +140,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const manual = await createModel<Manual, ManualAttributes>(
+    const manual = await ModelActions.create<Manual, ManualAttributes>(
         baseWorld,
         Manual,
         "manual"
@@ -157,7 +152,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const quiz = await createModel<Quiz, QuizAttributes>(
+    const quiz = await ModelActions.create<Quiz, QuizAttributes>(
         baseWorld,
         Quiz,
         "quiz"
@@ -169,7 +164,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const quizSection = await createModel<Section, SectionAttributes>(
+    const quizSection = await ModelActions.create<Section, SectionAttributes>(
         baseWorld,
         Section,
         "quizSection"
@@ -181,7 +176,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const question = await createModel<Question, QuestionAttributes>(
+    const question = await ModelActions.create<Question, QuestionAttributes>(
         baseWorld,
         Question,
         "question"
@@ -198,38 +193,123 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Question>(baseWorld, "question");
-    await deleteModel<Section>(baseWorld, "quizSection");
-    await deleteModel<Quiz>(baseWorld, "quiz");
-    await deleteModel<Manual>(baseWorld, "manual");
-    await deleteModel<Role>(baseWorld, "role");
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Question>(baseWorld, "question");
+    await ModelActions.delete<Section>(baseWorld, "quizSection");
+    await ModelActions.delete<Quiz>(baseWorld, "quiz");
+    await ModelActions.delete<Manual>(baseWorld, "manual");
+    await ModelActions.delete<Role>(baseWorld, "role");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create Quiz Answer", async () => {
-    await testCreateModel<Answer, AnswerAttributes>(baseWorld, Answer, key);
+    await ModelTestPass.create<Answer, AnswerAttributes>(
+        baseWorld,
+        Answer,
+        key
+    );
 });
 
 test("Update Quiz Answer", async () => {
-    await testUpdateModel<Answer, AnswerAttributes>(baseWorld, Answer, key, {
-        answer: "TEST",
-    });
+    await ModelTestPass.update<Answer, AnswerAttributes>(
+        baseWorld,
+        Answer,
+        key,
+        {
+            answer: "TEST",
+        }
+    );
 });
 
 test("Delete Quiz Answer", async () => {
-    await testDeleteModel<Answer, AnswerAttributes>(baseWorld, Answer, key, [
-        "id",
-    ]);
+    await ModelTestPass.delete<Answer, AnswerAttributes>(
+        baseWorld,
+        Answer,
+        key,
+        ["id"]
+    );
 });
 
 test("Read Quiz Answer", async () => {
-    await testReadModel<Answer, AnswerAttributes>(baseWorld, Answer, key, [
+    await ModelTestPass.read<Answer, AnswerAttributes>(baseWorld, Answer, key, [
         "id",
     ]);
 });
 
+test("Delete Answer while Manual is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await ModelActions.update<Quiz, QuizAttributes>(baseWorld, Quiz, "quiz", {
+        prevent_edit: true,
+    });
+
+    try {
+        await ModelTestFail.delete<Answer, AnswerAttributes>(
+            baseWorld,
+            Answer,
+            key,
+            /AnswerDeleteError: Cannot delete an answer while the quiz is locked from editing/
+        );
+
+        await ModelActions.update<Quiz, QuizAttributes>(
+            baseWorld,
+            Quiz,
+            "quiz",
+            {
+                prevent_edit: false,
+            }
+        );
+
+        await ModelActions.delete<Answer>(baseWorld, key);
+    } catch (e) {
+        if (e instanceof ModelError) {
+            if (e.deleted !== undefined && e.deleted !== false) {
+                await ModelActions.delete<Question>(baseWorld, key);
+            }
+        }
+        throw e;
+    }
+});
+
+test("Update Answer while Quiz is locked doesn't work", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    await ModelActions.update<Quiz, QuizAttributes>(baseWorld, Quiz, "quiz", {
+        prevent_edit: true,
+    });
+
+    try {
+        await ModelTestFail.update<Answer, AnswerAttributes>(
+            baseWorld,
+            Answer,
+            key,
+            { answer: "Me" },
+            /AnswerUpdateError: Cannot update an answer while the quiz is locked from editing/
+        );
+    } catch (e) {
+        if (
+            /AnswerDeleteError: Cannot delete an answer while the quiz is locked from editing/.test(
+                e.message
+            )
+        ) {
+            await ModelActions.update<Quiz, QuizAttributes>(
+                baseWorld,
+                Quiz,
+                "quiz",
+                {
+                    prevent_edit: false,
+                }
+            );
+
+            await ModelActions.delete<Question>(baseWorld, key);
+        }
+    }
+});
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

@@ -5,7 +5,7 @@ export default class BaseWorld {
     public connection: Connection;
     // public static Error: Error = new Error("Base world not instantiated.");
     public static errorMessage = "Base world not instantiated.";
-    private _props: any;
+    public _props: any;
 
     constructor(_connection: Connection) {
         this.connection = _connection;

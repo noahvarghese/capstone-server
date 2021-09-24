@@ -12,19 +12,10 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import {
-    createModel,
-    deleteModel,
-    updateModel,
-} from "../../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testDeleteModelFail,
-    testReadModel,
-    testUpdateModel,
-    testUpdateModelFail,
-} from "../../../test/util/model_compare";
+
+import ModelActions from "../../../test/helpers/model/actions";
+import ModelTestPass from "../../../test/helpers/model/test/pass";
+import ModelTestFail from "../../../test/helpers/model/test/fail";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
@@ -32,9 +23,9 @@ import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Content, { ContentAttributes } from "./content";
 import Manual, { ManualAttributes } from "./manual";
-import Policy, { PolicyAttributes } from "./policy";
-import Section, { ManualSectionAttributes } from "./manual_section";
-import ModelError from "../../../test/util/ModelError";
+import Policy, { PolicyAttributes } from "./policy/policy";
+import Section, { ManualSectionAttributes } from "./section";
+import ModelError from "../../../test/util/model_error";
 
 let baseWorld: BaseWorld | undefined;
 const key = "content";
@@ -85,7 +76,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -96,7 +87,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -110,11 +101,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -123,11 +113,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -136,7 +125,7 @@ beforeEach(async () => {
         department_id: department.id,
     });
 
-    const role = await createModel<Role, RoleAttributes>(
+    const role = await ModelActions.create<Role, RoleAttributes>(
         baseWorld,
         Role,
         "role"
@@ -149,7 +138,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const manual = await createModel<Manual, ManualAttributes>(
+    const manual = await ModelActions.create<Manual, ManualAttributes>(
         baseWorld,
         Manual,
         "manual"
@@ -163,7 +152,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const section = await createModel<Section, ManualSectionAttributes>(
+    const section = await ModelActions.create<Section, ManualSectionAttributes>(
         baseWorld,
         Section,
         "section"
@@ -175,7 +164,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const policy = await createModel<Policy, PolicyAttributes>(
+    const policy = await ModelActions.create<Policy, PolicyAttributes>(
         baseWorld,
         Policy,
         "policy"
@@ -192,37 +181,52 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Policy>(baseWorld, "policy");
-    await deleteModel<Section>(baseWorld, "section");
-    await deleteModel<Manual>(baseWorld, "manual");
-    await deleteModel<Role>(baseWorld, "role");
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Policy>(baseWorld, "policy");
+    await ModelActions.delete<Section>(baseWorld, "section");
+    await ModelActions.delete<Manual>(baseWorld, "manual");
+    await ModelActions.delete<Role>(baseWorld, "role");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create Content", async () => {
-    await testCreateModel<Content, ContentAttributes>(baseWorld, Content, key);
+    await ModelTestPass.create<Content, ContentAttributes>(
+        baseWorld,
+        Content,
+        key
+    );
 });
 
 test("Update Content", async () => {
-    await testUpdateModel<Content, ContentAttributes>(baseWorld, Content, key, {
-        title: "TEST",
-    });
+    await ModelTestPass.update<Content, ContentAttributes>(
+        baseWorld,
+        Content,
+        key,
+        {
+            title: "TEST",
+        }
+    );
 });
 
 test("Delete Content", async () => {
-    await testDeleteModel<Content, ContentAttributes>(baseWorld, Content, key, [
-        "id",
-    ]);
+    await ModelTestPass.delete<Content, ContentAttributes>(
+        baseWorld,
+        Content,
+        key,
+        ["id"]
+    );
 });
 
 test("Read Content", async () => {
-    await testReadModel<Content, ContentAttributes>(baseWorld, Content, key, [
-        "id",
-    ]);
+    await ModelTestPass.read<Content, ContentAttributes>(
+        baseWorld,
+        Content,
+        key,
+        ["id"]
+    );
 });
 
 test("Delete Content while Manual is locked doesn't work", async () => {
@@ -230,30 +234,35 @@ test("Delete Content while Manual is locked doesn't work", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
-        prevent_edit: true,
-    });
+    await ModelActions.update<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        "manual",
+        {
+            prevent_edit: true,
+        }
+    );
 
     try {
-        await testDeleteModelFail<Content, ContentAttributes>(
+        await ModelTestFail.delete<Content, ContentAttributes>(
             baseWorld,
             Content,
             key,
             /ContentDeleteError: Cannot delete content while the manual is locked from editing/
         );
 
-        await updateModel<Manual, ManualAttributes>(
+        await ModelActions.update<Manual, ManualAttributes>(
             baseWorld,
             Manual,
             "manual",
             { prevent_edit: false }
         );
 
-        await deleteModel<Content>(baseWorld, key);
+        await ModelActions.delete<Content>(baseWorld, key);
     } catch (e) {
         if (e instanceof ModelError) {
             if (e.deleted !== undefined && e.deleted !== false) {
-                await deleteModel<Content>(baseWorld, key);
+                await ModelActions.delete<Content>(baseWorld, key);
             }
         }
         throw e;
@@ -265,12 +274,17 @@ test("Update Content while Manual is locked doesn't work", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
-        prevent_edit: true,
-    });
+    await ModelActions.update<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        "manual",
+        {
+            prevent_edit: true,
+        }
+    );
 
     try {
-        await testUpdateModelFail<Content, ContentAttributes>(
+        await ModelTestFail.update<Content, ContentAttributes>(
             baseWorld,
             Content,
             key,
@@ -283,14 +297,14 @@ test("Update Content while Manual is locked doesn't work", async () => {
                 e.message
             )
         ) {
-            await updateModel<Manual, ManualAttributes>(
+            await ModelActions.update<Manual, ManualAttributes>(
                 baseWorld,
                 Manual,
                 "manual",
                 { prevent_edit: false }
             );
 
-            await deleteModel<Content>(baseWorld, key);
+            await ModelActions.delete<Content>(baseWorld, key);
         }
     }
 });

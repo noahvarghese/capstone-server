@@ -5,13 +5,8 @@ import {
 } from "../../test/sample_data/attributes";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import { createModel, deleteModel } from "../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testReadModel,
-    testUpdateModel,
-} from "../../test/util/model_compare";
+import ModelActions from "../../test/helpers/model/actions";
+import ModelTestPass from "../../test/helpers/model/test/pass";
 import Business, { BusinessAttributes } from "./business";
 import Permission, { PermissionAttributes } from "./permission";
 import User, { UserAttributes } from "./user/user";
@@ -46,7 +41,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -57,7 +52,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -75,13 +70,13 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create Permission", async () => {
-    await testCreateModel<Permission, PermissionAttributes>(
+    await ModelTestPass.create<Permission, PermissionAttributes>(
         baseWorld,
         Permission,
         key
@@ -89,7 +84,7 @@ test("Create Permission", async () => {
 });
 
 test("Update Permission", async () => {
-    await testUpdateModel<Permission, PermissionAttributes>(
+    await ModelTestPass.update<Permission, PermissionAttributes>(
         baseWorld,
         Permission,
         key,
@@ -98,7 +93,7 @@ test("Update Permission", async () => {
 });
 
 test("Delete Permission", async () => {
-    await testDeleteModel<Permission, PermissionAttributes>(
+    await ModelTestPass.delete<Permission, PermissionAttributes>(
         baseWorld,
         Permission,
         key,
@@ -107,7 +102,7 @@ test("Delete Permission", async () => {
 });
 
 test("Read Permission", async () => {
-    await testReadModel<Permission, PermissionAttributes>(
+    await ModelTestPass.read<Permission, PermissionAttributes>(
         baseWorld,
         Permission,
         key,

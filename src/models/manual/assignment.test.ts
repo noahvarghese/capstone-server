@@ -2,36 +2,26 @@
 import {
     businessAttributes,
     departmentAttributes,
+    manualAssignmentAttributes,
     manualAttributes,
     permissionAttributes,
-    policyAttributes,
-    readAttributes,
     roleAttributes,
-    sectionAttributes,
     userAttributes,
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testReadModel,
-    testUpdateModel,
-} from "../../../test/util/model_compare";
+import ModelActions from "../../../test/helpers/model/actions";
+import ModelTestPass from "../../../test/helpers/model/test/pass";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
-import Read, { ReadAttributes } from "./read";
 import Manual, { ManualAttributes } from "./manual";
-import Policy, { PolicyAttributes } from "./policy";
-import Section, { ManualSectionAttributes } from "./manual_section";
+import ManualAssignment, { ManualAssignmentAttributes } from "./assignment";
 
 let baseWorld: BaseWorld | undefined;
-const key = "read";
-const attrKey = `${key}Attributes`;
+const key = "manualAssignment";
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -58,15 +48,10 @@ beforeEach(async () => {
         "manualAttributes",
         manualAttributes
     );
-    baseWorld.setCustomProp<ManualSectionAttributes>(
-        "sectionAttributes",
-        sectionAttributes
+    baseWorld.setCustomProp<ManualAssignmentAttributes>(
+        "manualAssignmentAttributes",
+        manualAssignmentAttributes
     );
-    baseWorld.setCustomProp<PolicyAttributes>(
-        "policyAttributes",
-        policyAttributes
-    );
-    baseWorld.setCustomProp<ReadAttributes>(attrKey, readAttributes);
 });
 afterEach(() => {
     baseWorld = undefined;
@@ -78,7 +63,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -89,7 +74,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -103,11 +88,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -116,11 +100,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -129,7 +112,7 @@ beforeEach(async () => {
         department_id: department.id,
     });
 
-    const role = await createModel<Role, RoleAttributes>(
+    const role = await ModelActions.create<Role, RoleAttributes>(
         baseWorld,
         Role,
         "role"
@@ -142,88 +125,100 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const manual = await createModel<Manual, ManualAttributes>(
+    const manual = await ModelActions.create<Manual, ManualAttributes>(
         baseWorld,
         Manual,
         "manual"
     );
 
-    baseWorld.setCustomProp<ManualSectionAttributes>("sectionAttributes", {
-        ...baseWorld.getCustomProp<ManualSectionAttributes>(
-            "sectionAttributes"
-        ),
-        manual_id: manual.id,
-        updated_by_user_id: user.id,
-    });
-
-    const section = await createModel<Section, ManualSectionAttributes>(
-        baseWorld,
-        Section,
-        "section"
+    baseWorld.setCustomProp<ManualAssignmentAttributes>(
+        "manualAssignmentAttributes",
+        {
+            ...baseWorld.getCustomProp<ManualAssignmentAttributes>(
+                "manualAssignmentAttributes"
+            ),
+            department_id: department.id,
+            manual_id: manual.id,
+            role_id: role.id,
+            updated_by_user_id: user.id,
+        }
     );
-
-    baseWorld.setCustomProp<PolicyAttributes>("policyAttributes", {
-        ...baseWorld.getCustomProp<PolicyAttributes>("policyAttributes"),
-        manual_section_id: section.id,
-        updated_by_user_id: user.id,
-    });
-
-    const policy = await createModel<Policy, PolicyAttributes>(
-        baseWorld,
-        Policy,
-        "policy"
-    );
-
-    baseWorld.setCustomProp<ReadAttributes>(attrKey, {
-        ...baseWorld.getCustomProp<ReadAttributes>(attrKey),
-        policy_id: policy.id,
-        user_id: user.id,
-    });
 });
 afterEach(async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Policy>(baseWorld, "policy");
-    await deleteModel<Section>(baseWorld, "section");
-    await deleteModel<Manual>(baseWorld, "manual");
-    await deleteModel<Role>(baseWorld, "role");
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Manual>(baseWorld, "manual");
+    await ModelActions.delete<Role>(baseWorld, "role");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
-test("Create Policy Read", async () => {
-    await testCreateModel<Read, ReadAttributes>(baseWorld, Read, key);
+test("Create Manual Assignment", async () => {
+    await ModelTestPass.create<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key
+    );
 });
 
-test("Update model should fail", async () => {
+// Should fail
+test("Create Manual Assignment Without Department Or Role", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
-
+    baseWorld.setCustomProp<ManualAssignmentAttributes>(
+        "manualAssignmentAttributes",
+        {
+            ...baseWorld.getCustomProp<ManualAssignmentAttributes>(
+                "manualAssignmentAttributes"
+            ),
+            department_id: null as any,
+            role_id: null as any,
+        }
+    );
     try {
-        await testUpdateModel(baseWorld, Read, key, { policy_id: 2 });
+        await ModelTestPass.create<
+            ManualAssignment,
+            ManualAssignmentAttributes
+        >(baseWorld, ManualAssignment, key);
     } catch (e) {
-        const errorRegex = /PolicyReadUpdateError/;
-        expect(errorRegex.test(e.message)).toBe(true);
-        await deleteModel<Read>(baseWorld, key);
+        expect(e).toBeTruthy();
     }
 });
 
-test("Delete Policy Read", async () => {
-    await testDeleteModel<Read, ReadAttributes>(baseWorld, Read, key, [
-        "policy_id",
-        "user_id",
-    ]);
+/* Dont test update as it is a concatenated primary key */
+/* Meaning that an update should be treated as a DELETE and INSERT */
+
+test("Update Manual Assignment", async () => {
+    await ModelTestPass.update<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key,
+        { role_id: null }
+    );
 });
 
-test("Read Policy Read", async () => {
-    await testReadModel<Read, ReadAttributes>(baseWorld, Read, key, [
-        "user_id",
-        "policy_id",
-    ]);
+test("Delete Manual Assignment", async () => {
+    await ModelTestPass.delete<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key,
+        ["id"]
+    );
 });
+
+test("Read Manual Assignment", async () => {
+    await ModelTestPass.read<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        key,
+        ["id"]
+    );
+});
+
+// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

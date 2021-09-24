@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import EditableContentModel from "../abstract/editable_content_model";
+import EditableContentModel from "../../abstract/editable_content_model";
 
 export interface AnswerAttributes {
     answer: string;
@@ -20,7 +20,7 @@ const AnswerBuilder = <T extends Partial<AnswerAttributes>>(
 ): AnswerAttributes & T => Object.assign(EmptyAnswerAttributes(), options);
 
 @Entity({ name: "quiz_answer" })
-export default class Answer
+export default class QuizAnswer
     extends EditableContentModel
     implements AnswerAttributes
 {

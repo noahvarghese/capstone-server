@@ -4,14 +4,9 @@ import {
     userAttributes,
 } from "../../test/sample_data/attributes";
 import DBConnection from "../../test/util/db_connection";
-import { createModel, deleteModel } from "../../test/util/model_actions";
-import {
-    testCreateModel,
-    testCreateModelFail,
-    testDeleteModel,
-    testReadModel,
-    testUpdateModelFail,
-} from "../../test/util/model_compare";
+import ModelActions from "../../test/helpers/model/actions";
+import ModelTestPass from "../../test/helpers/model/test/pass";
+import ModelTestFail from "../../test/helpers/model/test/fail";
 import BaseWorld from "../../test/jest/support/base_world";
 import Business, { BusinessAttributes } from "./business";
 import Event, { EventAttributes } from "./event";
@@ -48,7 +43,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -59,7 +54,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -76,12 +71,12 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 test("Create Event", async () => {
-    await testCreateModel<Event, EventAttributes>(baseWorld, Event, key);
+    await ModelTestPass.create<Event, EventAttributes>(baseWorld, Event, key);
 });
 
 test("Create Event without user_id or business_id", async () => {
@@ -95,7 +90,7 @@ test("Create Event without user_id or business_id", async () => {
     eventAttrs.user_id = null;
     baseWorld?.setCustomProp<EventAttributes>("eventAttributes", eventAttrs);
 
-    await testCreateModelFail<Event, EventAttributes>(
+    await ModelTestFail.create<Event, EventAttributes>(
         baseWorld,
         Event,
         key,
@@ -104,7 +99,7 @@ test("Create Event without user_id or business_id", async () => {
 });
 
 test("Update Event should fail", async () => {
-    await testUpdateModelFail<Event, EventAttributes>(
+    await ModelTestFail.update<Event, EventAttributes>(
         baseWorld,
         Event,
         key,
@@ -117,12 +112,14 @@ test("Update Event should fail", async () => {
 
 test("Delete Event", async () => {
     jest.setTimeout(10000);
-    await testDeleteModel<Event, EventAttributes>(baseWorld, Event, key, [
+    await ModelTestPass.delete<Event, EventAttributes>(baseWorld, Event, key, [
         "id",
     ]);
 });
 
 test("Read Event", async () => {
     jest.setTimeout(10000);
-    await testReadModel<Event, EventAttributes>(baseWorld, Event, key, ["id"]);
+    await ModelTestPass.read<Event, EventAttributes>(baseWorld, Event, key, [
+        "id",
+    ]);
 });

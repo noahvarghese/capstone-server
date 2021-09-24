@@ -7,18 +7,9 @@ import {
 } from "../../test/sample_data/attributes";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import {
-    createModel,
-    deleteModel,
-    updateModel,
-} from "../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testDeleteModelFail,
-    testReadModel,
-    testUpdateModel,
-} from "../../test/util/model_compare";
+import ModelActions from "../../test/helpers/model/actions";
+import ModelTestPass from "../../test/helpers/model/test/pass";
+import ModelTestFail from "../../test/helpers/model/test/fail";
 import Business, { BusinessAttributes } from "./business";
 import Department, { DepartmentAttributes } from "./department";
 import Permission, { PermissionAttributes } from "./permission";
@@ -60,7 +51,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -71,7 +62,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -85,11 +76,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -98,11 +88,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -116,29 +105,33 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create Role", async () => {
-    await testCreateModel<Role, RoleAttributes>(baseWorld, Role, key);
+    await ModelTestPass.create<Role, RoleAttributes>(baseWorld, Role, key);
 });
 
 test("Update Role", async () => {
-    await testUpdateModel<Role, RoleAttributes>(baseWorld, Role, key, {
+    await ModelTestPass.update<Role, RoleAttributes>(baseWorld, Role, key, {
         name: "TEST",
     });
 });
 
 test("Delete Role", async () => {
-    await testDeleteModel<Role, RoleAttributes>(baseWorld, Role, key, ["id"]);
+    await ModelTestPass.delete<Role, RoleAttributes>(baseWorld, Role, key, [
+        "id",
+    ]);
 });
 
 test("Read Role", async () => {
-    await testReadModel<Role, RoleAttributes>(baseWorld, Role, key, ["id"]);
+    await ModelTestPass.read<Role, RoleAttributes>(baseWorld, Role, key, [
+        "id",
+    ]);
 });
 
 test("Prevent Deletion of Role", async () => {
@@ -153,21 +146,21 @@ test("Prevent Deletion of Role", async () => {
     });
 
     try {
-        await testDeleteModelFail(
+        await ModelTestFail.delete(
             baseWorld,
             Role,
             key,
             /RoleDeleteError: Cannot delete role while delete lock is set/
         );
 
-        await updateModel<Role, RoleAttributes>(baseWorld, Role, key, {
+        await ModelActions.update<Role, RoleAttributes>(baseWorld, Role, key, {
             prevent_delete: false,
         });
 
-        await deleteModel<Role>(baseWorld, key);
+        await ModelActions.delete<Role>(baseWorld, key);
     } catch (e) {
         if (e.deleted !== undefined && e.deleted !== false) {
-            await deleteModel<Role>(baseWorld, key);
+            await ModelActions.delete<Role>(baseWorld, key);
         }
     }
 });

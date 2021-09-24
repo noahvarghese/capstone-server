@@ -8,12 +8,8 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testReadModel,
-} from "../../../test/util/model_compare";
+import ModelActions from "../../../test/helpers/model/actions";
+import ModelTestPass from "../../../test/helpers/model/test/pass";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
@@ -60,7 +56,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -71,7 +67,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -85,11 +81,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -98,11 +93,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -111,7 +105,7 @@ beforeEach(async () => {
         department_id: department.id,
     });
 
-    const role = await createModel<Role, RoleAttributes>(
+    const role = await ModelActions.create<Role, RoleAttributes>(
         baseWorld,
         Role,
         "role"
@@ -129,16 +123,16 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Role>(baseWorld, "role");
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Role>(baseWorld, "role");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create User Role", async () => {
-    await testCreateModel<UserRole, UserRoleAttributes>(
+    await ModelTestPass.create<UserRole, UserRoleAttributes>(
         baseWorld,
         UserRole,
         key
@@ -157,9 +151,10 @@ test("Create User Role", async () => {
 //         "TEST"
 //     );
 // });
+test.todo("Update user role, see policy read for example");
 
 test("Delete User Role", async () => {
-    await testDeleteModel<UserRole, UserRoleAttributes>(
+    await ModelTestPass.delete<UserRole, UserRoleAttributes>(
         baseWorld,
         UserRole,
         key,
@@ -168,7 +163,7 @@ test("Delete User Role", async () => {
 });
 
 test("Read User Role", async () => {
-    await testReadModel<UserRole, UserRoleAttributes>(
+    await ModelTestPass.read<UserRole, UserRoleAttributes>(
         baseWorld,
         UserRole,
         key,

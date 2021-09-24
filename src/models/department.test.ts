@@ -1,25 +1,14 @@
-import {
-    businessAttributes,
-    departmentAttributes,
-    userAttributes,
-} from "../../test/sample_data/attributes";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import {
-    createModel,
-    deleteModel,
-    updateModel,
-} from "../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testDeleteModelFail,
-    testReadModel,
-    testUpdateModel,
-} from "../../test/util/model_compare";
-import Business, { BusinessAttributes } from "./business";
+import ModelActions from "../../test/helpers/model/actions";
+import ModelTestPass from "../../test/helpers/model/test/pass";
+import ModelTestFail from "../../test/helpers/model/test/fail";
 import Department, { DepartmentAttributes } from "./department";
-import User, { UserAttributes } from "./user/user";
+import {
+    createModels,
+    loadAttributes,
+} from "../../test/helpers/model/test/setup";
+import { teardown } from "../../test/helpers/model/test/teardown";
 
 let baseWorld: BaseWorld | undefined;
 const key = "department";
@@ -28,66 +17,23 @@ const key = "department";
 beforeAll(DBConnection.InitConnection);
 afterAll(DBConnection.CloseConnection);
 
-// State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    baseWorld.setCustomProp<UserAttributes>("userAttributes", userAttributes);
-    baseWorld.setCustomProp<BusinessAttributes>(
-        "businessAttributes",
-        businessAttributes
-    );
-    baseWorld.setCustomProp<DepartmentAttributes>(
-        "departmentAttributes",
-        departmentAttributes
-    );
-});
-afterEach(() => {
-    baseWorld = undefined;
+    loadAttributes(baseWorld, key);
+    await createModels(baseWorld, key);
 });
 
-// Domain setup
-beforeEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    const business = await createModel<Business, BusinessAttributes>(
-        baseWorld,
-        Business,
-        "business"
-    );
-
-    baseWorld.setCustomProp<UserAttributes>("userAttributes", {
-        ...baseWorld.getCustomProp<UserAttributes>("userAttributes"),
-        business_id: business.id,
-    });
-
-    const user = await createModel<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user"
-    );
-
-    baseWorld.setCustomProp<DepartmentAttributes>("departmentAttributes", {
-        ...baseWorld.getCustomProp<DepartmentAttributes>(
-            "departmentAttributes"
-        ),
-        updated_by_user_id: user.id,
-        business_id: business.id,
-    });
-});
 afterEach(async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await teardown<Department>(baseWorld, Department, key);
+    baseWorld = undefined;
 });
 
-// Tests
 test("Create Department", async () => {
-    await testCreateModel<Department, DepartmentAttributes>(
+    await ModelTestPass.create<Department, DepartmentAttributes>(
         baseWorld,
         Department,
         key
@@ -95,7 +41,7 @@ test("Create Department", async () => {
 });
 
 test("Update Department", async () => {
-    await testUpdateModel<Department, DepartmentAttributes>(
+    await ModelTestPass.update<Department, DepartmentAttributes>(
         baseWorld,
         Department,
         key,
@@ -104,7 +50,7 @@ test("Update Department", async () => {
 });
 
 test("Delete Department", async () => {
-    await testDeleteModel<Department, DepartmentAttributes>(
+    await ModelTestPass.delete<Department, DepartmentAttributes>(
         baseWorld,
         Department,
         key,
@@ -113,7 +59,7 @@ test("Delete Department", async () => {
 });
 
 test("Read Department", async () => {
-    await testReadModel<Department, DepartmentAttributes>(
+    await ModelTestPass.read<Department, DepartmentAttributes>(
         baseWorld,
         Department,
         key,
@@ -135,14 +81,14 @@ test("Prevent Deletion of Department", async () => {
     });
 
     try {
-        await testDeleteModelFail(
+        await ModelTestFail.delete(
             baseWorld,
             Department,
             key,
             /DepartmentDeleteError: Cannot delete department while delete lock is set/
         );
 
-        await updateModel<Department, DepartmentAttributes>(
+        await ModelActions.update<Department, DepartmentAttributes>(
             baseWorld,
             Department,
             key,
@@ -151,10 +97,10 @@ test("Prevent Deletion of Department", async () => {
             }
         );
 
-        await deleteModel<Department>(baseWorld, key);
+        await ModelActions.delete<Department>(baseWorld, Department, key);
     } catch (e) {
         if (e.deleted !== undefined && e.deleted !== false) {
-            await deleteModel<Department>(baseWorld, key);
+            await ModelActions.delete<Department>(baseWorld, Department, key);
         }
     }
 });

@@ -15,13 +15,6 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testReadModel,
-    testUpdateModelFail,
-} from "../../../test/util/model_compare";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
@@ -30,10 +23,13 @@ import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "../manual/manual";
 import Quiz, { QuizAttributes } from "./quiz";
 import Section, { SectionAttributes } from "./section";
-import Question, { QuestionAttributes } from "./question";
-import Answer, { AnswerAttributes } from "./answer";
+import Question, { QuestionAttributes } from "./question/question";
+import Answer, { AnswerAttributes } from "./question/answer";
 import Result, { ResultAttributes } from "./result";
 import Attempt, { AttemptAttributes } from "./attempt";
+import ModelTestFail from "../../../test/helpers/model/test/fail";
+import ModelTestPass from "../../../test/helpers/model/test/pass";
+import ModelActions from "../../../test/helpers/model/actions";
 
 let baseWorld: BaseWorld | undefined;
 const key = "result";
@@ -93,7 +89,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -104,7 +100,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -118,11 +114,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -131,11 +126,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -144,7 +138,7 @@ beforeEach(async () => {
         department_id: department.id,
     });
 
-    const role = await createModel<Role, RoleAttributes>(
+    const role = await ModelActions.create<Role, RoleAttributes>(
         baseWorld,
         Role,
         "role"
@@ -157,7 +151,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const manual = await createModel<Manual, ManualAttributes>(
+    const manual = await ModelActions.create<Manual, ManualAttributes>(
         baseWorld,
         Manual,
         "manual"
@@ -169,7 +163,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const quiz = await createModel<Quiz, QuizAttributes>(
+    const quiz = await ModelActions.create<Quiz, QuizAttributes>(
         baseWorld,
         Quiz,
         "quiz"
@@ -181,7 +175,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const quizSection = await createModel<Section, SectionAttributes>(
+    const quizSection = await ModelActions.create<Section, SectionAttributes>(
         baseWorld,
         Section,
         "quizSection"
@@ -193,7 +187,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const question = await createModel<Question, QuestionAttributes>(
+    const question = await ModelActions.create<Question, QuestionAttributes>(
         baseWorld,
         Question,
         "question"
@@ -205,7 +199,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const answer = await createModel<Answer, AnswerAttributes>(
+    const answer = await ModelActions.create<Answer, AnswerAttributes>(
         baseWorld,
         Answer,
         "answer"
@@ -217,7 +211,7 @@ beforeEach(async () => {
         user_id: user.id,
     });
 
-    const attempt = await createModel<Attempt, AttemptAttributes>(
+    const attempt = await ModelActions.create<Attempt, AttemptAttributes>(
         baseWorld,
         Attempt,
         "attempt"
@@ -235,26 +229,30 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Attempt>(baseWorld, "attempt");
-    await deleteModel<Answer>(baseWorld, "answer");
-    await deleteModel<Question>(baseWorld, "question");
-    await deleteModel<Section>(baseWorld, "quizSection");
-    await deleteModel<Quiz>(baseWorld, "quiz");
-    await deleteModel<Manual>(baseWorld, "manual");
-    await deleteModel<Role>(baseWorld, "role");
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Attempt>(baseWorld, "attempt");
+    await ModelActions.delete<Answer>(baseWorld, "answer");
+    await ModelActions.delete<Question>(baseWorld, "question");
+    await ModelActions.delete<Section>(baseWorld, "quizSection");
+    await ModelActions.delete<Quiz>(baseWorld, "quiz");
+    await ModelActions.delete<Manual>(baseWorld, "manual");
+    await ModelActions.delete<Role>(baseWorld, "role");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create Quiz Result", async () => {
-    await testCreateModel<Result, ResultAttributes>(baseWorld, Result, key);
+    await ModelTestPass.create<Result, ResultAttributes>(
+        baseWorld,
+        Result,
+        key
+    );
 });
 
 test("Update Quiz Result should fail", async () => {
-    await testUpdateModelFail<Result, ResultAttributes>(
+    await ModelTestFail.update<Result, ResultAttributes>(
         baseWorld,
         Result,
         key,
@@ -266,15 +264,16 @@ test("Update Quiz Result should fail", async () => {
 });
 
 test("Delete Quiz Result", async () => {
-    await testDeleteModel<Result, ResultAttributes>(baseWorld, Result, key, [
-        "quiz_attempt_id",
-        "quiz_question_id",
-        "quiz_answer_id",
-    ]);
+    await ModelTestPass.delete<Result, ResultAttributes>(
+        baseWorld,
+        Result,
+        key,
+        ["quiz_attempt_id", "quiz_question_id", "quiz_answer_id"]
+    );
 });
 
 test("Read Quiz Result", async () => {
-    await testReadModel<Result, ResultAttributes>(baseWorld, Result, key, [
+    await ModelTestPass.read<Result, ResultAttributes>(baseWorld, Result, key, [
         "quiz_attempt_id",
         "quiz_question_id",
         "quiz_answer_id",

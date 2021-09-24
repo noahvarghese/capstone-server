@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn } from "typeorm";
-import EventDates from "../abstract/event_dates";
+import EventDates from "../../abstract/event_dates";
 
 export interface ReadAttributes {
     user_id: number;
@@ -16,7 +16,7 @@ const ReadBuilder = <T extends Partial<ReadAttributes>>(
 ): ReadAttributes & T => Object.assign(EmptyReadAttributes(), options);
 
 @Entity({ name: "policy_read" })
-export default class Read extends EventDates implements ReadAttributes {
+export default class PolicyRead extends EventDates implements ReadAttributes {
     @PrimaryColumn()
     public user_id!: number;
     @PrimaryColumn()

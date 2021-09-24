@@ -2,18 +2,18 @@ import { BusinessAttributes } from "../../src/models/business";
 import { DepartmentAttributes } from "../../src/models/department";
 import { ContentAttributes } from "../../src/models/manual/content";
 import { ManualAttributes } from "../../src/models/manual/manual";
-import { ManualAssignmentAttributes } from "../../src/models/manual/manual_assignment";
-import { PolicyAttributes } from "../../src/models/manual/policy";
-import { ReadAttributes } from "../../src/models/manual/read";
-import { ManualSectionAttributes } from "../../src/models/manual/manual_section";
+import { ManualAssignmentAttributes } from "../../src/models/manual/assignment";
+import { PolicyAttributes } from "../../src/models/manual/policy/policy";
+import { ReadAttributes } from "../../src/models/manual/policy/read";
+import { ManualSectionAttributes } from "../../src/models/manual/section";
 import { SectionAttributes as QuizSectionAttributes } from "../../src/models/quiz/section";
 import { PermissionAttributes } from "../../src/models/permission";
-import { QuestionAttributes } from "../../src/models/quiz/question";
+import { QuestionAttributes } from "../../src/models/quiz/question/question";
 import { QuizAttributes } from "../../src/models/quiz/quiz";
 import { RoleAttributes } from "../../src/models/role";
 import { UserAttributes } from "../../src/models/user/user";
 import { UserRoleAttributes } from "../../src/models/user/user_role";
-import { AnswerAttributes } from "../../src/models/quiz/answer";
+import { AnswerAttributes } from "../../src/models/quiz/question/answer";
 import { AttemptAttributes } from "../../src/models/quiz/attempt";
 import { ResultAttributes } from "../../src/models/quiz/result";
 import { EventAttributes } from "../../src/models/event";
@@ -162,4 +162,26 @@ export const eventAttributes: EventAttributes = {
     status: "FAIL",
     user_id: null,
     business_id: null,
+};
+
+export default {
+    business: businessAttributes,
+    user: userAttributes,
+    permission: permissionAttributes,
+    department: departmentAttributes,
+    role: roleAttributes,
+    userRole: userRoleAttributes,
+    manual: manualAssignmentAttributes,
+    manualAssignment: manualAssignmentAttributes,
+    manualSection: sectionAttributes,
+    policy: policyAttributes,
+    content: contentAttributes,
+    policyRead: readAttributes,
+    quiz: quizAttributes,
+    quizSection: quizSectionAttributes,
+    quizQuestion: questionAttributes,
+    quizAnswer: answerAttributes,
+    quizResult: resultAttributes,
+    event: eventAttributes,
+    quizAttempt: attemptAttributes,
 };

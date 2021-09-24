@@ -4,28 +4,28 @@ import {
     departmentAttributes,
     manualAttributes,
     permissionAttributes,
-    quizAttributes,
-    quizSectionAttributes,
+    policyAttributes,
+    readAttributes,
     roleAttributes,
+    sectionAttributes,
     userAttributes,
-} from "../../../test/sample_data/attributes";
-import BaseWorld from "../../../test/jest/support/base_world";
-import DBConnection from "../../../test/util/db_connection";
-
-import ModelActions from "../../../test/helpers/model/actions";
-import ModelTestPass from "../../../test/helpers/model/test/pass";
-import ModelTestParentPrevent from "../../../test/helpers/model/test/parent_prevent";
-import Business, { BusinessAttributes } from "../business";
-import Department, { DepartmentAttributes } from "../department";
-import Permission, { PermissionAttributes } from "../permission";
-import Role, { RoleAttributes } from "../role";
-import User, { UserAttributes } from "../user/user";
-import Manual, { ManualAttributes } from "../manual/manual";
-import Quiz, { QuizAttributes } from "./quiz";
-import Section, { SectionAttributes } from "./section";
+} from "../../../../test/sample_data/attributes";
+import BaseWorld from "../../../../test/jest/support/base_world";
+import DBConnection from "../../../../test/util/db_connection";
+import ModelActions from "../../../../test/helpers/model/actions";
+import ModelTestPass from "../../../../test/helpers/model/test/pass";
+import Business, { BusinessAttributes } from "../../business";
+import Department, { DepartmentAttributes } from "../../department";
+import Permission, { PermissionAttributes } from "../../permission";
+import Role, { RoleAttributes } from "../../role";
+import User, { UserAttributes } from "../../user/user";
+import Read, { ReadAttributes } from "./read";
+import Manual, { ManualAttributes } from "../manual";
+import Policy, { PolicyAttributes } from "./policy";
+import Section, { ManualSectionAttributes } from "../section";
 
 let baseWorld: BaseWorld | undefined;
-const key = "section";
+const key = "read";
 const attrKey = `${key}Attributes`;
 
 // Database setup
@@ -35,34 +35,33 @@ afterAll(DBConnection.CloseConnection);
 // State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-
     baseWorld.setCustomProp<BusinessAttributes>(
         "businessAttributes",
         businessAttributes
     );
-
     baseWorld.setCustomProp<UserAttributes>("userAttributes", userAttributes);
-
     baseWorld.setCustomProp<PermissionAttributes>(
         "permissionAttributes",
         permissionAttributes
     );
-
     baseWorld.setCustomProp<DepartmentAttributes>(
         "departmentAttributes",
         departmentAttributes
     );
-
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", roleAttributes);
-
     baseWorld.setCustomProp<ManualAttributes>(
         "manualAttributes",
         manualAttributes
     );
-
-    baseWorld.setCustomProp<QuizAttributes>("quizAttributes", quizAttributes);
-
-    baseWorld.setCustomProp<SectionAttributes>(attrKey, quizSectionAttributes);
+    baseWorld.setCustomProp<ManualSectionAttributes>(
+        "sectionAttributes",
+        sectionAttributes
+    );
+    baseWorld.setCustomProp<PolicyAttributes>(
+        "policyAttributes",
+        policyAttributes
+    );
+    baseWorld.setCustomProp<ReadAttributes>(attrKey, readAttributes);
 });
 afterEach(() => {
     baseWorld = undefined;
@@ -142,22 +141,36 @@ beforeEach(async () => {
         "manual"
     );
 
-    baseWorld.setCustomProp<QuizAttributes>("quizAttributes", {
-        ...baseWorld.getCustomProp<QuizAttributes>("quizAttributes"),
+    baseWorld.setCustomProp<ManualSectionAttributes>("sectionAttributes", {
+        ...baseWorld.getCustomProp<ManualSectionAttributes>(
+            "sectionAttributes"
+        ),
         manual_id: manual.id,
         updated_by_user_id: user.id,
     });
 
-    const quiz = await ModelActions.create<Quiz, QuizAttributes>(
+    const section = await ModelActions.create<Section, ManualSectionAttributes>(
         baseWorld,
-        Quiz,
-        "quiz"
+        Section,
+        "section"
     );
 
-    baseWorld.setCustomProp<SectionAttributes>(attrKey, {
-        ...baseWorld.getCustomProp<SectionAttributes>(attrKey),
-        quiz_id: quiz.id,
+    baseWorld.setCustomProp<PolicyAttributes>("policyAttributes", {
+        ...baseWorld.getCustomProp<PolicyAttributes>("policyAttributes"),
+        manual_section_id: section.id,
         updated_by_user_id: user.id,
+    });
+
+    const policy = await ModelActions.create<Policy, PolicyAttributes>(
+        baseWorld,
+        Policy,
+        "policy"
+    );
+
+    baseWorld.setCustomProp<ReadAttributes>(attrKey, {
+        ...baseWorld.getCustomProp<ReadAttributes>(attrKey),
+        policy_id: policy.id,
+        user_id: user.id,
     });
 });
 afterEach(async () => {
@@ -165,7 +178,8 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await ModelActions.delete<Quiz>(baseWorld, "quiz");
+    await ModelActions.delete<Policy>(baseWorld, "policy");
+    await ModelActions.delete<Section>(baseWorld, "section");
     await ModelActions.delete<Manual>(baseWorld, "manual");
     await ModelActions.delete<Role>(baseWorld, "role");
     await ModelActions.delete<Permission>(baseWorld, "permission");
@@ -175,72 +189,34 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Quiz Section", async () => {
-    await ModelTestPass.create<Section, SectionAttributes>(
-        baseWorld,
-        Section,
-        key
-    );
+test("Create Policy Read", async () => {
+    await ModelTestPass.create<Read, ReadAttributes>(baseWorld, Read, key);
 });
 
-test("Update Quiz Section", async () => {
-    await ModelTestPass.update<Section, SectionAttributes>(
-        baseWorld,
-        Section,
-        key,
-        {
-            title: "TEST",
-        }
-    );
+test("Update model should fail", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
+    try {
+        await ModelTestPass.update(baseWorld, Read, key, { policy_id: 2 });
+    } catch (e) {
+        const errorRegex = /PolicyReadUpdateError/;
+        expect(errorRegex.test(e.message)).toBe(true);
+        await ModelActions.delete<Read>(baseWorld, key);
+    }
 });
 
-test("Delete Quiz Section", async () => {
-    await ModelTestPass.delete<Section, SectionAttributes>(
-        baseWorld,
-        Section,
-        key,
-        ["id"]
-    );
+test("Delete Policy Read", async () => {
+    await ModelTestPass.delete<Read, ReadAttributes>(baseWorld, Read, key, [
+        "policy_id",
+        "user_id",
+    ]);
 });
 
-test("Read Quiz Section", async () => {
-    await ModelTestPass.read<Section, SectionAttributes>(
-        baseWorld,
-        Section,
-        key,
-        ["id"]
-    );
+test("Read Policy Read", async () => {
+    await ModelTestPass.read<Read, ReadAttributes>(baseWorld, Read, key, [
+        "user_id",
+        "policy_id",
+    ]);
 });
-
-test("Delete Question while Manual is locked doesn't work", async () => {
-    await ModelTestParentPrevent.delete<
-        Quiz,
-        QuizAttributes,
-        Section,
-        SectionAttributes
-    >(
-        baseWorld,
-        { type: Quiz, modelName: "quiz", toggleAttribute: "prevent_edit" },
-        { type: Section, modelName: key },
-        /QuizSectionDeleteError: Cannot delete a section while the quiz is locked from editing/
-    );
-});
-
-test("Update Question while Quiz is locked doesn't work", async () => {
-    await ModelTestParentPrevent.update<
-        Quiz,
-        QuizAttributes,
-        Section,
-        SectionAttributes
-    >(
-        baseWorld,
-        { type: Quiz, modelName: "quiz", toggleAttribute: "prevent_edit" },
-        {
-            type: Section,
-            modelName: key,
-            attributesToUpdate: { title: "YOLO" },
-        },
-        /QuizSectionUpdateError: Cannot update a section while the quiz is locked from editing/
-    );
-});
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

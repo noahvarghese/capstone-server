@@ -18,7 +18,7 @@ const ResultBuilder = <T extends Partial<ResultAttributes>>(
 ): ResultAttributes & T => Object.assign(EmptyResultAttributes(), options);
 
 @Entity({ name: "quiz_result" })
-export default class Result extends BaseModel implements ResultAttributes {
+export default class QuizResult extends BaseModel implements ResultAttributes {
     @Column()
     public quiz_attempt_id!: number;
     @Column()

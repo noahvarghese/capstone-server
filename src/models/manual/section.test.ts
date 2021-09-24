@@ -10,27 +10,17 @@ import {
 } from "../../../test/sample_data/attributes";
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import {
-    createModel,
-    deleteModel,
-    updateModel,
-} from "../../../test/util/model_actions";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testDeleteModelFail,
-    testReadModel,
-    testUpdateModel,
-    testUpdateModelFail,
-} from "../../../test/util/model_compare";
+import ModelActions from "../../../test/helpers/model/actions";
+import ModelTestPass from "../../../test/helpers/model/test/pass";
+import ModelTestFail from "../../../test/helpers/model/test/fail";
 import Business, { BusinessAttributes } from "../business";
 import Department, { DepartmentAttributes } from "../department";
 import Permission, { PermissionAttributes } from "../permission";
 import Role, { RoleAttributes } from "../role";
 import User, { UserAttributes } from "../user/user";
 import Manual, { ManualAttributes } from "./manual";
-import ManualSection, { ManualSectionAttributes } from "./manual_section";
-import ModelError from "../../../test/util/ModelError";
+import ManualSection, { ManualSectionAttributes } from "./section";
+import ModelError from "../../../test/util/model_error";
 
 let baseWorld: BaseWorld | undefined;
 const key = "section";
@@ -75,7 +65,7 @@ beforeEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const business = await createModel<Business, BusinessAttributes>(
+    const business = await ModelActions.create<Business, BusinessAttributes>(
         baseWorld,
         Business,
         "business"
@@ -86,7 +76,7 @@ beforeEach(async () => {
         business_id: business.id,
     });
 
-    const user = await createModel<User, UserAttributes>(
+    const user = await ModelActions.create<User, UserAttributes>(
         baseWorld,
         User,
         "user"
@@ -100,11 +90,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const department = await createModel<Department, DepartmentAttributes>(
-        baseWorld,
+    const department = await ModelActions.create<
         Department,
-        "department"
-    );
+        DepartmentAttributes
+    >(baseWorld, Department, "department");
 
     baseWorld.setCustomProp<PermissionAttributes>("permissionAttributes", {
         ...baseWorld.getCustomProp<PermissionAttributes>(
@@ -113,11 +102,10 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const permission = await createModel<Permission, PermissionAttributes>(
-        baseWorld,
+    const permission = await ModelActions.create<
         Permission,
-        "permission"
-    );
+        PermissionAttributes
+    >(baseWorld, Permission, "permission");
 
     baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
         ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
@@ -126,7 +114,7 @@ beforeEach(async () => {
         department_id: department.id,
     });
 
-    const role = await createModel<Role, RoleAttributes>(
+    const role = await ModelActions.create<Role, RoleAttributes>(
         baseWorld,
         Role,
         "role"
@@ -139,7 +127,7 @@ beforeEach(async () => {
         updated_by_user_id: user.id,
     });
 
-    const manual = await createModel<Manual, ManualAttributes>(
+    const manual = await ModelActions.create<Manual, ManualAttributes>(
         baseWorld,
         Manual,
         "manual"
@@ -158,17 +146,17 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Manual>(baseWorld, "manual");
-    await deleteModel<Role>(baseWorld, "role");
-    await deleteModel<Permission>(baseWorld, "permission");
-    await deleteModel<Department>(baseWorld, "department");
-    await deleteModel<User>(baseWorld, "user");
-    await deleteModel<Business>(baseWorld, "business");
+    await ModelActions.delete<Manual>(baseWorld, "manual");
+    await ModelActions.delete<Role>(baseWorld, "role");
+    await ModelActions.delete<Permission>(baseWorld, "permission");
+    await ModelActions.delete<Department>(baseWorld, "department");
+    await ModelActions.delete<User>(baseWorld, "user");
+    await ModelActions.delete<Business>(baseWorld, "business");
 });
 
 // Tests
 test("Create Section", async () => {
-    await testCreateModel<ManualSection, ManualSectionAttributes>(
+    await ModelTestPass.create<ManualSection, ManualSectionAttributes>(
         baseWorld,
         ManualSection,
         key
@@ -176,7 +164,7 @@ test("Create Section", async () => {
 });
 
 test("Update Section", async () => {
-    await testUpdateModel<ManualSection, ManualSectionAttributes>(
+    await ModelTestPass.update<ManualSection, ManualSectionAttributes>(
         baseWorld,
         ManualSection,
         key,
@@ -187,7 +175,7 @@ test("Update Section", async () => {
 });
 
 test("Delete Section", async () => {
-    await testDeleteModel<ManualSection, ManualSectionAttributes>(
+    await ModelTestPass.delete<ManualSection, ManualSectionAttributes>(
         baseWorld,
         ManualSection,
         key,
@@ -196,7 +184,7 @@ test("Delete Section", async () => {
 });
 
 test("Read Section", async () => {
-    await testReadModel<ManualSection, ManualSectionAttributes>(
+    await ModelTestPass.read<ManualSection, ManualSectionAttributes>(
         baseWorld,
         ManualSection,
         key,
@@ -209,30 +197,35 @@ test("Delete Section while Manual is locked doesn't work", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
-        prevent_edit: true,
-    });
+    await ModelActions.update<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        "manual",
+        {
+            prevent_edit: true,
+        }
+    );
 
     try {
-        await testDeleteModelFail<ManualSection, ManualSectionAttributes>(
+        await ModelTestFail.delete<ManualSection, ManualSectionAttributes>(
             baseWorld,
             ManualSection,
             key,
             /ManualSectionDeleteError: Cannot delete a section while the manual is locked from editing/
         );
 
-        await updateModel<Manual, ManualAttributes>(
+        await ModelActions.update<Manual, ManualAttributes>(
             baseWorld,
             Manual,
             "manual",
             { prevent_edit: false }
         );
 
-        await deleteModel<ManualSection>(baseWorld, key);
+        await ModelActions.delete<ManualSection>(baseWorld, key);
     } catch (e) {
         if (e instanceof ModelError) {
             if (e.deleted !== undefined && e.deleted !== false) {
-                await deleteModel<ManualSection>(baseWorld, key);
+                await ModelActions.delete<ManualSection>(baseWorld, key);
             }
         }
         throw e;
@@ -244,12 +237,17 @@ test("Update Section while Manual is locked doesn't work", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await updateModel<Manual, ManualAttributes>(baseWorld, Manual, "manual", {
-        prevent_edit: true,
-    });
+    await ModelActions.update<Manual, ManualAttributes>(
+        baseWorld,
+        Manual,
+        "manual",
+        {
+            prevent_edit: true,
+        }
+    );
 
     try {
-        await testUpdateModelFail<ManualSection, ManualSectionAttributes>(
+        await ModelTestFail.update<ManualSection, ManualSectionAttributes>(
             baseWorld,
             ManualSection,
             key,
@@ -262,14 +260,14 @@ test("Update Section while Manual is locked doesn't work", async () => {
                 e.message
             )
         ) {
-            await updateModel<Manual, ManualAttributes>(
+            await ModelActions.update<Manual, ManualAttributes>(
                 baseWorld,
                 Manual,
                 "manual",
                 { prevent_edit: false }
             );
 
-            await deleteModel<ManualSection>(baseWorld, key);
+            await ModelActions.delete<ManualSection>(baseWorld, key);
         }
     }
 });

@@ -1,19 +1,15 @@
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import { createModel, deleteModel } from "../../../test/util/model_actions";
-import Business, { BusinessAttributes } from "../business";
-import {
-    businessAttributes,
-    userAttributes,
-} from "../../../test/sample_data/attributes";
+import ModelTestPass from "../../../test/helpers/model/test/pass";
 import User, { UserAttributes } from "./user";
-import {
-    testCreateModel,
-    testDeleteModel,
-    testReadModel,
-    testUpdateModel,
-} from "../../../test/util/model_compare";
 import dotenv from "dotenv";
+import {
+    createModels,
+    loadAttributes,
+} from "../../../test/helpers/model/test/setup";
+import { teardown } from "../../../test/helpers/model/test/teardown";
+import ModelActions from "../../../test/helpers/model/actions";
+import Business from "../business";
 dotenv.config();
 
 let baseWorld: BaseWorld | undefined;
@@ -23,71 +19,56 @@ const key = "user";
 beforeAll(DBConnection.InitConnection);
 afterAll(DBConnection.CloseConnection);
 
-// State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    baseWorld.setCustomProp<UserAttributes>("userAttributes", userAttributes);
-    baseWorld.setCustomProp<BusinessAttributes>(
-        "businessAttributes",
-        businessAttributes
-    );
-});
-afterEach(() => {
-    baseWorld = undefined;
+    loadAttributes(baseWorld, "user");
+    await createModels(baseWorld, "user");
 });
 
-// Business Setup
-beforeEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    const business = await createModel<Business, BusinessAttributes>(
-        baseWorld,
-        Business,
-        "business"
-    );
-
-    baseWorld.setCustomProp<UserAttributes>("userAttributes", {
-        ...baseWorld.getCustomProp<UserAttributes>("userAttributes"),
-        business_id: business.id,
-    });
-});
 afterEach(async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await deleteModel<Business>(baseWorld, "business");
+    await teardown(baseWorld, User, "user");
+    baseWorld = undefined;
 });
 
-// Tests
-
 test("Create User", async () => {
-    await testCreateModel<User, UserAttributes>(baseWorld, User, key);
+    await ModelTestPass.create<User, UserAttributes>(baseWorld, User, key);
 });
 
 test("Update User", async () => {
-    await testUpdateModel<User, UserAttributes>(baseWorld, User, key, {
+    await ModelTestPass.update<User, UserAttributes>(baseWorld, User, key, {
         first_name: "TEST",
     });
 });
 
 test("Delete User", async () => {
-    await testDeleteModel<User, UserAttributes>(baseWorld, User, key, ["id"]);
+    await ModelTestPass.delete<User, UserAttributes>(baseWorld, User, key, [
+        "id",
+    ]);
 });
 
 test("Read User", async () => {
-    await testReadModel<User, UserAttributes>(baseWorld, User, key, ["email"]);
+    await ModelTestPass.read<User, UserAttributes>(baseWorld, User, key, [
+        "email",
+    ]);
 });
 
 test("Create Token", async () => {
+    if (!baseWorld) {
+        throw new Error(BaseWorld.errorMessage);
+    }
+
     const user = new User();
     const initialVal = user.token;
 
     user.createToken();
 
     expect(user.token).not.toBe(initialVal);
+
+    await ModelActions.delete<User>(baseWorld, User, "user");
 });
 
 test("Updated user should have 1hr to update password", async () => {
@@ -95,24 +76,18 @@ test("Updated user should have 1hr to update password", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        `${key}Attributes`
+    let user = await ModelActions.create<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user"
     );
-
-    let user = new User(attributes);
     user.createToken();
-    user = await connection.manager.save(user);
-    user =
-        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
-        user;
-
-    // Trigger Update
-    user.createToken();
-    user = await connection.manager.save(user);
-    user =
-        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
-        user;
+    user = await ModelActions.update<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user",
+        { token: user.token }
+    );
 
     // Offset to adjust for delays potentially
     const allowedError = 5000;
@@ -127,7 +102,7 @@ test("Updated user should have 1hr to update password", async () => {
 
     expect(difference).toBeLessThanOrEqual(allowedError);
 
-    await connection.manager.remove(user);
+    await ModelActions.delete<User>(baseWorld, User, "user");
 });
 
 test("Token Should Be Valid", async () => {
@@ -135,22 +110,26 @@ test("Token Should Be Valid", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
-    const attributes =
-        baseWorld.getCustomProp<UserAttributes>("userAttributes");
-    let user = new User(attributes);
+    let user = await ModelActions.create<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user"
+    );
+
     user.createToken();
 
-    user = await connection.manager.save(user);
-    user =
-        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
-        user;
-
+    user = await ModelActions.update<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user",
+        { token: user.token }
+    );
     const match = user.compareToken(user.token ?? "");
 
     expect(user.token?.length).toBeGreaterThan(0);
     expect(match).toBe(true);
-    await connection.manager.remove(user);
+
+    await ModelActions.delete<User>(baseWorld, User, "user");
 });
 
 test("Invalid token expiry", async () => {
@@ -158,23 +137,29 @@ test("Invalid token expiry", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
-    const attributes =
-        baseWorld.getCustomProp<UserAttributes>("userAttributes");
-    let user = new User(attributes);
+    let user = await ModelActions.create<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user"
+    );
+
     user.createToken();
 
-    user = await connection.manager.save(user);
-    user =
-        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
-        user;
+    user = await ModelActions.update<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user",
+        { token: user.token }
+    );
+
     user.token_expiry = new Date(0);
 
     const match = user.compareToken(user.token ?? "");
 
     expect(user.token?.length).toBeGreaterThan(0);
     expect(match).toBe(false);
-    await connection.manager.remove(user);
+
+    await ModelActions.delete<User>(baseWorld, User, "user");
 });
 
 test("Wrong token should not match", async () => {
@@ -207,8 +192,11 @@ test("Wrong token should not match", async () => {
     const match = user1.compareToken(user2.token ?? "");
 
     expect(match).toBe(false);
+
     await connection.manager.remove(user1);
     await connection.manager.remove(user2);
+
+    baseWorld.setCustomProp<undefined>("userAttributes", undefined);
 });
 
 test("Reset Password", async () => {
@@ -216,19 +204,24 @@ test("Reset Password", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
     const attributes = baseWorld.getCustomProp<UserAttributes>(
         `${key}Attributes`
     );
 
     const oldPassword = attributes.password;
 
-    let user = new User(attributes);
+    let user = await ModelActions.create<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user"
+    );
     user.createToken();
-    user = await connection.manager.save(user);
-    user =
-        (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
-        user;
+    user = await ModelActions.update<User, UserAttributes>(
+        baseWorld,
+        User,
+        "user",
+        { token: user.token }
+    );
 
     const result = await user.resetPassword(oldPassword, user.token ?? "");
 
@@ -238,7 +231,7 @@ test("Reset Password", async () => {
     expect(user.password).not.toBe(oldPassword);
     expect(await user.comparePassword(oldPassword)).toBe(true);
 
-    await connection.manager.remove(user);
+    await ModelActions.delete<User>(baseWorld, User, "user");
 });
 
 test("Reset password empty", async () => {
@@ -271,4 +264,4 @@ test("Reset password empty", async () => {
     await connection.manager.remove(user);
 });
 
-// TODO: Test token creation and trigger that creates expiration date
+test.todo("When token is updated an expiry date is set to an hour from now");

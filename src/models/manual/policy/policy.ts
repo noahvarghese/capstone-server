@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import EditableContentModel from "../abstract/editable_content_model";
+import EditableContentModel from "../../abstract/editable_content_model";
 
 export interface PolicyAttributes {
     title: string;

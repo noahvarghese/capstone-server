@@ -18,7 +18,7 @@ const SectionBuilder = <T extends Partial<SectionAttributes>>(
 ): SectionAttributes & T => Object.assign(EmptySectionAttributes(), options);
 
 @Entity({ name: "quiz_section" })
-export default class Section
+export default class QuizSection
     extends EditableContentModel
     implements SectionAttributes
 {
