@@ -7,6 +7,7 @@ import {
     loadAttributes,
 } from "../../../test/helpers/model/test/setup";
 import { teardown } from "../../../test/helpers/model/test/teardown";
+import ModelTestFail from "../../../test/helpers/model/test/fail";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -36,19 +37,14 @@ test("Create User Role", async () => {
     );
 });
 
-/* Dont test update as it is a concatenated primary  */
-/* Meaning that an update should be treated as a DELETE and INSERT */
-
-// test("Update User Role", async () => {
-//     await testUpdateModel<UserRole, UserRoleAttributes>(
-//         baseWorld,
-//         UserRole,
-//
-//         "name",
-//         "TEST"
-//     );
-// });
-test.todo("Update user role, see policy read for example");
+test("Update user role should fail", async () => {
+    await ModelTestFail.update<UserRole, UserRoleAttributes>(
+        baseWorld,
+        UserRole,
+        { role_id: -1 },
+        /UserRoleUpdateError: Cannot update user role/
+    );
+});
 
 test("Delete User Role", async () => {
     await ModelTestPass.delete<UserRole, UserRoleAttributes>(

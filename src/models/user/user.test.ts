@@ -9,7 +9,6 @@ import {
 } from "../../../test/helpers/model/test/setup";
 import { teardown } from "../../../test/helpers/model/test/teardown";
 import ModelActions from "../../../test/helpers/model/actions";
-import { pascalToSnake } from "../../util/string";
 dotenv.config();
 
 let baseWorld: BaseWorld | undefined;
@@ -89,6 +88,7 @@ test("Updated user should have 1hr to update password", async () => {
     const difference = Math.abs(tokenExpiry - expectedExpiry);
 
     expect(difference).toBeLessThanOrEqual(allowedError);
+    expect(difference).toBeGreaterThan(0);
 
     await ModelActions.delete<User>(baseWorld, User);
 });
@@ -178,9 +178,8 @@ test("Reset Password", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        `${pascalToSnake(User.name)}Attributes`
-    );
+    const attributes =
+        baseWorld.getCustomProp<UserAttributes>("userAttributes");
 
     const oldPassword = attributes.password;
 
@@ -207,9 +206,8 @@ test("Reset password empty", async () => {
     }
 
     const { connection } = baseWorld;
-    const attributes = baseWorld.getCustomProp<UserAttributes>(
-        `${pascalToSnake(User.name)}Attributes`
-    );
+    const attributes =
+        baseWorld.getCustomProp<UserAttributes>("userAttributes");
 
     const oldPassword = attributes.password;
 
@@ -230,5 +228,3 @@ test("Reset password empty", async () => {
 
     await connection.manager.remove(user);
 });
-
-test.todo("When token is updated an expiry date is set to an hour from now");

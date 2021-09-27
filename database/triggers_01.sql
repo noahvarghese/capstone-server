@@ -73,14 +73,17 @@ END;
 
 //
 
-DELIMITER ;
-
 CREATE TRIGGER user_role_update
 BEFORE UPDATE
 ON user_role FOR EACH ROW
-SET NEW.updated_on = NOW();
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = CONCAT('UserRoleUpdateError: Cannot update user role. user_id: ', CAST(OLD.user_id AS CHAR), ' role_id: ', CAST(OLD.role_id AS CHAR));
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+END;
 
-DELIMITER //
+//
+
 
 CREATE TRIGGER quiz_attempt_update
 BEFORE UPDATE
