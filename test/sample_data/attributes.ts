@@ -93,7 +93,7 @@ export const manualAssignmentAttributes: ManualAssignmentAttributes = {
     updated_by_user_id: -1,
 };
 
-export const sectionAttributes: ManualSectionAttributes = {
+export const manualSectionAttributes: ManualSectionAttributes = {
     title: "Section",
     manual_id: -1,
     updated_by_user_id: -1,
@@ -171,9 +171,9 @@ export default {
     department: departmentAttributes,
     role: roleAttributes,
     userRole: userRoleAttributes,
-    manual: manualAssignmentAttributes,
+    manual: manualAttributes,
     manualAssignment: manualAssignmentAttributes,
-    manualSection: sectionAttributes,
+    manualSection: manualSectionAttributes,
     policy: policyAttributes,
     content: contentAttributes,
     policyRead: readAttributes,

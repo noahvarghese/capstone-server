@@ -3,7 +3,7 @@ import EditableContentModel from "../abstract/editable_content_model";
 
 export interface ManualAssignmentAttributes {
     role_id: number | null;
-    department_id: number;
+    department_id: number | null;
     manual_id: number;
     updated_by_user_id: number;
 }
@@ -29,8 +29,8 @@ export default class ManualAssignment
     public manual_id!: number;
     @Column({ nullable: true, type: "int" })
     public role_id!: number | null;
-    @Column()
-    public department_id!: number;
+    @Column({ nullable: true, type: "int" })
+    public department_id!: number | null;
 
     public constructor(options?: Partial<ManualAssignmentAttributes>) {
         super();

@@ -16,6 +16,7 @@ import QuizAnswer from "../../src/models/quiz/question/answer";
 import QuizResult from "../../src/models/quiz/result";
 import QuizAttempt from "../../src/models/quiz/attempt";
 import Event from "../../src/models/event";
+import ManualAssignment from "../../src/models/manual/assignment";
 
 const types: { [i: string]: new () => unknown } = {
     business: Business,
@@ -25,6 +26,7 @@ const types: { [i: string]: new () => unknown } = {
     role: Role,
     userRole: UserRole,
     manual: Manual,
+    manualAssignment: ManualAssignment,
     manualSection: ManualSection,
     policy: Policy,
     content: Content,

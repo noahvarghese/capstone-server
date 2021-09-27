@@ -48,7 +48,6 @@ export const createModels = async <T extends Y, Y>(
                 const nextModel =
                     baseWorld.getCustomProp<typeof nextType>(nextModelName);
 
-                console.log(currentModel, nextModelName, nextModel);
                 currentAttributes[key as keyof X] = nextModel[
                     "id" as keyof typeof nextModel
                 ] as unknown as X[keyof X];
@@ -63,10 +62,8 @@ export const createModels = async <T extends Y, Y>(
     const deps = dependencies[modelName];
 
     for (let i = 0; i < deps.length; i++) {
-        console.log(deps[i], deps.length);
         setNestedProps<Y>(deps[i]);
         await ModelActions.create(baseWorld, types[deps[i]]);
     }
-
     setNestedProps<Y>(modelName);
 };
