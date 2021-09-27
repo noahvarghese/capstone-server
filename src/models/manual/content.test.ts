@@ -85,19 +85,16 @@ test("Update Content while Manual is locked doesn't work", async () => {
     );
 });
 
-test.todo(
-    "Creating content when manual cannot be edited is true should fail",
-    async () => {
-        await ModelTestParentPrevent.create<
-            Manual,
-            ManualAttributes,
-            Content,
-            ContentAttributes
-        >(
-            baseWorld,
-            { type: Manual, toggleAttribute: "prevent_edit" },
-            Content,
-            /ContentInsertError: Cannot insert content while manual is locked/
-        );
-    }
-);
+test("Creating content when manual cannot be edited is true should fail", async () => {
+    await ModelTestParentPrevent.create<
+        Manual,
+        ManualAttributes,
+        Content,
+        ContentAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        Content,
+        /ContentInsertError: Cannot insert content while the manual is locked/
+    );
+});

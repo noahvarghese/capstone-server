@@ -129,6 +129,31 @@ END;
 
 //
 
+CREATE TRIGGER policy_insert
+BEFORE INSERT 
+ON policy FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    DECLARE prevent_edit TINYINT(1);
+
+    SET prevent_edit = (
+        SELECT m.prevent_edit 
+        FROM manual_section AS ms 
+        JOIN manual AS m 
+        ON m.id = ms.manual_id
+        WHERE ms.id = NEW.manual_section_id
+    );
+
+    IF prevent_edit = 1 THEN
+        SET msg = CONCAT('PolicyInsertError: Cannot insert a policy while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
+END;
+
+//
+
 CREATE TRIGGER policy_update
 BEFORE UPDATE
 ON policy FOR EACH ROW
@@ -147,6 +172,20 @@ BEGIN
     IF prevent_edit = 1 THEN
         SET msg = CONCAT('PolicyUpdateError: Cannot update a policy while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    ELSEIF (OLD.manual_section_id != NEW.manual_section_id) THEN
+
+        SET prevent_edit = (
+            SELECT m.prevent_edit 
+            FROM manual_section AS ms 
+            JOIN manual AS m 
+            ON m.id = ms.manual_id
+            WHERE ms.id = NEW.manual_section_id
+        );
+
+        IF prevent_edit = 1 THEN
+            SET msg = CONCAT('PolicyUpdateError: Cannot update a policy while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+        END IF;
     END IF;
 
     SET NEW.updated_on = NOW();
@@ -176,6 +215,30 @@ END;
 
 //
 
+CREATE TRIGGER content_insert
+BEFORE INSERT 
+ON content FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    DECLARE prevent_edit TINYINT(1);
+    SET prevent_edit = (
+        SELECT m.prevent_edit
+        FROM policy AS p 
+        JOIN manual_section AS ms ON ms.id = p.manual_section_id
+        JOIN manual AS m ON m.id = ms.manual_id
+        WHERE p.id = NEW.policy_id
+    );
+
+    IF (prevent_edit = 1) THEN
+        SET msg = CONCAT('ContentInsertError: Cannot insert content while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
+END;
+
+//
+
 CREATE TRIGGER content_update
 BEFORE UPDATE
 ON content FOR EACH ROW
@@ -193,6 +256,19 @@ BEGIN
     IF (prevent_edit = 1) THEN
         SET msg = CONCAT('ContentUpdateError: Cannot update content while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    ELSEIF (OLD.policy_id != NEW.policy_id) THEN
+        SET prevent_edit = (
+            SELECT m.prevent_edit
+            FROM policy AS p 
+            JOIN manual_section AS ms ON ms.id = p.manual_section_id
+            JOIN manual AS m ON m.id = ms.manual_id
+            WHERE p.id = NEW.policy_id
+        );
+    
+        IF (prevent_edit = 1) THEN
+            SET msg = CONCAT('ContentUpdateError: Cannot update content while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+        END IF;
     END IF;
 
     SET NEW.updated_on = NOW();

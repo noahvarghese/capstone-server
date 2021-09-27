@@ -95,19 +95,16 @@ test("Update Policy while Manual is locked doesn't work", async () => {
     );
 });
 
-test.todo(
-    "Creating a policy when manual cannot be edited is true should fail",
-    async () => {
-        await ModelTestParentPrevent.create<
-            Manual,
-            ManualAttributes,
-            Policy,
-            PolicyAttributes
-        >(
-            baseWorld,
-            { type: Manual, toggleAttribute: "prevent_edit" },
-            Policy,
-            /PolicyInsertError: Cannot insert a policy while manual is locked/
-        );
-    }
-);
+test("Creating a policy when manual cannot be edited is true should fail", async () => {
+    await ModelTestParentPrevent.create<
+        Manual,
+        ManualAttributes,
+        Policy,
+        PolicyAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        Policy,
+        /PolicyInsertError: Cannot insert a policy while the manual is locked/
+    );
+});

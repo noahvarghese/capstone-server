@@ -109,5 +109,3 @@ test("Creating section when manual cannot be edited is true should fail", async 
         /ManualSectionInsertError: Cannot insert a section while the manual is locked/
     );
 });
-
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
