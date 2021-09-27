@@ -97,4 +97,6 @@ test("Update Question while Quiz is locked doesn't work", async () => {
         /QuizSectionUpdateError: Cannot update a section while the quiz is locked from editing/
     );
 });
+
+test.todo("Creating section when quiz.prevent_edit is true should fail");
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

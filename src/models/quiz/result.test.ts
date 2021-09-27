@@ -31,7 +31,6 @@ afterEach(async () => {
     baseWorld = undefined;
 });
 
-// Tests
 test("Create Quiz Result", async () => {
     await ModelTestPass.create<QuizResult, QuizResultAttributes>(
         baseWorld,
@@ -39,6 +38,7 @@ test("Create Quiz Result", async () => {
     );
 });
 
+// because results should not be changable as a business rule
 test("Update Quiz Result should fail", async () => {
     await ModelTestFail.update<QuizResult, QuizResultAttributes>(
         baseWorld,

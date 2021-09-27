@@ -1,3 +1,4 @@
+import { pascalToSnake } from "../../../../src/util/string";
 import BaseWorld from "../../../jest/support/base_world";
 import ModelActions from "../actions";
 
@@ -50,12 +51,7 @@ export default class ModelTestParentPrevent {
             );
         } catch (e) {
             errorThrown = true;
-
-            expect(
-                expectedErrorMessage instanceof RegExp
-                    ? expectedErrorMessage.test(e.message)
-                    : e.message === expectedErrorMessage
-            ).toBe(true);
+            expect(e.message).toMatch(expectedErrorMessage);
         }
 
         expect(errorThrown).toBe(true);
@@ -109,12 +105,7 @@ export default class ModelTestParentPrevent {
             await ModelActions.delete<S>(baseWorld, modelType);
         } catch (e) {
             errorThrown = true;
-
-            expect(
-                expectedErrorMessage instanceof RegExp
-                    ? expectedErrorMessage.test(e.message)
-                    : e.message === expectedErrorMessage
-            ).toBe(true);
+            expect(e.message).toMatch(expectedErrorMessage);
         }
 
         expect(errorThrown).toBe(true);

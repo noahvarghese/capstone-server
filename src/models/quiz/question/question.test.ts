@@ -5,12 +5,12 @@ import ModelTestPass from "../../../../test/helpers/model/test/pass";
 import ModelTestFail from "../../../../test/helpers/model/test/fail";
 import Quiz, { QuizAttributes } from "../quiz";
 import QuizQuestion, { QuizQuestionAttributes } from "./question";
-import ModelError from "../../../../test/util/model_error";
 import { teardown } from "../../../../test/helpers/model/test/teardown";
 import {
     createModels,
     loadAttributes,
 } from "../../../../test/helpers/model/test/setup";
+import ModelTestParentPrevent from "../../../../test/helpers/model/test/parent_prevent";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -71,64 +71,35 @@ test("Delete Question while Quiz is locked doesn't work", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await ModelActions.update<Quiz, QuizAttributes>(baseWorld, Quiz, {
-        prevent_edit: true,
-    });
-
-    try {
-        await ModelTestFail.delete<QuizQuestion, QuizQuestionAttributes>(
-            baseWorld,
-            QuizQuestion,
-            /QuizQuestionDeleteError: Cannot delete a question while the quiz is locked from editing/
-        );
-
-        await ModelActions.update<Quiz, QuizAttributes>(baseWorld, Quiz, {
-            prevent_edit: false,
-        });
-
-        await ModelActions.delete<QuizQuestion>(baseWorld, QuizQuestion);
-    } catch (e) {
-        if (e instanceof ModelError) {
-            if (e.deleted !== undefined && e.deleted !== false) {
-                await ModelActions.delete<QuizQuestion>(
-                    baseWorld,
-                    QuizQuestion
-                );
-            }
-        }
-        throw e;
-    }
+    await ModelTestParentPrevent.delete<
+        Quiz,
+        QuizAttributes,
+        QuizQuestion,
+        QuizQuestionAttributes
+    >(
+        baseWorld,
+        { type: Quiz, toggleAttribute: "prevent_edit" },
+        QuizQuestion,
+        /QuizQuestionDeleteError: Cannot delete a question while the quiz is locked from editing/
+    );
 });
 
 test("Update Question while Quiz is locked doesn't work", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
-
-    await ModelActions.update<Quiz, QuizAttributes>(baseWorld, Quiz, {
-        prevent_edit: true,
-    });
-
-    try {
-        await ModelTestFail.update<QuizQuestion, QuizQuestionAttributes>(
-            baseWorld,
-            QuizQuestion,
-            { question: "Who am i?" },
-            /QuizQuestionUpdateError: Cannot update a question while the quiz is locked from editing/
-        );
-    } catch (e) {
-        if (
-            /QuizQuestionDeleteError: Cannot delete a question while the quiz is locked from editing/.test(
-                e.message
-            )
-        ) {
-            await ModelActions.update<Quiz, QuizAttributes>(baseWorld, Quiz, {
-                prevent_edit: false,
-            });
-
-            await ModelActions.delete<QuizQuestion>(baseWorld, QuizQuestion);
-        }
-    }
+    await ModelTestParentPrevent.update<
+        Quiz,
+        QuizAttributes,
+        QuizQuestion,
+        QuizQuestionAttributes
+    >(
+        baseWorld,
+        { type: Quiz, toggleAttribute: "prevent_edit" },
+        { type: QuizQuestion, attributesToUpdate: { question: "Hello" } },
+        /QuizQuestionUpdateError: Cannot update a question while the quiz is locked from editing/
+    );
 });
 
+test.todo("Creating question when quiz.prevent_edit is true should fail");
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

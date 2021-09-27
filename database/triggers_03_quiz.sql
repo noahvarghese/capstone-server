@@ -7,7 +7,7 @@ BEGIN
     DECLARE msg VARCHAR(128);
 
     IF OLD.prevent_edit = 1 AND NEW.prevent_edit = 1 THEN
-        SET msg = CONCAT('QuizUpdateError: Quiz is locked for editing. ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('QuizUpdateError: Quiz is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
     
