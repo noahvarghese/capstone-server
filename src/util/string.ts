@@ -67,12 +67,6 @@ export const pascalToSnake = (start: string): string => {
     for (let i = 0; i < pieces.length; i++) {
         const piece = pieces[i];
 
-        // the first is always lowercase
-        if (i === 0) {
-            final += piece.toLowerCase();
-            continue;
-        }
-
         // anything after the first,
         // and that is not the last
         // prepend an underscore '_'
@@ -91,6 +85,8 @@ export const pascalToSnake = (start: string): string => {
                     i++;
                 }
             }
+        } else if (i === 0) {
+            final += piece.toLowerCase();
         }
     }
 

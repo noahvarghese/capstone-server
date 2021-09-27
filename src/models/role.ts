@@ -1,4 +1,5 @@
 import { Entity, Column } from "typeorm";
+import { pascalToSnake } from "../util/string";
 import EditableContentModel from "./abstract/editable_content_model";
 
 export interface RoleAttributes {

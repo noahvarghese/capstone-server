@@ -11,13 +11,11 @@ export default class ModelTestFail {
      * @template X the interface the class implements
      * @param baseWorld
      * @param type
-     * @param modelName
      * @param expectedErrorMessage
      */
     static create = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        modelName: string,
         expectedErrorMessage: RegExp | string
     ): Promise<void> => {
         if (!baseWorld) {
@@ -27,7 +25,7 @@ export default class ModelTestFail {
         let errorThrown = false;
 
         try {
-            await ModelActions.create<T, X>(baseWorld, type, modelName);
+            await ModelActions.create<T, X>(baseWorld, type);
         } catch (e) {
             errorThrown = true;
 
@@ -37,7 +35,7 @@ export default class ModelTestFail {
                     : e.message === expectedErrorMessage
             ).toBe(true);
 
-            await ModelActions.delete<T>(baseWorld, type, modelName);
+            await ModelActions.delete<T>(baseWorld, type);
         }
 
         expect(errorThrown).toBe(true);
@@ -49,13 +47,11 @@ export default class ModelTestFail {
      * @template X the interface T implements
      * @param baseWorld
      * @param type
-     * @param modelName
      * @param expectedErrorMessage
      */
     static delete = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        modelName: string,
         expectedErrorMessage: string | RegExp
     ): Promise<void> => {
         if (!baseWorld) {
@@ -64,10 +60,10 @@ export default class ModelTestFail {
 
         let errorThrown = false;
 
-        await ModelActions.create<T, X>(baseWorld, type, modelName);
+        await ModelActions.create<T, X>(baseWorld, type);
 
         try {
-            await ModelActions.delete<T>(baseWorld, type, modelName);
+            await ModelActions.delete<T>(baseWorld, type);
         } catch (e) {
             errorThrown = true;
             expect(
@@ -86,14 +82,12 @@ export default class ModelTestFail {
      * @template X Interface that T is based off of
      * @param {BaseWorld} baseWorld
      * @param {new () => T} type same value as passed as T
-     * @param modelName the name of the class
      * @param attributesToUpdate attributes to change
      * @param expectedErrorMessage error message that would pass this test
      */
     static update = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        modelName: string,
         attributesToUpdate: Partial<X>,
         expectedErrorMessage: RegExp | string
     ): Promise<void> => {
@@ -102,13 +96,12 @@ export default class ModelTestFail {
         }
 
         let errorThrown = false;
-        await ModelActions.create<T, X>(baseWorld, type, modelName);
+        await ModelActions.create<T, X>(baseWorld, type);
 
         try {
             await ModelActions.update<T, X>(
                 baseWorld,
                 type,
-                modelName,
                 attributesToUpdate
             );
         } catch (e) {
@@ -119,7 +112,7 @@ export default class ModelTestFail {
                     : e.message === expectedErrorMessage
             ).toBe(true);
 
-            await ModelActions.delete<T>(baseWorld, type, modelName);
+            await ModelActions.delete<T>(baseWorld, type);
         }
 
         expect(errorThrown).toBe(true);

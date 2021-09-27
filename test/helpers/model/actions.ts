@@ -3,7 +3,12 @@ import CucumberBaseWorld from "../../cucumber/support/base_world";
 import { Connection } from "typeorm";
 import User from "../../../src/models/user/user";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { checkType, formatter, FormatType } from "../../../src/util/string";
+import {
+    checkType,
+    formatter,
+    FormatType,
+    pascalToCamel,
+} from "../../../src/util/string";
 
 /**
  * Performs CRUD actions without assertions
@@ -64,9 +69,10 @@ export default class ModelActions {
     //#region Get Criteria
     private static getCriteria = <T>(
         baseWorld: JestBaseWorld | CucumberBaseWorld,
-        type: new () => T,
-        modelName: string
+        type: new () => T
     ): Map<keyof T, T[keyof T]> => {
+        const modelName = pascalToCamel(type.name);
+
         const keys = ModelActions.getKeys(baseWorld, type, "camelCase");
         const model = baseWorld.getCustomProp<T>(modelName);
         const criteria: Map<keyof T, T[keyof T]> = new Map<
@@ -97,14 +103,14 @@ export default class ModelActions {
      * @template X interface that T implements
      * @param baseWorld
      * @param type
-     * @param modelName
      * @returns {Promise<T>}
      */
     static create = async <T, X>(
         baseWorld: JestBaseWorld | CucumberBaseWorld,
-        type: new () => T,
-        modelName: string
+        type: new () => T
     ): Promise<T> => {
+        const modelName = pascalToCamel(type.name);
+
         const connection =
             baseWorld instanceof JestBaseWorld
                 ? baseWorld.connection
@@ -153,16 +159,15 @@ export default class ModelActions {
      * @template X interface that T implements
      * @param baseWorld
      * @param type
-     * @param modelName
      * @param attributesToUpdate
      * @returns {Promise<T>}
      */
     static update = async <T extends X, X>(
         baseWorld: JestBaseWorld | CucumberBaseWorld,
         type: new () => T,
-        modelName: string,
         attributesToUpdate: Partial<X>
     ): Promise<T> => {
+        const modelName = pascalToCamel(type.name);
         // if it does not have a key of "id" then it is a concatenated key
         // baseWorld means baseWorld we will add anything ending in _id to the where caluse if baseWorld is the case
         // otherwise the where clause will just use the id
@@ -257,13 +262,13 @@ export default class ModelActions {
      *
      * @template T TypeORM entity class
      * @param baseWorld
-     * @param modelName
+     * @param {new () => T} type the class instance
      */
     static delete = async <T>(
         baseWorld: JestBaseWorld | CucumberBaseWorld,
-        type: new () => T,
-        modelName: string
+        type: new () => T
     ): Promise<void> => {
+        const modelName = pascalToCamel(type.name);
         const connection =
             baseWorld instanceof JestBaseWorld
                 ? baseWorld.connection
@@ -273,7 +278,7 @@ export default class ModelActions {
 
         if (model !== undefined) {
             await connection.manager.delete<T>(type, {
-                ...ModelActions.getCriteria(baseWorld, type, modelName),
+                ...ModelActions.getCriteria(baseWorld, type),
             });
 
             baseWorld.setCustomProp<undefined>(modelName, undefined);

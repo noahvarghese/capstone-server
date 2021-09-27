@@ -1,3 +1,4 @@
+import { pascalToCamel } from "../../../../src/util/string";
 import BaseWorld from "../../../jest/support/base_world";
 import ModelActions from "../actions";
 
@@ -10,22 +11,18 @@ export default class ModelTestPass {
      * @template X the interface T implements
      * @param baseWorld
      * @param type
-     * @param modelName
      */
     static create = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
-        type: new () => T,
-        modelName: string
+        type: new () => T
     ): Promise<void> => {
         if (!baseWorld) {
             throw new Error(BaseWorld.errorMessage);
         }
 
-        const model = await ModelActions.create<T, X>(
-            baseWorld,
-            type,
-            modelName
-        );
+        const modelName = pascalToCamel(type.name);
+
+        const model = await ModelActions.create<T, X>(baseWorld, type);
 
         if (model["id" as keyof T]) {
             expect(model["id" as keyof T]).toBeGreaterThan(0);
@@ -38,7 +35,7 @@ export default class ModelTestPass {
             )
         ).toBe(true);
 
-        await ModelActions.delete<T>(baseWorld, type, modelName);
+        await ModelActions.delete<T>(baseWorld, type);
     };
 
     /**
@@ -48,13 +45,11 @@ export default class ModelTestPass {
      * @template X the interface of expected column values for T
      * @param {BaseWorld | undefined} baseWorld the object to retrieve the connectoin and saved attributes from
      * @param {any} type pass T as value here
-     * @param {string} modelName the name of T as a string, as stored in baseWorld, used to save/access model later
      * @param {(keyof T)[]} keys the attributes to find the model in the database by
      */
     static delete = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        modelName: string,
         keys: (keyof T)[]
     ): Promise<void> => {
         if (!baseWorld) {
@@ -63,13 +58,9 @@ export default class ModelTestPass {
 
         const { connection } = baseWorld;
 
-        const model = await ModelActions.create<T, X>(
-            baseWorld,
-            type,
-            modelName
-        );
+        const model = await ModelActions.create<T, X>(baseWorld, type);
 
-        await ModelActions.delete<T>(baseWorld, type, modelName);
+        await ModelActions.delete<T>(baseWorld, type);
 
         const where: { [index: string]: unknown } = {};
 
@@ -89,14 +80,12 @@ export default class ModelTestPass {
      * @template X the interface T implements
      * @param baseWorld
      * @param type
-     * @param modelName
      * @param attrKey
      * @param canDelete
      */
     static read = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        modelName: string,
         attrKey: string[],
         canDelete = true
     ): Promise<void> => {
@@ -106,11 +95,7 @@ export default class ModelTestPass {
 
         const { connection } = baseWorld;
 
-        const model = await ModelActions.create<T, X>(
-            baseWorld,
-            type,
-            modelName
-        );
+        const model = await ModelActions.create<T, X>(baseWorld, type);
 
         const where: { [index: string]: unknown } = {};
 
@@ -131,7 +116,7 @@ export default class ModelTestPass {
         ).toBe(true);
 
         if (canDelete) {
-            await ModelActions.delete<T>(baseWorld, type, modelName);
+            await ModelActions.delete<T>(baseWorld, type);
         }
     };
 
@@ -141,27 +126,26 @@ export default class ModelTestPass {
      * @template X the interface T implements
      * @param baseWorld
      * @param type
-     * @param modelName
      * @param attributesToUpdate
      */
     static update = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        modelName: string,
         attributesToUpdate: Partial<X>
     ): Promise<void> => {
         if (!baseWorld) {
             throw new Error(BaseWorld.errorMessage);
         }
 
-        let model = await ModelActions.create<T, X>(baseWorld, type, modelName);
+        let model = await ModelActions.create<T, X>(baseWorld, type);
 
         model = await ModelActions.update<T, X>(
             baseWorld,
             type,
-            modelName,
             attributesToUpdate
         );
+
+        const modelName = pascalToCamel(type.name);
 
         // confirm update occurred
         expect(
@@ -172,6 +156,6 @@ export default class ModelTestPass {
         ).toBe(true);
 
         // cleanup
-        await ModelActions.delete<T>(baseWorld, type, modelName);
+        await ModelActions.delete<T>(baseWorld, type);
     };
 }

@@ -9,11 +9,10 @@ import {
 } from "../../../test/helpers/model/test/setup";
 import { teardown } from "../../../test/helpers/model/test/teardown";
 import ModelActions from "../../../test/helpers/model/actions";
-import Business from "../business";
+import { pascalToSnake } from "../../util/string";
 dotenv.config();
 
 let baseWorld: BaseWorld | undefined;
-const key = "user";
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -21,8 +20,8 @@ afterAll(DBConnection.CloseConnection);
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, "user");
-    await createModels(baseWorld, "user");
+    loadAttributes(baseWorld, User);
+    await createModels(baseWorld, User);
 });
 
 afterEach(async () => {
@@ -30,30 +29,26 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await teardown(baseWorld, User, "user");
+    await teardown(baseWorld, User);
     baseWorld = undefined;
 });
 
 test("Create User", async () => {
-    await ModelTestPass.create<User, UserAttributes>(baseWorld, User, key);
+    await ModelTestPass.create<User, UserAttributes>(baseWorld, User);
 });
 
 test("Update User", async () => {
-    await ModelTestPass.update<User, UserAttributes>(baseWorld, User, key, {
+    await ModelTestPass.update<User, UserAttributes>(baseWorld, User, {
         first_name: "TEST",
     });
 });
 
 test("Delete User", async () => {
-    await ModelTestPass.delete<User, UserAttributes>(baseWorld, User, key, [
-        "id",
-    ]);
+    await ModelTestPass.delete<User, UserAttributes>(baseWorld, User, ["id"]);
 });
 
 test("Read User", async () => {
-    await ModelTestPass.read<User, UserAttributes>(baseWorld, User, key, [
-        "email",
-    ]);
+    await ModelTestPass.read<User, UserAttributes>(baseWorld, User, ["email"]);
 });
 
 test("Create Token", async () => {
@@ -68,7 +63,7 @@ test("Create Token", async () => {
 
     expect(user.token).not.toBe(initialVal);
 
-    await ModelActions.delete<User>(baseWorld, User, "user");
+    await ModelActions.delete<User>(baseWorld, User);
 });
 
 test("Updated user should have 1hr to update password", async () => {
@@ -76,18 +71,11 @@ test("Updated user should have 1hr to update password", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    let user = await ModelActions.create<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user"
-    );
+    let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
     user.createToken();
-    user = await ModelActions.update<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user",
-        { token: user.token }
-    );
+    user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
+        token: user.token,
+    });
 
     // Offset to adjust for delays potentially
     const allowedError = 5000;
@@ -102,7 +90,7 @@ test("Updated user should have 1hr to update password", async () => {
 
     expect(difference).toBeLessThanOrEqual(allowedError);
 
-    await ModelActions.delete<User>(baseWorld, User, "user");
+    await ModelActions.delete<User>(baseWorld, User);
 });
 
 test("Token Should Be Valid", async () => {
@@ -110,26 +98,19 @@ test("Token Should Be Valid", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    let user = await ModelActions.create<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user"
-    );
+    let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
 
     user.createToken();
 
-    user = await ModelActions.update<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user",
-        { token: user.token }
-    );
+    user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
+        token: user.token,
+    });
     const match = user.compareToken(user.token ?? "");
 
     expect(user.token?.length).toBeGreaterThan(0);
     expect(match).toBe(true);
 
-    await ModelActions.delete<User>(baseWorld, User, "user");
+    await ModelActions.delete<User>(baseWorld, User);
 });
 
 test("Invalid token expiry", async () => {
@@ -137,20 +118,13 @@ test("Invalid token expiry", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    let user = await ModelActions.create<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user"
-    );
+    let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
 
     user.createToken();
 
-    user = await ModelActions.update<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user",
-        { token: user.token }
-    );
+    user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
+        token: user.token,
+    });
 
     user.token_expiry = new Date(0);
 
@@ -159,7 +133,7 @@ test("Invalid token expiry", async () => {
     expect(user.token?.length).toBeGreaterThan(0);
     expect(match).toBe(false);
 
-    await ModelActions.delete<User>(baseWorld, User, "user");
+    await ModelActions.delete<User>(baseWorld, User);
 });
 
 test("Wrong token should not match", async () => {
@@ -205,23 +179,16 @@ test("Reset Password", async () => {
     }
 
     const attributes = baseWorld.getCustomProp<UserAttributes>(
-        `${key}Attributes`
+        `${pascalToSnake(User.name)}Attributes`
     );
 
     const oldPassword = attributes.password;
 
-    let user = await ModelActions.create<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user"
-    );
+    let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
     user.createToken();
-    user = await ModelActions.update<User, UserAttributes>(
-        baseWorld,
-        User,
-        "user",
-        { token: user.token }
-    );
+    user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
+        token: user.token,
+    });
 
     const result = await user.resetPassword(oldPassword, user.token ?? "");
 
@@ -231,7 +198,7 @@ test("Reset Password", async () => {
     expect(user.password).not.toBe(oldPassword);
     expect(await user.comparePassword(oldPassword)).toBe(true);
 
-    await ModelActions.delete<User>(baseWorld, User, "user");
+    await ModelActions.delete<User>(baseWorld, User);
 });
 
 test("Reset password empty", async () => {
@@ -241,7 +208,7 @@ test("Reset password empty", async () => {
 
     const { connection } = baseWorld;
     const attributes = baseWorld.getCustomProp<UserAttributes>(
-        `${key}Attributes`
+        `${pascalToSnake(User.name)}Attributes`
     );
 
     const oldPassword = attributes.password;

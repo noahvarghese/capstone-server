@@ -32,4 +32,8 @@ export default class Policy
         const attr = PolicyBuilder(options);
         Object.assign(this, attr);
     }
+
+    // getName(): string {
+    // return super.getTableName(Policy);
+    // }
 }

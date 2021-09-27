@@ -11,7 +11,6 @@ import {
 import { teardown } from "../../test/helpers/model/test/teardown";
 
 let baseWorld: BaseWorld | undefined;
-const key = "department";
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -19,8 +18,8 @@ afterAll(DBConnection.CloseConnection);
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, key);
-    await createModels(baseWorld, key);
+    loadAttributes(baseWorld, Department);
+    await createModels(baseWorld, Department);
 });
 
 afterEach(async () => {
@@ -28,15 +27,14 @@ afterEach(async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    await teardown<Department>(baseWorld, Department, key);
+    await teardown<Department>(baseWorld, Department);
     baseWorld = undefined;
 });
 
 test("Create Department", async () => {
     await ModelTestPass.create<Department, DepartmentAttributes>(
         baseWorld,
-        Department,
-        key
+        Department
     );
 });
 
@@ -44,7 +42,6 @@ test("Update Department", async () => {
     await ModelTestPass.update<Department, DepartmentAttributes>(
         baseWorld,
         Department,
-        key,
         { name: "TEST" }
     );
 });
@@ -53,7 +50,6 @@ test("Delete Department", async () => {
     await ModelTestPass.delete<Department, DepartmentAttributes>(
         baseWorld,
         Department,
-        key,
         ["id"]
     );
 });
@@ -62,7 +58,6 @@ test("Read Department", async () => {
     await ModelTestPass.read<Department, DepartmentAttributes>(
         baseWorld,
         Department,
-        key,
         ["id"]
     );
 });
@@ -84,23 +79,21 @@ test("Prevent Deletion of Department", async () => {
         await ModelTestFail.delete(
             baseWorld,
             Department,
-            key,
             /DepartmentDeleteError: Cannot delete department while delete lock is set/
         );
 
         await ModelActions.update<Department, DepartmentAttributes>(
             baseWorld,
             Department,
-            key,
             {
                 prevent_delete: false,
             }
         );
 
-        await ModelActions.delete<Department>(baseWorld, Department, key);
+        await ModelActions.delete<Department>(baseWorld, Department);
     } catch (e) {
         if (e.deleted !== undefined && e.deleted !== false) {
-            await ModelActions.delete<Department>(baseWorld, Department, key);
+            await ModelActions.delete<Department>(baseWorld, Department);
         }
     }
 });

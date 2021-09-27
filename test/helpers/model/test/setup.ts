@@ -2,14 +2,15 @@ import BaseWorld from "../../../jest/support/base_world";
 import types from "../../../sample_data/types";
 import attributes from "../../../sample_data/attributes";
 import ModelActions from "../actions";
-import { snakeToCamel } from "../../../../src/util/string";
+import { pascalToCamel, snakeToCamel } from "../../../../src/util/string";
 import { deepClone } from "../../../../src/util/obj";
 import dependencies from "../../../sample_data/dependencies";
 
-export const loadAttributes = (
+export const loadAttributes = <T>(
     baseWorld: BaseWorld,
-    modelName: string
+    type: new () => T
 ): void => {
+    const modelName = pascalToCamel(type.name);
     const deps = dependencies[modelName as keyof typeof dependencies];
 
     for (const dependency of deps) {
@@ -25,14 +26,13 @@ export const loadAttributes = (
  * Assums that the model passed does not exist yet
  * @returns model
  * @param {BaseWorld} baseWorld
- * @param {string} modelName
- * @param {boolean} skipRun whether to instantiate in the database
+ * @param {new () => T} type
  */
-export const createModels = async (
+export const createModels = async <T extends Y, Y>(
     baseWorld: BaseWorld,
-    startingModelName: string
+    type: new () => T
 ): Promise<void> => {
-    const getNestedProps = <X>(currentModel: string) => {
+    const setNestedProps = <X>(currentModel: string) => {
         const modelAttributesName = `${currentModel}Attributes`;
         const currentAttributes =
             baseWorld.getCustomProp<X>(modelAttributesName);
@@ -48,6 +48,7 @@ export const createModels = async (
                 const nextModel =
                     baseWorld.getCustomProp<typeof nextType>(nextModelName);
 
+                console.log(currentModel, nextModelName, nextModel);
                 currentAttributes[key as keyof X] = nextModel[
                     "id" as keyof typeof nextModel
                 ] as unknown as X[keyof X];
@@ -58,11 +59,14 @@ export const createModels = async (
     };
 
     // get dependencies
-    const deps = dependencies[startingModelName];
+    const modelName = pascalToCamel(type.name);
+    const deps = dependencies[modelName];
 
     for (let i = 0; i < deps.length; i++) {
-        getNestedProps(deps[i]);
-        await ModelActions.create(baseWorld, types[deps[i]], deps[i]);
+        console.log(deps[i], deps.length);
+        setNestedProps<Y>(deps[i]);
+        await ModelActions.create(baseWorld, types[deps[i]]);
     }
-    getNestedProps(startingModelName);
+
+    setNestedProps<Y>(modelName);
 };
