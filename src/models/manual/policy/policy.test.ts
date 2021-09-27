@@ -11,6 +11,7 @@ import {
     createModels,
     loadAttributes,
 } from "../../../../test/helpers/model/test/setup";
+import ModelTestParentPrevent from "../../../../test/helpers/model/test/parent_prevent";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -67,69 +68,34 @@ test("Read Policy", async () => {
 });
 
 test("Delete Policy while Manual is locked doesn't work", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await ModelActions.update<Manual, ManualAttributes>(baseWorld, Manual, {
-        prevent_edit: true,
-    });
-
-    try {
-        await ModelTestFail.delete<Policy, PolicyAttributes>(
-            baseWorld,
-            Policy,
-
-            /PolicyDeleteError: Cannot delete a policy while the manual is locked from editing/
-        );
-
-        await ModelActions.update<Manual, ManualAttributes>(baseWorld, Manual, {
-            prevent_edit: false,
-        });
-
-        await ModelActions.delete<Policy>(baseWorld, Policy);
-    } catch (e) {
-        if (e instanceof ModelError) {
-            if (e.deleted !== undefined && e.deleted !== false) {
-                await ModelActions.delete<Policy>(baseWorld, Policy);
-            }
-        }
-        throw e;
-    }
+    await ModelTestParentPrevent.delete<
+        Manual,
+        ManualAttributes,
+        Policy,
+        PolicyAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        Policy,
+        /PolicyDeleteError: Cannot delete a policy while the manual is locked from editing/
+    );
 });
 
 test("Update Policy while Manual is locked doesn't work", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await ModelActions.update<Manual, ManualAttributes>(baseWorld, Manual, {
-        prevent_edit: true,
-    });
-
-    try {
-        await ModelTestFail.update<Policy, PolicyAttributes>(
-            baseWorld,
-            Policy,
-
-            { title: "YOLO" },
-            /PolicyUpdateError: Cannot update a policy while the manual is locked from editing/
-        );
-    } catch (e) {
-        if (
-            /PolicyDeleteError: Cannot delete a policy while the manual is locked from editing/.test(
-                e.message
-            )
-        ) {
-            await ModelActions.update<Manual, ManualAttributes>(
-                baseWorld,
-                Manual,
-                { prevent_edit: false }
-            );
-
-            await ModelActions.delete<Policy>(baseWorld, Policy);
-        }
-    }
+    await ModelTestParentPrevent.update<
+        Manual,
+        ManualAttributes,
+        Policy,
+        PolicyAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        {
+            type: Policy,
+            attributesToUpdate: { title: "YOLO" },
+        },
+        /PolicyUpdateError: Cannot update a policy while the manual is locked from editing/
+    );
 });
 
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
+test.todo("Creating a policy when manual cannot be edited is true should fail");

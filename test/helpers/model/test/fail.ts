@@ -29,11 +29,7 @@ export default class ModelTestFail {
         } catch (e) {
             errorThrown = true;
 
-            expect(
-                expectedErrorMessage instanceof RegExp
-                    ? expectedErrorMessage.test(e.message)
-                    : e.message === expectedErrorMessage
-            ).toBe(true);
+            expect(e.message).toMatch(expectedErrorMessage);
 
             await ModelActions.delete<T>(baseWorld, type);
         }
@@ -66,11 +62,7 @@ export default class ModelTestFail {
             await ModelActions.delete<T>(baseWorld, type);
         } catch (e) {
             errorThrown = true;
-            expect(
-                expectedErrorMessage instanceof RegExp
-                    ? expectedErrorMessage.test(e.message)
-                    : e.message === expectedErrorMessage
-            ).toBe(true);
+            expect(e.message).toMatch(expectedErrorMessage);
         }
 
         expect(errorThrown).toBe(true);
@@ -106,11 +98,7 @@ export default class ModelTestFail {
             );
         } catch (e) {
             errorThrown = true;
-            expect(
-                expectedErrorMessage instanceof RegExp
-                    ? expectedErrorMessage.test(e.message)
-                    : e.message === expectedErrorMessage
-            ).toBe(true);
+            expect(e.message).toMatch(expectedErrorMessage);
 
             await ModelActions.delete<T>(baseWorld, type);
         }

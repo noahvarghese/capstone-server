@@ -48,7 +48,7 @@ END;
 
 CREATE TRIGGER manual_assignment_insert
 BEFORE INSERT
-ON manual FOR EACH ROW
+ON manual_assignment FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
@@ -61,7 +61,7 @@ END;
 
 CREATE TRIGGER manual_assignment_update
 BEFORE UPDATE
-ON manual FOR EACH ROW
+ON manual_assignment FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN

@@ -1,15 +1,13 @@
 import BaseWorld from "../../../../test/jest/support/base_world";
 import DBConnection from "../../../../test/util/db_connection";
-import ModelActions from "../../../../test/helpers/model/actions";
 import ModelTestPass from "../../../../test/helpers/model/test/pass";
-import Read, { ReadAttributes } from "./read";
 import {
     createModels,
     loadAttributes,
 } from "../../../../test/helpers/model/test/setup";
-import PolicyRead from "./read";
 import { teardown } from "../../../../test/helpers/model/test/teardown";
-
+import ModelTestFail from "../../../../test/helpers/model/test/fail";
+import PolicyRead, { PolicyReadAttributes } from "./read";
 let baseWorld: BaseWorld | undefined;
 
 // Database setup
@@ -34,33 +32,33 @@ afterEach(async () => {
 
 // Tests
 test("Create Policy Read", async () => {
-    await ModelTestPass.create<Read, ReadAttributes>(baseWorld, Read);
+    await ModelTestPass.create<PolicyRead, PolicyReadAttributes>(
+        baseWorld,
+        PolicyRead
+    );
 });
 
 test("Update model should fail", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    try {
-        await ModelTestPass.update(baseWorld, Read, { policy_id: 2 });
-    } catch (e) {
-        const errorRegex = /PolicyReadUpdateError/;
-        expect(errorRegex.test(e.message)).toBe(true);
-        await ModelActions.delete<Read>(baseWorld, Read);
-    }
+    ModelTestFail.update<PolicyRead, PolicyReadAttributes>(
+        baseWorld,
+        PolicyRead,
+        { policy_id: -1 },
+        /PolicyReadUpdateError: Cannot update policy read/
+    );
 });
 
 test("Delete Policy Read", async () => {
-    await ModelTestPass.delete<Read, ReadAttributes>(baseWorld, Read, [
-        "policy_id",
-        "user_id",
-    ]);
+    await ModelTestPass.delete<PolicyRead, PolicyReadAttributes>(
+        baseWorld,
+        PolicyRead,
+        ["policy_id", "user_id"]
+    );
 });
 
 test("Read Policy Read", async () => {
-    await ModelTestPass.read<Read, ReadAttributes>(baseWorld, Read, [
-        "user_id",
-        "policy_id",
-    ]);
+    await ModelTestPass.read<PolicyRead, PolicyReadAttributes>(
+        baseWorld,
+        PolicyRead,
+        ["user_id", "policy_id"]
+    );
 });

@@ -39,32 +39,21 @@ test("Create Content", async () => {
 });
 
 test("Update Content", async () => {
-    await ModelTestPass.update<Content, ContentAttributes>(
-        baseWorld,
-        Content,
-
-        {
-            title: "TEST",
-        }
-    );
+    await ModelTestPass.update<Content, ContentAttributes>(baseWorld, Content, {
+        title: "TEST",
+    });
 });
 
 test("Delete Content", async () => {
-    await ModelTestPass.delete<Content, ContentAttributes>(
-        baseWorld,
-        Content,
-
-        ["id"]
-    );
+    await ModelTestPass.delete<Content, ContentAttributes>(baseWorld, Content, [
+        "id",
+    ]);
 });
 
 test("Read Content", async () => {
-    await ModelTestPass.read<Content, ContentAttributes>(
-        baseWorld,
-        Content,
-
-        ["id"]
-    );
+    await ModelTestPass.read<Content, ContentAttributes>(baseWorld, Content, [
+        "id",
+    ]);
 });
 
 test("Delete Content while Manual is locked doesn't work", async () => {

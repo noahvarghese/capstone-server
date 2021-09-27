@@ -7,6 +7,7 @@ import {
     loadAttributes,
 } from "../../../test/helpers/model/test/setup";
 import { teardown } from "../../../test/helpers/model/test/teardown";
+import ModelTestFail from "../../../test/helpers/model/test/fail";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -43,6 +44,7 @@ test("Create Manual Assignment Without Department Or Role", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }
+
     baseWorld.setCustomProp<ManualAssignmentAttributes>(
         "manualAssignmentAttributes",
         {
@@ -53,14 +55,21 @@ test("Create Manual Assignment Without Department Or Role", async () => {
             role_id: null,
         }
     );
-    try {
-        await ModelTestPass.create<
-            ManualAssignment,
-            ManualAssignmentAttributes
-        >(baseWorld, ManualAssignment);
-    } catch (e) {
-        expect(e).toBeTruthy();
-    }
+
+    await ModelTestFail.create<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        /ManualAssignmentInsertError: Cannot add a manual_assignment without a role or department/
+    );
+});
+
+test("Update manual assignment without role or department", async () => {
+    await ModelTestFail.update<ManualAssignment, ManualAssignmentAttributes>(
+        baseWorld,
+        ManualAssignment,
+        { department_id: null, role_id: null },
+        /ManualAssignmentUpdateError: Cannot update a manual_assignment without a role or department/
+    );
 });
 
 /* Dont test update as it is a concatenated primary  */
@@ -70,7 +79,6 @@ test("Update Manual Assignment", async () => {
     await ModelTestPass.update<ManualAssignment, ManualAssignmentAttributes>(
         baseWorld,
         ManualAssignment,
-
         { role_id: null }
     );
 });
@@ -79,7 +87,6 @@ test("Delete Manual Assignment", async () => {
     await ModelTestPass.delete<ManualAssignment, ManualAssignmentAttributes>(
         baseWorld,
         ManualAssignment,
-
         ["id"]
     );
 });
@@ -88,7 +95,6 @@ test("Read Manual Assignment", async () => {
     await ModelTestPass.read<ManualAssignment, ManualAssignmentAttributes>(
         baseWorld,
         ManualAssignment,
-
         ["id"]
     );
 });

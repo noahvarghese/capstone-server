@@ -1,6 +1,5 @@
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import ModelActions from "../../../test/helpers/model/actions";
 import ModelTestPass from "../../../test/helpers/model/test/pass";
 import ModelTestFail from "../../../test/helpers/model/test/fail";
 import Manual, { ManualAttributes } from "./manual";
@@ -9,6 +8,7 @@ import {
     createModels,
     loadAttributes,
 } from "../../../test/helpers/model/test/setup";
+import ModelTestParentPrevent from "../../../test/helpers/model/test/parent_prevent";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -50,7 +50,6 @@ test("Create Manual Without Department Or Role", async () => {
     await ModelTestFail.create(
         baseWorld,
         Manual,
-
         /ManualInsertError: Cannot add a manual without a role or department/
     );
 });
@@ -59,7 +58,6 @@ test("Update Manual Without Department Or Role", async () => {
     await ModelTestFail.update<Manual, ManualAttributes>(
         baseWorld,
         Manual,
-
         {
             role_id: null,
             department_id: null,
@@ -72,23 +70,15 @@ test("Update Manual Without Department Or Role", async () => {
 /* Meaning that an update should be treated as a DELETE and INSERT */
 
 test("Update Manual", async () => {
-    await ModelTestPass.update<Manual, ManualAttributes>(
-        baseWorld,
-        Manual,
-
-        {
-            title: "TEST",
-        }
-    );
+    await ModelTestPass.update<Manual, ManualAttributes>(baseWorld, Manual, {
+        title: "TEST",
+    });
 });
 
 test("Delete Manual", async () => {
-    await ModelTestPass.delete<Manual, ManualAttributes>(
-        baseWorld,
-        Manual,
-
-        ["id"]
-    );
+    await ModelTestPass.delete<Manual, ManualAttributes>(baseWorld, Manual, [
+        "id",
+    ]);
 });
 
 test("Read User Role", async () => {
@@ -102,36 +92,17 @@ test("Prevent Deletion of Manual", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    // set prevent delete in environment data
-    baseWorld.setCustomProp<ManualAttributes>("manualAttributes", {
-        ...baseWorld.getCustomProp<ManualAttributes>("manualAttributes"),
-        prevent_delete: true,
-    });
-
-    try {
-        await ModelTestFail.delete(
-            baseWorld,
-            Manual,
-
-            /ManualDeleteError: Cannot delete manual while delete lock is set/
-        );
-
-        await ModelActions.update<Manual, ManualAttributes>(
-            baseWorld,
-            Manual,
-
-            {
-                prevent_delete: false,
-            }
-        );
-
-        await ModelActions.delete<Manual>(baseWorld, Manual);
-    } catch (e) {
-        if (e.deleted !== undefined && e.deleted !== false) {
-            await ModelActions.delete<Manual>(baseWorld, Manual);
-        }
-        throw e;
-    }
+    await ModelTestParentPrevent.delete<
+        Manual,
+        ManualAttributes,
+        Manual,
+        ManualAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_delete" },
+        Manual,
+        /ManualDeleteError: Cannot delete manual while delete lock is set/
+    );
 });
 
 test("Prevent edit of manual", async () => {
@@ -154,4 +125,3 @@ test("Prevent edit of manual", async () => {
         /ManualUpdateError: Manual is locked from editing./
     );
 });
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
