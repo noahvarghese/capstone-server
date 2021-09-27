@@ -98,5 +98,16 @@ test("Update Question while Quiz is locked doesn't work", async () => {
     );
 });
 
-test.todo("Creating section when quiz.prevent_edit is true should fail");
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
+test("Creating section when quiz.prevent_edit is true should fail", async () => {
+    await ModelTestParentPrevent.create<
+        Quiz,
+        QuizAttributes,
+        QuizSection,
+        QuizSectionAttributes
+    >(
+        baseWorld,
+        { type: Quiz, toggleAttribute: "prevent_edit" },
+        QuizSection,
+        /QuizSectionInsertError: Cannot insert a section while the quiz is locked/
+    );
+});

@@ -1,8 +1,6 @@
 import BaseWorld from "../../../../test/jest/support/base_world";
 import DBConnection from "../../../../test/util/db_connection";
-import ModelActions from "../../../../test/helpers/model/actions";
 import ModelTestPass from "../../../../test/helpers/model/test/pass";
-import ModelTestFail from "../../../../test/helpers/model/test/fail";
 import Quiz, { QuizAttributes } from "../quiz";
 import QuizQuestion, { QuizQuestionAttributes } from "./question";
 import { teardown } from "../../../../test/helpers/model/test/teardown";
@@ -101,5 +99,16 @@ test("Update Question while Quiz is locked doesn't work", async () => {
     );
 });
 
-test.todo("Creating question when quiz.prevent_edit is true should fail");
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
+test("Creating question when quiz.prevent_edit is true should fail", async () => {
+    await ModelTestParentPrevent.create<
+        Quiz,
+        QuizAttributes,
+        QuizQuestion,
+        QuizQuestionAttributes
+    >(
+        baseWorld,
+        { type: Quiz, toggleAttribute: "prevent_edit" },
+        QuizQuestion,
+        /QuizQuestionInsertError: Cannot insert a question while the quiz is locked/
+    );
+});

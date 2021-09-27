@@ -94,5 +94,17 @@ test("Update QuizAnswer while Quiz is locked doesn't work", async () => {
         /QuizAnswerUpdateError: Cannot update an answer while the quiz is locked from editing/
     );
 });
-test.todo("Creating answer when quiz.prevent_edit is true should fail");
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
+
+test("Creating answer when quiz.prevent_edit is true should fail", async () => {
+    await ModelTestParentPrevent.create<
+        Quiz,
+        QuizAttributes,
+        QuizAnswer,
+        QuizAnswerAttributes
+    >(
+        baseWorld,
+        { type: Quiz, toggleAttribute: "prevent_edit" },
+        QuizAnswer,
+        /QuizAnswerInsertError: Cannot insert an answer while the quiz is locked/
+    );
+});

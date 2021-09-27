@@ -13,7 +13,13 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "typeRoots": ["@types", "./node_modules/@types"]
+        "typeRoots": ["@types", "./node_modules/@types"],
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noEmitOnError": true
     },
     "include": ["src"],
     "exclude": ["src/**/*.test.ts"]

@@ -4,7 +4,7 @@ import { ContentAttributes } from "../../src/models/manual/content";
 import { ManualAttributes } from "../../src/models/manual/manual";
 import { ManualAssignmentAttributes } from "../../src/models/manual/assignment";
 import { PolicyAttributes } from "../../src/models/manual/policy/policy";
-import { ReadAttributes } from "../../src/models/manual/policy/read";
+import { PolicyReadAttributes } from "../../src/models/manual/policy/read";
 import { ManualSectionAttributes } from "../../src/models/manual/section";
 import { QuizSectionAttributes } from "../../src/models/quiz/section";
 import { PermissionAttributes } from "../../src/models/permission";
@@ -112,7 +112,7 @@ export const contentAttributes: ContentAttributes = {
     updated_by_user_id: -1,
 };
 
-export const readAttributes: ReadAttributes = {
+export const policyReadAttributes: PolicyReadAttributes = {
     policy_id: -1,
     user_id: -1,
 };
@@ -176,7 +176,7 @@ export default {
     manualSection: manualSectionAttributes,
     policy: policyAttributes,
     content: contentAttributes,
-    policyRead: readAttributes,
+    policyRead: policyReadAttributes,
     quiz: quizAttributes,
     quizSection: quizSectionAttributes,
     quizQuestion: quizQuestionAttributes,
