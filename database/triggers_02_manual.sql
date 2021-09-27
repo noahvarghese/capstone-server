@@ -73,6 +73,22 @@ END;
 
 //
 
+CREATE TRIGGER manual_section_insert
+BEFORE INSERT
+ON manual_section FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    DECLARE prevent_edit TINYINT(1);
+    SET prevent_edit = (SELECT manual.prevent_edit FROM manual WHERE manual.id = NEW.manual_id);
+
+    IF (prevent_edit = 1) THEN
+        SET msg = CONCAT('ManualSectionInsertError: Cannot insert a section while the manual is locked. ', CAST(NEW.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END;
+
+//
+
 CREATE TRIGGER manual_section_update
 BEFORE UPDATE
 ON manual_section FOR EACH ROW
@@ -82,8 +98,14 @@ BEGIN
     SET prevent_edit = (SELECT manual.prevent_edit FROM manual WHERE manual.id = OLD.manual_id);
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ManualSectionUpdateError: Cannot update a section while the manual is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualSectionUpdateError: Cannot update a section while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    ELSEIF (OLD.manual_id != NEW.manual_id) THEN
+        SET prevent_edit = (SELECT manual.prevent_edit FROM manual WHERE manual.id = NEW.manual_id);
+        IF (prevent_edit = 1) THEN
+            SET msg = CONCAT('ManualSectionUpdateError: Cannot update a section while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+        END IF;
     END IF;
 
     SET NEW.updated_on = NOW();
@@ -123,7 +145,7 @@ BEGIN
     );
 
     IF prevent_edit = 1 THEN
-        SET msg = CONCAT('PolicyUpdateError: Cannot update a policy while the manual is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('PolicyUpdateError: Cannot update a policy while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -147,7 +169,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('PolicyDeleteError: Cannot delete a policy while the manual is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('PolicyDeleteError: Cannot delete a policy while the manual is locked from editing. ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -169,7 +191,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ContentUpdateError: Cannot update content while the manual is locked from editing.', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ContentUpdateError: Cannot update content while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -193,7 +215,7 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('ContentDeleteError: Cannot delete content while the manual is locked from editing.', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('ContentDeleteError: Cannot delete content while the manual is locked from editing. ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;

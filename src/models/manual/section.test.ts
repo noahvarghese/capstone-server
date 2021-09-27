@@ -83,9 +83,6 @@ test("Delete Section while Manual is locked doesn't work", async () => {
 });
 
 test("Update Section while Manual is locked doesn't work", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
     await ModelTestParentPrevent.update<
         Manual,
         ManualAttributes,
@@ -99,6 +96,18 @@ test("Update Section while Manual is locked doesn't work", async () => {
     );
 });
 
-test.todo("Creating section when manual cannot be edited is true should fail");
+test("Creating section when manual cannot be edited is true should fail", async () => {
+    await ModelTestParentPrevent.create<
+        Manual,
+        ManualAttributes,
+        ManualSection,
+        ManualSectionAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        ManualSection,
+        /ManualSectionInsertError: Cannot insert a section while the manual is locked/
+    );
+});
 
 // May want to add a trigger to not allow last updated by user to be the same as the user this role applies to

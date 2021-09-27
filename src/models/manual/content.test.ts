@@ -1,11 +1,8 @@
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import ModelActions from "../../../test/helpers/model/actions";
 import ModelTestPass from "../../../test/helpers/model/test/pass";
-import ModelTestFail from "../../../test/helpers/model/test/fail";
 import Content, { ContentAttributes } from "./content";
 import Manual, { ManualAttributes } from "./manual";
-import ModelError from "../../../test/util/model_error";
 import {
     createModels,
     loadAttributes,
@@ -88,4 +85,19 @@ test("Update Content while Manual is locked doesn't work", async () => {
     );
 });
 
-test.todo("Creating content when manual cannot be edited is true should fail");
+test.todo(
+    "Creating content when manual cannot be edited is true should fail",
+    async () => {
+        await ModelTestParentPrevent.create<
+            Manual,
+            ManualAttributes,
+            Content,
+            ContentAttributes
+        >(
+            baseWorld,
+            { type: Manual, toggleAttribute: "prevent_edit" },
+            Content,
+            /ContentInsertError: Cannot insert content while manual is locked/
+        );
+    }
+);

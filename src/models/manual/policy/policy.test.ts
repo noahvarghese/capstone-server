@@ -1,11 +1,8 @@
-import ModelActions from "../../../../test/helpers/model/actions";
 import ModelTestPass from "../../../../test/helpers/model/test/pass";
-import ModelTestFail from "../../../../test/helpers/model/test/fail";
 import BaseWorld from "../../../../test/jest/support/base_world";
 import DBConnection from "../../../../test/util/db_connection";
 import Manual, { ManualAttributes } from "../manual";
 import Policy, { PolicyAttributes } from "./policy";
-import ModelError from "../../../../test/util/model_error";
 import { teardown } from "../../../../test/helpers/model/test/teardown";
 import {
     createModels,
@@ -98,4 +95,19 @@ test("Update Policy while Manual is locked doesn't work", async () => {
     );
 });
 
-test.todo("Creating a policy when manual cannot be edited is true should fail");
+test.todo(
+    "Creating a policy when manual cannot be edited is true should fail",
+    async () => {
+        await ModelTestParentPrevent.create<
+            Manual,
+            ManualAttributes,
+            Policy,
+            PolicyAttributes
+        >(
+            baseWorld,
+            { type: Manual, toggleAttribute: "prevent_edit" },
+            Policy,
+            /PolicyInsertError: Cannot insert a policy while manual is locked/
+        );
+    }
+);
