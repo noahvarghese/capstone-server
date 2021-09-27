@@ -99,7 +99,6 @@ export default class ModelTestFail {
         } catch (e) {
             errorThrown = true;
             expect(e.message).toMatch(expectedErrorMessage);
-
             await ModelActions.delete<T>(baseWorld, type);
         }
 

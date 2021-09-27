@@ -11,6 +11,7 @@ import {
     loadAttributes,
 } from "../../../test/helpers/model/test/setup";
 import { teardown } from "../../../test/helpers/model/test/teardown";
+import ModelTestParentPrevent from "../../../test/helpers/model/test/parent_prevent";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -57,66 +58,34 @@ test("Read Content", async () => {
 });
 
 test("Delete Content while Manual is locked doesn't work", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await ModelActions.update<Manual, ManualAttributes>(baseWorld, Manual, {
-        prevent_edit: true,
-    });
-
-    try {
-        await ModelTestFail.delete<Content, ContentAttributes>(
-            baseWorld,
-            Content,
-            /ContentDeleteError: Cannot delete content while the manual is locked from editing/
-        );
-
-        await ModelActions.update<Manual, ManualAttributes>(baseWorld, Manual, {
-            prevent_edit: false,
-        });
-
-        await ModelActions.delete<Content>(baseWorld, Content);
-    } catch (e) {
-        if (e instanceof ModelError) {
-            if (e.deleted !== undefined && e.deleted !== false) {
-                await ModelActions.delete<Content>(baseWorld, Content);
-            }
-        }
-        throw e;
-    }
+    await ModelTestParentPrevent.delete<
+        Manual,
+        ManualAttributes,
+        Content,
+        ContentAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        Content,
+        /ContentDeleteError: Cannot delete content while the manual is locked from editing/
+    );
 });
 
 test("Update Content while Manual is locked doesn't work", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await ModelActions.update<Manual, ManualAttributes>(baseWorld, Manual, {
-        prevent_edit: true,
-    });
-
-    try {
-        await ModelTestFail.update<Content, ContentAttributes>(
-            baseWorld,
-            Content,
-
-            { title: "YOLO" },
-            /ContentUpdateError: Cannot update content while the manual is locked from editing/
-        );
-    } catch (e) {
-        if (
-            /ContentDeleteError: Cannot delete content while the manual is locked from editing/.test(
-                e.message
-            )
-        ) {
-            await ModelActions.update<Manual, ManualAttributes>(
-                baseWorld,
-                Manual,
-                { prevent_edit: false }
-            );
-
-            await ModelActions.delete<Content>(baseWorld, Content);
-        }
-    }
+    await ModelTestParentPrevent.update<
+        Manual,
+        ManualAttributes,
+        Content,
+        ContentAttributes
+    >(
+        baseWorld,
+        { type: Manual, toggleAttribute: "prevent_edit" },
+        {
+            type: Content,
+            attributesToUpdate: { title: "YOLO" },
+        },
+        /ContentUpdateError: Cannot update content while the manual is locked from editing/
+    );
 });
+
+test.todo("Creating content when manual cannot be edited is true should fail");

@@ -8,6 +8,7 @@ import {
 import { teardown } from "../../../../test/helpers/model/test/teardown";
 import ModelTestFail from "../../../../test/helpers/model/test/fail";
 import PolicyRead, { PolicyReadAttributes } from "./read";
+
 let baseWorld: BaseWorld | undefined;
 
 // Database setup
@@ -39,11 +40,11 @@ test("Create Policy Read", async () => {
 });
 
 test("Update model should fail", async () => {
-    ModelTestFail.update<PolicyRead, PolicyReadAttributes>(
+    await ModelTestFail.update<PolicyRead, PolicyReadAttributes>(
         baseWorld,
         PolicyRead,
         { policy_id: -1 },
-        /PolicyReadUpdateError: Cannot update policy read/
+        /PolicyReadUpdateError: Cannot update policy_read/
     );
 });
 
