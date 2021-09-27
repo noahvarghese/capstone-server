@@ -1,28 +1,29 @@
 import { Entity, Column } from "typeorm";
 import EditableContentModel from "../../abstract/editable_content_model";
 
-export interface QuestionAttributes {
+export interface QuizQuestionAttributes {
     question: string;
     type: string;
     quiz_section_id: number;
     updated_by_user_id: number;
 }
 
-const EmptyQuestionAttributes = (): QuestionAttributes => ({
+const EmptyQuestionAttributes = (): QuizQuestionAttributes => ({
     question: "",
     type: "",
     quiz_section_id: -1,
     updated_by_user_id: -1,
 });
 
-const QuestionBuilder = <T extends Partial<QuestionAttributes>>(
+const QuizQuestionBuilder = <T extends Partial<QuizQuestionAttributes>>(
     options?: T
-): QuestionAttributes & T => Object.assign(EmptyQuestionAttributes(), options);
+): QuizQuestionAttributes & T =>
+    Object.assign(EmptyQuestionAttributes(), options);
 
 @Entity({ name: "quiz_question" })
 export default class QuizQuestion
     extends EditableContentModel
-    implements QuestionAttributes
+    implements QuizQuestionAttributes
 {
     @Column()
     public question!: string;
@@ -31,9 +32,9 @@ export default class QuizQuestion
     @Column()
     public quiz_section_id!: number;
 
-    public constructor(options?: Partial<QuestionAttributes>) {
+    public constructor(options?: Partial<QuizQuestionAttributes>) {
         super();
-        const attr = QuestionBuilder(options);
+        const attr = QuizQuestionBuilder(options);
         Object.assign(this, attr);
     }
 }

@@ -1,18 +1,10 @@
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-
 import ModelActions from "../../../test/helpers/model/actions";
 import ModelTestPass from "../../../test/helpers/model/test/pass";
 import ModelTestFail from "../../../test/helpers/model/test/fail";
-import Business, { BusinessAttributes } from "../business";
-import Department, { DepartmentAttributes } from "../department";
-import Permission, { PermissionAttributes } from "../permission";
-import Role, { RoleAttributes } from "../role";
-import User, { UserAttributes } from "../user/user";
 import Content, { ContentAttributes } from "./content";
 import Manual, { ManualAttributes } from "./manual";
-import Policy, { PolicyAttributes } from "./policy/policy";
-import Section, { ManualSectionAttributes } from "./section";
 import ModelError from "../../../test/util/model_error";
 import {
     createModels,

@@ -1,31 +1,32 @@
 import { Entity, Column } from "typeorm";
 import BaseModel from "../abstract/base_model";
 
-export interface AttemptAttributes {
+export interface QuizAttemptAttributes {
     user_id: number;
     quiz_id: number;
 }
 
-const EmptyAttemptAttributes = (): AttemptAttributes => ({
+const EmptyAttemptAttributes = (): QuizAttemptAttributes => ({
     user_id: -1,
     quiz_id: -1,
 });
 
-const AttemptBuilder = <T extends Partial<AttemptAttributes>>(
+const AttemptBuilder = <T extends Partial<QuizAttemptAttributes>>(
     options?: T
-): AttemptAttributes & T => Object.assign(EmptyAttemptAttributes(), options);
+): QuizAttemptAttributes & T =>
+    Object.assign(EmptyAttemptAttributes(), options);
 
 @Entity({ name: "quiz_attempt" })
 export default class QuizAttempt
     extends BaseModel
-    implements AttemptAttributes
+    implements QuizAttemptAttributes
 {
     @Column()
     public user_id!: number;
     @Column()
     public quiz_id!: number;
 
-    public constructor(options?: Partial<AttemptAttributes>) {
+    public constructor(options?: Partial<QuizAttemptAttributes>) {
         super();
         const attr = AttemptBuilder(options);
         Object.assign(this, attr);

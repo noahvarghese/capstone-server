@@ -114,7 +114,16 @@ const dependencies: { [i: string]: string[] } = {
         "quizSection",
         "quizQuestion",
     ],
-    quizAttempt: [],
+    quizAttempt: [
+        "business",
+        "user",
+        "department",
+        "permission",
+        "role",
+        "userRole",
+        "manual",
+        "quiz",
+    ],
     quizResult: [
         "business",
         "user",

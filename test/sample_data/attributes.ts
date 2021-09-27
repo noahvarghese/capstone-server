@@ -6,16 +6,16 @@ import { ManualAssignmentAttributes } from "../../src/models/manual/assignment";
 import { PolicyAttributes } from "../../src/models/manual/policy/policy";
 import { ReadAttributes } from "../../src/models/manual/policy/read";
 import { ManualSectionAttributes } from "../../src/models/manual/section";
-import { SectionAttributes as QuizSectionAttributes } from "../../src/models/quiz/section";
+import { QuizSectionAttributes } from "../../src/models/quiz/section";
 import { PermissionAttributes } from "../../src/models/permission";
-import { QuestionAttributes } from "../../src/models/quiz/question/question";
+import { QuizQuestionAttributes } from "../../src/models/quiz/question/question";
 import { QuizAttributes } from "../../src/models/quiz/quiz";
 import { RoleAttributes } from "../../src/models/role";
 import { UserAttributes } from "../../src/models/user/user";
 import { UserRoleAttributes } from "../../src/models/user/user_role";
-import { AnswerAttributes } from "../../src/models/quiz/question/answer";
-import { AttemptAttributes } from "../../src/models/quiz/attempt";
-import { ResultAttributes } from "../../src/models/quiz/result";
+import { QuizAnswerAttributes } from "../../src/models/quiz/question/answer";
+import { QuizAttemptAttributes } from "../../src/models/quiz/attempt";
+import { QuizResultAttributes } from "../../src/models/quiz/result";
 import { EventAttributes } from "../../src/models/event";
 
 // Configuration
@@ -132,26 +132,26 @@ export const quizSectionAttributes: QuizSectionAttributes = {
     quiz_id: -1,
 };
 
-export const questionAttributes: QuestionAttributes = {
+export const quizQuestionAttributes: QuizQuestionAttributes = {
     question: "Question",
     type: "radio",
     quiz_section_id: -1,
     updated_by_user_id: -1,
 };
 
-export const answerAttributes: AnswerAttributes = {
+export const quizAnswerAttributes: QuizAnswerAttributes = {
     answer: "Answer",
     correct: false,
     quiz_question_id: -1,
     updated_by_user_id: -1,
 };
 
-export const attemptAttributes: AttemptAttributes = {
+export const quizAttemptAttributes: QuizAttemptAttributes = {
     quiz_id: -1,
     user_id: -1,
 };
 
-export const resultAttributes: ResultAttributes = {
+export const resultAttributes: QuizResultAttributes = {
     quiz_answer_id: -1,
     quiz_attempt_id: -1,
     quiz_question_id: -1,
@@ -179,9 +179,9 @@ export default {
     policyRead: readAttributes,
     quiz: quizAttributes,
     quizSection: quizSectionAttributes,
-    quizQuestion: questionAttributes,
-    quizAnswer: answerAttributes,
+    quizQuestion: quizQuestionAttributes,
+    quizAnswer: quizAnswerAttributes,
     quizResult: resultAttributes,
     event: eventAttributes,
-    quizAttempt: attemptAttributes,
+    quizAttempt: quizAttemptAttributes,
 };
