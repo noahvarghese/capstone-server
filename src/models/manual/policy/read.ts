@@ -1,4 +1,5 @@
 import { Entity, PrimaryColumn } from "typeorm";
+import { AttributeFactory } from "../../abstract/base_model";
 import EventDates from "../../abstract/event_dates";
 
 export interface PolicyReadAttributes {
@@ -6,14 +7,10 @@ export interface PolicyReadAttributes {
     policy_id: number;
 }
 
-const EmptyReadAttributes = (): PolicyReadAttributes => ({
+export const EmptyPolicyReadAttributes = (): PolicyReadAttributes => ({
     user_id: -1,
     policy_id: -1,
 });
-
-const ReadBuilder = <T extends Partial<PolicyReadAttributes>>(
-    options?: T
-): PolicyReadAttributes & T => Object.assign(EmptyReadAttributes(), options);
 
 @Entity({ name: "policy_read" })
 export default class PolicyRead
@@ -27,7 +24,9 @@ export default class PolicyRead
 
     public constructor(options?: Partial<PolicyReadAttributes>) {
         super();
-        const attr = ReadBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(
+            this,
+            AttributeFactory(options, EmptyPolicyReadAttributes)
+        );
     }
 }

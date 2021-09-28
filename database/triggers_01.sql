@@ -51,6 +51,28 @@ END;
 
 //
 
+CREATE TRIGGER membership_request_insert
+BEFORE INSERT
+ON membership_request FOR EACH ROW
+BEGIN
+    IF NEW.token IS NOT NULL THEN
+        SET NEW.token_expiry = NOW() + INTERVAL 1 DAY;
+    END IF;
+END;
+
+//
+
+CREATE TRIGGER membership_request_update
+BEFORE UPDATE 
+ON membership_request FOR EACH ROW
+BEGIN
+    IF NEW.token != OLD.token THEN
+        SET NEW.token_expiry = NOW() + INTERVAL 1 DAY;
+    END IF;
+END;
+
+//
+
 CREATE TRIGGER users_forgot_password_token_created
 BEFORE UPDATE
 ON user FOR EACH ROW

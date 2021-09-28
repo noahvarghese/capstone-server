@@ -1,4 +1,5 @@
 import { Entity, Column } from "typeorm";
+import { AttributeFactory } from "../abstract/base_model";
 import EditableContentModel from "../abstract/editable_content_model";
 
 export interface QuizAttributes {
@@ -10,7 +11,7 @@ export interface QuizAttributes {
     updated_by_user_id: number;
 }
 
-const EmptyQuizAttributes = (): QuizAttributes => ({
+export const EmptyQuizAttributes = (): QuizAttributes => ({
     title: "",
     max_attempts: -1,
     manual_id: -1,
@@ -18,10 +19,6 @@ const EmptyQuizAttributes = (): QuizAttributes => ({
     prevent_edit: false,
     updated_by_user_id: -1,
 });
-
-const QuizBuilder = <T extends Partial<QuizAttributes>>(
-    options?: T
-): QuizAttributes & T => Object.assign(EmptyQuizAttributes(), options);
 
 @Entity({ name: "quiz" })
 export default class Quiz
@@ -41,7 +38,6 @@ export default class Quiz
 
     public constructor(options?: Partial<QuizAttributes>) {
         super();
-        const attr = QuizBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyQuizAttributes));
     }
 }

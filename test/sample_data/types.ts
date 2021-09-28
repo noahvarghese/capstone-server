@@ -18,10 +18,12 @@ import QuizAttempt from "../../src/models/quiz/attempt";
 import Event from "../../src/models/event";
 import ManualAssignment from "../../src/models/manual/assignment";
 import Membership from "../../src/models/membership";
+import MembershipRequest from "../../src/models/membership_request";
 
 const types: { [i: string]: new () => unknown } = {
     business: Business,
     membership: Membership,
+    membershipRequest: MembershipRequest,
     user: User,
     permission: Permission,
     department: Department,

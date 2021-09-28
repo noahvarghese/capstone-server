@@ -1,4 +1,5 @@
 import { Entity, Column } from "typeorm";
+import { AttributeFactory } from "../../abstract/base_model";
 import EditableContentModel from "../../abstract/editable_content_model";
 
 export interface PolicyAttributes {
@@ -7,15 +8,11 @@ export interface PolicyAttributes {
     updated_by_user_id: number;
 }
 
-const EmptyPolicyAttributes = (): PolicyAttributes => ({
+export const EmptyPolicyAttributes = (): PolicyAttributes => ({
     title: "",
     manual_section_id: -1,
     updated_by_user_id: -1,
 });
-
-const PolicyBuilder = <T extends Partial<PolicyAttributes>>(
-    options?: T
-): PolicyAttributes & T => Object.assign(EmptyPolicyAttributes(), options);
 
 @Entity({ name: "policy" })
 export default class Policy
@@ -29,11 +26,6 @@ export default class Policy
 
     public constructor(options?: Partial<PolicyAttributes>) {
         super();
-        const attr = PolicyBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyPolicyAttributes));
     }
-
-    // getName(): string {
-    // return super.getTableName(Policy);
-    // }
 }

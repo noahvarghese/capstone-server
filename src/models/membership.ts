@@ -1,4 +1,5 @@
 import { Entity, PrimaryColumn } from "typeorm";
+import { AttributeFactory } from "./abstract/base_model";
 import EventDates from "./abstract/event_dates";
 
 export interface MembershipAttributes {
@@ -6,16 +7,10 @@ export interface MembershipAttributes {
     business_id: number | null;
 }
 
-const EmptyMembershipAttributes = (): MembershipAttributes => ({
+export const EmptyMembershipAttributes = (): MembershipAttributes => ({
     user_id: -1,
     business_id: -1,
 });
-
-const MembershipBuilder = <T extends Partial<MembershipAttributes>>(
-    options?: T
-) => {
-    Object.assign(EmptyMembershipAttributes(), options);
-};
 
 @Entity()
 export default class Membership
@@ -29,6 +24,9 @@ export default class Membership
 
     public constructor(options?: Partial<MembershipAttributes>) {
         super();
-        Object.assign(this, MembershipBuilder(options));
+        Object.assign(
+            this,
+            AttributeFactory(options, EmptyMembershipAttributes)
+        );
     }
 }

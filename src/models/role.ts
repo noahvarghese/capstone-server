@@ -1,4 +1,5 @@
 import { Entity, Column } from "typeorm";
+import { AttributeFactory } from "./abstract/base_model";
 import EditableContentModel from "./abstract/editable_content_model";
 
 export interface RoleAttributes {
@@ -9,17 +10,13 @@ export interface RoleAttributes {
     updated_by_user_id: number;
 }
 
-const EmptyRoleAttributes = (): RoleAttributes => ({
+export const EmptyRoleAttributes = (): RoleAttributes => ({
     name: "",
     department_id: -1,
     permission_id: -1,
     prevent_delete: false,
     updated_by_user_id: -1,
 });
-
-const RoleBuilder = <T extends Partial<RoleAttributes>>(
-    options?: T
-): RoleAttributes & T => Object.assign(EmptyRoleAttributes(), options);
 
 @Entity()
 export default class Role
@@ -37,7 +34,6 @@ export default class Role
 
     public constructor(options?: Partial<RoleAttributes>) {
         super();
-        const attr = RoleBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyRoleAttributes));
     }
 }

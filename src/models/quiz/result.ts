@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import BaseModel from "../abstract/base_model";
+import BaseModel, { AttributeFactory } from "../abstract/base_model";
 
 export interface QuizResultAttributes {
     quiz_attempt_id: number;
@@ -7,15 +7,11 @@ export interface QuizResultAttributes {
     quiz_answer_id: number;
 }
 
-const EmptyResultAttributes = (): QuizResultAttributes => ({
+export const EmptyResultAttributes = (): QuizResultAttributes => ({
     quiz_attempt_id: -1,
     quiz_question_id: -1,
     quiz_answer_id: -1,
 });
-
-const ResultBuilder = <T extends Partial<QuizResultAttributes>>(
-    options?: T
-): QuizResultAttributes & T => Object.assign(EmptyResultAttributes(), options);
 
 @Entity({ name: "quiz_result" })
 export default class QuizResult
@@ -31,7 +27,6 @@ export default class QuizResult
 
     public constructor(options?: Partial<QuizResultAttributes>) {
         super();
-        const attr = ResultBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyResultAttributes));
     }
 }

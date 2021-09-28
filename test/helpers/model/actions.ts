@@ -107,7 +107,7 @@ export default class ModelActions {
      */
     static create = async <T, X>(
         baseWorld: JestBaseWorld | CucumberBaseWorld,
-        type: new () => T
+        type: new (options?: X) => T
     ): Promise<T> => {
         const modelName = pascalToCamel(type.name);
 
@@ -117,7 +117,7 @@ export default class ModelActions {
                 : baseWorld.getCustomProp<Connection>("connection");
         const attributes = baseWorld.getCustomProp<X>(`${modelName}Attributes`);
 
-        let model = connection.manager.create<T>(type, attributes);
+        let model = connection.manager.create<T>(type, new type(attributes));
 
         // handle automatic creation
         if (model instanceof User) {

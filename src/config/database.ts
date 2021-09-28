@@ -20,10 +20,12 @@ import Result from "../models/quiz/result";
 import Read from "../models/manual/policy/read";
 import Event from "../models/event";
 import Membership from "../models/membership";
+import MembershipRequest from "../models/membership_request";
 
 const entities = [
     Business,
     User,
+    MembershipRequest,
     Membership,
     Department,
     Permission,
@@ -44,8 +46,10 @@ const entities = [
     Event,
 ];
 
-export const connection: ConnectionOptions = {
-    database: process.env.DB ?? "",
+export const connectionOptions = (
+    env?: "_dev" | "_test" | undefined
+): ConnectionOptions => ({
+    database: (process.env.DB ?? "") + (env ?? ""),
     host: process.env.DB_URL ?? "",
     username: process.env.DB_USER ?? "",
     password: process.env.DB_PWD ?? "",
@@ -55,39 +59,9 @@ export const connection: ConnectionOptions = {
     entities,
     logging: true,
     logger: new DBLogger(),
-};
-
-export const devConnection: ConnectionOptions = {
-    database: process.env.DB ? process.env.DB + "_dev" : "",
-    host: process.env.DB_URL ?? "",
-    username: process.env.DB_USER ?? "",
-    password: process.env.DB_PWD ?? "",
-    // enforce strict typing by only applying
-    // a small subset of the potential database types
-    type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities,
-    logging: true,
-    logger: new DBLogger(),
-};
-
-export const testConnection: ConnectionOptions = {
-    database: process.env.DB ? process.env.DB + "_test" : "",
-    host: process.env.DB_URL ?? "",
-    username: process.env.DB_USER ?? "",
-    password: process.env.DB_PWD ?? "",
-    // enforce strict typing by only applying
-    // a small subset of the potential database types
-    type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities,
-    logging: true,
-    logger: new DBLogger(),
-};
+});
 
 export default async (env?: "test" | "dev"): Promise<Connection> =>
     await createConnection(
-        env === "test"
-            ? testConnection
-            : env === "dev"
-            ? devConnection
-            : connection
+        connectionOptions(env ? (("_" + env) as "_test" | "_dev") : undefined)
     );

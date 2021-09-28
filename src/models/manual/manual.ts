@@ -1,4 +1,5 @@
 import { Entity, Column } from "typeorm";
+import { AttributeFactory } from "../abstract/base_model";
 import EditableContentModel from "../abstract/editable_content_model";
 
 export interface ManualAttributes {
@@ -10,7 +11,7 @@ export interface ManualAttributes {
     updated_by_user_id: number;
 }
 
-const EmptyManualAttributes = (): ManualAttributes => ({
+export const EmptyManualAttributes = (): ManualAttributes => ({
     title: "",
     department_id: -1,
     role_id: -1,
@@ -18,10 +19,6 @@ const EmptyManualAttributes = (): ManualAttributes => ({
     prevent_edit: false,
     updated_by_user_id: -1,
 });
-
-const ManualBuilder = <T extends Partial<ManualAttributes>>(
-    options?: T
-): ManualAttributes & T => Object.assign(EmptyManualAttributes(), options);
 
 @Entity({ name: "manual" })
 export default class Manual
@@ -41,7 +38,6 @@ export default class Manual
 
     public constructor(options?: Partial<ManualAttributes>) {
         super();
-        const attr = ManualBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyManualAttributes));
     }
 }

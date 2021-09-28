@@ -14,11 +14,11 @@ export const loadAttributes = <T>(
     const deps = dependencies[modelName as keyof typeof dependencies];
 
     for (const dependency of deps) {
-        const attr = attributes[dependency as keyof typeof attributes];
+        const attr = attributes[dependency as keyof typeof attributes]();
         baseWorld.setCustomProp(`${dependency}Attributes`, deepClone(attr));
     }
 
-    const attr = attributes[modelName as keyof typeof attributes];
+    const attr = attributes[modelName as keyof typeof attributes]();
     baseWorld.setCustomProp(`${modelName}Attributes`, deepClone(attr));
 };
 

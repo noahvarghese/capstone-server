@@ -4,6 +4,7 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
 } from "typeorm";
+import { AttributeFactory } from "./abstract/base_model";
 
 export interface EventAttributes {
     name: string;
@@ -12,16 +13,12 @@ export interface EventAttributes {
     business_id: number | null;
 }
 
-const EmptyEventAttributes = (): EventAttributes => ({
+export const EmptyEventAttributes = (): EventAttributes => ({
     name: "",
     status: "FAIL",
     user_id: null,
     business_id: null,
 });
-
-const EventBuilder = <T extends Partial<EventAttributes>>(
-    options?: T
-): EventAttributes & T => Object.assign(EmptyEventAttributes(), options);
 
 @Entity()
 export default class Event implements EventAttributes {
@@ -39,7 +36,6 @@ export default class Event implements EventAttributes {
     public created_on!: Date;
 
     public constructor(options?: Partial<EventAttributes>) {
-        const attr = EventBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyEventAttributes));
     }
 }

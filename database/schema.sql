@@ -30,6 +30,12 @@ CREATE TABLE user (
     last_name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     email VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     phone VARCHAR(50) NOT NULL,
+    address VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
+    postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
+    province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
+    country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
+    birthday DATETIME NOT NULL,
     password VARCHAR(255) NOT NULL,
     token VARCHAR(32) DEFAULT NULL,
     token_expiry DATETIME DEFAULT NULL,
@@ -38,6 +44,19 @@ CREATE TABLE user (
     deleted_on DATETIME DEFAULT NULL,
     UNIQUE (email),
     PRIMARY KEY (id)
+);
+
+CREATE TABLE membership_request (
+    user_id INT NOT NULL,
+    business_id INT NOT NULL,
+    token VARCHAR(32) DEFAULT NULL,
+    token_expiry DATETIME NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    PRIMARY KEY (business_id, user_id)
 );
 
 CREATE TABLE membership (
@@ -67,7 +86,9 @@ CREATE TABLE department (
 
 CREATE TABLE permission (
     id INT NOT NULL AUTO_INCREMENT,
-    add_users_to_business TINYINT(1) NOT NULL,
+    add_users TINYINT(1) NOT NULL,
+    edit_users TINYINT(1) NOT NULL,
+    delete_users TINYINT(1) NOT NULL,
     assign_users_to_department TINYINT(1) NOT NULL,
     assign_users_to_role TINYINT(1) NOT NULL,
     create_resources TINYINT(1) NOT NULL,

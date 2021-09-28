@@ -1,5 +1,5 @@
 import { Connection, createConnection } from "typeorm";
-import { testConnection } from "../../src/config/database";
+import { connectionOptions } from "../../src/config/database";
 
 export default class DBConnection {
     private static _connection: Connection | undefined;
@@ -7,7 +7,7 @@ export default class DBConnection {
     public static InitConnection = async (): Promise<void> => {
         DBConnection._connection = await createConnection({
             name: "Test",
-            ...testConnection,
+            ...connectionOptions("_test"),
             logging: false,
         });
     };

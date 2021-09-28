@@ -47,6 +47,8 @@ Only businesses can register, registers the admin user at the same time
 business register parameters: name, address
 admin user register parameters: name, email, [phone]
 
+Checks that the user ahs not been created as each business has their own email and the primary user should be registering the business email as their own
+
 ### Adding employees
 
 Add name email [phone]

@@ -1,5 +1,5 @@
 import { Entity, Column } from "typeorm";
-import BaseModel from "./abstract/base_model";
+import BaseModel, { AttributeFactory } from "./abstract/base_model";
 
 export interface BusinessAttributes {
     name: string;
@@ -10,7 +10,7 @@ export interface BusinessAttributes {
     country: string;
 }
 
-const EmptyBusiness = (): BusinessAttributes => ({
+export const EmptyBusinessAttributes = (): BusinessAttributes => ({
     name: "",
     address: "",
     city: "",
@@ -18,12 +18,6 @@ const EmptyBusiness = (): BusinessAttributes => ({
     province: "",
     country: "",
 });
-
-const BusinessBuilder = <T extends Partial<BusinessAttributes>>(
-    options?: T
-): BusinessAttributes & T => {
-    return Object.assign(EmptyBusiness(), options);
-};
 
 @Entity({ name: "business" })
 export default class Business extends BaseModel implements BusinessAttributes {
@@ -42,7 +36,6 @@ export default class Business extends BaseModel implements BusinessAttributes {
 
     public constructor(options?: Partial<BusinessAttributes>) {
         super();
-        const businessAttr = BusinessBuilder(options);
-        Object.assign(this, businessAttr);
+        Object.assign(this, AttributeFactory(options, EmptyBusinessAttributes));
     }
 }

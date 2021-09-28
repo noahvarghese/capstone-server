@@ -1,31 +1,39 @@
 import { uid } from "rand-token";
 import bcrypt from "bcryptjs";
 import { Entity, Column } from "typeorm";
-import BaseModel from "../abstract/base_model";
+import BaseModel, { AttributeFactory } from "../abstract/base_model";
 
 export interface UserAttributes {
     first_name: string;
     last_name: string;
     email: string;
     phone: string;
+    address: string;
+    city: string;
+    postal_code: string;
+    province: string;
+    country: string;
+    birthday: Date | undefined;
     password: string;
     token?: string | undefined | null;
     token_expiry?: Date | undefined | null;
 }
 
-const EmptyUserAttributes = (): UserAttributes => ({
+export const EmptyUserAttributes = (): UserAttributes => ({
     first_name: "",
     last_name: "",
     email: "",
     phone: "",
+    address: "",
+    city: "",
+    postal_code: "",
+    province: "",
+    country: "",
+    birthday: undefined,
     password: "",
     token: undefined,
     token_expiry: undefined,
 });
-
-const UserBuilder = <T extends Partial<UserAttributes>>(
-    options?: T
-): UserAttributes & T => Object.assign(EmptyUserAttributes(), options);
 
 @Entity({ name: "user" })
 export default class User extends BaseModel implements UserAttributes {
@@ -39,6 +47,18 @@ export default class User extends BaseModel implements UserAttributes {
     @Column()
     public phone!: string;
     @Column()
+    public address!: string;
+    @Column()
+    public city!: string;
+    @Column()
+    public postal_code!: string;
+    @Column()
+    public province!: string;
+    @Column()
+    public country!: string;
+    @Column()
+    public birthday!: Date;
+    @Column()
     public password!: string;
     @Column({ nullable: true, type: "text", unique: true })
     public token?: string | null | undefined;
@@ -47,8 +67,7 @@ export default class User extends BaseModel implements UserAttributes {
 
     public constructor(options?: Partial<UserAttributes>) {
         super();
-        const userAttr = UserBuilder(options);
-        Object.assign(this, userAttr);
+        Object.assign(this, AttributeFactory(options, EmptyUserAttributes));
     }
 
     // pass reference back so we can chain it within the connection.manager.save method

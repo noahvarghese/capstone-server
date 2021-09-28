@@ -6,6 +6,7 @@ const dependencies: { [i: string]: string[] } = {
     business: [],
     user: ["business"],
     membership: ["business", "user"],
+    membershipRequest: ["business", "user"],
     event: ["business", "user", "membership"],
     permission: ["business", "user", "membership"],
     department: ["business", "user", "membership"],

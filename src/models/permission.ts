@@ -1,8 +1,11 @@
 import { Entity, Column } from "typeorm";
+import { AttributeFactory } from "./abstract/base_model";
 import EditableContentModel from "./abstract/editable_content_model";
 
 export interface PermissionAttributes {
-    add_users_to_business: boolean;
+    add_users: boolean;
+    edit_users: boolean;
+    delete_users: boolean;
     assign_users_to_department: boolean;
     assign_users_to_role: boolean;
     create_resources: boolean;
@@ -11,8 +14,10 @@ export interface PermissionAttributes {
     updated_by_user_id: number;
 }
 
-const EmptyPermissionAttributes = (): PermissionAttributes => ({
-    add_users_to_business: false,
+export const EmptyPermissionAttributes = (): PermissionAttributes => ({
+    add_users: false,
+    edit_users: false,
+    delete_users: false,
     assign_users_to_department: false,
     assign_users_to_role: false,
     create_resources: false,
@@ -21,18 +26,11 @@ const EmptyPermissionAttributes = (): PermissionAttributes => ({
     updated_by_user_id: -1,
 });
 
-const PermissionBuilder = <T extends Partial<PermissionAttributes>>(
-    options?: T
-): PermissionAttributes & T =>
-    Object.assign(EmptyPermissionAttributes(), options);
-
 @Entity({ name: "permission" })
 export default class Permission
     extends EditableContentModel
     implements PermissionAttributes
 {
-    @Column()
-    public add_users_to_business!: boolean;
     @Column()
     public assign_users_to_role!: boolean;
     @Column()
@@ -43,10 +41,18 @@ export default class Permission
     public assign_resources_to_department!: boolean;
     @Column()
     public assign_resources_to_role!: boolean;
+    @Column()
+    public add_users!: boolean;
+    @Column()
+    public edit_users!: boolean;
+    @Column()
+    public delete_users!: boolean;
 
     public constructor(options?: Partial<PermissionAttributes>) {
         super();
-        const attr = PermissionBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(
+            this,
+            AttributeFactory(options, EmptyPermissionAttributes)
+        );
     }
 }
