@@ -1,16 +1,14 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Entity, PrimaryColumn } from "typeorm";
 import EventDates from "./abstract/event_dates";
 
 export interface MembershipAttributes {
     user_id: number | null;
     business_id: number | null;
-    deactivated: boolean;
 }
 
 const EmptyMembershipAttributes = (): MembershipAttributes => ({
     user_id: -1,
     business_id: -1,
-    deactivated: false,
 });
 
 const MembershipBuilder = <T extends Partial<MembershipAttributes>>(
@@ -28,8 +26,6 @@ export default class Membership
     public user_id!: number;
     @PrimaryColumn()
     public business_id!: number;
-    @Column()
-    public deactivated!: boolean;
 
     public constructor(options?: Partial<MembershipAttributes>) {
         super();

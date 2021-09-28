@@ -32,7 +32,6 @@ export const businessAttributes: BusinessAttributes = {
 export const membershipAttributes: MembershipAttributes = {
     user_id: -1,
     business_id: -1,
-    deactivated: false,
 };
 
 export const userAttributes: UserAttributes = {
