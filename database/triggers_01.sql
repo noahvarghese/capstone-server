@@ -3,6 +3,23 @@ BEFORE UPDATE
 ON business FOR EACH ROW
 SET NEW.updated_on = NOW();
 
+DELIMITER //
+
+CREATE TRIGGER business_delete 
+BEFORE DELETE
+ON business FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    IF (OLD.prevent_delete = 1) THEN
+        SET msg = CONCAT('BusinessDeleteError: Cannot delete business. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END;
+
+// 
+
+DELIMITER ;
+
 CREATE TRIGGER user_update
 BEFORE UPDATE
 ON user FOR EACH ROW
@@ -10,6 +27,46 @@ SET NEW.updated_on = NOW();
 
 DELIMITER //
 
+CREATE TRIGGER membership_insert
+BEFORE INSERT
+ON membership FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+
+    IF (NEW.business_id IS NULL OR NEW.business_id = '') THEN
+        SET msg = "MembershipInsertError: Business id cannot be null or empty";
+    ELSEIF (NEW.user_id IS NULL OR NEW.user_id = '') THEN
+        SET msg = "MembershipInsertError: User id cannot be null or empty";
+    END IF;
+
+    IF (msg != '') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END;
+
+//
+
+CREATE TRIGGER membership_update
+BEFORE UPDATE
+ON membership FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = '';
+
+    IF (NEW.business_id IS NULL OR NEW.business_id = '') THEN
+        SET msg = "MembershipUpdateError: Business id cannot be null or empty";
+    ELSEIF (NEW.user_id IS NULL OR NEW.user_id = '') THEN
+        SET msg = "MembershipUpdateError: User id cannot be null or empty";
+    END IF;
+
+    IF (msg != '') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
+END;
+
+//
 
 CREATE TRIGGER users_forgot_password_token_created
 BEFORE UPDATE

@@ -1,4 +1,5 @@
 import { BusinessAttributes } from "../../src/models/business";
+import { MembershipAttributes } from "../../src/models/membership";
 import { DepartmentAttributes } from "../../src/models/department";
 import { ContentAttributes } from "../../src/models/manual/content";
 import { ManualAttributes } from "../../src/models/manual/manual";
@@ -31,6 +32,11 @@ export const businessAttributes: BusinessAttributes = {
     postal_code: "L6H1X1",
 };
 
+export const membershipAttributes: MembershipAttributes = {
+    user_id: -1,
+    business_id: -1,
+};
+
 export const userAttributes: UserAttributes = {
     first_name: "Noah",
     last_name: "Varghese",
@@ -43,7 +49,6 @@ export const userAttributes: UserAttributes = {
     country: "CA",
     birthday: new Date("1996-08-07"),
     phone: "9053393294",
-    business_id: -1,
 };
 
 export const departmentAttributes: DepartmentAttributes = {
@@ -166,6 +171,7 @@ export const eventAttributes: EventAttributes = {
 
 export default {
     business: businessAttributes,
+    membership: membershipAttributes,
     user: userAttributes,
     permission: permissionAttributes,
     department: departmentAttributes,

@@ -15,7 +15,6 @@ export interface UserAttributes {
     country: string;
     birthday: Date | undefined;
     password: string;
-    business_id: number;
     token?: string | undefined | null;
     token_expiry?: Date | undefined | null;
 }
@@ -32,7 +31,6 @@ const EmptyUserAttributes = (): UserAttributes => ({
     country: "",
     birthday: undefined,
     password: "",
-    business_id: -1,
     token: undefined,
     token_expiry: undefined,
 });
@@ -66,8 +64,6 @@ export default class User extends BaseModel implements UserAttributes {
     public birthday!: Date;
     @Column()
     public password!: string;
-    @Column()
-    public business_id!: number;
     @Column({ nullable: true, type: "text", unique: true })
     public token?: string | null | undefined;
     @Column({ nullable: true, type: "datetime", unique: false })

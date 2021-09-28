@@ -20,6 +20,7 @@ CREATE TABLE business (
     postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
     province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
     country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -45,12 +46,21 @@ CREATE TABLE user (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    business_id INT NOT NULL,
-    /* access_level_id INT NOT NULL, */
+    /*-- business_id INT NOT NULL,*/
     UNIQUE (email),
-    FOREIGN KEY (business_id) REFERENCES business(id),
-    /* FOREIGN KEY (access_level_id) REFERENCES access_level(id), */
+    /*-- FOREIGN KEY (business_id) REFERENCES business(id),*/
     PRIMARY KEY (id)
+);
+
+CREATE TABLE membership (
+    business_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    PRIMARY KEY (business_id, user_id)
 );
 
 CREATE TABLE department (
@@ -296,3 +306,8 @@ CREATE TABLE event (
     FOREIGN KEY (business_id) REFERENCES business(id),
     PRIMARY KEY (id)
 );
+
+INSERT INTO business (
+    name,
+    prevent_delete
+) VALUES ("OnBoard", 1);

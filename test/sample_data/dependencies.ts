@@ -5,14 +5,23 @@
 const dependencies: { [i: string]: string[] } = {
     business: [],
     user: ["business"],
-    event: ["business", "user"],
-    permission: ["business", "user"],
-    department: ["business", "user"],
-    role: ["business", "user", "department", "permission"],
-    userRole: ["business", "user", "department", "permission", "role"],
+    membership: ["business", "user"],
+    event: ["business", "user", "membership"],
+    permission: ["business", "user", "membership"],
+    department: ["business", "user", "membership"],
+    role: ["business", "user", "membership", "department", "permission"],
+    userRole: [
+        "business",
+        "user",
+        "membership",
+        "department",
+        "permission",
+        "role",
+    ],
     manual: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -21,6 +30,7 @@ const dependencies: { [i: string]: string[] } = {
     manualAssignment: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -30,6 +40,7 @@ const dependencies: { [i: string]: string[] } = {
     manualSection: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -40,6 +51,7 @@ const dependencies: { [i: string]: string[] } = {
     policy: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -51,6 +63,7 @@ const dependencies: { [i: string]: string[] } = {
     content: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -63,6 +76,7 @@ const dependencies: { [i: string]: string[] } = {
     policyRead: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -75,6 +89,7 @@ const dependencies: { [i: string]: string[] } = {
     quiz: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -84,6 +99,7 @@ const dependencies: { [i: string]: string[] } = {
     quizSection: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -94,6 +110,7 @@ const dependencies: { [i: string]: string[] } = {
     quizQuestion: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -105,6 +122,7 @@ const dependencies: { [i: string]: string[] } = {
     quizAnswer: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -117,6 +135,7 @@ const dependencies: { [i: string]: string[] } = {
     quizAttempt: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",
@@ -127,6 +146,7 @@ const dependencies: { [i: string]: string[] } = {
     quizResult: [
         "business",
         "user",
+        "membership",
         "department",
         "permission",
         "role",

@@ -39,6 +39,29 @@ re removing users from roles / departments
 
 -   must have at least 1 user in the role/department Admin/Admin
 
+## User management
+
+### Registration
+
+Only businesses can register, registers the admin user at the same time
+business register parameters: name, address
+admin user register parameters: name, email, [phone]
+
+### Adding employees
+
+Add name email [phone]
+Email is sent to user asking to "Accept Invitation"
+
+If user has registered previously they are asked to login if the browser doesn't have a cookie, then areadded as a member of the business and sent to the dashboard
+Else they are sent to set a password and on success redirected to the dashboard
+
+### Login
+
+When a user logs in check if a member of any business
+if not an error is shown asking to reach out tho their manager
+if yes they are redirected to the dashboard
+the dashboard will let them choose which business they want to view
+
 ## Environment Variables
 
 -   Env variables must be loaded into the Elastic Beanstalk as well as the job runner for CI/CD
