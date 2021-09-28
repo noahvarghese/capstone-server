@@ -79,14 +79,14 @@ export default class ModelTestPass {
      * @template T TypeORM entity class
      * @template X the interface T implements
      * @param baseWorld
-     * @param type
-     * @param attrKey
+     * @param {new () => T} type T
+     * @param attrKey keys to select record by
      * @param canDelete
      */
     static read = async <T extends X, X>(
         baseWorld: BaseWorld | undefined,
         type: new () => T,
-        attrKey: string[],
+        attrKey: (keyof T)[],
         canDelete = true
     ): Promise<void> => {
         if (!baseWorld) {
@@ -97,7 +97,7 @@ export default class ModelTestPass {
 
         const model = await ModelActions.create<T, X>(baseWorld, type);
 
-        const where: { [index: string]: unknown } = {};
+        const where: Partial<T> = {};
 
         for (const attr of attrKey) {
             where[attr] = model[attr as keyof T];

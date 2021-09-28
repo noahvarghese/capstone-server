@@ -22,9 +22,6 @@ import { EventAttributes } from "../../src/models/event";
 // Configuration
 export const businessAttributes: BusinessAttributes = {
     name: "Oakville Windows and Doors",
-    code: "Oakville3294",
-    email: "varghese.noah@gmail.com",
-    phone: "9053393294",
     address: "1380 Speers Rd",
     city: "Oakville",
     province: "ON",
@@ -35,6 +32,7 @@ export const businessAttributes: BusinessAttributes = {
 export const membershipAttributes: MembershipAttributes = {
     user_id: -1,
     business_id: -1,
+    deactivated: false,
 };
 
 export const userAttributes: UserAttributes = {
@@ -42,12 +40,6 @@ export const userAttributes: UserAttributes = {
     last_name: "Varghese",
     email: "varghese.noah@gmail.com",
     password: "password",
-    address: "207 Elderwood Trail",
-    city: "Oakville",
-    postal_code: "L6H1X1",
-    province: "ON",
-    country: "CA",
-    birthday: new Date("1996-08-07"),
     phone: "9053393294",
 };
 

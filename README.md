@@ -62,6 +62,17 @@ if not an error is shown asking to reach out tho their manager
 if yes they are redirected to the dashboard
 the dashboard will let them choose which business they want to view
 
+## Business Rules
+
+Triggers are added to the database to enforce business rules that do not affect development (ie if items should only be updated by users of a specific business, the triggers will enforce that, but if the item should not be deleted but deactivated instead of deleted then there is no trigger as development tests run cleanup after)
+
+### Items enforced
+
+-   Checks that the user accessing a resource is a part of the business that the resource is under
+-   Checks that the user has appropriate permissions to modify/view resources (see permissions table)
+-   Checks if resources are locked before processinga change
+-   Checks that mandatory fields are filled in
+
 ## Environment Variables
 
 -   Env variables must be loaded into the Elastic Beanstalk as well as the job runner for CI/CD

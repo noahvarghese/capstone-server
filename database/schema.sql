@@ -12,15 +12,11 @@ CREATE TABLE sessions (
 CREATE TABLE business (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    phone VARCHAR(50) NOT NULL,
-    email VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    code VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     address VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
     postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
     province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
     country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
-    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -34,27 +30,20 @@ CREATE TABLE user (
     last_name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     email VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     phone VARCHAR(50) NOT NULL,
-    address VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
-    postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
-    province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
-    country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
-    birthday DATETIME NOT NULL,
     password VARCHAR(255) NOT NULL,
     token VARCHAR(32) DEFAULT NULL,
     token_expiry DATETIME DEFAULT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    /*-- business_id INT NOT NULL,*/
     UNIQUE (email),
-    /*-- FOREIGN KEY (business_id) REFERENCES business(id),*/
     PRIMARY KEY (id)
 );
 
 CREATE TABLE membership (
     business_id INT NOT NULL,
     user_id INT NOT NULL,
+    deactivated TINYINT(1) NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -76,8 +65,6 @@ CREATE TABLE department (
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
-
-/* Each role will have a set of permissions */
 
 CREATE TABLE permission (
     id INT NOT NULL AUTO_INCREMENT,
@@ -132,8 +119,6 @@ CREATE TABLE manual (
     deleted_on DATETIME DEFAULT NULL,
     prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
     prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
-    /* NEEDS DEPARTMENT OR ROLE */
-    /* THIS IS FOR THE OWNER OF the MANUAL */
     role_id INT DEFAULT NULL,
     department_id INT DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
@@ -306,8 +291,3 @@ CREATE TABLE event (
     FOREIGN KEY (business_id) REFERENCES business(id),
     PRIMARY KEY (id)
 );
-
-INSERT INTO business (
-    name,
-    prevent_delete
-) VALUES ("OnBoard", 1);

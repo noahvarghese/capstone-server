@@ -1,19 +1,16 @@
-import {
-    Column,
-    CreateDateColumn,
-    DeleteDateColumn,
-    Entity,
-    UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
+import EventDates from "./abstract/event_dates";
 
 export interface MembershipAttributes {
-    user_id: number;
-    business_id: number;
+    user_id: number | null;
+    business_id: number | null;
+    deactivated: boolean;
 }
 
 const EmptyMembershipAttributes = (): MembershipAttributes => ({
     user_id: -1,
     business_id: -1,
+    deactivated: false,
 });
 
 const MembershipBuilder = <T extends Partial<MembershipAttributes>>(
@@ -23,19 +20,19 @@ const MembershipBuilder = <T extends Partial<MembershipAttributes>>(
 };
 
 @Entity()
-export default class Membership implements MembershipAttributes {
-    @Column()
+export default class Membership
+    extends EventDates
+    implements MembershipAttributes
+{
+    @PrimaryColumn()
     public user_id!: number;
-    @Column()
+    @PrimaryColumn()
     public business_id!: number;
-    @CreateDateColumn()
-    public created_on!: Date;
-    @UpdateDateColumn()
-    public updated_on!: Date;
-    @DeleteDateColumn()
-    public deleted_on!: Date;
+    @Column()
+    public deactivated!: boolean;
 
     public constructor(options?: Partial<MembershipAttributes>) {
+        super();
         Object.assign(this, MembershipBuilder(options));
     }
 }

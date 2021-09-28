@@ -19,10 +19,12 @@ import Attempt from "../models/quiz/attempt";
 import Result from "../models/quiz/result";
 import Read from "../models/manual/policy/read";
 import Event from "../models/event";
+import Membership from "../models/membership";
 
 const entities = [
     Business,
     User,
+    Membership,
     Department,
     Permission,
     Role,
