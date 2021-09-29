@@ -4,12 +4,13 @@ import ModelActions from "../actions";
 import types from "../../../sample_data/types";
 import dependencies from "../../../sample_data/dependencies";
 import { pascalToCamel } from "../../../../src/util/string";
-import { Connection } from "typeorm";
+import { Connection, DeepPartial } from "typeorm";
 import User from "../../../../src/models/user/user";
 import Business from "../../../../src/models/business";
 import attributes from "../../../sample_data/attributes";
 import Membership from "../../../../src/models/membership";
 import MembershipRequest from "../../../../src/models/membership_request";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 /**
  * Assumes that the model passed is cleaned up prior to this
@@ -38,6 +39,61 @@ export const teardown = async <T>(
 
 // export const unsetPreventDelete = () => {};
 // export const unsetPreventEdit = () => {};
+export const unsetKey = async <T extends X & Record<string, unknown>, X>(
+    ids: {
+        business_id: number;
+        member_ids: number[];
+    },
+    key: "prevent_edit" | "prevent_delete",
+    connection: Connection,
+    type: new () => unknown,
+    attribute: X
+): Promise<void> => {
+    const additionalWhere: { prevent_edit?: boolean } = {};
+
+    if (
+        key !== "prevent_edit" &&
+        Object.keys(attribute).includes("prevent_edit")
+    ) {
+        additionalWhere["prevent_edit"] = false;
+    }
+
+    if (Object.keys(attribute).includes(key)) {
+        const { business_id, member_ids } = ids;
+
+        if (Object.keys(attribute).includes("business_id")) {
+            await connection.manager.update(
+                type,
+                { business_id, [key]: true, ...additionalWhere },
+                {
+                    [key]: false,
+                } as unknown as QueryDeepPartialEntity<T>
+            );
+        } else if (Object.keys(attribute).includes("updated_by_user_id")) {
+            for (const updated_by_user_id of member_ids) {
+                await connection.manager.update(
+                    type,
+                    { updated_by_user_id, [key]: true, ...additionalWhere },
+                    {
+                        [key]: false,
+                    } as unknown as DeepPartial<T>
+                );
+            }
+        } else if (Object.keys(attribute).includes("user_id")) {
+            for (const id of member_ids) {
+                await connection.manager.update(
+                    type,
+                    {
+                        user_id: id,
+                        [key]: true,
+                        ...additionalWhere,
+                    },
+                    { [key]: false } as unknown as DeepPartial<T>
+                );
+            }
+        }
+    }
+};
 
 export const cleanupByUserAndBusiness = async <T>(
     baseWorld: CucumberBaseWorld,
@@ -61,21 +117,21 @@ export const cleanupByUserAndBusiness = async <T>(
             "No businesses found with name: " + details["name" as keyof T]
         );
 
-    const businessId = business[0].id;
+    const business_id = business[0].id;
 
     // get user ids to delete
-    let memberIds = (
+    let member_ids = (
         await connection.manager.find<Membership>(Membership, {
-            where: { business_id: businessId },
+            where: { business_id },
         })
     ).map((member) => member.user_id);
 
-    memberIds = memberIds.concat(
+    member_ids = member_ids.concat(
         (
             await connection.manager.find<MembershipRequest>(
                 MembershipRequest,
                 {
-                    where: { business_id: businessId },
+                    where: { business_id },
                 }
             )
         ).map((member) => member.user_id)
@@ -92,51 +148,36 @@ export const cleanupByUserAndBusiness = async <T>(
         const attribute = attributes[dependency as keyof typeof attributes]();
 
         // turn off any edit or delete locks
-        if (Object.keys(attribute).includes("prevent_edit")) {
-            let models: unknown[] = [];
+        await unsetKey(
+            { business_id, member_ids },
+            "prevent_edit",
+            connection,
+            type,
+            attribute
+        );
 
-            if (Object.keys(attribute).includes("business_id")) {
-                models = await connection
-                    .getRepository(type)
-                    .find({ business_id: businessId, prevent_edit: true });
+        await unsetKey(
+            { business_id, member_ids },
+            "prevent_delete",
+            connection,
+            type,
+            attribute
+        );
+    }
 
-                for (const model of models) {
-                    await connection.manager.update(
-                        type,
-                        { business_id: businessId, prevent_edit: true },
-                        { prevent_edit: false }
-                    );
-                }
-            } else if (Object.keys(attribute).includes("updated_by_user_id")) {
-                for (const id of memberIds) {
-                    models = models.concat(
-                        await connection.getRepository(type).find({
-                            updated_by_user_id: id,
-                            prevent_edit: true,
-                        })
-                    );
-                }
-            } else if (Object.keys(attribute).includes("user_id")) {
-                for (const id of memberIds) {
-                    models = models.concat(
-                        await connection.getRepository(type).find({
-                            updated_by_user_id: id,
-                            prevent_edit: true,
-                        })
-                    );
-                }
-            }
-        }
+    // starting at the most dependent table
+    for (let i = deps.length - 1; i >= 0; i--) {
+        const dependency = deps[i];
+        const type = types[dependency];
+        const attribute = attributes[dependency as keyof typeof attributes]();
 
         // delete any models by business or user ids
         if (Object.keys(attribute).includes("business_id")) {
             await connection.manager.remove(
-                await connection
-                    .getRepository(type)
-                    .find({ business_id: businessId })
+                await connection.getRepository(type).find({ business_id })
             );
         } else if (Object.keys(attribute).includes("updated_by_user_id")) {
-            for (const id of memberIds) {
+            for (const id of member_ids) {
                 await connection.manager.remove(
                     await connection
                         .getRepository(type)
@@ -144,19 +185,18 @@ export const cleanupByUserAndBusiness = async <T>(
                 );
             }
         } else if (Object.keys(attribute).includes("user_id")) {
-            for (const id of memberIds) {
+            for (const id of member_ids) {
                 await connection.manager.remove(
                     await connection.getRepository(type).find({ user_id: id })
                 );
             }
         }
-
         // since user and business do not have the above keys
         // delete by their ids
         if (type === Business) {
             await connection.manager.remove<Business>(Business, business[0]);
         } else if (type === User) {
-            for (const id of memberIds) {
+            for (const id of member_ids) {
                 await connection.manager.remove<User>(
                     User,
                     await connection.manager.findOneOrFail(User, id)
