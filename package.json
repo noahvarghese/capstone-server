@@ -7,17 +7,13 @@
     },
     "scripts": {
         "prebuild": "rm -rf ./node_modules && npm i",
-        "build": "rm -rf ./build && tsc -p ./src && mv ./build/src/* ./build/ && rmdir ./build/src",
+        "build": "rm -rf ./build && tsc -p ./src",
         "format": "prettier --write \"**/*.ts\"",
         "format-check": "prettier --check \"**/*.ts\"",
         "dev": "nodemon -e ts,.env,json --ignore build/ --ignore test/ --exec ./node_modules/.bin/ts-node ./src/index.ts",
         "start": "node ./index.js",
-        "pretest:cucumber": "cd ./test",
-        "test:cucumber": "../node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter --exit",
-        "posttest:cucumber": "cd ../",
-        "pretest:jest": "cd ./test",
-        "test:jest": "cd ./test && jest --maxConcurrency=1 --runInBand --coverage",
-        "posttest:jest": "cd ../",
+        "test:cucumber": "./node_modules/.bin/cucumber-js -p default -f @cucumber/pretty-formatter --exit",
+        "test:jest": "jest --maxConcurrency=1 --runInBand --coverage --verbose false",
         "test": "npm run test:jest && npm run test:cucumber"
     },
     "repository": {

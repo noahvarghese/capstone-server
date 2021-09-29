@@ -19,12 +19,12 @@ const registerBusiness = (): RegisterBusinessProps => ({
     phone: user.phone,
 });
 
-const login = () => ({
-    email: user.email,
-    password: user.password,
-});
+// const login = () => ({
+//     email: user.email,
+//     password: user.password,
+// });
 
 export default {
     registerBusiness,
-    login,
+    // login,
 };

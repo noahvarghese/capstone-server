@@ -61,7 +61,8 @@ export const connectionOptions = (
     logger: new DBLogger(),
 });
 
-export default async (env?: "test" | "dev"): Promise<Connection> =>
-    await createConnection(
+export default async (env?: "test" | "dev"): Promise<Connection> => {
+    return await createConnection(
         connectionOptions(env ? (("_" + env) as "_test" | "_dev") : undefined)
     );
+};
