@@ -1,9 +1,9 @@
 import { Given, When } from "@cucumber/cucumber";
-import { RegisterProps } from "../../../../src/routes/auth/signup";
+import { RegisterBusinessProps } from "../../../../src/routes/auth/signup";
 import {
     businessAttributes,
     userAttributes,
-} from "../../../sample_data/attributes";
+} from "../../../sample_data/model_attributes";
 import BaseWorld from "../../support/base_world";
 import FormData from "form-data";
 import { server } from "../../../../src/util/permalink";
@@ -14,7 +14,7 @@ const businessAttr = businessAttributes();
 const userAttr = userAttributes();
 
 Given("the user has valid inputs", function (this: BaseWorld) {
-    this.setCustomProp<RegisterProps>("details", {
+    this.setCustomProp<RegisterBusinessProps>("registerBusiness", {
         name: businessAttr.name,
         address: businessAttr.address,
         city: businessAttr.city,
@@ -33,7 +33,8 @@ When(
     "a new user registers a new business",
     { timeout: 10000 },
     async function (this: BaseWorld) {
-        const registerProps = this.getCustomProp<RegisterProps>("details");
+        const registerProps =
+            this.getCustomProp<RegisterBusinessProps>("registerBusiness");
 
         const body = new FormData();
 

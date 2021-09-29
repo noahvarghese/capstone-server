@@ -1,7 +1,7 @@
 import { Given, Then, When } from "@cucumber/cucumber";
 import User from "../../../../src/models/user/user";
 import { server } from "../../../../src/util/permalink";
-import { userAttributes } from "../../../sample_data/attributes";
+import { userAttributes } from "../../../sample_data/model_attributes";
 import DBConnection from "../../../util/db_connection";
 import Event from "../../../../src/models/event";
 import FormData from "form-data";

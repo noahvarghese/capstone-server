@@ -12,7 +12,7 @@ import { phoneValidator, postalCodeValidator } from "../../util/validators";
 
 const router = Router();
 
-export interface RegisterProps {
+export interface RegisterBusinessProps {
     name: string;
     first_name: string;
     last_name: string;
@@ -40,7 +40,7 @@ router.post("/", async (req: Request, res: Response) => {
         province,
         password,
         confirm_password,
-    } = req.body as RegisterProps;
+    } = req.body as RegisterBusinessProps;
 
     // validate no keys are missing
     for (const [key, value] of Object.entries(req.body)) {

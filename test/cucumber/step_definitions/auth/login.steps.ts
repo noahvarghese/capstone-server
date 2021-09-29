@@ -2,7 +2,7 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import User from "../../../../src/models/user/user";
 import { server } from "../../../../src/util/permalink";
 import BaseWorld from "../../support/base_world";
-import { userAttributes } from "../../../sample_data/attributes";
+import { userAttributes } from "../../../sample_data/model_attributes";
 import { expect } from "chai";
 import axios from "axios";
 import { getCookie } from "../../../util/request";

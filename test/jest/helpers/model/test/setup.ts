@@ -1,7 +1,7 @@
 import JestBaseWorld from "../../../../jest/support/base_world";
 import CucumberBaseWorld from "../../../../cucumber/support/base_world";
 import types from "../../../../sample_data/types";
-import attributes from "../../../../sample_data/attributes";
+import attributes from "../../../../sample_data/model_attributes";
 import ModelActions from "../actions";
 import { pascalToCamel, snakeToCamel } from "../../../../../src/util/string";
 import { deepClone } from "../../../../../src/util/obj";

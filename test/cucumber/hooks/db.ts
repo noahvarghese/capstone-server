@@ -2,8 +2,8 @@ import { After, Before } from "@cucumber/cucumber";
 import { Connection } from "typeorm";
 import DBConnection from "../../util/db_connection";
 import BaseWorld from "../support/base_world";
-import { RegisterProps } from "../../../src/routes/auth/signup";
-import { cleanupByUserAndBusiness } from "../../jest/helpers/model/test/teardown";
+import { RegisterBusinessProps } from "../../../src/routes/auth/signup";
+import { teardown } from "../helpers/teardown";
 
 Before("@db", async function (this: BaseWorld) {
     this.setCustomProp<Connection>(
@@ -12,11 +12,14 @@ Before("@db", async function (this: BaseWorld) {
     );
 });
 
+// @Before({ tags: "@login" }, async function (this: BaseWorld) {
+// this.setCustomProp<RegisterProps>("details", )
+// });
+
 After("@db", async function (this: BaseWorld) {
     this.setCustomProp<undefined>("connection", undefined);
 });
 
-// cleanup
-After({ tags: "@signup_business" }, async function (this: BaseWorld) {
-    await cleanupByUserAndBusiness<RegisterProps>(this, "details", "userRole");
+After({ tags: "@signup_business or @login" }, async function (this: BaseWorld) {
+    await teardown<RegisterBusinessProps>(this, "registerBusiness", "userRole");
 });
