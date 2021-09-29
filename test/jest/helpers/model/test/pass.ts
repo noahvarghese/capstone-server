@@ -1,5 +1,5 @@
-import { pascalToCamel } from "../../../../src/util/string";
-import BaseWorld from "../../../jest/support/base_world";
+import { pascalToCamel } from "../../../../../src/util/string";
+import BaseWorld from "../../../../jest/support/base_world";
 import ModelActions from "../actions";
 
 /**

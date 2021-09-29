@@ -1,8 +1,8 @@
 import Business, { BusinessAttributes } from "./business";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import ModelTestPass from "../../test/helpers/model/test/pass";
-import { loadAttributes } from "../../test/helpers/model/test/setup";
+import ModelTestPass from "../../test/jest/helpers/model/test/pass";
+import { loadAttributes } from "../../test/jest/helpers/model/test/setup";
 
 // State management
 let baseWorld: BaseWorld | undefined;

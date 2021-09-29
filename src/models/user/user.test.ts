@@ -1,14 +1,14 @@
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import ModelTestPass from "../../../test/helpers/model/test/pass";
+import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
 import User, { UserAttributes } from "./user";
 import dotenv from "dotenv";
 import {
     createModels,
     loadAttributes,
-} from "../../../test/helpers/model/test/setup";
-import { teardown } from "../../../test/helpers/model/test/teardown";
-import ModelActions from "../../../test/helpers/model/actions";
+} from "../../../test/jest/helpers/model/test/setup";
+import { teardown } from "../../../test/jest/helpers/model/test/teardown";
+import ModelActions from "../../../test/jest/helpers/model/actions";
 dotenv.config();
 
 let baseWorld: BaseWorld | undefined;

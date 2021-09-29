@@ -1,10 +1,10 @@
-import ModelTestFail from "../../test/helpers/model/test/fail";
-import ModelTestPass from "../../test/helpers/model/test/pass";
+import ModelTestFail from "../../test/jest/helpers/model/test/fail";
+import ModelTestPass from "../../test/jest/helpers/model/test/pass";
 import {
     createModels,
     loadAttributes,
-} from "../../test/helpers/model/test/setup";
-import { teardown } from "../../test/helpers/model/test/teardown";
+} from "../../test/jest/helpers/model/test/setup";
+import { teardown } from "../../test/jest/helpers/model/test/teardown";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
 import Membership, { MembershipAttributes } from "./membership";

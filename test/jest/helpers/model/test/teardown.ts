@@ -1,15 +1,15 @@
-import JestBaseWorld from "../../../jest/support/base_world";
-import CucumberBaseWorld from "../../../cucumber/support/base_world";
+import JestBaseWorld from "../../../support/base_world";
+import CucumberBaseWorld from "../../../../cucumber/support/base_world";
 import ModelActions from "../actions";
-import types from "../../../sample_data/types";
-import dependencies from "../../../sample_data/dependencies";
-import { pascalToCamel } from "../../../../src/util/string";
+import types from "../../../../sample_data/types";
+import dependencies from "../../../../sample_data/dependencies";
+import { pascalToCamel } from "../../../../../src/util/string";
 import { Connection, DeepPartial } from "typeorm";
-import User from "../../../../src/models/user/user";
-import Business from "../../../../src/models/business";
-import attributes from "../../../sample_data/attributes";
-import Membership from "../../../../src/models/membership";
-import MembershipRequest from "../../../../src/models/membership_request";
+import User from "../../../../../src/models/user/user";
+import Business from "../../../../../src/models/business";
+import attributes from "../../../../sample_data/attributes";
+import Membership from "../../../../../src/models/membership";
+import MembershipRequest from "../../../../../src/models/membership_request";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 /**

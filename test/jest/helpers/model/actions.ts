@@ -1,14 +1,14 @@
-import JestBaseWorld from "../../jest/support/base_world";
-import CucumberBaseWorld from "../../cucumber/support/base_world";
+import JestBaseWorld from "../../support/base_world";
+import CucumberBaseWorld from "../../../cucumber/support/base_world";
 import { Connection } from "typeorm";
-import User from "../../../src/models/user/user";
+import User from "../../../../src/models/user/user";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import {
     checkType,
     formatter,
     FormatType,
     pascalToCamel,
-} from "../../../src/util/string";
+} from "../../../../src/util/string";
 
 /**
  * Performs CRUD actions without assertions

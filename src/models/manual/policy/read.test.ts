@@ -1,12 +1,12 @@
 import BaseWorld from "../../../../test/jest/support/base_world";
 import DBConnection from "../../../../test/util/db_connection";
-import ModelTestPass from "../../../../test/helpers/model/test/pass";
+import ModelTestPass from "../../../../test/jest/helpers/model/test/pass";
 import {
     createModels,
     loadAttributes,
-} from "../../../../test/helpers/model/test/setup";
-import { teardown } from "../../../../test/helpers/model/test/teardown";
-import ModelTestFail from "../../../../test/helpers/model/test/fail";
+} from "../../../../test/jest/helpers/model/test/setup";
+import { teardown } from "../../../../test/jest/helpers/model/test/teardown";
+import ModelTestFail from "../../../../test/jest/helpers/model/test/fail";
 import PolicyRead, { PolicyReadAttributes } from "./read";
 
 let baseWorld: BaseWorld | undefined;

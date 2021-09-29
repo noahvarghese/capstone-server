@@ -1,14 +1,14 @@
 import BaseWorld from "../../../test/jest/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
-import ModelTestPass from "../../../test/helpers/model/test/pass";
+import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
 import ManualSection, { ManualSectionAttributes } from "./section";
-import { teardown } from "../../../test/helpers/model/test/teardown";
+import { teardown } from "../../../test/jest/helpers/model/test/teardown";
 import {
     createModels,
     loadAttributes,
-} from "../../../test/helpers/model/test/setup";
+} from "../../../test/jest/helpers/model/test/setup";
 import Manual, { ManualAttributes } from "./manual";
-import ModelTestParentPrevent from "../../../test/helpers/model/test/parent_prevent";
+import ModelTestParentPrevent from "../../../test/jest/helpers/model/test/parent_prevent";
 
 let baseWorld: BaseWorld | undefined;
 

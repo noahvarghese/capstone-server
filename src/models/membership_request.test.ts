@@ -1,11 +1,11 @@
 import { uid } from "rand-token";
-import ModelActions from "../../test/helpers/model/actions";
-import ModelTestPass from "../../test/helpers/model/test/pass";
+import ModelActions from "../../test/jest/helpers/model/actions";
+import ModelTestPass from "../../test/jest/helpers/model/test/pass";
 import {
     createModels,
     loadAttributes,
-} from "../../test/helpers/model/test/setup";
-import { teardown } from "../../test/helpers/model/test/teardown";
+} from "../../test/jest/helpers/model/test/setup";
+import { teardown } from "../../test/jest/helpers/model/test/teardown";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
 import MembershipRequest, {

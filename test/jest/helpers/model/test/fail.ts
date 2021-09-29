@@ -1,4 +1,4 @@
-import BaseWorld from "../../../jest/support/base_world";
+import BaseWorld from "../../../../jest/support/base_world";
 import ModelActions from "../actions";
 
 /**
