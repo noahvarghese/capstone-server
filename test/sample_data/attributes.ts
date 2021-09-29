@@ -134,6 +134,7 @@ export const departmentAttributes = (): DepartmentAttributes =>
         {
             name: "Management",
             prevent_delete: false,
+            prevent_edit: false,
             business_id: 1,
             updated_by_user_id: -1,
         },
@@ -161,6 +162,7 @@ export const roleAttributes = (): RoleAttributes =>
         {
             name: "Admin",
             prevent_delete: false,
+            prevent_edit: false,
             department_id: -1,
             permission_id: -1,
             updated_by_user_id: -1,

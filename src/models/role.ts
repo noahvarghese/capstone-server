@@ -7,6 +7,7 @@ export interface RoleAttributes {
     department_id: number;
     permission_id: number;
     prevent_delete: boolean;
+    prevent_edit: boolean;
     updated_by_user_id: number;
 }
 
@@ -16,6 +17,7 @@ export const EmptyRoleAttributes = (): RoleAttributes => ({
     permission_id: -1,
     prevent_delete: false,
     updated_by_user_id: -1,
+    prevent_edit: false,
 });
 
 @Entity()
@@ -29,6 +31,8 @@ export default class Role
     public department_id!: number;
     @Column()
     public permission_id!: number;
+    @Column()
+    public prevent_edit!: boolean;
     @Column()
     public prevent_delete!: boolean;
 

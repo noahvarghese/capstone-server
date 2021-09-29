@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import User from "../models/user/user";
 import Event from "../models/event";
 import Logs from "./logs/logs";
-import Business from "../models/business";
 import { client } from "./permalink";
 import { getConnection } from "typeorm";
 
@@ -41,7 +40,7 @@ export const resetPasswordEmail = async (user: User): Promise<boolean> => {
 };
 
 export const sendMail = async (
-    model: User | Business,
+    model: User,
     mailOpts: MailOpts
 ): Promise<boolean> => {
     const transporter = nodemailer.createTransport({

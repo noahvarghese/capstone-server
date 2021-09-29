@@ -7,7 +7,7 @@ import { expect } from "chai";
 import { getCookie } from "../../../util/request";
 
 Given("the user has been authenticated", async function (this: BaseWorld) {
-    const { email, password } = userAttributes;
+    const { email, password } = userAttributes();
 
     const response = await axios.post(
         server("/auth/login"),

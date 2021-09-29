@@ -25,7 +25,7 @@ router.post("/", async (req: Request, res: Response) => {
         const success = await user.comparePassword(password);
         if (success) {
             req.session.user_id = user.id;
-            req.session.business_id = user.business_id;
+            // req.session.business_id = user.business_id;
             res.sendStatus(200);
             return;
         }

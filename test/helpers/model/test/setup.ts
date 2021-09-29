@@ -1,4 +1,5 @@
-import BaseWorld from "../../../jest/support/base_world";
+import JestBaseWorld from "../../../jest/support/base_world";
+import CucumberBaseWorld from "../../../cucumber/support/base_world";
 import types from "../../../sample_data/types";
 import attributes from "../../../sample_data/attributes";
 import ModelActions from "../actions";
@@ -7,7 +8,7 @@ import { deepClone } from "../../../../src/util/obj";
 import dependencies from "../../../sample_data/dependencies";
 
 export const loadAttributes = <T>(
-    baseWorld: BaseWorld,
+    baseWorld: JestBaseWorld | CucumberBaseWorld,
     type: new () => T
 ): void => {
     const modelName = pascalToCamel(type.name);
@@ -29,7 +30,7 @@ export const loadAttributes = <T>(
  * @param {new () => T} type
  */
 export const createModels = async <T extends Y, Y>(
-    baseWorld: BaseWorld,
+    baseWorld: JestBaseWorld | CucumberBaseWorld,
     type: new () => T
 ): Promise<void> => {
     const setNestedProps = <X>(currentModel: string) => {

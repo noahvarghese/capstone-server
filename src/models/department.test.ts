@@ -1,8 +1,7 @@
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import ModelActions from "../../test/helpers/model/actions";
 import ModelTestPass from "../../test/helpers/model/test/pass";
-import ModelTestFail from "../../test/helpers/model/test/fail";
+import ModelTestParentPrevent from "../../test/helpers/model/test/parent_prevent";
 import Department, { DepartmentAttributes } from "./department";
 import {
     createModels,
@@ -63,37 +62,29 @@ test("Read Department", async () => {
 });
 
 test("Prevent Deletion of Department", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
+    await ModelTestParentPrevent.delete<
+        Department,
+        DepartmentAttributes,
+        Department,
+        DepartmentAttributes
+    >(
+        baseWorld,
+        { type: Department, toggleAttribute: "prevent_delete" },
+        Department,
+        /DepartmentDeleteError: Cannot delete department while delete lock is set/
+    );
+});
 
-    // set prevent delete in environment data
-    baseWorld.setCustomProp<DepartmentAttributes>("departmentAttributes", {
-        ...baseWorld.getCustomProp<DepartmentAttributes>(
-            "departmentAttributes"
-        ),
-        prevent_delete: true,
-    });
-
-    try {
-        await ModelTestFail.delete(
-            baseWorld,
-            Department,
-            /DepartmentDeleteError: Cannot delete department while delete lock is set/
-        );
-
-        await ModelActions.update<Department, DepartmentAttributes>(
-            baseWorld,
-            Department,
-            {
-                prevent_delete: false,
-            }
-        );
-
-        await ModelActions.delete<Department>(baseWorld, Department);
-    } catch (e) {
-        if (e.deleted !== undefined && e.deleted !== false) {
-            await ModelActions.delete<Department>(baseWorld, Department);
-        }
-    }
+test("Prevent edit of department", async () => {
+    await ModelTestParentPrevent.update<
+        Department,
+        DepartmentAttributes,
+        Department,
+        DepartmentAttributes
+    >(
+        baseWorld,
+        { type: Department, toggleAttribute: "prevent_edit" },
+        { type: Department, attributesToUpdate: { name: "YOLO" } },
+        /DepartmentUpdateError: Cannot edit department while edit lock is set/
+    );
 });

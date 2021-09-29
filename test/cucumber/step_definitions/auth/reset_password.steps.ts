@@ -11,10 +11,11 @@ import { Connection } from "typeorm";
 import axios from "axios";
 
 const newPassword = "secret123";
+const userAttr = userAttributes();
 
 Given("the user is registered", function (this: BaseWorld) {
     this.setCustomProp<{ email: string }>("credentials", {
-        email: userAttributes.email,
+        email: userAttr.email,
     });
 });
 
@@ -22,7 +23,7 @@ Given(
     "the user has requested to reset their password",
     async function (this: BaseWorld) {
         await axios.post(server("auth/requestResetPassword"), {
-            email: userAttributes.email,
+            email: userAttr.email,
         });
 
         const connection = this.getCustomProp<Connection>("connection");
@@ -31,7 +32,7 @@ Given(
             "user",
             (
                 await connection.manager.find(User, {
-                    where: { email: userAttributes.email },
+                    where: { email: userAttr.email },
                 })
             )[0]
         );
@@ -83,7 +84,7 @@ When(
         user = (
             await (
                 await DBConnection.GetConnection()
-            ).manager.find(User, { where: { email: userAttributes.email } })
+            ).manager.find(User, { where: { email: userAttr.email } })
         )[0];
 
         const { token } = user;
@@ -111,7 +112,7 @@ When(
 
         user = (
             await connection.manager.find(User, {
-                where: { email: userAttributes.email },
+                where: { email: userAttr.email },
             })
         )[0];
 

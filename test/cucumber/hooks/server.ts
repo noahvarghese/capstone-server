@@ -6,7 +6,7 @@ import setupServer from "../../../src/util/server";
 let server: Server;
 
 BeforeAll(async function () {
-    const disableLogs = true;
+    const disableLogs = false;
     server = await setupServer(disableLogs, "test");
 });
 

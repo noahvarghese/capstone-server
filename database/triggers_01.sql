@@ -84,15 +84,6 @@ END;
 
 //
 
-DELIMITER ;
-
-CREATE TRIGGER department_update
-BEFORE UPDATE
-ON department FOR EACH ROW
-SET NEW.updated_on = NOW();
-
-DELIMITER //
-
 CREATE TRIGGER department_delete
 BEFORE DELETE
 ON department FOR EACH ROW
@@ -100,9 +91,25 @@ BEGIN
     DECLARE msg VARCHAR(128);
 
     IF OLD.prevent_delete = 1 THEN
-        SET msg = CONCAT('DepartmentDeleteError: Cannot delete department while delete lock is set', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('DepartmentDeleteError: Cannot delete department while delete lock is set. ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
+END;
+
+//
+
+CREATE TRIGGER department_update
+BEFORE UPDATE 
+ON department FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+
+    IF OLD.prevent_edit = 1 AND OLD.prevent_edit = NEW.prevent_edit THEN
+        SET msg = CONCAT('DepartmentUpdateError: Cannot edit department while edit lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
 END;
 
 //
@@ -114,11 +121,6 @@ BEFORE UPDATE
 ON permission FOR EACH ROW
 SET NEW.updated_on = NOW();
 
-CREATE TRIGGER role_update
-BEFORE UPDATE
-ON role FOR EACH ROW
-SET NEW.updated_on = NOW();
-
 DELIMITER //
 
 CREATE TRIGGER role_delete
@@ -128,9 +130,25 @@ BEGIN
     DECLARE msg VARCHAR(128);
 
     IF OLD.prevent_delete = 1 THEN
-        SET msg = CONCAT('RoleDeleteError: Cannot delete role while delete lock is set', CAST(OLD.id AS CHAR));
+        SET msg = CONCAT('RoleDeleteError: Cannot delete role while delete lock is set. ', CAST(OLD.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
+END;
+
+//
+
+CREATE TRIGGER role_update
+BEFORE UPDATE 
+ON role FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+
+    IF OLD.prevent_edit = 1 AND OLD.prevent_edit = NEW.prevent_edit THEN
+        SET msg = CONCAT('RoleUpdateError: Cannot edit role while edit lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
 END;
 
 //

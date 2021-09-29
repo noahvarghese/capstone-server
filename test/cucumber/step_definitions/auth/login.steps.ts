@@ -7,23 +7,24 @@ import { expect } from "chai";
 import axios from "axios";
 import { getCookie } from "../../../util/request";
 
+const userAttr = userAttributes();
 Given("the user has valid credentials", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
-        email: userAttributes.email,
-        password: userAttributes.password,
+        email: userAttr.email,
+        password: userAttr.password,
     });
 });
 
 Given("the user has an invalid email", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
         email: "invalid",
-        password: userAttributes.password,
+        password: userAttr.password,
     });
 });
 
 Given("the user has an invalid password", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
-        email: userAttributes.email,
+        email: userAttr.email,
         password: "invalid",
     });
 });

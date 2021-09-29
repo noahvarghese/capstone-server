@@ -1,4 +1,5 @@
-import BaseWorld from "../../../jest/support/base_world";
+import JestBaseWorld from "../../../jest/support/base_world";
+import CucumberBaseWorld from "../../../cucumber/support/base_world";
 import ModelActions from "../actions";
 import types from "../../../sample_data/types";
 import dependencies from "../../../sample_data/dependencies";
@@ -11,7 +12,7 @@ import { pascalToCamel } from "../../../../src/util/string";
  * @param {new () => T} type
  */
 export const teardown = async <T>(
-    baseWorld: BaseWorld,
+    baseWorld: JestBaseWorld | CucumberBaseWorld,
     type: new () => T
 ): Promise<void> => {
     const modelName = pascalToCamel(type.name);

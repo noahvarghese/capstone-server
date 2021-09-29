@@ -1,14 +1,13 @@
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import ModelActions from "../../test/helpers/model/actions";
 import ModelTestPass from "../../test/helpers/model/test/pass";
-import ModelTestFail from "../../test/helpers/model/test/fail";
 import Role, { RoleAttributes } from "./role";
 import {
     createModels,
     loadAttributes,
 } from "../../test/helpers/model/test/setup";
 import { teardown } from "../../test/helpers/model/test/teardown";
+import ModelTestParentPrevent from "../../test/helpers/model/test/parent_prevent";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -52,31 +51,29 @@ test("Read Role", async () => {
 });
 
 test("Prevent Deletion of Role", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
+    await ModelTestParentPrevent.delete<
+        Role,
+        RoleAttributes,
+        Role,
+        RoleAttributes
+    >(
+        baseWorld,
+        { type: Role, toggleAttribute: "prevent_delete" },
+        Role,
+        /RoleDeleteError: Cannot delete role while delete lock is set/
+    );
+});
 
-    // set prevent delete in environment data
-    baseWorld.setCustomProp<RoleAttributes>("roleAttributes", {
-        ...baseWorld.getCustomProp<RoleAttributes>("roleAttributes"),
-        prevent_delete: true,
-    });
-
-    try {
-        await ModelTestFail.delete(
-            baseWorld,
-            Role,
-            /RoleDeleteError: Cannot delete role while delete lock is set/
-        );
-
-        await ModelActions.update<Role, RoleAttributes>(baseWorld, Role, {
-            prevent_delete: false,
-        });
-
-        await ModelActions.delete<Role>(baseWorld, Role);
-    } catch (e) {
-        if (e.deleted !== undefined && e.deleted !== false) {
-            await ModelActions.delete<Role>(baseWorld, Role);
-        }
-    }
+test("Prevent Update of Role", async () => {
+    await ModelTestParentPrevent.update<
+        Role,
+        RoleAttributes,
+        Role,
+        RoleAttributes
+    >(
+        baseWorld,
+        { type: Role, toggleAttribute: "prevent_edit" },
+        { type: Role, attributesToUpdate: { name: "YOLO" } },
+        /RoleUpdateError: Cannot edit role while edit lock is set/
+    );
 });
