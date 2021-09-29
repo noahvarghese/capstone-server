@@ -1,4 +1,5 @@
-import { RegisterBusinessProps } from "../../src/routes/auth/signup";
+import "module-alias/register";
+import { RegisterBusinessProps } from "@routes/auth/signup";
 import attributes from "./model_attributes";
 
 const business = attributes.business();
