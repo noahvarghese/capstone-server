@@ -63,6 +63,7 @@
         "prettier": "^2.4.0",
         "ts-jest": "^26.5.5",
         "ts-node": "^9.1.1",
+        "tsconfig-paths": "^3.11.0",
         "typescript": "^4.2.4"
     },
     "dependencies": {
@@ -93,6 +94,9 @@
     "_moduleAliases": {
         "@models": "models",
         "@routes": "routes",
-        "@util": "util"
+        "@util": "util",
+        "@test/*": [
+            "test/*"
+        ]
     }
 }

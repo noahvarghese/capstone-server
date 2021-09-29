@@ -1,6 +1,6 @@
 import CucumberBaseWorld from "../support/base_world";
 import { Connection, DeepPartial } from "typeorm";
-import User from "../../../src/models/user/user";
+import User from "@models/user/user";
 import Business from "../../../src/models/business";
 import attributes from "../../sample_data/model_attributes";
 import types from "../../sample_data/types";

@@ -21,5 +21,5 @@ After("@db", async function (this: BaseWorld) {
 });
 
 After({ tags: "@signup_business or @login" }, async function (this: BaseWorld) {
-    await teardown<RegisterBusinessProps>(this, "registerBusiness", "userRole");
+    await teardown<RegisterBusinessProps>(this, "body", "userRole");
 });

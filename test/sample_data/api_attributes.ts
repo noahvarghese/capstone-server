@@ -1,6 +1,6 @@
-import "module-alias/register";
 import { RegisterBusinessProps } from "@routes/auth/signup";
 import attributes from "./model_attributes";
+import { LoginProps } from "@routes/auth/login";
 
 const business = attributes.business();
 const user = attributes.user();
@@ -19,12 +19,12 @@ const registerBusiness = (): RegisterBusinessProps => ({
     phone: user.phone,
 });
 
-// const login = () => ({
-//     email: user.email,
-//     password: user.password,
-// });
+const login = (): LoginProps => ({
+    email: user.email,
+    password: user.password,
+});
 
 export default {
     registerBusiness,
-    // login,
+    login,
 };
