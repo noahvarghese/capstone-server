@@ -1,9 +1,10 @@
+import { RegisterBusinessProps } from "../../src/routes/auth/signup";
 import attributes from "./model_attributes";
 
 const business = attributes.business();
 const user = attributes.user();
 
-const registerBusiness = {
+const registerBusiness = (): RegisterBusinessProps => ({
     name: business.name,
     address: business.address,
     city: business.city,
@@ -15,8 +16,14 @@ const registerBusiness = {
     confirm_password: user.password,
     email: user.email,
     phone: user.phone,
-};
+});
+
+const login = () => ({
+    email: user.email,
+    password: user.password,
+});
 
 export default {
     registerBusiness,
+    login,
 };

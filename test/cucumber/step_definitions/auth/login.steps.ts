@@ -8,6 +8,7 @@ import axios from "axios";
 import { getCookie } from "../../../util/request";
 
 const userAttr = userAttributes();
+
 Given("the user has valid credentials", function (this: BaseWorld) {
     this.setCustomProp<{ email: string; password: string }>("credentials", {
         email: userAttr.email,
