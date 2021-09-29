@@ -1,7 +1,7 @@
 import { Connection, DeepPartial, ObjectLiteral } from "typeorm";
 import Logs from "./logs/logs";
 
-export default class ModelActions {
+export default class Model {
     public static create = async <T>(
         connection: Connection,
         type: new () => T,

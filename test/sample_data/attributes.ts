@@ -304,6 +304,7 @@ export const resultAttributes = (): QuizResultAttributes =>
             quiz_answer_id: -1,
             quiz_attempt_id: -1,
             quiz_question_id: -1,
+            updated_by_user_id: -1,
         },
         EmptyResultAttributes
     );

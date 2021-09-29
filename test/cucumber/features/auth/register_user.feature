@@ -1,4 +1,4 @@
-Feature: Signup
+Feature: Signup User
 
 @signup
 Scenario: New user added to business should receive an invite
@@ -23,11 +23,3 @@ Scenario: Existing user added to business
 Given the user is logged in as an admin
 When an existing user is added to the business
 Then the user should get an invite
-
-@signup_business
-@db
-Scenario: New business signup should direct user to dashboard
-Given the user has valid inputs
-When a new user registers a new business
-Then a cookie should be returned
-

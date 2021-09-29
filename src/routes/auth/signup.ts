@@ -7,7 +7,7 @@ import Permission from "../../models/permission";
 import Role from "../../models/role";
 import User from "../../models/user/user";
 import UserRole from "../../models/user/user_role";
-import ModelActions from "../../util/model_actions";
+import Model from "../../util/model";
 import { phoneValidator, postalCodeValidator } from "../../util/validators";
 
 const router = Router();
@@ -122,7 +122,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         businessId = (
-            await ModelActions.create<Business>(
+            await Model.create<Business>(
                 connection,
                 Business,
                 new Business({ name, address, city, postal_code, province })
@@ -135,7 +135,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         userId = (
-            await ModelActions.create<User>(
+            await Model.create<User>(
                 connection,
                 User,
                 new User({ first_name, last_name, email, phone })
@@ -147,7 +147,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     try {
-        await ModelActions.create<Membership>(
+        await Model.create<Membership>(
             connection,
             Membership,
             new Membership({ user_id: userId, business_id: businessId })
@@ -159,7 +159,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         departmentId = (
-            await ModelActions.create<Department>(
+            await Model.create<Department>(
                 connection,
                 Department,
                 new Department({
@@ -178,7 +178,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         permissionId = (
-            await ModelActions.create<Permission>(
+            await Model.create<Permission>(
                 connection,
                 Permission,
                 new Permission({
@@ -201,7 +201,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         roleId = (
-            await ModelActions.create<Role>(
+            await Model.create<Role>(
                 connection,
                 Role,
                 new Role({
@@ -220,7 +220,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     try {
-        await ModelActions.create<UserRole>(
+        await Model.create<UserRole>(
             connection,
             UserRole,
             new UserRole({

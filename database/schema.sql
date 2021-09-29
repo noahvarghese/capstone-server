@@ -285,6 +285,8 @@ CREATE TABLE quiz_result (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    updated_by_user_id INT NOT NULL,
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
     FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id),
