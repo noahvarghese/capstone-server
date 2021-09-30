@@ -1,82 +1,70 @@
-import {
-    BusinessAttributes,
-    EmptyBusinessAttributes,
-} from "../../src/models/business";
+import { BusinessAttributes, EmptyBusinessAttributes } from "@models/business";
 import {
     EmptyMembershipAttributes,
     MembershipAttributes,
-} from "../../src/models/membership";
+} from "@models/membership";
 import {
     DepartmentAttributes,
     EmptyDeparmentAttributes,
-} from "../../src/models/department";
+} from "@models/department";
 import {
     ContentAttributes,
     EmptyContentAttributes,
-} from "../../src/models/manual/content";
-import {
-    EmptyManualAttributes,
-    ManualAttributes,
-} from "../../src/models/manual/manual";
+} from "@models/manual/content";
+import { EmptyManualAttributes, ManualAttributes } from "@models/manual/manual";
 import {
     EmptyManualAssignmentAttributes,
     ManualAssignmentAttributes,
-} from "../../src/models/manual/assignment";
+} from "@models/manual/assignment";
 import {
     EmptyPolicyAttributes,
     PolicyAttributes,
-} from "../../src/models/manual/policy/policy";
+} from "@models/manual/policy/policy";
 import {
     EmptyPolicyReadAttributes,
     PolicyReadAttributes,
-} from "../../src/models/manual/policy/read";
+} from "@models/manual/policy/read";
 import {
     EmptyManualSectionAttributes,
     ManualSectionAttributes,
-} from "../../src/models/manual/section";
+} from "@models/manual/section";
 import {
     EmptyQuizSectionAttributes,
     QuizSectionAttributes,
-} from "../../src/models/quiz/section";
+} from "@models/quiz/section";
 import {
     EmptyPermissionAttributes,
     PermissionAttributes,
-} from "../../src/models/permission";
+} from "@models/permission";
 import {
     EmptyQuestionAttributes,
     QuizQuestionAttributes,
-} from "../../src/models/quiz/question/question";
-import {
-    EmptyQuizAttributes,
-    QuizAttributes,
-} from "../../src/models/quiz/quiz";
-import { EmptyRoleAttributes, RoleAttributes } from "../../src/models/role";
-import {
-    EmptyUserAttributes,
-    UserAttributes,
-} from "../../src/models/user/user";
+} from "@models/quiz/question/question";
+import { EmptyQuizAttributes, QuizAttributes } from "@models/quiz/quiz";
+import { EmptyRoleAttributes, RoleAttributes } from "@models/role";
+import { EmptyUserAttributes, UserAttributes } from "@models/user/user";
 import {
     EmptyUserRoleAttributes,
     UserRoleAttributes,
-} from "../../src/models/user/user_role";
+} from "@models/user/user_role";
 import {
     EmptyAnswerAttributes,
     QuizAnswerAttributes,
-} from "../../src/models/quiz/question/answer";
+} from "@models/quiz/question/answer";
 import {
     EmptyAttemptAttributes,
     QuizAttemptAttributes,
-} from "../../src/models/quiz/attempt";
+} from "@models/quiz/attempt";
 import {
     EmptyResultAttributes,
     QuizResultAttributes,
-} from "../../src/models/quiz/result";
-import { EmptyEventAttributes, EventAttributes } from "../../src/models/event";
-import { AttributeFactory } from "../../src/models/abstract/base_model";
+} from "@models/quiz/result";
+import { EmptyEventAttributes, EventAttributes } from "@models/event";
+import { AttributeFactory } from "@models/abstract/base_model";
 import {
     EmptyMembershipRequestAttributes,
     MembershipRequestAttributes,
-} from "../../src/models/membership_request";
+} from "@models/membership_request";
 
 // Configuration
 export const businessAttributes = (): BusinessAttributes =>

@@ -1,8 +1,8 @@
 import JestBaseWorld from "../../../support/base_world";
 import CucumberBaseWorld from "../../../../cucumber/support/base_world";
 import ModelActions from "../actions";
-import types from "../../../../sample_data/types";
-import dependencies from "../../../../sample_data/dependencies";
+import types from "../../../../sample_data/model/types";
+import dependencies from "../../../../sample_data/model/dependencies";
 import { pascalToCamel } from "../../../../../src/util/string";
 /**
  * Assumes that the model passed is cleaned up prior to this

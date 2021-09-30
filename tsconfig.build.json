@@ -16,17 +16,17 @@
         "noImplicitThis": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
-        "baseUrl": "./",
+        "baseUrl": "./src",
         "module": "commonjs",
         "sourceMap": true,
         "outDir": "./build",
-        "rootDir": "./",
+        "rootDir": "./src",
         "paths": {
-            "@models/*": ["src/models/*"],
-            "@routes/*": ["src/routes/*"],
-            "@util/*": ["src/util/*"],
-            "@test/*": ["test/*"]
+            "@models/*": ["models/*"],
+            "@routes/*": ["routes/*"],
+            "@util/*": ["util/*"]
         }
     },
-    "include": ["./**/*.ts", "./**/*.test.ts"]
+    "include": ["./**/*.ts"],
+    "exclude": ["./**/*.test.ts", "./test"]
 }

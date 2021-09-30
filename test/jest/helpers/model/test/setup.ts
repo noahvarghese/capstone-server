@@ -1,11 +1,11 @@
 import JestBaseWorld from "../../../../jest/support/base_world";
 import CucumberBaseWorld from "../../../../cucumber/support/base_world";
-import types from "../../../../sample_data/types";
-import attributes from "../../../../sample_data/model_attributes";
+import types from "../../../../sample_data/model/types";
+import attributes from "../../../../sample_data/model/attributes";
 import ModelActions from "../actions";
 import { pascalToCamel, snakeToCamel } from "../../../../../src/util/string";
 import { deepClone } from "../../../../../src/util/obj";
-import dependencies from "../../../../sample_data/dependencies";
+import dependencies from "../../../../sample_data/model/dependencies";
 
 export const loadAttributes = <T>(
     baseWorld: JestBaseWorld | CucumberBaseWorld,

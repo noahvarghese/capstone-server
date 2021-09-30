@@ -141,7 +141,7 @@ test("Wrong token should not match", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
+    const connection = baseWorld.getConnection();
     const attributes =
         baseWorld.getCustomProp<UserAttributes>("userAttributes");
     const attributes2 =
@@ -205,7 +205,7 @@ test("Reset password empty", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
 
-    const { connection } = baseWorld;
+    const connection = baseWorld.getConnection();
     const attributes =
         baseWorld.getCustomProp<UserAttributes>("userAttributes");
 

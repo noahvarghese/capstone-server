@@ -1,6 +1,5 @@
 import JestBaseWorld from "../../support/base_world";
 import CucumberBaseWorld from "../../../cucumber/support/base_world";
-import { Connection } from "typeorm";
 import User from "../../../../src/models/user/user";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import {
@@ -29,10 +28,7 @@ export default class ModelActions {
         desiredFormat: FormatType
     ): (keyof T)[] => {
         const keys: (keyof T)[] = [];
-        const connection =
-            baseWorld instanceof JestBaseWorld
-                ? baseWorld.connection
-                : baseWorld.getCustomProp<Connection>("connection");
+        const connection = baseWorld.getConnection();
 
         const columns = connection
             .getMetadata(type)
@@ -111,10 +107,7 @@ export default class ModelActions {
     ): Promise<T> => {
         const modelName = pascalToCamel(type.name);
 
-        const connection =
-            baseWorld instanceof JestBaseWorld
-                ? baseWorld.connection
-                : baseWorld.getCustomProp<Connection>("connection");
+        const connection = baseWorld.getConnection();
         const attributes = baseWorld.getCustomProp<X>(`${modelName}Attributes`);
 
         let model = connection.manager.create<T>(type, new type(attributes));
@@ -171,10 +164,7 @@ export default class ModelActions {
         // if it does not have a key of "id" then it is a concatenated key
         // baseWorld means baseWorld we will add anything ending in _id to the where caluse if baseWorld is the case
         // otherwise the where clause will just use the id
-        const connection =
-            baseWorld instanceof JestBaseWorld
-                ? baseWorld.connection
-                : baseWorld.getCustomProp<Connection>("connection");
+        const connection = baseWorld.getConnection();
 
         let model = baseWorld.getCustomProp<T>(modelName);
 
@@ -269,10 +259,7 @@ export default class ModelActions {
         type: new () => T
     ): Promise<void> => {
         const modelName = pascalToCamel(type.name);
-        const connection =
-            baseWorld instanceof JestBaseWorld
-                ? baseWorld.connection
-                : baseWorld.getCustomProp<Connection>("connection");
+        const connection = baseWorld.getConnection();
 
         const model = baseWorld.getCustomProp<T | undefined>(modelName);
 

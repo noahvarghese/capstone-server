@@ -56,7 +56,7 @@ export default class ModelTestPass {
             throw new Error(BaseWorld.errorMessage);
         }
 
-        const { connection } = baseWorld;
+        const connection = baseWorld.getConnection();
 
         const model = await ModelActions.create<T, X>(baseWorld, type);
 
@@ -93,7 +93,7 @@ export default class ModelTestPass {
             throw new Error(BaseWorld.errorMessage);
         }
 
-        const { connection } = baseWorld;
+        const connection = baseWorld.getConnection();
 
         const model = await ModelActions.create<T, X>(baseWorld, type);
 

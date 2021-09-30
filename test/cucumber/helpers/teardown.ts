@@ -2,12 +2,13 @@ import CucumberBaseWorld from "../support/base_world";
 import { Connection, DeepPartial } from "typeorm";
 import User from "@models/user/user";
 import Business from "../../../src/models/business";
-import attributes from "../../sample_data/model_attributes";
-import types from "../../sample_data/types";
-import dependencies from "../../sample_data/dependencies";
+import attributes from "../../sample_data/model/attributes";
+import types from "../../sample_data/model/types";
+import dependencies from "../../sample_data/model/dependencies";
 import Membership from "../../../src/models/membership";
 import MembershipRequest from "../../../src/models/membership_request";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { snakeToCamel } from "@util/string";
 
 const unsetKey = async <T extends X & Record<string, unknown>, X>(
     ids: {
@@ -65,113 +66,154 @@ const unsetKey = async <T extends X & Record<string, unknown>, X>(
     }
 };
 
-export const teardown = async <T>(
-    baseWorld: CucumberBaseWorld,
-    detailsKey: string,
-    topLevelModelKey: string
-): Promise<void> => {
-    const connection = baseWorld.getCustomProp<Connection>("connection");
-    const details = baseWorld.getCustomProp<T>(detailsKey);
+/**
+ * Compares dependecies keys to tags
+ * Doesn't stop at first match, if a second match is found an error is thrown
+ * That way I get notified if i accidentally set multiple tags
+ * @param tags
+ */
+const getTeardownKey = (tags: string[]): string => {
+    let topLevelModelKey = "";
 
-    // get business id to delete
-    const business = await connection.manager.find(Business, {
-        where: { name: details["name" as keyof T] },
-    });
-
-    if (business.length > 1)
-        throw new Error(
-            "Multiple businesses found with name: " + details["name" as keyof T]
-        );
-    else if (business.length === 0)
-        throw new Error(
-            "No businesses found with name: " + details["name" as keyof T]
-        );
-
-    const business_id = business[0].id;
-
-    // get user ids to delete
-    let member_ids = (
-        await connection.manager.find<Membership>(Membership, {
-            where: { business_id },
-        })
-    ).map((member) => member.user_id);
-
-    member_ids = member_ids.concat(
-        (
-            await connection.manager.find<MembershipRequest>(
-                MembershipRequest,
-                {
-                    where: { business_id },
-                }
-            )
-        ).map((member) => member.user_id)
-    );
-
-    // add top level dependency to delete
-    const deps = dependencies[topLevelModelKey];
-    deps.push(topLevelModelKey);
-
-    // starting at the most dependent table
-    for (let i = deps.length - 1; i >= 0; i--) {
-        const dependency = deps[i];
-        const type = types[dependency];
-        const attribute = attributes[dependency as keyof typeof attributes]();
-
-        // turn off any edit or delete locks
-        await unsetKey(
-            { business_id, member_ids },
-            "prevent_edit",
-            connection,
-            type,
-            attribute
-        );
-
-        await unsetKey(
-            { business_id, member_ids },
-            "prevent_delete",
-            connection,
-            type,
-            attribute
-        );
-    }
-
-    // starting at the most dependent table
-    for (let i = deps.length - 1; i >= 0; i--) {
-        const dependency = deps[i];
-        const type = types[dependency];
-        const attribute = attributes[dependency as keyof typeof attributes]();
-
-        // delete any models by business or user ids
-        if (Object.keys(attribute).includes("business_id")) {
-            await connection.manager.remove(
-                await connection.getRepository(type).find({ business_id })
+    for (const tag of tags) {
+        const cleanup = "@cleanup_";
+        if (tag.includes(cleanup)) {
+            const dependencyName = snakeToCamel(
+                tag.substring(cleanup.length, tag.length)
             );
-        } else if (Object.keys(attribute).includes("updated_by_user_id")) {
-            for (const id of member_ids) {
-                await connection.manager.remove(
-                    await connection
-                        .getRepository(type)
-                        .find({ updated_by_user_id: id })
-                );
-            }
-        } else if (Object.keys(attribute).includes("user_id")) {
-            for (const id of member_ids) {
-                await connection.manager.remove(
-                    await connection.getRepository(type).find({ user_id: id })
-                );
-            }
-        }
-        // since user and business do not have the above keys
-        // delete by their ids
-        if (type === Business) {
-            await connection.manager.remove<Business>(Business, business[0]);
-        } else if (type === User) {
-            for (const id of member_ids) {
-                await connection.manager.remove<User>(
-                    User,
-                    await connection.manager.findOneOrFail(User, id)
-                );
+
+            if (Object.keys(dependencies).includes(dependencyName)) {
+                if (topLevelModelKey !== "") {
+                    throw new Error(
+                        `Multiple model keys found in Scenario tags: ${topLevelModelKey}, ${tag}`
+                    );
+                }
+                topLevelModelKey = dependencyName;
             }
         }
     }
+
+    return topLevelModelKey;
 };
+
+export async function teardown(this: CucumberBaseWorld): Promise<void> {
+    const tags = this.getTags();
+    const topLevelModelKey = getTeardownKey(tags);
+
+    // don't run teardown if no model key found
+    // as perhaps there are tests that will not require cleanup
+    // or require a different cleanup
+    if (topLevelModelKey === "") {
+        return;
+    }
+
+    const connection = this.getCustomProp<Connection>("connection");
+    const businessNames = this.getCustomProp<string[]>("businessNames");
+
+    for (const name of businessNames) {
+        // get business id to delete
+        const business = await connection.manager.find(Business, {
+            where: { name },
+        });
+
+        if (business.length > 1)
+            throw new Error(`Multiple businesses found with name: ${name}`);
+        else if (business.length === 0)
+            throw new Error(`No businesses found with name: ${name}`);
+
+        const business_id = business[0].id;
+
+        // get user ids to delete
+        let member_ids = (
+            await connection.manager.find<Membership>(Membership, {
+                where: { business_id },
+            })
+        ).map((member) => member.user_id);
+
+        member_ids = member_ids.concat(
+            (
+                await connection.manager.find<MembershipRequest>(
+                    MembershipRequest,
+                    {
+                        where: { business_id },
+                    }
+                )
+            ).map((member) => member.user_id)
+        );
+
+        // add top level dependency to delete
+        const deps = dependencies[topLevelModelKey];
+        deps.push(topLevelModelKey);
+
+        // starting at the most dependent table
+        for (let i = deps.length - 1; i >= 0; i--) {
+            const dependency = deps[i];
+            const type = types[dependency];
+            const attribute =
+                attributes[dependency as keyof typeof attributes]();
+
+            // turn off any edit or delete locks
+            await unsetKey(
+                { business_id, member_ids },
+                "prevent_edit",
+                connection,
+                type,
+                attribute
+            );
+
+            await unsetKey(
+                { business_id, member_ids },
+                "prevent_delete",
+                connection,
+                type,
+                attribute
+            );
+        }
+
+        // starting at the most dependent table
+        for (let i = deps.length - 1; i >= 0; i--) {
+            const dependency = deps[i];
+            const type = types[dependency];
+            const attribute =
+                attributes[dependency as keyof typeof attributes]();
+
+            // delete any models by business or user ids
+            if (Object.keys(attribute).includes("business_id")) {
+                await connection.manager.remove(
+                    await connection.getRepository(type).find({ business_id })
+                );
+            } else if (Object.keys(attribute).includes("updated_by_user_id")) {
+                for (const id of member_ids) {
+                    await connection.manager.remove(
+                        await connection
+                            .getRepository(type)
+                            .find({ updated_by_user_id: id })
+                    );
+                }
+            } else if (Object.keys(attribute).includes("user_id")) {
+                for (const id of member_ids) {
+                    await connection.manager.remove(
+                        await connection
+                            .getRepository(type)
+                            .find({ user_id: id })
+                    );
+                }
+            }
+            // since user and business do not have the above keys
+            // delete by their ids
+            if (type === Business) {
+                await connection.manager.remove<Business>(
+                    Business,
+                    business[0]
+                );
+            } else if (type === User) {
+                for (const id of member_ids) {
+                    await connection.manager.remove<User>(
+                        User,
+                        await connection.manager.findOneOrFail(User, id)
+                    );
+                }
+            }
+        }
+    }
+}
