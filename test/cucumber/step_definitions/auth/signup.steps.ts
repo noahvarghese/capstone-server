@@ -9,6 +9,8 @@ import Event from "@models/event";
 import MembershipRequest from "@models/membership_request";
 import { InviteUserProps } from "@routes/user/invite";
 import { expect } from "chai";
+import { userAttributes } from "@test/sample_data/model/attributes";
+import Membership from "@models/membership";
 
 Given("the user has valid inputs", function (this: BaseWorld) {
     loadBody.call(this, "registerBusiness");
@@ -26,14 +28,35 @@ Given("the user is logged in as an admin", async function (this: BaseWorld) {
     await submitForm.call(this, urls.login, true, false);
 });
 
-Given("the user has received an invite", async function (this: BaseWorld) {
-    return "pending";
-});
+async function sendInvite(this: BaseWorld, userType: "new" | "existing") {
+    if (userType === "existing") {
+        const connection = this.getConnection();
+        const adminUser = await connection.manager.findOneOrFail(User, {
+            where: { email: userAttributes().email },
+        });
 
-When("a new user is added to the business", async function (this: BaseWorld) {
+        await connection.manager.findOneOrFail(Membership, {
+            where: { user_id: adminUser.id },
+        });
+
+        await connection.manager.insert(
+            User,
+            new User({
+                email: process.env.SECONDARY_TEST_EMAIL,
+                first_name: "TEST",
+                last_name: "TEST",
+                password: userAttributes().password,
+            })
+        );
+    }
+
     loadBody.call(this, "inviteUser");
     await submitForm.call(this, urls.inviteUser, true, true, true);
-});
+}
+
+Given("the user has received an invite", sendInvite);
+
+When(/an? (new|existing) user is added to the business/, sendInvite);
 
 Then("the user should get an invite", async function (this: BaseWorld) {
     const connection = this.getConnection();

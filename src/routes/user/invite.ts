@@ -6,6 +6,7 @@ import User from "@models/user/user";
 import MembershipRequest from "@models/membership_request";
 import { sendUserInviteEmail } from "@util/mail";
 import Business from "@models/business";
+import Logs from "@util/logs/logs";
 
 export interface InviteUserProps {
     first_name: string;
@@ -50,22 +51,35 @@ router.post("/", async (req: Request, res: Response) => {
     const { SqlConnection: connection } = req;
     let userId: number;
 
+    // handle user creation
+    let receivingUser: User;
+
     try {
-        userId = (
-            await Model.create<User>(
-                connection,
-                User,
-                new User({ first_name, last_name, email, phone })
-            )
-        ).id;
+        receivingUser = await connection.manager.findOneOrFail(User, {
+            where: { email },
+        });
     } catch (e) {
-        res.status(500).json({ message: e.message });
-        return;
+        try {
+            userId = (
+                await Model.create<User>(
+                    connection,
+                    User,
+                    new User({ first_name, last_name, email, phone })
+                )
+            ).id;
+        } catch (e) {
+            Logs.Debug(e.message);
+            res.status(500).json({ message: e.message });
+            return;
+        }
+
+        receivingUser = await connection.manager.findOneOrFail(User, userId);
     }
 
     const businessId = req.session.current_business_id;
+
     const membershipRequest = new MembershipRequest({
-        user_id: userId,
+        user_id: receivingUser.id,
         business_id: businessId,
         updated_by_user_id: req.session.user_id,
     });
@@ -86,8 +100,6 @@ router.post("/", async (req: Request, res: Response) => {
         User,
         req.session.user_id
     );
-
-    const receivingUser = await connection.manager.findOneOrFail(User, userId);
 
     const business = await connection.manager.findOneOrFail(
         Business,
