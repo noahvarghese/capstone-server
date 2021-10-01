@@ -11,6 +11,7 @@ export interface EventAttributes {
     status: "PASS" | "FAIL";
     user_id: number | null;
     business_id: number | null;
+    reason: string | null;
 }
 
 export const EmptyEventAttributes = (): EventAttributes => ({
@@ -18,6 +19,7 @@ export const EmptyEventAttributes = (): EventAttributes => ({
     status: "FAIL",
     user_id: null,
     business_id: null,
+    reason: "",
 });
 
 @Entity()
@@ -26,6 +28,8 @@ export default class Event implements EventAttributes {
     public id!: number;
     @Column()
     public name!: string;
+    @Column({ nullable: true })
+    public reason!: string;
     @Column()
     public status!: "PASS" | "FAIL";
     @Column({ nullable: true })

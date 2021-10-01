@@ -8,7 +8,11 @@ import Role from "../../models/role";
 import User from "../../models/user/user";
 import UserRole from "../../models/user/user_role";
 import Model from "../../util/model";
-import { phoneValidator, postalCodeValidator } from "../../util/validators";
+import {
+    emptyChecker,
+    phoneValidator,
+    postalCodeValidator,
+} from "../../util/validators";
 
 const router = Router();
 
@@ -26,7 +30,31 @@ export interface RegisterBusinessProps {
     confirm_password: string;
 }
 
+export const emptyRegisterBusinessProps = (): RegisterBusinessProps => ({
+    name: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    postal_code: "",
+    province: "",
+    password: "",
+    confirm_password: "",
+});
+
 router.post("/", async (req: Request, res: Response) => {
+    // validate no keys are missing
+    const result = emptyChecker<RegisterBusinessProps>(
+        Object.assign(emptyRegisterBusinessProps(), req.body)
+    );
+
+    if (result) {
+        res.status(400).json(result);
+        return;
+    }
+
     // all possible keys that we could be expecting
     const {
         name,
@@ -41,20 +69,6 @@ router.post("/", async (req: Request, res: Response) => {
         password,
         confirm_password,
     } = req.body as RegisterBusinessProps;
-
-    // validate no keys are missing
-    for (const [key, value] of Object.entries(req.body)) {
-        if (!value || (value as string).trim() === "") {
-            // returns bad field and explanation
-            res.status(400).json({
-                message: `${(key[0].toUpperCase() + key.substring(1))
-                    .split("_")
-                    .join(" ")} cannot be empty`,
-                field: key,
-            });
-            return;
-        }
-    }
 
     // Validate that data is in the expected format
     if (validator.isEmail(email) === false) {
@@ -138,7 +152,12 @@ router.post("/", async (req: Request, res: Response) => {
             await Model.create<User>(
                 connection,
                 User,
-                new User({ first_name, last_name, email, phone })
+                await new User({
+                    first_name,
+                    last_name,
+                    email,
+                    phone,
+                }).hashPassword(password)
             )
         ).id;
     } catch (e) {
@@ -234,7 +253,7 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    req.session.business_id = businessId;
+    req.session.business_ids = [businessId];
     req.session.user_id = userId;
     res.sendStatus(201);
 });

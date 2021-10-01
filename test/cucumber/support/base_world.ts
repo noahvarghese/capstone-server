@@ -21,6 +21,10 @@ export default class CucumberBaseWorld extends World {
         this._connection = connection;
     }
 
+    clearConnection(): void {
+        delete this._connection;
+    }
+
     getConnection(): Connection {
         if (!this._connection) {
             throw new Error("connection is not defined");

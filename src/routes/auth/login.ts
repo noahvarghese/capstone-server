@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import User from "@models/user/user";
+import Membership from "@models/membership";
 
 const router = Router();
 
@@ -29,8 +30,14 @@ router.post("/", async (req: Request, res: Response) => {
     if (user.password) {
         const success = await user.comparePassword(password);
         if (success) {
+            const memberships = await connection.manager.find(Membership, {
+                where: { user_id: user.id },
+            });
+
             req.session.user_id = user.id;
-            // req.session.business_id = user.business_id;
+            req.session.business_ids = memberships.map((m) => m.business_id);
+            req.session.current_business_id = req.session.business_ids[0];
+
             res.sendStatus(200);
             return;
         }

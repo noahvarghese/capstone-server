@@ -49,11 +49,14 @@ CREATE TABLE user (
 CREATE TABLE membership_request (
     user_id INT NOT NULL,
     business_id INT NOT NULL,
-    token VARCHAR(32) DEFAULT NULL,
+    token VARCHAR(32) NOT NULL,
     token_expiry DATETIME NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    updated_by_user_id INT NOT NULL,
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    UNIQUE(token),
     FOREIGN KEY (business_id) REFERENCES business(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
     PRIMARY KEY (business_id, user_id)
@@ -65,6 +68,8 @@ CREATE TABLE membership (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    updated_by_user_id INT NULL,
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     FOREIGN KEY (business_id) REFERENCES business(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
     PRIMARY KEY (business_id, user_id)
@@ -307,6 +312,7 @@ CREATE TABLE policy_read (
 CREATE TABLE event (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(50),
+    reason MEDIUMTEXT DEFAULT NULL,
     status ENUM("PASS", "FAIL"),
     user_id INT DEFAULT NULL,
     business_id INT DEFAULT NULL,

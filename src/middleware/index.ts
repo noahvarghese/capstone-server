@@ -39,12 +39,37 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         }
     }
 
-    if (requestedPublicResource === false && !req.session.user_id) {
-        res.redirect(client("login"));
-        return;
-    }
+    if (
+        requestedPublicResource ||
+        (req.session.user_id &&
+            req.session.current_business_id &&
+            req.session.business_ids)
+    ) {
+        next();
+    } else {
+        req.session.destroy((err) => {
+            if (err) {
+                Logs.Error(err.message);
+                res.sendStatus(400);
+                return;
+            }
 
-    next();
+            try {
+                const { SESSION_ID } = process.env;
+
+                if (!SESSION_ID) {
+                    res.sendStatus(500);
+                    throw new Error("Session ID not set");
+                }
+
+                res.clearCookie(SESSION_ID);
+                res.redirect(client("login"));
+            } catch (e) {
+                Logs.Error(e.message);
+                res.redirect(client("login"));
+            }
+        });
+    }
 };
 
 const retrieveConnection = (

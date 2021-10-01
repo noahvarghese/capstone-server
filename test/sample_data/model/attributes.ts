@@ -85,6 +85,7 @@ export const membershipAttributes = (): MembershipAttributes =>
         {
             user_id: -1,
             business_id: -1,
+            updated_by_user_id: null,
         },
         EmptyMembershipAttributes
     );
@@ -95,6 +96,7 @@ export const membershipRequestAttributes = (): MembershipRequestAttributes =>
             business_id: -1,
             token: "",
             user_id: -1,
+            updated_by_user_id: -1,
         },
         EmptyMembershipRequestAttributes
     );
@@ -301,6 +303,7 @@ export const eventAttributes = (): EventAttributes =>
     AttributeFactory(
         {
             name: "Event",
+            reason: "YOLO",
             status: "FAIL",
             user_id: null,
             business_id: null,

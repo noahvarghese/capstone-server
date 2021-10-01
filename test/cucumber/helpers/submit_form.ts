@@ -7,10 +7,11 @@ export async function submitForm<T extends Record<string, unknown>>(
     this: BaseWorld,
     url: string,
     retrieveCookie: boolean,
-    withCookie: boolean
+    withCookie: boolean,
+    errorOnFail = false
 ): Promise<void> {
     let cookie = "";
-    let status: number;
+    let status: number | string = "";
     let message = "";
 
     const cookies = this.getCustomProp<string>("cookies");
@@ -18,7 +19,7 @@ export async function submitForm<T extends Record<string, unknown>>(
 
     try {
         const res = await axios.post(server(url), body, {
-            headers: withCookie ? { Cookie: cookies } : {},
+            headers: withCookie && cookies ? { Cookie: cookies } : {},
             withCredentials: true,
         });
 
@@ -27,12 +28,19 @@ export async function submitForm<T extends Record<string, unknown>>(
         status = res.status;
     } catch (e) {
         const { response } = e;
-        status = response.status;
-        message = response.data.message;
+        if (response) {
+            status = response.status;
+            message = response.data.message;
+        }
+
+        if (errorOnFail) {
+            e.message = `${message}\n${e.message}`;
+            throw e;
+        }
     }
 
     if (retrieveCookie) this.setCustomProp<string | null>("cookies", cookie);
 
-    this.setCustomProp<number>("status", status);
+    this.setCustomProp<number>("status", status as number);
     this.setCustomProp<string>("message", message);
 }

@@ -1,9 +1,10 @@
 import { After, Before } from "@cucumber/cucumber";
-import { Connection } from "typeorm";
+// import { Connection } from "typeorm";
 import DBConnection from "../../util/db_connection";
 import BaseWorld from "../support/base_world";
 import { teardown } from "../helpers/teardown";
 import { businessAttributes } from "@test/sample_data/model/attributes";
+import { setup } from "../helpers/setup";
 
 Before(async function (this: BaseWorld, { pickle }) {
     const { tags } = pickle;
@@ -15,15 +16,15 @@ Before(async function (this: BaseWorld, { pickle }) {
 
         this.setTags(tagNames ?? new Array<string>());
     }
+
     this.setCustomProp<string[]>("businessNames", [businessAttributes().name]);
-    this.setCustomProp<Connection>(
-        "connection",
-        await DBConnection.GetConnection()
-    );
+    this.setConnection(await DBConnection.GetConnection());
+
+    await setup.call(this);
 });
 
 After(async function (this: BaseWorld) {
     await teardown.call(this);
-    this.setCustomProp<undefined>("connection", undefined);
+    this.clearConnection();
     this.setTags([]);
 });

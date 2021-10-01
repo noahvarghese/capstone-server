@@ -4,11 +4,11 @@ import User from "@models/user/user";
 import Business from "../../../src/models/business";
 import attributes from "../../sample_data/model/attributes";
 import types from "../../sample_data/model/types";
-import dependencies from "../../sample_data/model/dependencies";
+import dependencies from "../../sample_data/api/teardown_dependencies";
 import Membership from "../../../src/models/membership";
 import MembershipRequest from "../../../src/models/membership_request";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { snakeToCamel } from "@util/string";
+import { getKey } from "./keytags";
 
 const unsetKey = async <T extends X & Record<string, unknown>, X>(
     ids: {
@@ -66,39 +66,14 @@ const unsetKey = async <T extends X & Record<string, unknown>, X>(
     }
 };
 
-/**
- * Compares dependecies keys to tags
- * Doesn't stop at first match, if a second match is found an error is thrown
- * That way I get notified if i accidentally set multiple tags
- * @param tags
- */
-const getTeardownKey = (tags: string[]): string => {
-    let topLevelModelKey = "";
-
-    for (const tag of tags) {
-        const cleanup = "@cleanup_";
-        if (tag.includes(cleanup)) {
-            const dependencyName = snakeToCamel(
-                tag.substring(cleanup.length, tag.length)
-            );
-
-            if (Object.keys(dependencies).includes(dependencyName)) {
-                if (topLevelModelKey !== "") {
-                    throw new Error(
-                        `Multiple model keys found in Scenario tags: ${topLevelModelKey}, ${tag}`
-                    );
-                }
-                topLevelModelKey = dependencyName;
-            }
-        }
-    }
-
-    return topLevelModelKey;
-};
-
 export async function teardown(this: CucumberBaseWorld): Promise<void> {
     const tags = this.getTags();
-    const topLevelModelKey = getTeardownKey(tags);
+    const topLevelModelKey = getKey<string, typeof dependencies>(
+        tags,
+        "@cleanup_",
+        dependencies,
+        true
+    );
 
     // don't run teardown if no model key found
     // as perhaps there are tests that will not require cleanup
@@ -107,7 +82,7 @@ export async function teardown(this: CucumberBaseWorld): Promise<void> {
         return;
     }
 
-    const connection = this.getCustomProp<Connection>("connection");
+    const connection = this.getConnection();
     const businessNames = this.getCustomProp<string[]>("businessNames");
 
     for (const name of businessNames) {
@@ -177,28 +152,6 @@ export async function teardown(this: CucumberBaseWorld): Promise<void> {
             const attribute =
                 attributes[dependency as keyof typeof attributes]();
 
-            // delete any models by business or user ids
-            if (Object.keys(attribute).includes("business_id")) {
-                await connection.manager.remove(
-                    await connection.getRepository(type).find({ business_id })
-                );
-            } else if (Object.keys(attribute).includes("updated_by_user_id")) {
-                for (const id of member_ids) {
-                    await connection.manager.remove(
-                        await connection
-                            .getRepository(type)
-                            .find({ updated_by_user_id: id })
-                    );
-                }
-            } else if (Object.keys(attribute).includes("user_id")) {
-                for (const id of member_ids) {
-                    await connection.manager.remove(
-                        await connection
-                            .getRepository(type)
-                            .find({ user_id: id })
-                    );
-                }
-            }
             // since user and business do not have the above keys
             // delete by their ids
             if (type === Business) {
@@ -212,6 +165,34 @@ export async function teardown(this: CucumberBaseWorld): Promise<void> {
                         User,
                         await connection.manager.findOneOrFail(User, id)
                     );
+                }
+            }
+            // delete any models by business or user ids
+            else {
+                if (Object.keys(attribute).includes("business_id")) {
+                    await connection.manager.remove(
+                        await connection
+                            .getRepository(type)
+                            .find({ business_id })
+                    );
+                }
+                if (Object.keys(attribute).includes("updated_by_user_id")) {
+                    for (const id of member_ids) {
+                        await connection.manager.remove(
+                            await connection
+                                .getRepository(type)
+                                .find({ updated_by_user_id: id })
+                        );
+                    }
+                }
+                if (Object.keys(attribute).includes("user_id")) {
+                    for (const id of member_ids) {
+                        await connection.manager.remove(
+                            await connection
+                                .getRepository(type)
+                                .find({ user_id: id })
+                        );
+                    }
                 }
             }
         }

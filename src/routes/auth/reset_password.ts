@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import User from "../../models/user/user";
 import Logs from "../../util/logs/logs";
-import { resetPasswordEmail } from "../../util/mail";
+// import { resetPasswordEmail } from "../../util/mail";
 
 const router = Router();
 
@@ -27,7 +27,7 @@ router.post("/:token", async (request: Request, response: Response) => {
 
         if (await user.resetPassword(password, token)) {
             await connection.manager.save(User, user);
-            await resetPasswordEmail(user);
+            // await resetPasswordEmail(user);
             response.sendStatus(200);
         } else {
             response.status(403).json({ message: "Password not long enough" });

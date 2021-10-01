@@ -19,3 +19,19 @@ export const phoneValidator = (val: string): boolean => {
         return false;
     }
 };
+
+export const emptyChecker = <T>(
+    obj: T
+): undefined | { message: string; field: string } => {
+    for (const [key, value] of Object.entries(obj)) {
+        if (!value || (value as string).trim() === "") {
+            return {
+                message: `${(key[0].toUpperCase() + key.substring(1))
+                    .split("_")
+                    .join(" ")} cannot be empty`,
+                field: key,
+            };
+        }
+    }
+    return undefined;
+};

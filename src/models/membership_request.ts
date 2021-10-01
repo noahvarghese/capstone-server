@@ -8,6 +8,7 @@ export interface MembershipRequestAttributes {
     business_id: number | null;
     token: string;
     token_expiry: Date;
+    updated_by_user_id: number;
 }
 
 export const EmptyMembershipRequestAttributes =
@@ -17,6 +18,7 @@ export const EmptyMembershipRequestAttributes =
         token: "",
         // sets date to 24 hours from now
         token_expiry: new Date(new Date().setHours(new Date().getHours() + 24)),
+        updated_by_user_id: -1,
     });
 
 @Entity()
@@ -32,6 +34,8 @@ export default class MembershipRequest
     public token!: string;
     @Column()
     public token_expiry!: Date;
+    @Column()
+    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<MembershipRequestAttributes>) {
         super();
