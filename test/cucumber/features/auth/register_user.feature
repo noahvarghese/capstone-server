@@ -14,8 +14,8 @@ Then the user should get an invite
 
 Scenario: User accepting invite joins business
 Given the user has received an invite
-When they accept the invite
-Then they are a member of the business
+When the user accepts the invite
+Then the user is a member of the business
 
 Scenario: User setting password redirects to login
 Given the user has accepted the invite
