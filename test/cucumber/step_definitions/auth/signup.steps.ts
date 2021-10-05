@@ -54,9 +54,15 @@ async function sendInvite(this: BaseWorld, userType: "new" | "existing") {
     await submitForm.call(this, urls.inviteUser, true, true, true);
 }
 
+async function acceptInvite(this: BaseWorld) {}
+
 Given("the user has received an invite", sendInvite);
 
+Given("the user has accepted the invite", acceptInvite);
+
 When(/an? (new|existing) user is added to the business/, sendInvite);
+
+When("the user accepts the invite", acceptInvite);
 
 Then("the user should get an invite", async function (this: BaseWorld) {
     const connection = this.getConnection();
