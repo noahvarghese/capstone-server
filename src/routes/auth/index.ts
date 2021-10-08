@@ -14,10 +14,14 @@ router.use("/resetPassword", resetRoute);
 router.use("/requestResetPassword", requestResetRoute);
 
 router.post("/", (req: Request, res: Response) => {
-    if (req.session.user_id && req.session.business_ids) {
+    if (
+        req.session.user_id &&
+        req.session.business_ids &&
+        req.session.current_business_id
+    ) {
         res.sendStatus(200);
     } else {
-        res.sendStatus(400);
+        res.status(400).json({ message: "Not authenticated" });
     }
 });
 

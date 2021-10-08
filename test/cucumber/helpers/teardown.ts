@@ -161,10 +161,10 @@ export async function teardown(this: CucumberBaseWorld): Promise<void> {
                 );
             } else if (type === User) {
                 for (const id of member_ids) {
-                    await connection.manager.remove<User>(
-                        User,
-                        await connection.manager.findOneOrFail(User, id)
-                    );
+                    const user = await connection.manager.findOne(User, id);
+                    if (user) {
+                        await connection.manager.remove<User>(User, user);
+                    }
                 }
             }
             // delete any models by business or user ids

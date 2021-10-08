@@ -16,6 +16,35 @@ Documentation - mockups, ERD, class diagrams are currently in my private DropBox
 
 They may be moved into their own repo at the end of this to showcase all parts of this project.
 
+## Tests
+
+In the test/sample_data directory is the configuration for setup and teardown of each test case
+Since we have tests for the models and the api, I have seperated the dependencies so as to provide common actions for setup teardown and running of each test within the context of the test areas.
+
+### Models
+
+Here the model types, test attributes for each type, and any dependencies are stored in individual objects.
+All of these share the same keys so we can collect all the metadata for a specific test.
+
+### Api
+
+Here we have a few more bits of information. We have test attributes, dependencies for creation, dependencies for teardown, and urls.
+The dependencies to setup for the specific test are done as api calls instead of operating directly on the database as in the models. Also the setup needs to follow how a genuine user would use the site.
+The dependencies to teardown are done by modifying the database directly and skipping the api as not all teardown will be implemented in api calls, and it is faster.
+The urls are either a string or a function that returns a string if url parameters are required
+
+The template for the tests is necessary data is stored in an attribute "body" saved in the BaseWorld state, then an action 'submitForm' is performed that takes the data stored and submits it to the given url.
+
+#### Stages
+
+1. Setup (Perform any user actions needed before the test can execute)
+2. Run:
+    - Background (Any given steps that are common to all tests in a feature)
+    - Given (May either: alter a model or two, perform an api call, or save data to the global store)
+    - When (Perform an action, in this case an api call, may save results to check in then step)
+    - Then (Compares results saved to expected)
+3. Teardown (Database cleanup)
+
 ## Areas of Focus
 
 -   Node / Express
@@ -101,6 +130,7 @@ Triggers are added to the database to enforce business rules that do not affect 
 | SESSION_ID            | string                     | id to use for session cookie                                                                                                     |
 | SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
+| SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
 
 ## API Documentation
 
@@ -139,20 +169,12 @@ Triggers are added to the database to enforce business rules that do not affect 
                 email: string;
                 phone: string;
                 address: string;
-                birthday: Date | string;
                 city: string;
                 postal_code: string;
                 province: string;
-                business_code: string;
                 password: string;
                 confirm_password: string;
-                business_name: string;
-                business_address: string;
-                business_province: string;
-                business_city: string
-                business_postal_code: string;
-                business_phone: string;
-                business_email: string;
+                name: string;
             }</pre></td>
             <td>false</td>
             <td>201</td>
@@ -193,6 +215,28 @@ Triggers are added to the database to enforce business rules that do not affect 
             <td>401, 403, 500</td>
             <td><pre>{message: string;} | void</pre></td>
             <td>this is the link sent via email to reset the password</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/user/invite</td>
+            <td><pre>{first_name: string; last_name: string; email: string; phone: string}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>void</pre></td>
+            <td>400,500</td>
+            <td><pre>{message: string;}</pre></td>
+            <td>This is how a business adds a new user, will add user to database if user does not exist, and send invite to user</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/user/invite/:token</td>
+            <td><pre></pre></td>
+            <td>false</td>
+            <td>200</td>
+            <td><pre>void</pre></td>
+            <td>400,500</td>
+            <td><pre>{message: string;}</pre></td>
+            <td>Not implmented</td>
         </tr>
         <tr>
             <td></td>

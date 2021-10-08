@@ -1,6 +1,5 @@
 import User from "../models/user/user";
 import Event from "../models/event";
-// import Logs from "./logs/logs";
 import { client } from "./permalink";
 import { getConnection } from "typeorm";
 import Business from "@models/business";
@@ -42,7 +41,7 @@ export const sendUserInviteEmail = async (
     sendingUser: User,
     receivingUser: User
 ): Promise<boolean> => {
-    const url = client("user/invite/" + membershipRequest.token);
+    const url = client(`user/invite/${membershipRequest.token}`);
 
     return await sendMail(
         {
@@ -63,6 +62,34 @@ export const sendUserInviteEmail = async (
     );
 };
 
+export const requestResetPasswordEmail = async (
+    user: User
+): Promise<boolean> => {
+    const url = client(`resetPassword/${user.token}`);
+    return await sendMail(
+        {
+            template: "request_reset_password",
+            message: { to: user.email },
+            locals: { url, first_name: user.first_name },
+        },
+        new Event({
+            name: "Request Reset Password",
+            user_id: user.id,
+        })
+    );
+};
+
+export const resetPasswordEmail = async (user: User): Promise<boolean> => {
+    return await sendMail(
+        {
+            template: "reset_password",
+            message: { to: user.email },
+            locals: { first_name: user.first_name },
+        },
+        new Event({ name: "Password Reset", user_id: user.id })
+    );
+};
+
 export const sendMail = async (
     options: Email.EmailOptions,
     event: Event
@@ -79,26 +106,3 @@ export const sendMail = async (
     await Model.create<Event>(getConnection(), Event, event);
     return event.status === "PASS";
 };
-
-export const requestResetPasswordEmail = async (): Promise<boolean> => {
-    return Promise.resolve(true);
-    // const resetPasswordUrl = client("auth/resetPassword/" + user.token);
-
-    // return await sendMail(user, {
-    //     subject: "Reset Password Requested",
-    //     heading: `Reset password requested for user ${user.first_name} ${user.last_name}: ${user.email}`,
-    //     body: `To reset your email please go to <a href="${resetPasswordUrl}">${resetPasswordUrl}</a></div><div>This link will expire at ${user.token_expiry}`,
-    // });
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// export const resetPasswordEmail = async (user?: User): Promise<boolean> => {
-// return Promise.resolve(true);
-// return await sendMail(user, {
-//     subject: "Reset Password Requested",
-//     heading: `Reset password successful for ${
-//         user.first_name + " " + user.last_name
-//     } : ${user.email}`,
-//     body: `Your password has been reset, please contact support if this was not you.`,
-// });
-// };

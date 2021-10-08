@@ -13,13 +13,16 @@ const clearCookie = (req: Request, res: Response, next: NextFunction) => {
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     const publicRoutes: (string | RegExp)[] = [
-        "/auth",
         "/auth/login",
         "/auth/signup",
-        /^\/auth\/resetPassword\//,
+        /^\/auth\/resetPassword\/\w+$/,
         "/auth/requestResetPassword",
+        /^\/user\/invite\/\w/,
     ];
+    const openRoutes: (string | RegExp)[] = [/^\/auth\/?$/];
+
     let requestedPublicResource = false;
+    let requestedOpenResource = false;
 
     if (req.originalUrl === "/") {
         next();
@@ -30,6 +33,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         if (route instanceof RegExp) {
             if (route.test(req.originalUrl)) {
                 requestedPublicResource = true;
+                break;
             }
         } else {
             if (req.originalUrl === route) {
@@ -39,18 +43,38 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         }
     }
 
+    for (const route of openRoutes) {
+        if (route instanceof RegExp) {
+            if (route.test(req.originalUrl)) {
+                requestedOpenResource = true;
+                break;
+            }
+        } else {
+            if (req.originalUrl === route) {
+                requestedOpenResource = true;
+                break;
+            }
+        }
+    }
+
+    const loggedIn =
+        req.session.user_id &&
+        req.session.current_business_id &&
+        req.session.business_ids;
+
     if (
-        requestedPublicResource ||
-        (req.session.user_id &&
-            req.session.current_business_id &&
-            req.session.business_ids)
+        (loggedIn ? !requestedPublicResource : requestedPublicResource) ||
+        requestedOpenResource
     ) {
         next();
+        return;
     } else {
         req.session.destroy((err) => {
             if (err) {
                 Logs.Error(err.message);
-                res.sendStatus(400);
+                res.status(400).json({
+                    message: "Error occurred destroying session",
+                });
                 return;
             }
 
@@ -58,7 +82,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
                 const { SESSION_ID } = process.env;
 
                 if (!SESSION_ID) {
-                    res.sendStatus(500);
+                    res.status(500).json({ message: "Session ID not set" });
                     throw new Error("Session ID not set");
                 }
 

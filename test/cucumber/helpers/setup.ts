@@ -24,15 +24,22 @@ export async function setup(this: BaseWorld): Promise<void> {
         false
     );
 
+    const completedDependencies: ApiRoute[] = [];
+
     for (const key of keys) {
         const deps = dependencies[key];
 
         for (const dependency of deps) {
+            // prevent setting up multiple items
+            if (completedDependencies.includes(dependency)) continue;
+            else completedDependencies.push(dependency);
+
             loadBody.call(this, dependency as ApiRoute);
             try {
+                const url = urls[dependency as keyof typeof urls];
                 await submitForm.call(
                     this,
-                    urls[dependency as keyof typeof urls],
+                    typeof url === "function" ? url("") : url,
                     true,
                     true,
                     true
