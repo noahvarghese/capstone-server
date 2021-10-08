@@ -41,6 +41,7 @@ jobs:
       SESSION_ID: ${{ secrets.SESSION_ID }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       TARGET_ENV: ${{ secrets.TARGET_ENV }}
+      SECONDARY_TEST_EMAIL: ${{ secrets.SECONDARY_TEST_EMAIL }}
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
