@@ -1,14 +1,23 @@
 import { Request, Response, Router } from "express";
 import validator from "validator";
 import Business from "../../models/business";
+import Department from "../../models/department";
+import Membership from "../../models/membership";
+import Permission from "../../models/permission";
+import Role from "../../models/role";
 import User from "../../models/user/user";
-import Logs from "../../util/logs/logs";
-import { sendMail } from "../../util/mail";
-import { phoneValidator, postalCodeValidator } from "../../util/validators";
+import UserRole from "../../models/user/user_role";
+import Model from "../../util/model";
+import {
+    emptyChecker,
+    phoneValidator,
+    postalCodeValidator,
+} from "../../util/validators";
 
 const router = Router();
 
-export interface RegisterProps {
+export interface RegisterBusinessProps {
+    name: string;
     first_name: string;
     last_name: string;
     email: string;
@@ -17,80 +26,53 @@ export interface RegisterProps {
     city: string;
     postal_code: string;
     province: string;
-    birthday: Date | string;
-    business_code: string;
     password: string;
     confirm_password: string;
-    business_name: string;
-    business_address: string;
-    business_province: string;
-    business_city: string;
-    business_postal_code: string;
-    business_phone: string;
-    business_email: string;
 }
 
-router.post("/", async (req: Request, res: Response) => {
-    // return;
+export const emptyRegisterBusinessProps = (): RegisterBusinessProps => ({
+    name: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    postal_code: "",
+    province: "",
+    password: "",
+    confirm_password: "",
+});
 
+router.post("/", async (req: Request, res: Response) => {
+    // validate no keys are missing
+    const result = emptyChecker<RegisterBusinessProps>(
+        Object.assign(emptyRegisterBusinessProps(), req.body)
+    );
+
+    if (result) {
+        res.status(400).json(result);
+        return;
+    }
+
+    // all possible keys that we could be expecting
     const {
+        name,
         first_name,
         last_name,
         email,
         phone,
         address,
-        birthday,
         city,
         postal_code,
         province,
-        business_code,
         password,
         confirm_password,
-        business_name,
-        business_address,
-        business_province,
-        business_city,
-        business_postal_code,
-        business_phone,
-        business_email,
-    } = req.body as RegisterProps;
+    } = req.body as RegisterBusinessProps;
 
-    // checks for empty entries
-    // this means that they were explicitly set as empty
-
-    const skipBusinessValues = business_code && business_code.trim();
-
-    for (const [key, value] of Object.entries(req.body)) {
-        if (
-            !key.includes("business") ||
-            (!skipBusinessValues && key !== "business_code")
-        ) {
-            if (!value || (value as string).trim() === "") {
-                res.status(400).json({
-                    message: `${(key[0].toUpperCase() + key.substring(1))
-                        .split("_")
-                        .join(" ")} cannot be empty`,
-                    field: key,
-                });
-                return;
-            }
-        }
-    }
-
+    // Validate that data is in the expected format
     if (validator.isEmail(email) === false) {
         res.status(400).json({ message: "Invalid email.", field: "email" });
-        return;
-    }
-
-    if (
-        !(birthday instanceof Date) &&
-        validator.isDate(birthday) === false &&
-        isNaN(new Date(birthday).getTime())
-    ) {
-        res.status(400).json({
-            message: "Invalid birthday",
-            field: "birthday",
-        });
         return;
     }
 
@@ -101,7 +83,6 @@ router.post("/", async (req: Request, res: Response) => {
         });
         return;
     }
-
     if (!postalCodeValidator(postal_code)) {
         res.status(400).json({
             message: "Invalid postal code",
@@ -109,7 +90,6 @@ router.post("/", async (req: Request, res: Response) => {
         });
         return;
     }
-
     if (password.length < 8) {
         res.status(400).json({
             message: "Password must be at least 8 characters",
@@ -117,7 +97,6 @@ router.post("/", async (req: Request, res: Response) => {
         });
         return;
     }
-
     if (password !== confirm_password) {
         res.status(400).json({
             message: "Passwords do not match",
@@ -127,132 +106,156 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     const { SqlConnection: connection } = req;
-    let business;
-    let newBusiness;
 
-    if (business_code) {
-        try {
-            business = await connection.manager.findOneOrFail(Business, {
-                where: { code: business_code },
-            });
-            newBusiness = false;
-        } catch (e) {
-            res.status(400).json({
-                message: "Invalid business code",
-                field: "business_code",
-            });
-            return;
-        }
-    } else {
-        if (validator.isEmail(business_email) === false) {
-            res.status(400).json({
-                message: "Invalid business email.",
-                field: "business_email",
-            });
-            return;
-        }
-
-        if (!phoneValidator(phone)) {
-            res.status(400).json({
-                message: "Invalid business phone number",
-                field: "business_phone",
-            });
-            return;
-        }
-
-        if (!postalCodeValidator(business_postal_code)) {
-            res.status(400).json({
-                message: "Invalid business postal code",
-                field: "business_postal_code",
-            });
-            return;
-        }
-        // create new business
-        business = connection.manager.create(Business, {
-            name: business_name,
-            country: "CA",
-            email: business_email,
-            postal_code: business_postal_code,
-            phone: business_phone,
-            province: business_province,
-            address: business_address,
-            city: business_city,
-        });
-
-        business.createCode();
-
-        try {
-            business = await connection.manager.save(business);
-        } catch (e) {
-            Logs.Error(e.message);
-            res.status(500).json({ message: "Failed to create business" });
-            return;
-        }
-
-        newBusiness = true;
-    }
-
-    const user = connection.manager.create(User, {
-        first_name,
-        last_name,
-        address,
-        city,
-        postal_code,
-        province,
-        country: "CA",
-        birthday,
-        business_id: business.id,
-        email,
-        password,
-        phone,
+    // check for existing business
+    const foundBusiness = await connection.manager.find(Business, {
+        where: { name },
     });
 
+    if (foundBusiness.length !== 0) {
+        res.status(400).json({
+            message: "Business already exists",
+        });
+        return;
+    }
+
+    const foundUser = await connection.manager.find(User, { where: { email } });
+
+    if (foundUser.length !== 0) {
+        res.status(400).json({
+            message: "User already exists, please use a different email",
+        });
+    }
+
+    // Create necessary records and associations
+    let businessId: number;
+    let userId: number;
+    let departmentId: number;
+    let permissionId: number;
+    let roleId: number;
+
     try {
-        await connection.manager.save(await user.hashPassword(user.password));
+        businessId = (
+            await Model.create<Business>(
+                connection,
+                Business,
+                new Business({ name, address, city, postal_code, province })
+            )
+        ).id;
     } catch (e) {
-        Logs.Error(e.message);
-        res.status(500).json({ message: "Failed to create user" });
+        res.status(500).json({ message: e.message });
         return;
     }
 
     try {
-        await sendMail(user, {
-            subject: "Welcome Onboard",
-            html: `<div><h1>Welcome Onboard</h1><p>thank you ${user.first_name} ${user.last_name} for registering. We have notified ${business.name} that you have signed up.</p></div>`,
-        });
+        userId = (
+            await Model.create<User>(
+                connection,
+                User,
+                await new User({
+                    first_name,
+                    last_name,
+                    email,
+                    phone,
+                }).hashPassword(password)
+            )
+        ).id;
     } catch (e) {
-        Logs.Error(e.message);
-        // Don't fail as the user and business are created and the welcome email is a nice to have
-        // this can be debugged by reviewing the event table in the database
-    }
-
-    let html: string;
-    let subject: string;
-
-    if (newBusiness) {
-        subject = "Welcome Onboard";
-        html = `<div><h1>Welcome Onboard</h1><p>Thanks for joining us on this adventure ${business.name}.</p></div>`;
-    } else {
-        subject = "New Employee";
-        html = `<div><h1>New Employee</h1><p>A new employee ${user.first_name} ${user.last_name} : ${user.email} has joined your company.</p></div>`;
+        res.status(500).json({ message: e.message });
+        return;
     }
 
     try {
-        await sendMail(business, {
-            subject,
-            to: business.email,
-            html,
-        });
+        await Model.create<Membership>(
+            connection,
+            Membership,
+            new Membership({ user_id: userId, business_id: businessId })
+        );
     } catch (e) {
-        Logs.Error(e.message);
-        // Don't fail as the user and business are created and the welcome email is a nice to have
-        // this can be debugged by reviewing the event table in the database
+        res.status(500).json({ message: e.message });
+        return;
     }
 
-    req.session.user_id = user.id;
-    req.session.business_id = user.business_id;
+    try {
+        departmentId = (
+            await Model.create<Department>(
+                connection,
+                Department,
+                new Department({
+                    business_id: businessId,
+                    updated_by_user_id: userId,
+                    prevent_delete: true,
+                    prevent_edit: true,
+                    name: "Admin",
+                })
+            )
+        ).id;
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+
+    try {
+        permissionId = (
+            await Model.create<Permission>(
+                connection,
+                Permission,
+                new Permission({
+                    add_users: true,
+                    assign_resources_to_department: true,
+                    assign_resources_to_role: true,
+                    assign_users_to_department: true,
+                    assign_users_to_role: true,
+                    create_resources: true,
+                    delete_users: true,
+                    edit_users: true,
+                    updated_by_user_id: userId,
+                })
+            )
+        ).id;
+    } catch ({ message }) {
+        res.status(500).json({ message });
+        return;
+    }
+
+    try {
+        roleId = (
+            await Model.create<Role>(
+                connection,
+                Role,
+                new Role({
+                    updated_by_user_id: userId,
+                    prevent_delete: true,
+                    name: "General",
+                    department_id: departmentId,
+                    permission_id: permissionId,
+                    prevent_edit: true,
+                })
+            )
+        ).id;
+    } catch ({ message }) {
+        res.status(500).json({ message });
+        return;
+    }
+
+    try {
+        await Model.create<UserRole>(
+            connection,
+            UserRole,
+            new UserRole({
+                user_id: userId,
+                updated_by_user_id: userId,
+                role_id: roleId,
+            })
+        );
+    } catch ({ message }) {
+        res.status(500).json({ message });
+        return;
+    }
+
+    req.session.business_ids = [businessId];
+    req.session.user_id = userId;
     res.sendStatus(201);
-    return;
 });
 
 export default router;

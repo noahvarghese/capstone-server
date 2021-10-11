@@ -13,13 +13,16 @@ const clearCookie = (req: Request, res: Response, next: NextFunction) => {
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     const publicRoutes: (string | RegExp)[] = [
-        "/auth",
         "/auth/login",
         "/auth/signup",
-        /^\/auth\/resetPassword\//,
+        /^\/auth\/resetPassword\/\w+$/,
         "/auth/requestResetPassword",
+        /^\/user\/invite\/\w/,
     ];
+    const openRoutes: (string | RegExp)[] = [/^\/auth\/?$/];
+
     let requestedPublicResource = false;
+    let requestedOpenResource = false;
 
     if (req.originalUrl === "/") {
         next();
@@ -30,6 +33,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         if (route instanceof RegExp) {
             if (route.test(req.originalUrl)) {
                 requestedPublicResource = true;
+                break;
             }
         } else {
             if (req.originalUrl === route) {
@@ -39,12 +43,57 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         }
     }
 
-    if (requestedPublicResource === false && !req.session.user_id) {
-        res.redirect(client("login"));
-        return;
+    for (const route of openRoutes) {
+        if (route instanceof RegExp) {
+            if (route.test(req.originalUrl)) {
+                requestedOpenResource = true;
+                break;
+            }
+        } else {
+            if (req.originalUrl === route) {
+                requestedOpenResource = true;
+                break;
+            }
+        }
     }
 
-    next();
+    const loggedIn =
+        req.session.user_id &&
+        req.session.current_business_id &&
+        req.session.business_ids;
+
+    if (
+        (loggedIn ? !requestedPublicResource : requestedPublicResource) ||
+        requestedOpenResource
+    ) {
+        next();
+        return;
+    } else {
+        req.session.destroy((err) => {
+            if (err) {
+                Logs.Error(err.message);
+                res.status(400).json({
+                    message: "Error occurred destroying session",
+                });
+                return;
+            }
+
+            try {
+                const { SESSION_ID } = process.env;
+
+                if (!SESSION_ID) {
+                    res.status(500).json({ message: "Session ID not set" });
+                    throw new Error("Session ID not set");
+                }
+
+                res.clearCookie(SESSION_ID);
+                res.redirect(client("login"));
+            } catch (e) {
+                Logs.Error(e.message);
+                res.redirect(client("login"));
+            }
+        });
+    }
 };
 
 const retrieveConnection = (

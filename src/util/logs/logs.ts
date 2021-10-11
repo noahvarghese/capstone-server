@@ -15,17 +15,14 @@ enum LogLevels {
 
 interface LogData {
     prefix: string;
-    consoleFunction: (
-        prefix: string,
-        message: string | unknown,
-        ...optionalParams: unknown[]
-    ) => void;
+    consoleFunction: (prefix: string, ...args: unknown[]) => void;
 }
 
 const emptyLogData = (): LogData => ({
     prefix: "",
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    consoleFunction: (): void => {},
+    consoleFunction: function (): void {
+        return;
+    },
 });
 
 const createLogData = <T extends Partial<LogData>>(
@@ -75,6 +72,8 @@ export default class Logs {
     public static configureLogs = (disableLogs: boolean): void => {
         if (disableLogs) {
             Logs.logLevel = 0;
+        } else {
+            Logs.logLevel = Number(process.env.LOG_LEVEL) ?? Infinity;
         }
     };
 
@@ -82,123 +81,47 @@ export default class Logs {
         return LogDataTypes[logLevel] ?? emptyLogData();
     };
 
-    private static add = (
-        logLevel: LogLevels,
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
+    private static add = (logLevel: LogLevels, ...args: unknown[]): void => {
         if (logLevel <= Logs.logLevel) {
             try {
                 const { prefix, consoleFunction }: LogData =
                     Logs.getLogData(logLevel);
-
-                if (optionalParams.length > 1 || optionalParams[0]) {
-                    consoleFunction(
-                        prefix,
-                        typeof message !== "string"
-                            ? JSON.stringify(message)
-                            : message,
-                        ...optionalParams
-                    );
-                } else {
-                    consoleFunction(
-                        prefix,
-                        typeof message !== "string"
-                            ? JSON.stringify(message)
-                            : message
-                    );
-                }
+                consoleFunction(prefix, ...args);
             } catch (e) {
                 console.error(e.message);
             }
         }
     };
 
-    static Test = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.TEST,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Test(...args: unknown[]): void {
+        Logs.add(LogLevels.TEST, ...args);
+    }
 
-    static Event = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.EVENT,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Event(...args: unknown[]): void {
+        Logs.add(LogLevels.EVENT, ...args);
+    }
 
-    static Error = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.ERROR,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Error(...args: unknown[]): void {
+        Logs.add(LogLevels.ERROR, ...args);
+    }
 
-    static Warning = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.WARN,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Warning(...args: unknown[]): void {
+        Logs.add(LogLevels.WARN, ...args);
+    }
 
-    static Debug = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.DEBUG,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Debug(...args: unknown[]): void {
+        Logs.add(LogLevels.DEBUG, ...args);
+    }
 
-    static Log = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.LOG,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Log(...args: unknown[]): void {
+        Logs.add(LogLevels.LOG, ...args);
+    }
 
-    static SQL = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.SQL,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static SQL(...args: unknown[]): void {
+        Logs.add(LogLevels.SQL, ...args);
+    }
 
-    static Metric = (
-        message?: string | unknown,
-        ...optionalParams: unknown[]
-    ): void => {
-        Logs.add(
-            LogLevels.METRICS,
-            message,
-            optionalParams.length > 0 ? optionalParams : undefined
-        );
-    };
+    static Metric(...args: unknown[]): void {
+        Logs.add(LogLevels.METRICS, ...args);
+    }
 }

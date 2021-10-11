@@ -1,18 +1,30 @@
 import { After, Before } from "@cucumber/cucumber";
-import { Connection } from "typeorm";
-import Business from "../../../src/models/business";
+// import { Connection } from "typeorm";
 import DBConnection from "../../util/db_connection";
 import BaseWorld from "../support/base_world";
+import { teardown } from "../helpers/teardown";
+import { businessAttributes } from "@test/sample_data/model/attributes";
+import { setup } from "../helpers/setup";
 
-Before("@db", async function (this: BaseWorld) {
-    this.setCustomProp<Connection>(
-        "connection",
-        await DBConnection.GetConnection()
-    );
+Before({ timeout: 20000 }, async function (this: BaseWorld, { pickle }) {
+    const { tags } = pickle;
+
+    if (tags) {
+        const tagNames = tags
+            .map((t) => t.name)
+            .filter((t) => t !== null && t !== undefined) as string[];
+
+        this.setTags(tagNames ?? new Array<string>());
+    }
+
+    this.setCustomProp<string[]>("businessNames", [businessAttributes().name]);
+    this.setConnection(await DBConnection.GetConnection());
+
+    await setup.call(this);
 });
 
-After("@db", async function (this: BaseWorld) {
-    const connection = this.getCustomProp<Connection>("connection");
-    await connection.manager.remove(await connection.manager.find(Business));
-    this.setCustomProp<undefined>("connection", undefined);
+After({ timeout: 20000 }, async function (this: BaseWorld) {
+    await teardown.call(this);
+    this.clearConnection();
+    this.setTags([]);
 });

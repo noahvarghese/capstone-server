@@ -1,7 +1,7 @@
 import { uid } from "rand-token";
 import bcrypt from "bcryptjs";
 import { Entity, Column } from "typeorm";
-import BaseModel from "../abstract/base_model";
+import BaseModel, { AttributeFactory } from "../abstract/base_model";
 
 export interface UserAttributes {
     first_name: string;
@@ -15,12 +15,11 @@ export interface UserAttributes {
     country: string;
     birthday: Date | undefined;
     password: string;
-    business_id: number;
     token?: string | undefined | null;
     token_expiry?: Date | undefined | null;
 }
 
-const EmptyUserAttributes = (): UserAttributes => ({
+export const EmptyUserAttributes = (): UserAttributes => ({
     first_name: "",
     last_name: "",
     email: "",
@@ -32,14 +31,9 @@ const EmptyUserAttributes = (): UserAttributes => ({
     country: "",
     birthday: undefined,
     password: "",
-    business_id: -1,
     token: undefined,
     token_expiry: undefined,
 });
-
-const UserBuilder = <T extends Partial<UserAttributes>>(
-    options?: T
-): UserAttributes & T => Object.assign(EmptyUserAttributes(), options);
 
 @Entity({ name: "user" })
 export default class User extends BaseModel implements UserAttributes {
@@ -66,8 +60,6 @@ export default class User extends BaseModel implements UserAttributes {
     public birthday!: Date;
     @Column()
     public password!: string;
-    @Column()
-    public business_id!: number;
     @Column({ nullable: true, type: "text", unique: true })
     public token?: string | null | undefined;
     @Column({ nullable: true, type: "datetime", unique: false })
@@ -75,8 +67,7 @@ export default class User extends BaseModel implements UserAttributes {
 
     public constructor(options?: Partial<UserAttributes>) {
         super();
-        const userAttr = UserBuilder(options);
-        Object.assign(this, userAttr);
+        Object.assign(this, AttributeFactory(options, EmptyUserAttributes));
     }
 
     // pass reference back so we can chain it within the connection.manager.save method

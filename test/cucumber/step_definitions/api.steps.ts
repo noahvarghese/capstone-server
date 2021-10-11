@@ -5,17 +5,14 @@ import { client, server } from "../../../src/util/permalink";
 import { getRedirectInfo } from "../../util/request";
 import Logs from "../../../src/util/logs/logs";
 
-When(
-    "a user has navigated to the root of the backend",
-    async function (this: BaseWorld) {
-        Logs.Error(server());
-        const response = await getRedirectInfo(server());
-        this.setCustomProp<number>("status", response.status);
-        this.setCustomProp<string>("location", response.location);
-    }
-);
+When("I navigate to the root of the backend", async function (this: BaseWorld) {
+    Logs.Error(server());
+    const response = await getRedirectInfo(server());
+    this.setCustomProp<number>("status", response.status);
+    this.setCustomProp<string>("location", response.location);
+});
 
-Then("they should be redirected to the frontend", function (this: BaseWorld) {
+Then("I should be redirected to the frontend", function (this: BaseWorld) {
     const status = this.getCustomProp<number>("status");
     const location = this.getCustomProp<string>("location");
     expect(location).to.contain(client());

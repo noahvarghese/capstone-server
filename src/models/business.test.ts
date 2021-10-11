@@ -1,17 +1,11 @@
 import Business, { BusinessAttributes } from "./business";
 import BaseWorld from "../../test/jest/support/base_world";
 import DBConnection from "../../test/util/db_connection";
-import { businessAttributes } from "../../test/sample_data/attributes";
-import {
-    testCreateModel,
-    testUpdateModel,
-    testDeleteModel,
-    testReadModel,
-} from "../../test/util/model_compare";
+import ModelTestPass from "../../test/jest/helpers/model/test/pass";
+import { loadAttributes } from "../../test/jest/helpers/model/test/setup";
 
 // State management
 let baseWorld: BaseWorld | undefined;
-const key = "business";
 
 // Database Setup
 beforeAll(DBConnection.InitConnection);
@@ -20,49 +14,40 @@ afterAll(DBConnection.CloseConnection);
 // State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    baseWorld.setCustomProp<BusinessAttributes>(
-        `${key}Attributes`,
-        businessAttributes
-    );
+    loadAttributes(baseWorld, Business);
 });
 
 afterEach(() => {
     baseWorld = undefined;
 });
 
-// Tests
-
 test("Create Business", async () => {
-    await testCreateModel<Business, BusinessAttributes>(
+    await ModelTestPass.create<Business, BusinessAttributes>(
         baseWorld,
-        Business,
-        key
+        Business
     );
 });
 
 test("Update Business", async () => {
-    await testUpdateModel<Business, BusinessAttributes>(
+    await ModelTestPass.update<Business, BusinessAttributes>(
         baseWorld,
         Business,
-        key,
         { name: "TEST" }
     );
 });
 
 test("Read Business", async () => {
-    await testReadModel<Business, BusinessAttributes>(
+    await ModelTestPass.read<Business, BusinessAttributes>(
         baseWorld,
         Business,
-        key,
         ["name"]
     );
 });
 
 test("Delete Business", async () => {
-    await testDeleteModel<Business, BusinessAttributes>(
+    await ModelTestPass.delete<Business, BusinessAttributes>(
         baseWorld,
         Business,
-        key,
         ["id"]
     );
 });

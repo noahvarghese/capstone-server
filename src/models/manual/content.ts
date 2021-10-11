@@ -1,4 +1,5 @@
 import { Entity, Column } from "typeorm";
+import { AttributeFactory } from "../abstract/base_model";
 import EditableContentModel from "../abstract/editable_content_model";
 
 export interface ContentAttributes {
@@ -8,16 +9,12 @@ export interface ContentAttributes {
     updated_by_user_id: number;
 }
 
-const EmptyContentAttributes = (): ContentAttributes => ({
+export const EmptyContentAttributes = (): ContentAttributes => ({
     title: "",
     content: "",
     policy_id: -1,
     updated_by_user_id: -1,
 });
-
-const ContentBuilder = <T extends Partial<ContentAttributes>>(
-    options?: T
-): ContentAttributes & T => Object.assign(EmptyContentAttributes(), options);
 
 @Entity({ name: "content" })
 export default class Content
@@ -33,7 +30,6 @@ export default class Content
 
     public constructor(options?: Partial<ContentAttributes>) {
         super();
-        const attr = ContentBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyContentAttributes));
     }
 }

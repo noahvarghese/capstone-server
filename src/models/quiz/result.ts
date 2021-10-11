@@ -1,24 +1,26 @@
 import { Entity, Column } from "typeorm";
-import BaseModel from "../abstract/base_model";
+import { AttributeFactory } from "../abstract/base_model";
+import EditableContentModel from "../abstract/editable_content_model";
 
-export interface ResultAttributes {
+export interface QuizResultAttributes {
     quiz_attempt_id: number;
     quiz_question_id: number;
     quiz_answer_id: number;
+    updated_by_user_id: number;
 }
 
-const EmptyResultAttributes = (): ResultAttributes => ({
+export const EmptyResultAttributes = (): QuizResultAttributes => ({
     quiz_attempt_id: -1,
     quiz_question_id: -1,
     quiz_answer_id: -1,
+    updated_by_user_id: -1,
 });
 
-const ResultBuilder = <T extends Partial<ResultAttributes>>(
-    options?: T
-): ResultAttributes & T => Object.assign(EmptyResultAttributes(), options);
-
 @Entity({ name: "quiz_result" })
-export default class Result extends BaseModel implements ResultAttributes {
+export default class QuizResult
+    extends EditableContentModel
+    implements QuizResultAttributes
+{
     @Column()
     public quiz_attempt_id!: number;
     @Column()
@@ -26,9 +28,8 @@ export default class Result extends BaseModel implements ResultAttributes {
     @Column()
     public quiz_answer_id!: number;
 
-    public constructor(options?: Partial<ResultAttributes>) {
+    public constructor(options?: Partial<QuizResultAttributes>) {
         super();
-        const attr = ResultBuilder(options);
-        Object.assign(this, attr);
+        Object.assign(this, AttributeFactory(options, EmptyResultAttributes));
     }
 }

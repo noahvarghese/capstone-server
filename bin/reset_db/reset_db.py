@@ -172,7 +172,10 @@ def go_through_files(file_list, prev_path=""):
             file_path = abspath(join(prev_path, file))
 
         if (isdir(file_path)):
-            go_through_files(listdir(file_path), file_path)
+            list_dir = listdir(file_path)
+            list_dir = sorted(list_dir)
+
+            go_through_files(list_dir, file_path)
         else:
             if ( file_path.endswith(".sql") ):
                 execute_file(file_path)
