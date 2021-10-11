@@ -68,6 +68,8 @@ jobs:
           TRAILING_VERSION=$((TRAILING_VERSION+1))
           VERSION=\"$(echo $VERSION | cut -d . -f 1).$(echo $VERSION | cut -d . -f 2).$TRAILING_VERSION\"
           echo VERSION=$(echo $VERSION) >> $GITHUB_ENV
+      - name: install dependencies
+        run: npm i
       - name: build
         run: npm run build
       - name: create artifact
