@@ -6,7 +6,7 @@ import { teardown } from "../helpers/teardown";
 import { businessAttributes } from "@test/sample_data/model/attributes";
 import { setup } from "../helpers/setup";
 
-Before(async function (this: BaseWorld, { pickle }) {
+Before({ timeout: 20000 }, async function (this: BaseWorld, { pickle }) {
     const { tags } = pickle;
 
     if (tags) {
