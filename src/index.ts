@@ -1,6 +1,3 @@
-import "module-alias/register";
-import "module-alias/register";
-import "module-alias/register";
 import enableMultiThreading, {
     setupMultiThreading,
 } from "./util/multithreading";
