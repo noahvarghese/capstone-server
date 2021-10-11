@@ -23,7 +23,7 @@ Before(async function (this: BaseWorld, { pickle }) {
     await setup.call(this);
 });
 
-After(async function (this: BaseWorld) {
+After({ timeout: 20000 }, async function (this: BaseWorld) {
     await teardown.call(this);
     this.clearConnection();
     this.setTags([]);

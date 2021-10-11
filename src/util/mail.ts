@@ -9,7 +9,10 @@ import Model from "./model";
 import Logs from "./logs/logs";
 
 const { NODE_ENV } = process.env;
-const TEMPLATE_DIR = NODE_ENV === "dev" || NODE_ENV === "test" ? `${__dirname}/../../email_templates` : `${__dirname}/../email_templates`;
+const TEMPLATE_DIR =
+    NODE_ENV === "dev" || NODE_ENV === "test"
+        ? `${__dirname}/../../email_templates`
+        : `${__dirname}/../email_templates`;
 
 const email = new Email({
     message: {
