@@ -40,10 +40,8 @@ jobs:
       - uses: actions/setup-node@v2
       - name: install dependencies
         run: npm i
-      - name: unit test
-        run: npm run test:jest
-      - name: bdd test
-        run: npm run test:cucumber
+      - name: tests
+        run: npm run test
   continuous-deployment:
     if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'cd skip') && !contains(github.event.head_commit.message, 'skip cd'))"
     runs-on: ubuntu-latest

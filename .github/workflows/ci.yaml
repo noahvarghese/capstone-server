@@ -18,7 +18,7 @@ jobs:
       - name: install dependencies
         run: npm i
       - name: check formatting
-        run: npm run format-check
+        run: npm run format:check
   continuous-integration:
     env:
       DB: ${{ secrets.DB }}

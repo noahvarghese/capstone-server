@@ -72,7 +72,6 @@ When(
         }
 
         await submitForm.call(this, url, true, false);
-        console.log(this.getCustomProp<string>("message"));
     }
 );
 

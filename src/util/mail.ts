@@ -1,5 +1,5 @@
-import User from "../models/user/user";
-import Event from "../models/event";
+import User from "@models/user/user";
+import Event from "@models/event";
 import { client } from "./permalink";
 import { getConnection } from "typeorm";
 import Business from "@models/business";
@@ -8,7 +8,8 @@ import Email from "email-templates";
 import Model from "./model";
 import Logs from "./logs/logs";
 
-const TEMPLATE_DIR = `${__dirname}/emails`;
+const { NODE_ENV } = process.env;
+const TEMPLATE_DIR = NODE_ENV === "dev" || NODE_ENV === "test" ? `${__dirname}/../../email_templates` : `${__dirname}/../email_templates`;
 
 const email = new Email({
     message: {
