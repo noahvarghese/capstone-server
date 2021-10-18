@@ -4,23 +4,18 @@ import BaseWorld from "@test/cucumber/support/base_world";
 import Event from "@models/event";
 import { expect } from "chai";
 import attributes, {
-    RequestResetPasswordProps,
+    ForgotPasswordProps,
 } from "@test/sample_data/api/attributes";
 import { loadBody } from "@test/cucumber/helpers/setup";
 import { submitForm } from "@test/cucumber/helpers/submit_form";
 import { urls } from "@test/sample_data/api/dependencies";
 
 Given("I am registered", function (this: BaseWorld) {
-    loadBody.call(this, "requestResetPassword");
+    loadBody.call(this, "forgotPassword");
 });
 
 When("I request to reset the password", async function (this: BaseWorld) {
-    await submitForm.call(
-        this,
-        urls.requestResetPassword as string,
-        true,
-        false
-    );
+    await submitForm.call(this, urls.forgotPassword as string, true, false);
 });
 
 Then("a token should be created", async function (this: BaseWorld) {
@@ -28,9 +23,8 @@ Then("a token should be created", async function (this: BaseWorld) {
     const user = (
         await connection.manager.find(User, {
             where: {
-                email: (
-                    attributes.requestResetPassword() as RequestResetPasswordProps
-                ).email,
+                email: (attributes.forgotPassword() as ForgotPasswordProps)
+                    .email,
             },
         })
     )[0];
@@ -50,9 +44,8 @@ Then("I am sent a token", async function (this: BaseWorld) {
     const user = (
         await connection.manager.find(User, {
             where: {
-                email: (
-                    attributes.requestResetPassword() as RequestResetPasswordProps
-                ).email,
+                email: (attributes.forgotPassword() as ForgotPasswordProps)
+                    .email,
             },
         })
     )[0];

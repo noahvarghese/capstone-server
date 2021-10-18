@@ -1,8 +1,8 @@
-@setup_request_reset_password
+@setup_forgot_password
 @cleanup_user_role
-Feature: Request Reset Password
+Feature: Forgot Password
 
-Scenario: Request Reset Password Token Created
+Scenario: Forgot Password Token Created
     Given I am registered
     When I request to reset the password
     Then a token should be created

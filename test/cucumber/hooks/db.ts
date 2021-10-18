@@ -1,5 +1,4 @@
 import { After, Before } from "@cucumber/cucumber";
-// import { Connection } from "typeorm";
 import DBConnection from "../../util/db_connection";
 import BaseWorld from "../support/base_world";
 import { teardown } from "../helpers/teardown";

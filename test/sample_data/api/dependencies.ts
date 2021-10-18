@@ -5,7 +5,7 @@ export type ApiRoute =
     | "login"
     | "inviteUser"
     | "acceptInvite"
-    | "requestResetPassword"
+    | "forgotPassword"
     | "resetPassword"
     | "logout"
     | "authCheck";
@@ -15,19 +15,19 @@ const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
     login: ["registerBusiness"],
     inviteUser: ["registerBusiness", "login"],
     acceptInvite: ["registerBusiness", "login", "inviteUser"],
-    requestResetPassword: ["registerBusiness"],
+    forgotPassword: ["registerBusiness"],
     resetPassword: ["registerBusiness"],
     logout: ["registerBusiness", "login"],
     authCheck: ["registerBusiness", "login"],
 };
 
 export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
-    registerBusiness: "auth/signup",
+    registerBusiness: "auth/register",
     login: "auth/login",
     inviteUser: "user/invite",
     acceptInvite: (token: string) => `user/invite/${token}`,
-    requestResetPassword: "auth/requestResetPassword",
-    resetPassword: (token: string) => `auth/resetPassword/${token}`,
+    forgotPassword: "auth/forgot_password",
+    resetPassword: (token: string) => `auth/reset_password/${token}`,
     logout: "auth/logout",
     authCheck: "auth",
 };
@@ -39,7 +39,7 @@ export const teardown_dependencies: { [i in ApiRoute]: string[] } = {
     login: modelDependencies["userRole"],
     inviteUser: [...modelDependencies["userRole"], "event"],
     acceptInvite: [...modelDependencies["userRole"], "event"],
-    requestResetPassword: modelDependencies["userRole"],
+    forgotPassword: modelDependencies["userRole"],
     resetPassword: modelDependencies["userRole"],
     logout: modelDependencies["userRole"],
     authCheck: modelDependencies["userRole"],

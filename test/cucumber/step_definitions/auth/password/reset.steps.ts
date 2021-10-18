@@ -3,7 +3,7 @@ import User from "@models/user/user";
 import BaseWorld from "@test/cucumber/support/base_world";
 import { expect } from "chai";
 import attributes, {
-    RequestResetPasswordProps,
+    ForgotPasswordProps,
     ResetPasswordProps,
 } from "@test/sample_data/api/attributes";
 import loadAndCall from "@test/cucumber/helpers/actions";
@@ -12,8 +12,7 @@ import { submitForm } from "@test/cucumber/helpers/submit_form";
 import { urls } from "@test/sample_data/api/dependencies";
 import { loadBody } from "@test/cucumber/helpers/setup";
 
-const { email } =
-    attributes.requestResetPassword() as RequestResetPasswordProps;
+const { email } = attributes.forgotPassword() as ForgotPasswordProps;
 const { password } = attributes.resetPassword() as ResetPasswordProps;
 
 const getUser = async (connection: Connection) =>
@@ -28,7 +27,7 @@ const getUser = async (connection: Connection) =>
 Given(
     "I have requested to reset the password",
     async function (this: BaseWorld) {
-        await loadAndCall.call(this, "requestResetPassword", {
+        await loadAndCall.call(this, "forgotPassword", {
             withCookie: false,
             saveCookie: false,
         });

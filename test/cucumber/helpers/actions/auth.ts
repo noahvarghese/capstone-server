@@ -100,8 +100,8 @@ async function authCheck(this: BaseWorld): Promise<void> {
     });
 }
 
-async function requestResetPassword(this: BaseWorld): Promise<void> {
-    await loadAndCall.call(this, "requestResetPassword", {
+async function forgotPassword(this: BaseWorld): Promise<void> {
+    await loadAndCall.call(this, "forgotPassword", {
         saveCookie: false,
         withCookie: false,
     });
@@ -134,7 +134,7 @@ const authActions: ActionFnMap = {
     registerBusiness,
     login,
     logout,
-    requestResetPassword,
+    forgotPassword,
     resetPassword,
     inviteUser,
     acceptInvite,

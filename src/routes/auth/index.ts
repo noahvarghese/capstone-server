@@ -1,17 +1,17 @@
 import { Router, Request, Response } from "express";
 import loginRoute from "./login";
 import logoutRoute from "./logout";
-import signupRoute from "./signup";
-import requestResetRoute from "./request_reset_password";
+import registerRoute from "./register";
+import forgotRoute from "./forgot_password";
 import resetRoute from "./reset_password";
 
 const router = Router();
 
 router.use("/login", loginRoute);
-router.use("/signup", signupRoute);
+router.use("/register", registerRoute);
 router.use("/logout", logoutRoute);
-router.use("/resetPassword", resetRoute);
-router.use("/requestResetPassword", requestResetRoute);
+router.use("/forgot_password", forgotRoute);
+router.use("/reset_password", resetRoute);
 
 router.post("/", (req: Request, res: Response) => {
     if (

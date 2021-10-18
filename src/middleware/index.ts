@@ -14,9 +14,9 @@ const clearCookie = (req: Request, res: Response, next: NextFunction) => {
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     const publicRoutes: (string | RegExp)[] = [
         "/auth/login",
-        "/auth/signup",
-        /^\/auth\/resetPassword\/\w+$/,
-        "/auth/requestResetPassword",
+        "/auth/register",
+        /^\/auth\/forgot_password/,
+        /^\/auth\/reset_password\/\w+$/,
         /^\/user\/invite\/\w/,
     ];
     const openRoutes: (string | RegExp)[] = [/^\/auth\/?$/];
@@ -88,9 +88,11 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
 
                 res.clearCookie(SESSION_ID);
                 res.redirect(client("login"));
+                return;
             } catch (e) {
                 Logs.Error(e.message);
                 res.redirect(client("login"));
+                return;
             }
         });
     }

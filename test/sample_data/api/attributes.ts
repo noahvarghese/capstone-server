@@ -1,4 +1,4 @@
-import { RegisterBusinessProps } from "@routes/auth/signup";
+import { RegisterBusinessProps } from "@routes/auth/register";
 import modelAttributes from "../model/attributes";
 import { LoginProps } from "@routes/auth/login";
 import { ApiRoute } from "./dependencies";
@@ -63,11 +63,11 @@ export interface AuthCheckProps {}
 
 const authCheck = (): AuthCheckProps => deepClone({});
 
-export interface RequestResetPasswordProps {
+export interface ForgotPasswordProps {
     email: string;
 }
 
-const requestResetPassword = (): RequestResetPasswordProps =>
+const forgotPassword = (): ForgotPasswordProps =>
     deepClone({ email: user.email });
 
 const attributes: {
@@ -79,10 +79,10 @@ const attributes: {
         | ResetPasswordProps
         | LogoutProps
         | AuthCheckProps
-        | RequestResetPasswordProps;
+        | ForgotPasswordProps;
 } = {
     registerBusiness,
-    requestResetPassword,
+    forgotPassword,
     login,
     inviteUser,
     acceptInvite,

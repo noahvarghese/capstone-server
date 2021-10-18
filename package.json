@@ -20,6 +20,7 @@
         "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --require tsconfig-paths/register --ignore build/ --ignore test/ --exec ts-node ./src/index.ts",
         "start": "NODE_ENV=prod node ./index.js",
         "test:cucumber": "NODE_ENV=test cucumber-js -p default -f @cucumber/pretty-formatter --exit",
+        "test:cucumber-feature": "NODE_ENV=test cucumber-js -p feature -f @cucumber/pretty-formatter --exit",
         "test:jest": "NODE_ENV=test jest --maxConcurrency=1 --runInBand --coverage --verbose false",
         "test": "npm run test:jest && npm run test:cucumber"
     },
