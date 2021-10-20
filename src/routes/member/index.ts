@@ -52,8 +52,7 @@ router.get("/:id", async (req: Request, res: Response) => {
             .leftJoin(User, "user", "user.id = user_role.user_id")
             .getRawMany();
 
-        console.log(roles);
-        res.status(200).json({ id: req.params.id });
+        res.status(200).json({ id: req.params.id, roles });
     } catch (e) {
         Logs.Error(e.message);
         res.status(400).json({ message: "Bad id" });

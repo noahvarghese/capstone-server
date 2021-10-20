@@ -1,7 +1,11 @@
 import Department from "@models/department";
 import Permission from "@models/permission";
+import Role from "@models/role";
+import User from "@models/user/user";
+import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Response, Request } from "express";
+
 const router = Router();
 
 router.get("/", async (req: Request, res: Response) => {
@@ -28,10 +32,43 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     try {
+        const returnVal: {
+            name: string;
+            numMembers: number;
+            numRoles: number;
+        }[] = [];
+
         const departments = await SqlConnection.manager.find(Department, {
             where: { business_id: current_business_id },
         });
-        res.status(200).json({ data: departments });
+
+        for (const dept of departments) {
+            const numMembers = await SqlConnection.createQueryBuilder()
+                .select("COUNT(user.id)", "count")
+                .from(Department, "d")
+                .leftJoin(Role, "r", "r.department_id = d.id")
+                .where("d.id = :dept_id", { dept_id: dept.id })
+                .leftJoin(UserRole, "ur", "ur.role_id = r.id")
+                .leftJoin(User, "user", "user.id = ur.user_id")
+                .getRawMany();
+
+            const numRoles = await SqlConnection.createQueryBuilder()
+                .select("COUNT(r.id)", "count")
+                .from(Department, "d")
+                .leftJoin(Role, "r", "r.department_id = d.id")
+                .where("d.id = :dept_id", { dept_id: dept.id })
+                .getRawMany();
+
+            returnVal.push({
+                name: dept.name,
+                numMembers: numMembers[0].count,
+                numRoles: numRoles[0].count,
+            });
+        }
+
+        res.status(200).json({
+            data: returnVal,
+        });
         return;
     } catch (e) {
         Logs.Error(e.message);

@@ -125,7 +125,7 @@ export default class Permission
             );
 
             const result = permissions.find((p) => {
-                for (const [key, value] of Object.keys(p)) {
+                for (const [key, value] of Object.entries(p)) {
                     if (permission.includes(key as keyof Permission) && value) {
                         return true;
                     }
