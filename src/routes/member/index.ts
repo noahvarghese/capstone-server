@@ -42,6 +42,7 @@ router.get("/:id", async (req: Request, res: Response) => {
                 "user.phone",
                 "user.birthday",
             ])
+            .addSelect(["role"])
             .from(Role, "role")
             .where("dept.business_id = :business_id", {
                 business_id: current_business_id,

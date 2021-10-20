@@ -33,6 +33,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     try {
         const returnVal: {
+            id: number;
             name: string;
             numMembers: number;
             numRoles: number;
@@ -60,6 +61,7 @@ router.get("/", async (req: Request, res: Response) => {
                 .getRawMany();
 
             returnVal.push({
+                id: dept.id,
                 name: dept.name,
                 numMembers: numMembers[0].count,
                 numRoles: numRoles[0].count,

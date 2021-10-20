@@ -32,6 +32,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     try {
         const returnVal: {
+            id: number;
             name: string;
             numMembers: number;
             department: string;
@@ -62,6 +63,7 @@ router.get("/", async (req: Request, res: Response) => {
             );
 
             returnVal.push({
+                id: role.id,
                 name: role.name,
                 numMembers: numMembers[0].count,
                 department: department.name,
@@ -85,6 +87,7 @@ router.post("/", async (req: Request, res: Response) => {
         SqlConnection,
         body,
     } = req;
+    console.log(body);
 
     //check permissions
     const hasPermission = await Permission.checkPermission(
