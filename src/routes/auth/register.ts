@@ -256,6 +256,7 @@ router.post("/", async (req: Request, res: Response) => {
                 user_id: userId,
                 updated_by_user_id: userId,
                 role_id: roleId,
+                primary_role_for_user: true,
             })
         );
     } catch ({ message }) {

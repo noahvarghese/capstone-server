@@ -134,14 +134,20 @@ export const departmentAttributes = (): DepartmentAttributes =>
 export const permissionAttributes = (): PermissionAttributes =>
     AttributeFactory(
         {
-            add_users: true,
-            delete_users: true,
-            edit_users: true,
-            assign_users_to_department: true,
-            assign_users_to_role: true,
-            create_resources: true,
-            assign_resources_to_department: true,
-            assign_resources_to_role: true,
+            global_crud_users: true,
+            global_crud_department: true,
+            global_crud_role: true,
+            global_crud_resources: true,
+            global_assign_users_to_department: true,
+            global_assign_users_to_role: true,
+            global_assign_resources_to_department: true,
+            global_assign_resources_to_role: true,
+            global_view_reports: true,
+            dept_crud_role: true,
+            dept_crud_resources: true,
+            dept_assign_users_to_role: true,
+            dept_assign_resources_to_role: true,
+            dept_view_reports: true,
             updated_by_user_id: -1,
         },
         EmptyPermissionAttributes
@@ -165,6 +171,7 @@ export const userRoleAttributes = (): UserRoleAttributes =>
         {
             user_id: -1,
             role_id: -1,
+            primary_role_for_user: true,
             updated_by_user_id: -1,
         },
         EmptyUserRoleAttributes

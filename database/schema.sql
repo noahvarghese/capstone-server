@@ -137,6 +137,7 @@ CREATE TABLE role (
 CREATE TABLE user_role (
     user_id INT NOT NULL,
     role_id INT NOT NULL,
+    primary_role_for_user TINYINT(1) NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
