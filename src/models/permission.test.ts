@@ -42,7 +42,7 @@ test("Update Permission", async () => {
         baseWorld,
         Permission,
 
-        { assign_resources_to_department: false }
+        { global_assign_resources_to_department: false }
     );
 });
 
