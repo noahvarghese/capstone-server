@@ -13,19 +13,19 @@ export type ApiRoute =
 const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
     registerBusiness: [],
     login: ["registerBusiness"],
-    inviteUser: ["registerBusiness", "login"],
-    acceptInvite: ["registerBusiness", "login", "inviteUser"],
+    inviteUser: ["registerBusiness"],
+    acceptInvite: ["registerBusiness", "inviteUser"],
     forgotPassword: ["registerBusiness"],
     resetPassword: ["registerBusiness"],
-    logout: ["registerBusiness", "login"],
-    authCheck: ["registerBusiness", "login"],
+    logout: ["registerBusiness"],
+    authCheck: ["registerBusiness"],
 };
 
 export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
     registerBusiness: "auth/register",
     login: "auth/login",
-    inviteUser: "user/invite",
-    acceptInvite: (token: string) => `user/invite/${token}`,
+    inviteUser: "member/invite",
+    acceptInvite: (token: string) => `member/invite/${token}`,
     forgotPassword: "auth/forgot_password",
     resetPassword: (token: string) => `auth/reset_password/${token}`,
     logout: "auth/logout",

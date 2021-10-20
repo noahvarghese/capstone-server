@@ -1,8 +1,9 @@
 import { Request, Response, Router } from "express";
 import User from "@models/user/user";
 import Logs from "@util/logs/logs";
-import { resetPasswordEmail } from "@util/mail";
+import { resetPasswordEmail } from "@services/email";
 import { MoreThan } from "typeorm";
+import Membership from "@models/membership";
 
 const router = Router();
 
@@ -41,6 +42,17 @@ router.post("/:token", async (request: Request, response: Response) => {
 
     try {
         await resetPasswordEmail(user);
+
+        const memberships = await connection.manager.find(Membership, {
+            where: { user_id: user.id },
+            order: { created_on: "ASC" },
+        });
+
+        request.session.business_ids = memberships.map((m) => m.business_id);
+        request.session.user_id = user.id;
+        request.session.current_business_id = memberships.find(
+            (m) => m.default
+        )?.business_id;
         response.sendStatus(200);
         return;
     } catch (e) {

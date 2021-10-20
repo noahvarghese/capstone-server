@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import User from "../../models/user/user";
 import Logs from "../../util/logs/logs";
-import { requestResetPasswordEmail } from "../../util/mail";
+import { requestResetPasswordEmail } from "@services/email";
 
 const router = Router();
 

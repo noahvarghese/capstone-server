@@ -8,7 +8,7 @@ if (origin[origin.length - 1] === "/") {
 }
 
 const corsOptions = {
-    origin,
+    origin: [origin, origin + "/"],
     credentials: true,
     // Need to check why I enabled this
     // Leaving for now

@@ -5,7 +5,7 @@ import actions from "@test/cucumber/helpers/actions/auth";
 import attributes from "@test/sample_data/api/attributes";
 import BaseWorld from "@test/cucumber/support/base_world";
 import Membership from "@models/membership";
-import { InviteUserProps } from "@routes/user/invite";
+import { InviteUserProps } from "@routes/member/invite";
 import { expect } from "chai";
 
 Given("the user has received an invite", async function (this: BaseWorld) {

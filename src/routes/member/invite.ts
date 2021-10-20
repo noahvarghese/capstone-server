@@ -4,7 +4,7 @@ import validator from "validator";
 import Model from "@util/model";
 import User from "@models/user/user";
 import MembershipRequest from "@models/membership_request";
-import { sendUserInviteEmail } from "@util/mail";
+import { sendUserInviteEmail } from "@services/email";
 import Business from "@models/business";
 import Logs from "@util/logs/logs";
 import { MoreThan } from "typeorm";
@@ -28,6 +28,9 @@ const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
     const { first_name, last_name, email, phone } = req.body as InviteUserProps;
+    const {
+        session: { current_business_id },
+    } = req;
 
     // validate
     const result = emptyChecker<InviteUserProps>(
@@ -77,6 +80,26 @@ router.post("/", async (req: Request, res: Response) => {
             res.status(500).json({ message: e.message });
             return;
         }
+    }
+
+    try {
+        const existingMembership = await connection.manager.find(Membership, {
+            where: {
+                user_id: invitedUser.id,
+                business_id: current_business_id,
+            },
+        });
+        if (existingMembership.length > 0) {
+            res.status(400).json({
+                message: "User is already a member of the business",
+            });
+            return;
+        }
+    } catch (_) {
+        res.status(500).json({
+            message: "Error checking if membership exists",
+        });
+        return;
     }
 
     const businessId = req.session.current_business_id;
@@ -144,6 +167,19 @@ router.post("/:token", async (req: Request, res: Response) => {
         return;
     }
 
+    // check if there is another membership request
+    let setDefault;
+
+    try {
+        const count = await connection.manager.count(Membership, {
+            where: { user_id: membershipRequest.user_id },
+        });
+
+        if (count === 0) setDefault = true;
+    } catch (_) {
+        setDefault = false;
+    }
+
     try {
         await connection.manager.insert(
             Membership,
@@ -151,6 +187,7 @@ router.post("/:token", async (req: Request, res: Response) => {
                 business_id: membershipRequest.business_id,
                 updated_by_user_id: membershipRequest.user_id,
                 user_id: membershipRequest.user_id,
+                default: setDefault,
             })
         );
     } catch (e) {

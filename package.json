@@ -13,11 +13,11 @@
         "build": "rm -rf ./build && tsc -p ./tsconfig.build.json",
         "postbuild": "npm run build:email-templates && npm run module-alias:cleanup && npm run build:package",
         "build:dev": "npm run build && cp .env ./build",
-        "build:email-templates": "cp -R ./email_templates ./build",
+        "build:email-templates": "cp -R ./src/services/email/templates ./build/services/email",
         "build:package": "cp ./package*.json ./build && cd build && npm ci",
         "format": "prettier --write \"**/*.ts\"",
         "format:check": "prettier --check \"**/*.ts\"",
-        "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --require tsconfig-paths/register --ignore build/ --ignore test/ --exec ts-node ./src/index.ts",
+        "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --require tsconfig-paths/register --ignore build/ --ignore test/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
         "test:cucumber": "NODE_ENV=test cucumber-js -p default -f @cucumber/pretty-formatter --exit",
         "test:cucumber-feature": "NODE_ENV=test cucumber-js -p feature -f @cucumber/pretty-formatter --exit",
@@ -105,6 +105,7 @@
     "_moduleAliases": {
         "@models": "models",
         "@routes": "routes",
+        "@services": "services",
         "@util": "util"
     }
 }

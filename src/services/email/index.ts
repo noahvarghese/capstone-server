@@ -1,18 +1,18 @@
 import User from "@models/user/user";
 import Event from "@models/event";
-import { client } from "./permalink";
+import { client } from "../../util/permalink";
 import { getConnection } from "typeorm";
 import Business from "@models/business";
 import MembershipRequest from "@models/membership_request";
 import Email from "email-templates";
-import Model from "./model";
-import Logs from "./logs/logs";
+import Model from "../../util/model";
+import Logs from "../../util/logs/logs";
 
-const { NODE_ENV } = process.env;
-const TEMPLATE_DIR =
-    NODE_ENV === "dev" || NODE_ENV === "test"
-        ? `${__dirname}/../../email_templates`
-        : `${__dirname}/../email_templates`;
+// const { NODE_ENV } = process.env;
+const TEMPLATE_DIR = `${__dirname}/templates`;
+// NODE_ENV === "dev" || NODE_ENV === "test"
+// ? `${__dirname}/templates`
+// : `${__dirname}/../email_templates`;
 
 const email = new Email({
     message: {
@@ -45,7 +45,7 @@ export const sendUserInviteEmail = async (
     sendingUser: User,
     receivingUser: User
 ): Promise<boolean> => {
-    const url = client(`user/invite/${membershipRequest.token}`);
+    const url = client(`member/invite/${membershipRequest.token}`);
 
     return await sendMail(
         {

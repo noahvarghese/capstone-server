@@ -17,7 +17,7 @@ export function loadBody<T>(
 
 export async function setup(this: BaseWorld): Promise<void> {
     const tags = this.getTags();
-    const keys = getKey<Array<keyof typeof dependencies>, typeof dependencies>(
+    const keys = getKey<Array<ApiRoute>, typeof dependencies>(
         tags,
         "@setup_",
         dependencies,
@@ -34,9 +34,9 @@ export async function setup(this: BaseWorld): Promise<void> {
             if (completedDependencies.includes(dependency)) continue;
             else completedDependencies.push(dependency);
 
-            loadBody.call(this, dependency as ApiRoute);
+            loadBody.call(this, dependency);
             try {
-                const url = urls[dependency as keyof typeof urls];
+                const url = urls[dependency];
                 await submitForm.call(
                     this,
                     typeof url === "function" ? url("") : url,

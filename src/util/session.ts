@@ -45,8 +45,8 @@ export const createSession = async (): Promise<
     return session.default({
         name: process.env.SESSION_ID ?? "sid",
         secret: process.env.SESSION_SECRET ?? "",
-        resave: true,
-        rolling: true,
+        resave: false,
+        rolling: false,
         saveUninitialized: false,
         cookie: {
             maxAge: 8 * 60 * 60 * 1000,

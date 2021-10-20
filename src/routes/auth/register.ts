@@ -169,7 +169,11 @@ router.post("/", async (req: Request, res: Response) => {
         await Model.create<Membership>(
             connection,
             Membership,
-            new Membership({ user_id: userId, business_id: businessId })
+            new Membership({
+                user_id: userId,
+                business_id: businessId,
+                default: true,
+            })
         );
     } catch (e) {
         res.status(500).json({ message: e.message });
@@ -201,14 +205,20 @@ router.post("/", async (req: Request, res: Response) => {
                 connection,
                 Permission,
                 new Permission({
-                    add_users: true,
-                    assign_resources_to_department: true,
-                    assign_resources_to_role: true,
-                    assign_users_to_department: true,
-                    assign_users_to_role: true,
-                    create_resources: true,
-                    delete_users: true,
-                    edit_users: true,
+                    global_crud_users: true,
+                    global_crud_department: true,
+                    global_crud_role: true,
+                    global_crud_resources: true,
+                    global_assign_users_to_department: true,
+                    global_assign_users_to_role: true,
+                    global_assign_resources_to_department: true,
+                    global_assign_resources_to_role: true,
+                    global_view_reports: true,
+                    dept_crud_role: true,
+                    dept_crud_resources: true,
+                    dept_assign_users_to_role: true,
+                    dept_assign_resources_to_role: true,
+                    dept_view_reports: true,
                     updated_by_user_id: userId,
                 })
             )
@@ -255,7 +265,10 @@ router.post("/", async (req: Request, res: Response) => {
 
     req.session.business_ids = [businessId];
     req.session.user_id = userId;
+    req.session.current_business_id = businessId;
+
     res.sendStatus(201);
+    return;
 });
 
 export default router;

@@ -2,7 +2,7 @@ import { RegisterBusinessProps } from "@routes/auth/register";
 import modelAttributes from "../model/attributes";
 import { LoginProps } from "@routes/auth/login";
 import { ApiRoute } from "./dependencies";
-import { InviteUserProps } from "@routes/user/invite";
+import { InviteUserProps } from "@routes/member/invite";
 import { deepClone } from "@util/obj";
 
 const business = modelAttributes.business();

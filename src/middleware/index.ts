@@ -17,7 +17,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         "/auth/register",
         /^\/auth\/forgot_password/,
         /^\/auth\/reset_password\/\w+$/,
-        /^\/user\/invite\/\w/,
+        /^\/member\/invite\/\w+/,
     ];
     const openRoutes: (string | RegExp)[] = [/^\/auth\/?$/];
 
@@ -58,9 +58,9 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     }
 
     const loggedIn =
-        req.session.user_id &&
-        req.session.current_business_id &&
-        req.session.business_ids;
+        Boolean(req.session.user_id) &&
+        Boolean(req.session.current_business_id) &&
+        Boolean(req.session.business_ids);
 
     if (
         (loggedIn ? !requestedPublicResource : requestedPublicResource) ||
@@ -87,11 +87,11 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
                 }
 
                 res.clearCookie(SESSION_ID);
-                res.redirect(client("login"));
+                res.redirect(client(""));
                 return;
             } catch (e) {
                 Logs.Error(e.message);
-                res.redirect(client("login"));
+                res.redirect(client(""));
                 return;
             }
         });

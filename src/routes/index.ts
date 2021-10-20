@@ -2,12 +2,22 @@ import { Request, Response, Router } from "express";
 import Logs from "../util/logs/logs";
 import { client } from "../util/permalink";
 import authRouter from "./auth";
+import departmentRouter from "./department";
 import userRouter from "./user";
+import permissionRoute from "./permission";
+import roleRouter from "./role";
+import settingsRoute from "./settings";
+import memberRoute from "./member";
 
 const router = Router();
 
 /* Uncomment after creating the other routes */
 router.use("/auth", authRouter);
+router.use("/department", departmentRouter);
+router.use("/member", memberRoute);
+router.use("/permission", permissionRoute);
+router.use("/role", roleRouter);
+router.use("/settings", settingsRoute);
 router.use("/user", userRouter);
 
 // Default route handler to serve the website if requests are made

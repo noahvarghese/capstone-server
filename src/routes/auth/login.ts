@@ -32,11 +32,15 @@ router.post("/", async (req: Request, res: Response) => {
         if (success) {
             const memberships = await connection.manager.find(Membership, {
                 where: { user_id: user.id },
+                order: { created_on: "DESC" },
             });
 
             req.session.user_id = user.id;
             req.session.business_ids = memberships.map((m) => m.business_id);
-            req.session.current_business_id = req.session.business_ids[0];
+
+            req.session.current_business_id = memberships.find(
+                (m) => m.default
+            )?.business_id;
 
             res.sendStatus(200);
             return;
