@@ -1,7 +1,6 @@
 import { RegisterBusinessProps } from "@routes/auth/register";
 import modelAttributes from "../model/attributes";
 import { LoginProps } from "@routes/auth/login";
-import { ApiRoute } from "./dependencies";
 import { InviteUserProps } from "@routes/member/invite";
 import { deepClone } from "@util/obj";
 
@@ -70,17 +69,18 @@ export interface ForgotPasswordProps {
 const forgotPassword = (): ForgotPasswordProps =>
     deepClone({ email: user.email });
 
-const attributes: {
-    [i in ApiRoute]: () =>
-        | RegisterBusinessProps
-        | LoginProps
-        | InviteUserProps
-        | AcceptInviteProps
-        | ResetPasswordProps
-        | LogoutProps
-        | AuthCheckProps
-        | ForgotPasswordProps;
-} = {
+interface IApiRoute {
+    registerBusiness: () => RegisterBusinessProps;
+    forgotPassword: () => ForgotPasswordProps;
+    login: () => LoginProps;
+    inviteUser: () => InviteUserProps;
+    acceptInvite: () => AcceptInviteProps;
+    resetPassword: () => ResetPasswordProps;
+    logout: () => LogoutProps;
+    authCheck: () => AuthCheckProps;
+}
+
+const attributes: IApiRoute = {
     registerBusiness,
     forgotPassword,
     login,

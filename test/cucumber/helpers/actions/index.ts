@@ -16,9 +16,12 @@ async function loadAndCall(
         saveCookie: boolean;
         errOnFail?: boolean;
     },
-    token?: string
+    token?: string,
+    body?: unknown
 ): Promise<void> {
-    loadBody.call(this, key);
+    if (!body) loadBody.call(this, key);
+    else this.setCustomProp<typeof body>("body", body);
+
     await submitForm.call(
         this,
         typeof urls[key] === "function"

@@ -7,8 +7,55 @@ import attributes from "@test/sample_data/api/attributes";
 import BaseWorld from "@test/cucumber/support/base_world";
 import { expect } from "chai";
 import Event from "@models/event";
+import loadAndCall from "@test/cucumber/helpers/actions";
+import Business from "@models/business";
+import Membership from "@models/membership";
 
 Given("I am logged in as an admin", actions.login);
+Given("I am logged in as a user", async function (this: BaseWorld) {
+    const email = "automailr.noreply@gmail.com";
+    const { password } = attributes.login();
+    const { first_name, last_name } = attributes.inviteUser();
+
+    const connection = this.getConnection();
+    const user = await new User({ email, first_name, last_name }).hashPassword(
+        password
+    );
+
+    const res = await connection.manager.insert(User, user);
+
+    const business = await connection
+        .createQueryBuilder()
+        .select("b")
+        .from(Business, "b")
+        .where("b.name = :name", {
+            name: this.getCustomProp<string[]>("businessNames")[0],
+        })
+        .getOne();
+
+    await connection.manager.insert(
+        Membership,
+        new Membership({
+            business_id: business?.id,
+            user_id: res.identifiers[0].id,
+            default: true,
+        })
+    );
+
+    // create new user in database with relationships
+    //login
+
+    await loadAndCall.call(
+        this,
+        "login",
+        {
+            withCookie: false,
+            saveCookie: true,
+        },
+        undefined,
+        { email, password }
+    );
+});
 
 When(/an? (new|existing) user is added to the business/, actions.inviteUser);
 
@@ -50,4 +97,8 @@ Then("the user should get an invite", async function (this: BaseWorld) {
     );
 
     expect(membershipRequests.length).to.be.equal(1);
+});
+
+Then("I get an error", async function (this: BaseWorld) {
+    expect(this.getCustomProp<number>("status")).to.be.greaterThan(299);
 });
