@@ -24,8 +24,8 @@ const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
 export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
     registerBusiness: "auth/register",
     login: "auth/login",
-    inviteUser: "member/invite",
-    acceptInvite: (token: string) => `member/invite/${token}`,
+    inviteUser: "members/invite",
+    acceptInvite: (token: string) => `members/invite/${token}`,
     forgotPassword: "auth/forgot_password",
     resetPassword: (token: string) => `auth/reset_password/${token}`,
     logout: "auth/logout",

@@ -13,10 +13,10 @@ const router = Router();
 
 /* Uncomment after creating the other routes */
 router.use("/auth", authRouter);
-router.use("/department", departmentRouter);
-router.use("/member", memberRoute);
+router.use("/departments", departmentRouter);
+router.use("/members", memberRoute);
 router.use("/permission", permissionRoute);
-router.use("/role", roleRouter);
+router.use("/roles", roleRouter);
 router.use("/settings", settingsRoute);
 router.use("/user", userRouter);
 
