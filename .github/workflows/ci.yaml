@@ -26,6 +26,8 @@ jobs:
       - name: check apis are documented
         run: |
           ROUTES=()
+          pwd
+          ls -la
 
           for f in $(find src/routes -name '*.ts');
           do
