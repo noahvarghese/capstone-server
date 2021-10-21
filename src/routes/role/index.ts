@@ -85,9 +85,8 @@ router.post("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
         SqlConnection,
-        body,
+        body: { name, department: department_id, ...rest },
     } = req;
-    console.log(body);
 
     //check permissions
     const hasPermission = await Permission.checkPermission(
@@ -104,7 +103,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     // check role exists
     const count = await SqlConnection.manager.count(Role, {
-        where: { ...body },
+        where: { name, department_id },
     });
 
     if (count > 0) {
@@ -114,7 +113,20 @@ router.post("/", async (req: Request, res: Response) => {
 
     // try create
     try {
-        const result = await SqlConnection.manager.insert(Role, new Role(body));
+        const permissionResult = await SqlConnection.manager.insert(
+            Permission,
+            new Permission({ ...rest, updated_by_user_id: user_id })
+        );
+
+        const result = await SqlConnection.manager.insert(
+            Role,
+            new Role({
+                name,
+                department_id,
+                permission_id: permissionResult.identifiers[0].id,
+                updated_by_user_id: user_id,
+            })
+        );
 
         if (result.identifiers.length === 1) {
             res.sendStatus(201);

@@ -69,7 +69,52 @@ export interface ForgotPasswordProps {
 const forgotPassword = (): ForgotPasswordProps =>
     deepClone({ email: user.email });
 
-interface IApiRoute {
+export interface CreateDepartmentProps {
+    name: string;
+}
+const createDepartment = (): CreateDepartmentProps =>
+    deepClone({ name: "TEST" });
+
+export interface CreateRoleProps {
+    name: string;
+    department: number[];
+    global_crud_users: boolean;
+    global_crud_department: boolean;
+    global_crud_role: boolean;
+    global_crud_resources: boolean;
+    global_assign_users_to_department: boolean;
+    global_assign_users_to_role: boolean;
+    global_assign_resources_to_department: boolean;
+    global_assign_resources_to_role: boolean;
+    global_view_reports: boolean;
+    dept_crud_role: boolean;
+    dept_crud_resources: boolean;
+    dept_assign_users_to_role: boolean;
+    dept_assign_resources_to_role: boolean;
+    dept_view_reports: boolean;
+}
+
+const createRole = (): CreateRoleProps =>
+    deepClone({
+        name: "TEST",
+        department: [-1],
+        dept_assign_resources_to_role: false,
+        dept_assign_users_to_role: false,
+        dept_crud_resources: false,
+        dept_crud_role: false,
+        dept_view_reports: false,
+        global_assign_resources_to_department: false,
+        global_assign_resources_to_role: false,
+        global_assign_users_to_department: false,
+        global_assign_users_to_role: false,
+        global_crud_department: false,
+        global_crud_resources: false,
+        global_crud_role: false,
+        global_crud_users: false,
+        global_view_reports: false,
+    });
+
+export interface IApiRoute {
     registerBusiness: () => RegisterBusinessProps;
     forgotPassword: () => ForgotPasswordProps;
     login: () => LoginProps;
@@ -78,6 +123,8 @@ interface IApiRoute {
     resetPassword: () => ResetPasswordProps;
     logout: () => LogoutProps;
     authCheck: () => AuthCheckProps;
+    createDepartment: () => CreateDepartmentProps;
+    createRole: () => CreateRoleProps;
 }
 
 const attributes: IApiRoute = {
@@ -89,6 +136,8 @@ const attributes: IApiRoute = {
     resetPassword,
     logout,
     authCheck,
+    createDepartment,
+    createRole,
 };
 
 export default attributes;

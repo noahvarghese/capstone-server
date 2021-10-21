@@ -6,6 +6,8 @@ import attributes from "@test/sample_data/api/attributes";
 import BaseWorld from "@test/cucumber/support/base_world";
 import loadAndCall, { ActionFnMap } from ".";
 import { userAttributes } from "@test/sample_data/model/attributes";
+import Department from "@models/department";
+import Business from "@models/business";
 
 /**
  * Finds the token for the membership request
@@ -75,7 +77,6 @@ async function inviteUser(
     await loadAndCall.call(this, "inviteUser", {
         withCookie: true,
         saveCookie: true,
-        errOnFail: true,
     });
 }
 
@@ -130,6 +131,39 @@ async function registerBusiness(this: BaseWorld): Promise<void> {
     });
 }
 
+async function createRole(this: BaseWorld): Promise<void> {
+    const business = await this.getConnection().manager.findOneOrFail(
+        Business,
+        { where: { name: this.getCustomProp<string[]>("businessNames")[0] } }
+    );
+
+    const department = await this.getConnection().manager.findOneOrFail(
+        Department,
+        { where: { business_id: business.id, name: "Admin" } }
+    );
+
+    await loadAndCall.call(
+        this,
+        "createRole",
+        {
+            saveCookie: true,
+            withCookie: true,
+        },
+        undefined,
+        {
+            name: "TEST",
+            department: department.id,
+        }
+    );
+}
+
+async function createDepartment(this: BaseWorld): Promise<void> {
+    await loadAndCall.call(this, "createDepartment", {
+        saveCookie: true,
+        withCookie: true,
+    });
+}
+
 const authActions: ActionFnMap = {
     registerBusiness,
     login,
@@ -139,6 +173,8 @@ const authActions: ActionFnMap = {
     inviteUser,
     acceptInvite,
     authCheck,
+    createDepartment,
+    createRole,
 };
 
 export default authActions;

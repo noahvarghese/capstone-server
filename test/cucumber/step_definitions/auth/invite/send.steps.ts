@@ -101,4 +101,5 @@ Then("the user should get an invite", async function (this: BaseWorld) {
 
 Then("I get an error", async function (this: BaseWorld) {
     expect(this.getCustomProp<number>("status")).to.be.greaterThan(299);
+    expect(this.getCustomProp<number>("status")).not.to.be.eq(404);
 });
