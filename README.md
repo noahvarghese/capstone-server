@@ -1,3 +1,4 @@
+![Continuous Deployment](https://github.com/noahvarghese/capstone-server/actions/workflows/cd.yaml/badge.svg)
 # OnBoard - Backend
 
 ## About
