@@ -29,12 +29,12 @@ jobs:
 
           for f in $(find src/routes -name '*.ts');
           do
-            routes=($(cat "$f" | grep "router.use"))
+            routes=( $(cat "$f" | grep "router.use") )
+
             for r in "${routes[@]}";
             do
               prefix_removed=${r:12}
-              suffix_removed=${prefix_removed::-3}
-              route=$(echo suffix_removed | cut -d \" -f 1)
+              route=$(echo prefix_removed | cut -d \" -f 1)
               echo "$route"
               ROUTES+="$route"
             done
