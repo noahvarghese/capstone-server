@@ -1,8 +1,8 @@
 name: Continuous Deployment
 
 on:
-    push:
-        branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   continuous-integration:
@@ -40,8 +40,44 @@ jobs:
       - uses: actions/setup-node@v2
       - name: install dependencies
         run: npm i
-      - name: tests
-        run: npm run test
+      - name: run unit tests only if files have changed
+        run: |
+          # Gets array of files that were changed between commits
+          FILES=( git diff --name-only $(git rev-parse @~) $(git rev-parse @) )
+
+          RUN_UNIT_TEST=false
+          RUN_API_TEST=false
+
+          for f in "${FILES[@]}"
+          do
+            if [ echo "$f" | grep -q "src/models" ] ; then
+              RUN_TEST=true
+              break
+            fi
+
+            if [echo "$f" | grep -q "database/" ]; then
+              RUN_TEST=true
+              break
+            fi
+
+            if [echo "$f" | grep -q "test/jest" ]; then
+              RUN_TEST=true
+              break
+            fi
+
+            if [echo "$f" | grep -q "test/sample_data/model" ]; then
+              RUN_TEST=true
+              break
+            fi
+          done
+
+          if [ "$RUN_TEST" = true ]; then
+            npm run test:jest
+          else
+            echo "No Tests Changed"
+          fi
+      - name: api tests
+        run: npm run test:cucumber
   continuous-deployment:
     if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'cd skip') && !contains(github.event.head_commit.message, 'skip cd'))"
     runs-on: ubuntu-latest
