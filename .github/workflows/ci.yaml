@@ -45,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - name: install dependencies
+        run: npm i
       # - uses: actions/setup-python@v2
       # - name: install python dependencies
       #   run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
@@ -65,17 +68,17 @@ jobs:
               break
             fi
 
-            if [echo "$f" | grep -q "database/" ]; then
+            if [ echo "$f" | grep -q "database/" ]; then
               RUN_TEST=true
               break
             fi
 
-            if [echo "$f" | grep -q "test/jest" ]; then
+            if [ echo "$f" | grep -q "test/jest" ]; then
               RUN_TEST=true
               break
             fi
 
-            if [echo "$f" | grep -q "test/sample_data/model" ]; then
+            if [ echo "$f" | grep -q "test/sample_data/model" ]; then
               RUN_TEST=true
               break
             fi
@@ -86,10 +89,5 @@ jobs:
           else
             echo "No Tests Changed"
           fi
-      - uses: actions/setup-node@v2
-      - name: install dependencies
-        run: npm i
-      - name: unit test
-        run: npm run test:jest
       - name: bdd test
         run: npm run test:cucumber
