@@ -17,7 +17,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         "/auth/register",
         /^\/auth\/forgot_password/,
         /^\/auth\/reset_password\/\w+$/,
-        /^\/member\/invite\/\w+/,
+        /^\/members\/invite\/\w+/,
     ];
     const openRoutes: (string | RegExp)[] = [/^\/auth\/?$/];
 
