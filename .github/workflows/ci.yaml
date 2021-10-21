@@ -19,6 +19,33 @@ jobs:
         run: npm i
       - name: check formatting
         run: npm run format:check
+  check-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: check apis are documented
+        run: |
+          ROUTES=()
+
+          for f in $(find src/routes -name '*.ts');
+          do
+            routes=($(cat "$f" | grep "router.use"))
+            for r in "${routes[@]}";
+            do
+              prefix_removed=${r:12}
+              suffix_removed=${prefix_removed::-3}
+              route=$(echo suffix_removed | cut -d \" -f 1)
+              echo "$route"
+              ROUTES+="$route"
+            done
+          done
+
+          for r in "${ROUTES[@]}"; do
+            if [ ! $(cat ./README.md | grep -q "$r") ]; then
+              echo 'Route "$r" missing from documentation'
+              exit 125
+            fi
+          done
   continuous-integration:
     env:
       DB: ${{ secrets.DB }}
