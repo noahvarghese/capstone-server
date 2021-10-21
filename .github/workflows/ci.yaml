@@ -24,30 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: check apis are documented
-        run: |
-          ROUTES=()
-          pwd
-          ls -la
-
-          for f in $(find src/routes -name '*.ts');
-          do
-            routes=( $(cat "$f" | grep "router.use") )
-
-            for r in "${routes[@]}";
-            do
-              prefix_removed=${r:12}
-              route=$(echo prefix_removed | cut -d \" -f 1)
-              echo "$route"
-              ROUTES+="$route"
-            done
-          done
-
-          for r in "${ROUTES[@]}"; do
-            if [ ! $(cat ./README.md | grep -q "$r") ]; then
-              echo 'Route "$r" missing from documentation'
-              exit 125
-            fi
-          done
+        run: ./bin/documentation/check_routes.sh
   continuous-integration:
     env:
       DB: ${{ secrets.DB }}
