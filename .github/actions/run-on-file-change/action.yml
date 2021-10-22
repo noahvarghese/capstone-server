@@ -12,9 +12,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
-      run: ./bin/files/changed.sh ${{ inputs.files }} ,
-      shell: bash
+    - id: files
+      name: Get changed files and compare
+      uses: jitterbit/get-changed-files@v1
+      run: |
+        ./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,
+    # - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
+    #   run: ./bin/files/changed.sh ${{ inputs.files }} ,
+    #   shell: bash
     - run: |
         if [ $? -eq 2 ];
         then

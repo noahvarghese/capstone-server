@@ -18,18 +18,23 @@ trim_all_whitespace() {
 }
 
 if [[ -z $1 ]]; then
+    echo "Changed files not set"
+    exit 1
+fi
+
+if [[ -z $2 ]]; then
     echo "Variable files not set"
     exit 1
 fi
 
 DELIMITER=,
 
-if [ ! -z $2 ]; then
-    DELIMITER=$2
+if [ ! -z $3 ]; then
+    DELIMITER=$3
 fi
 
-GIVEN_FILES=$1
-CHANGED_FILES=$(git diff --name-only $(git rev-parse @~) $(git rev-parse @))
+CHANGED_FILES=$1
+GIVEN_FILES=$2
 
 echo $?
 echo "$CHANGED_FILES"
