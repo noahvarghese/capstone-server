@@ -2,13 +2,13 @@
 
 if ! test -f "$1"; then
     echo "Please provide a valid file"
-    exit 125
+    exit 1
 fi
 echo $1 $2
 
 if ! test -d "$2"; then
     echo "Please provide a path to the routes"
-    exit 125
+    exit 2
 fi
 
 SAVEIFS=$IFS   # Save current IFS
@@ -44,7 +44,7 @@ do
 done
 
 if [ $FOUND -gt 0 ]; then
-    exit 125
+    exit 3
 fi
 
 IFS=$SAVEIFS   # Restore IFS
