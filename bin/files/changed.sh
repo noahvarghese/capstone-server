@@ -38,19 +38,19 @@ IFS=$DELIMITER
 CHANGED_FILES=$1
 GIVEN_FILES=$2
 
-echo $?
-echo "$CHANGED_FILES"
+# echo $?
+# echo "$CHANGED_FILES"
 
 for changed in ${CHANGED_FILES[@]}; do
     for given in ${GIVEN_FILES[@]}; do
         given="$(trim_all_whitespace "$given")"
         if [[ "$changed" == *"$given"* ]]; then
-            echo [ CHANGED ]: "$changed"
-            echo [ PATTERN ]: "$given"
+            # echo [ CHANGED ]: "$changed"
+            # echo [ PATTERN ]: "$given"
             cleanup true
         fi
     done
 done
 
-echo "No files matched"
+# echo "No files matched"
 cleanup false
