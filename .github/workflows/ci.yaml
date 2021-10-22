@@ -66,7 +66,7 @@ jobs:
             # Gets previous commit hash
             VAL=$(git rev-parse @~)
           fi
-          echo '::set-output name=CHANGED::$VAL'
+          echo '::set-output name=CHANGED::${VAL}'
         shell: bash
       - uses: ./.github/actions/ci
         with:
