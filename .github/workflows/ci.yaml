@@ -23,7 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/check-documentation
+      - name: "Check API Documentation"
+        uses: ./.github/actions/check-documentation
         with:
           doc: ./README.md
           routes: ./src/routes/
