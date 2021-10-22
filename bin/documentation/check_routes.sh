@@ -1,19 +1,25 @@
 #!/bin/bash
 
+SAVEIFS=$IFS   # Save current IFS
+IFS=$'\n'      # Change IFS to new line
+
+cleanup() {
+    IFS=$SAVEIFS   # Restore IFS
+    exit $1
+}
+
 if ! test -f "$1"; then
     echo "Please provide a valid file"
-    exit 1
+    cleanup 1
 fi
 echo $1 $2
 
 if ! test -d "$2"; then
     echo "Please provide a path to the routes"
-    exit 2
+    cleanup 2
 fi
 
-SAVEIFS=$IFS   # Save current IFS
-IFS=$'\n'      # Change IFS to new line
-names=($names) # split to array $names
+
 FOUND=0
 
 for f in $(find "$2" -name '*.ts');
@@ -44,7 +50,7 @@ do
 done
 
 if [ $FOUND -gt 0 ]; then
-    exit 3
+    cleanup 3
 fi
 
-IFS=$SAVEIFS   # Restore IFS
+cleanup 0

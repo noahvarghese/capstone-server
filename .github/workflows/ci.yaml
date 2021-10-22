@@ -63,40 +63,9 @@ jobs:
       # - name: reset test DB
       #   run: python bin/reset_db/reset_db.py -t --files ./database/
       - name: run unit tests only if files have changed
-        run: |
-          # Gets array of files that were changed between commits
-          FILES=( git diff --name-only $(git rev-parse @~) $(git rev-parse @) )
-
-          RUN_UNIT_TEST=false
-          RUN_API_TEST=false
-
-          for f in "${FILES[@]}"
-          do
-            if [ echo "$f" | grep -q "src/models" ] ; then
-              RUN_TEST=true
-              break
-            fi
-
-            if [ echo "$f" | grep -q "database/" ]; then
-              RUN_TEST=true
-              break
-            fi
-
-            if [ echo "$f" | grep -q "test/jest" ]; then
-              RUN_TEST=true
-              break
-            fi
-
-            if [ echo "$f" | grep -q "test/sample_data/model" ]; then
-              RUN_TEST=true
-              break
-            fi
-          done
-
-          if [ "$RUN_TEST" = true ]; then
-            npm run test:jest
-          else
-            echo "No Tests Changed"
-          fi
+        uses: ./.github/actions/run-on-file-change
+        with:
+          files: "src/models, test/jest, test/sample_data/model, database"
+          command: "npm run test:jest"
       - name: bdd test
         run: npm run test:cucumber

@@ -1,0 +1,25 @@
+name: "Run On File Change"
+description: "If given files changed, run the command"
+inputs:
+  files:
+    description: Array of partial files, globs not supported yet
+    required: true
+    default: "[]"
+  command:
+    description: "Command to run if files were changed"
+    required: true
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
+      run: ./bin/files/changed ${{ inputs.files }} ,
+      continue-on-error: true
+      shell: bash
+    - run: |
+        if [ $? -eq 2 ];
+        then
+          echo Executing command "${{ inputs.command }}";
+          eval ${{ inputs.command }}; 
+        fi
+      shell: bash
