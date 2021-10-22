@@ -1,0 +1,26 @@
+name: "Continuous Integration"
+description: "continuous integration"
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - name: install dependencies
+      run: npm ci
+      shell: bash
+    - name: model tests
+      run: |
+        # Runs only changed tests
+        if ${{ github.event_name }} == 'pull_request'; then
+          # Gets the name out of the path
+          BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
+          CHANGED=origin/"$(BASE_REF_NAME)"
+        else
+          # Gets previous commit hash
+          CHANGED="$(git rev-parse @~)"
+        fi
+        npm run test:jest -- --changedSince "$(CHANGED)"
+      shell: bash
+    - name: api tests
+      run: npm run test:cucumber
+      shell: bash

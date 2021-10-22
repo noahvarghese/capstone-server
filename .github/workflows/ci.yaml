@@ -1,5 +1,4 @@
-name: Continuous Integration
-
+name: Checks
 on:
   push:
     branches:
@@ -19,7 +18,7 @@ jobs:
         run: npm i
       - name: check formatting
         run: npm run format:check
-  check-documentation:
+  check-api-documentation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,21 +26,8 @@ jobs:
         uses: ./.github/actions/check-documentation
         with:
           doc: ./README.md
-          routes: ./src/routes/
-  db-should-update:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - name: install python dependencies
-        run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
-      - name: Reset database if SQL files changed
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"database\""
-          command: "python ./bin/database/reset/main.py -t --files ./database/"
+          routes: ./src/routes/ 
   continuous-integration:
-    needs: db-should-update
     env:
       DB: ${{ secrets.DB }}
       DB_PORT: ${{ secrets.DB_PORT }}
@@ -66,37 +52,4 @@ jobs:
       SECONDARY_TEST_EMAIL: ${{ secrets.SECONDARY_TEST_EMAIL }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-      - name: install dependencies
-        run: npm ci
-      - name: unit tests
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"src/models, test/jest, test/sample_data/model, database\""
-          command: "npm run test:jest"
-      - name: auth tests
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"src/routes/auth, test/cucumber/features/auth, test/sample_data\""
-          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/auth"
-      - name: departments tests
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"src/routes/departments, test/cucumber/features/departments, test/sample_data\""
-          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/departments"
-      - name: roles tests
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"src/routes/roles, test/cucumber/features/roles, test/sample_data\""
-          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/roles"
-      - name: members tests
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"src/routes/members, test/cucumber/features/members, test/sample_data\""
-          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/members"
-      - name: settings tests
-        uses: ./.github/actions/run-on-file-change
-        with:
-          files: "\"src/routes/settings, test/cucumber/features/settings, test/sample_data\""
-          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/settings"
+      - uses: ./.github/actions/ci
