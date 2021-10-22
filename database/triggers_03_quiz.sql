@@ -13,7 +13,6 @@ BEGIN
     
     SET NEW.updated_on = NOW();
 END
-
 //
 
 CREATE TRIGGER quiz_delete

@@ -43,7 +43,7 @@ do
         cat $1 | grep -q "$full_route"
 
         if [ $(echo $?) -gt 0 ]; then
-            echo Route: "$full_route" missing from documentation
+            echo Route: "$full_route" missing from documentation file "$1"
             FOUND+=1
         fi
     done
