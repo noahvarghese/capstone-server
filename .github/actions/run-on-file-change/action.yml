@@ -13,10 +13,12 @@ runs:
   using: "composite"
   steps:
     - id: files
-      name: Get changed files and compare
+      name: Get changed files
       uses: jitterbit/get-changed-files@v1
+    - name: Compare changed files to watched files
       run: |
         ./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,
+      shell: bash
     # - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
     #   run: ./bin/files/changed.sh ${{ inputs.files }} ,
     #   shell: bash
