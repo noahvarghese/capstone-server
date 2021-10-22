@@ -16,6 +16,7 @@ runs:
           CHANGED=origin/"$(BASE_REF_NAME)"
         else
           # Gets previous commit hash
+          echo pre changed
           CHANGED="$(git rev-parse @~)"
           echo "$CHANGED"
         fi
