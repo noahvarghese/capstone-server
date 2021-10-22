@@ -24,7 +24,7 @@ runs:
         echo '::set-output name=CHANGED::$CHANGED'
       shell: bash
     - run: |
-        if [ ${{ steps.changed.outputs.CHANGED }} == true ];
+        if [[ ${{ steps.changed.outputs.CHANGED }} == true ]];
         then
           echo Executing command "${{ inputs.command }}";
           eval ${{ inputs.command }}; 
