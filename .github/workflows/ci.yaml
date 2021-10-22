@@ -57,6 +57,7 @@ jobs:
         name: "Get changed"
         run: |
           git rev-parse --git-dir
+          git branch -a
           if ${{ github.event_name }} == 'pull_request'; then
             # Gets the name out of the path
             BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
