@@ -41,9 +41,9 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <pre>{email: string; password: string;}</pre></td>
             <td>false</td>
             <td>200</td>
-            <td>void</td>
+            <td>{}</td>
             <td>400, 401</td>
-            <td><pre>{message: string;} | void</pre></td>
+            <td><pre>{message?: string;}</pre></td>
             <td>logs user in, sets session variable so that a cookie is returned for use</td>
         </tr>
         <tr>
@@ -65,9 +65,9 @@ They may be moved into their own repo at the end of this to showcase all parts o
             }</pre></td>
             <td>false</td>
             <td>201</td>
-            <td><pre>void</pre></td>
+            <td><pre>{}</pre></td>
             <td>400, 500</td>
-            <td><pre>{message: string; field: string; } | {message: string;}</pre></td>
+            <td><pre>{message?: string; field?: string; }</pre></td>
             <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
         </tr>
         <tr>
@@ -87,9 +87,9 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td><pre>{email: string;}</pre></td>
             <td>false</td>
             <td>200</td>
-            <td><pre>void</pre></td>
+            <td><pre>{}</pre></td>
             <td>401, 500</td>
-            <td><pre>{message: string;}</pre></td>
+            <td><pre>{message?: string;}</pre></td>
             <td>submit email to receive a link to reset password via email</td>
         </tr>
         <tr>
@@ -98,39 +98,185 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td><pre>{password: string; confirm_password:string;}</pre></td>
             <td>false</td>
             <td>200</td>
-            <td><pre>void</pre></td>
+            <td><pre>{}</pre></td>
             <td>401, 403, 500</td>
-            <td><pre>{message: string;} | void</pre></td>
+            <td><pre>{message?: string;}</pre></td>
             <td>this is the link sent via email to reset the password</td>
         </tr>
         <tr>
             <td>POST</td>
             <td>/members/invite</td>
             <td>
-                <pre>{
+                <pre>
+                {
                     first_name: string; 
                     last_name: string; 
                     email: string; 
                     phone: string
-                }</pre>
+                }
+                </pre>
             </td>
             <td>true</td>
             <td>200</td>
-            <td><pre>void</pre></td>
+            <td><pre>{}</pre></td>
             <td>400,500</td>
-            <td><pre>{message: string;}</pre></td>
+            <td><pre>{message?: string;}</pre></td>
             <td>This is how a business adds a new user, will add user to database if user does not exist, and send invite to user</td>
         </tr>
         <tr>
             <td>POST</td>
+            <td>/members/invite</td>
+            <td>
+                <pre>
+                {
+                    first_name: string;
+                    last_name: string;
+                    email: string;
+                    phone: string;
+                }    
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Requires user sending request to have explicit permissions to create user. Checks if user exists before creating. Otherwise will just send the invite.</td>
+        </tr>
+        <tr>
+            <td>POST</td>
             <td>/members/invite/:token</td>
-            <td><pre></pre></td>
+            <td><pre>{}</pre></td>
             <td>false</td>
             <td>200</td>
-            <td><pre>void</pre></td>
+            <td><pre>{}</pre></td>
             <td>400,500</td>
-            <td><pre>{message: string;}</pre></td>
-            <td>Not implmented</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Checks that token is valid then converts user's link to business from membership_request to membership</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/settings/nav</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    home: boolean;
+                    members: boolean;
+                    departments: boolean;
+                    roles: boolean;
+                    manuals: boolean;
+                    quizzes: boolean;
+                    reports: boolean;
+                    scores: boolean;
+                    logout: boolean;
+                }: Permission     
+                </pre>
+            </td>
+            <td>500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>returns the pages the cleint has access to</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/departments/:id</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    name: string;
+                    numMembers: number;
+                    numRoles: number;
+                    ...more
+                }
+                </pre>
+            </td>
+            <td>403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Gets department, not implemented</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/departments</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    name: string;
+                    numMembers: number;
+                    numRoles: number;
+                }[]
+                </pre>
+            </td>
+            <td>403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Gets list of departments</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/departments</td>
+            <td><pre>{name: string;}</pre></td>
+            <td>true</td>
+            <td>201</td>
+            <td><pre>{}</pre></td>
+            <td>403,405,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Creates department</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/roles</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    name: string;
+                    numMembers: number;
+                    department: string;
+                }[]
+                </pre>
+            </td>
+            <td>403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Gets list of roles</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/roles</td>
+            <td>
+                <pre>
+                {
+                    name: string; 
+                    department: number; 
+                    home: boolean;
+                    members: boolean;
+                    departments: boolean;
+                    roles: boolean;
+                    manuals: boolean;
+                    quizzes: boolean;
+                    reports: boolean;
+                    scores: boolean;
+                    logout: boolean;
+                }
+                </pre>
+            </td>
+            <td>true</td>
+            <td>201</td>
+            <td><pre>{}</pre></td>
+            <td>403,405,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Creates role</td>
         </tr>
         <tr>
             <td></td>
