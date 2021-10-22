@@ -78,25 +78,25 @@ jobs:
       - name: auth tests
         uses: ./.github/actions/run-on-file-change
         with:
-          files: "\"src/routes/auth, test/sample_data\""
+          files: "\"src/routes/auth, test/cucumber/features/auth, test/sample_data\""
           command: "npm run test:cucumber-feature -- ./test/cucumber/feature/auth"
       - name: departments tests
         uses: ./.github/actions/run-on-file-change
         with:
-          files: "\"src/routes/departments, test/sample_data\""
+          files: "\"src/routes/departments, test/cucumber/features/departments, test/sample_data\""
           command: "npm run test:cucumber-feature -- ./test/cucumber/feature/departments"
       - name: roles tests
         uses: ./.github/actions/run-on-file-change
         with:
-          files: "\"src/routes/roles, test/sample_data\""
+          files: "\"src/routes/roles, test/cucumber/features/roles, test/sample_data\""
           command: "npm run test:cucumber-feature -- ./test/cucumber/feature/roles"
       - name: members tests
         uses: ./.github/actions/run-on-file-change
         with:
-          files: "\"src/routes/members, test/sample_data\""
+          files: "\"src/routes/members, test/cucumber/features/members, test/sample_data\""
           command: "npm run test:cucumber-feature -- ./test/cucumber/feature/members"
       - name: settings tests
         uses: ./.github/actions/run-on-file-change
         with:
-          files: "\"src/routes/settings, test/sample_data\""
+          files: "\"src/routes/settings, test/cucumber/features/settings, test/sample_data\""
           command: "npm run test:cucumber-feature -- ./test/cucumber/feature/settings"
