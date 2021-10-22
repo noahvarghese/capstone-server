@@ -17,10 +17,10 @@ runs:
         else
           # Gets previous commit hash
           echo pre changed
-          CHANGED="$(git rev-parse @~)"
+          CHANGED="$(git rev-parse HEAD^1)"
           echo "$CHANGED"
         fi
-        npm run test:jest -- --changedSince "$(CHANGED)"
+        npm run test:jest -- --changedSince "$CHANGED"
       shell: bash
     - name: api tests
       run: npm run test:cucumber
