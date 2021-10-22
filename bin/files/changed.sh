@@ -10,7 +10,11 @@ SAVEIFS=$IFS   # Save current IFS
 
 cleanup() {
     IFS=$SAVEIFS   # Restore IFS
-    exit $1
+
+    if $1 -gt 0; then
+        exit $1
+    fi
+    echo $1
 } 
 
 trim_all_whitespace() {
@@ -47,10 +51,10 @@ for changed in ${CHANGED_FILES[@]}; do
         if [[ "$changed" == *"$given"* ]]; then
             echo [ CHANGED ]: "$changed"
             echo [ PATTERN ]: "$given"
-            cleanup 2
+            cleanup true
         fi
     done
 done
 
 echo "No files matched"
-cleanup 0
+cleanup false

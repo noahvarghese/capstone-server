@@ -17,12 +17,14 @@ runs:
       uses: jitterbit/get-changed-files@v1
       with:
         format: "csv"
-    - name: Compare changed files to watched files
+    - id: changed
+      name: Compare changed files to watched files
       run: |
-        ./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,
+        CHANGED="$(./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,)"
+        echo '::set-output name=CHANGED::CHANGED'
       shell: bash
     - run: |
-        if [ $? -eq 2 ];
+        if [ ${{ steps.changed.outputs.CHANGED }} == true ];
         then
           echo Executing command "${{ inputs.command }}";
           eval ${{ inputs.command }}; 
