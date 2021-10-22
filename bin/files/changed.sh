@@ -8,11 +8,6 @@
 # In our case we are going to throw an error, or an exit code of greater than zero
 SAVEIFS=$IFS   # Save current IFS
 
-cleanup() {
-    IFS=$SAVEIFS   # Restore IFS
-    echo $1
-} 
-
 trim_all_whitespace() {
     echo -e "${1}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 }
@@ -47,10 +42,14 @@ for changed in ${CHANGED_FILES[@]}; do
         if [[ "$changed" == *"$given"* ]]; then
             # echo [ CHANGED ]: "$changed"
             # echo [ PATTERN ]: "$given"
-            cleanup true
+            IFS=$SAVEIFS   # Restore IFS
+            echo true
+            exit
         fi
     done
 done
 
 # echo "No files matched"
-cleanup false
+IFS=$SAVEIFS   # Restore IFS
+echo false
+exit
