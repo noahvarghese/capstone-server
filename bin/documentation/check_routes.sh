@@ -1,30 +1,34 @@
 #!/bin/bash
-FROMATTED_ROUTES=()
 
-for f in $(find src/routes/member -name '*.ts');
+if ! test -f "$1"; then
+    echo "Please provide a valid file"
+    exit 125
+fi
+
+SAVEIFS=$IFS   # Save current IFS
+IFS=$'\n'      # Change IFS to new line
+names=($names) # split to array $names
+FOUND=0
+
+for f in $(find src/routes -name '*.ts');
 do
-    echo "$f"
     routes=( $(cat "$f" | grep "router.use(\"") )
-    echo "RS"
-    echo $routes
 
     for r in "${routes[@]}";
     do
-        echo "N"
-        echo "$r"
         prefix_removed=${r:12}
-        echo "P"
-        echo "$prefix_removed"
         route=$(echo "$prefix_removed" | cut -d \" -f 1)
-        echo "R"
-        echo "$route"
-        FORMATTED_ROUTES+="$route"
+    
+        cat $1 | grep -q "$route"
+        if [ $(echo $?) -gt 0 ]; then
+            echo Route: "$route" missing from documentation
+            FOUND+=1
+        fi
     done
 done
 
-for r in "${FORMATTED_ROUTES[@]}"; do
-    if [ ! $(cat ./README.md | grep -q "$r") ]; then
-        echo Route "$r" missing from documentation
-        exit 125
-    fi
-done
+if [ $FOUND -gt 0 ]; then
+    exit 125
+fi
+
+IFS=$SAVEIFS   # Restore IFS
