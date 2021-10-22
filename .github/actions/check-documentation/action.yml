@@ -10,7 +10,7 @@ inputs:
     required: true
     default: ""
 runs:
-  using: "composite"
+  using: composite
   steps:
     - run: ./bin/documentation/check_routes.sh ${{ inputs.doc }} ${{ inputs.routes }}
       shell: bash

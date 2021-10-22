@@ -4,13 +4,13 @@ inputs:
   files:
     description: Array of partial files, globs not supported yet
     required: true
-    default: "[]"
+    default: ""
   command:
     description: "Command to run if files were changed"
     required: true
     default: ""
 runs:
-  using: "composite"
+  using: composite
   steps:
     - id: files
       name: Get changed files
@@ -27,5 +27,7 @@ runs:
         then
           echo Executing command "${{ inputs.command }}";
           eval ${{ inputs.command }}; 
+        else
+          echo No files changed
         fi
       shell: bash
