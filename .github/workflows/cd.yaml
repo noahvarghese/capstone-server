@@ -40,7 +40,6 @@ jobs:
         with:
           files: "\"src/models, test/jest, test/sample_data/model, database\""
           command: "npm run test:jest"
-      - name: bdd test
       - name: api tests
         run: npm run test:cucumber
   # This is not a good idea for actual applications, but for school it should be okay
