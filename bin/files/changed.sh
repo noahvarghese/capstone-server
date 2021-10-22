@@ -31,6 +31,7 @@ fi
 GIVEN_FILES=$1
 CHANGED_FILES=$(git diff --name-only $(git rev-parse @~) $(git rev-parse @))
 
+echo $?
 echo "$CHANGED_FILES"
 
 for changed in ${CHANGED_FILES[@]}; do
