@@ -39,7 +39,7 @@ jobs:
       #   run: python ./bin/reset_db/reset_db.py --files ./database/ -t
       - uses: actions/setup-node@v2
       - name: install dependencies
-        run: npm i
+        run: npm ci
       - name: run unit tests only if files have changed
         run: |
           # Gets array of files that were changed between commits

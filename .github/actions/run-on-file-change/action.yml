@@ -14,7 +14,6 @@ runs:
   steps:
     - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
       run: ./bin/files/changed ${{ inputs.files }} ,
-      continue-on-error: true
       shell: bash
     - run: |
         if [ $? -eq 2 ];
