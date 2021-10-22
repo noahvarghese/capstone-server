@@ -33,6 +33,8 @@ if [ ! -z $3 ]; then
     DELIMITER=$3
 fi
 
+IFS=$DELIMITER
+
 CHANGED_FILES=$1
 GIVEN_FILES=$2
 
@@ -40,7 +42,6 @@ echo $?
 echo "$CHANGED_FILES"
 
 for changed in ${CHANGED_FILES[@]}; do
-    IFS=$DELIMITER
     for given in ${GIVEN_FILES[@]}; do
         given="$(trim_all_whitespace "$given")"
         if [[ "$changed" == *"$given"* ]]; then

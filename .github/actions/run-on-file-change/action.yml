@@ -21,9 +21,6 @@ runs:
       run: |
         ./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,
       shell: bash
-    # - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
-    #   run: ./bin/files/changed.sh ${{ inputs.files }} ,
-    #   shell: bash
     - run: |
         if [ $? -eq 2 ];
         then
