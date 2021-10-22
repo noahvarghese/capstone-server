@@ -31,6 +31,8 @@ fi
 GIVEN_FILES=$1
 CHANGED_FILES=$(git diff --name-only $(git rev-parse @~) $(git rev-parse @))
 
+echo "$CHANGED_FILES"
+
 for changed in ${CHANGED_FILES[@]}; do
     IFS=$DELIMITER
     for given in ${GIVEN_FILES[@]}; do
@@ -43,5 +45,5 @@ for changed in ${CHANGED_FILES[@]}; do
     done
 done
 
-echo "No files changed"
+echo "No files matched"
 cleanup 0
