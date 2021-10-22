@@ -21,7 +21,7 @@ runs:
       name: Compare changed files to watched files
       run: |
         CHANGED="$(./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,)"
-        echo '::set-output name=CHANGED::CHANGED'
+        echo '::set-output name=CHANGED::$CHANGED'
       shell: bash
     - run: |
         if [ ${{ steps.changed.outputs.CHANGED }} == true ];
