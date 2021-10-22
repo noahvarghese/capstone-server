@@ -64,7 +64,7 @@ jobs:
           else
             # Gets previous commit hash
             echo pre changed
-            VAL=git rev-parse HEAD^1
+            VAL=$(git rev-parse HEAD^1)
             echo "$VAL"
           fi
           echo '::set-output name=CHANGED::"$VAL"'
