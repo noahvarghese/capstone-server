@@ -4,6 +4,13 @@
 # If there is a specific order you need the files executed in, use a csv string of paths
 # python ./bin/reset_db.py -t --files ./database/ --path .env
 
+# CI Examples
+      # - uses: actions/setup-python@v2
+      # - name: install python dependencies
+      #   run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
+      # - name: reset test DB
+      #   run: python bin/reset_db/reset_db.py -t --files ./database/
+
 import sys, getopt, os, re
 from os import path, listdir
 from os.path import join, dirname, abspath, isdir
