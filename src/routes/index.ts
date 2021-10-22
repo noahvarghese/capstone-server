@@ -7,7 +7,7 @@ import userRouter from "./user";
 import permissionRoute from "./permission";
 import roleRouter from "./role";
 import settingsRoute from "./settings";
-import memberRoute from "./member";
+import memberRoute from "./members";
 
 const router = Router();
 

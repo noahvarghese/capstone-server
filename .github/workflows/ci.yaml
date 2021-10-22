@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: check apis are documented
-        run: ./bin/documentation/check_routes.sh ./README.md ./src/routes
+        run: ./bin/documentation/check_routes.sh ./README.md ./src/routes/
   continuous-integration:
     env:
       DB: ${{ secrets.DB }}

@@ -48,7 +48,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         </tr>
         <tr>
             <td>POST</td>
-            <td>/auth/signup</td>
+            <td>/auth/register</td>
             <td><pre>
             {
                 first_name: string;
@@ -83,7 +83,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         </tr>
         <tr>
             <td>POST</td>
-            <td>/auth/requestResetPassword </td>
+            <td>/auth/forgot_password </td>
             <td><pre>{email: string;}</pre></td>
             <td>false</td>
             <td>200</td>
@@ -94,7 +94,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         </tr>
         <tr>
             <td>POST</td>
-            <td>/auth/resetPassword/{token}</td>
+            <td>/auth/reset_password/{token}</td>
             <td><pre>{password: string; confirm_password:string;}</pre></td>
             <td>false</td>
             <td>200</td>
@@ -105,7 +105,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         </tr>
         <tr>
             <td>POST</td>
-            <td>/user/invite</td>
+            <td>/members/invite</td>
             <td>
                 <pre>{
                     first_name: string; 
@@ -123,7 +123,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         </tr>
         <tr>
             <td>POST</td>
-            <td>/user/invite/:token</td>
+            <td>/members/invite/:token</td>
             <td><pre></pre></td>
             <td>false</td>
             <td>200</td>

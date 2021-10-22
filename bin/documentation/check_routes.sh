@@ -24,17 +24,20 @@ do
     do
         prefix_removed=${r:12}
         route=$(echo "$prefix_removed" | cut -d \" -f 1)
+        
+        file_path="${f:${#2}-1}"
+        # Removes the index.ts to allow for concatenation
+        file_path="${file_path%/index.ts}"
+
+        full_route="$file_path""$route"
     
         # Checks that the file contains the route
-        cat $1 | grep -q "$route"
+        cat $1 | grep -q "$full_route"
 
         if [ $(echo $?) -gt 0 ]; then
             # Formats the file and route to make sense in context
             # Removes the file prefix that was passed as part of the CLI args
-            file_path="${f:${#2}-1}"
-            # Removes the index.ts to allow for concatenation
-            file_path="${file_path%/index.ts}"
-            echo Route: "$file_path""$route" missing from documentation
+            echo Route: "$full_route" missing from documentation
             FOUND+=1
         fi
     done

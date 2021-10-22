@@ -6,7 +6,7 @@ import { loadBody } from "@test/cucumber/helpers/setup";
 import { submitForm } from "@test/cucumber/helpers/submit_form";
 import actions from "@test/cucumber/helpers/actions/auth";
 import attributes from "@test/sample_data/api/attributes";
-import { InviteUserProps } from "@routes/member/invite";
+import { InviteUserProps } from "@routes/members/invite";
 import { LoginProps } from "@routes/auth/login";
 import User from "@models/user/user";
 import { urls } from "@test/sample_data/api/dependencies";
