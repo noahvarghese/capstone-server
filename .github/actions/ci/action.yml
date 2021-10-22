@@ -10,6 +10,8 @@ runs:
     - name: model tests
       run: |
         # Runs only changed tests
+        pwd
+        ls -la
         if ${{ github.event_name }} == 'pull_request'; then
           # Gets the name out of the path
           BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
