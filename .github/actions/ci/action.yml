@@ -15,6 +15,7 @@ runs:
       shell: bash
     - name: model tests
       run: |
+        echo ${{ inputs.changed }}
         npm run test:jest -- --changedSince "${{ inputs.changed }}"
       shell: bash
     - name: api tests
