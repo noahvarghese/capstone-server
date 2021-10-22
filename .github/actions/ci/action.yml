@@ -1,21 +1,31 @@
 name: "Continuous Integration"
 description: "continuous integration"
-inputs:
-  changed:
-    description: "either the commit hash or branch to compare against"
-    required: true
-    default: ""
 runs:
   using: composite
   steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - uses: actions/setup-node@v2
+    - id: changed
+      name: "Get changed"
+      run: |
+        if ${{ github.event_name }} == 'pull_request'; then
+          # Gets the name out of the path
+          BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
+          VAL=origin/"$(BASE_REF_NAME)"
+        else
+          # Gets previous commit hash
+          VAL=$(git rev-parse @~)
+        fi
+        echo "::set-output name=CHANGED::${VAL}"
+      shell: bash
     - name: install dependencies
       run: npm ci
       shell: bash
     - name: model tests
       run: |
-        echo ${{ inputs.changed }}
-        npm run test:jest -- --changedSince "${{ inputs.changed }}"
+        npm run test:jest -- --changedSince "${{ steps.changed.outputs.CHANGED }}"
       shell: bash
     - name: api tests
       run: npm run test:cucumber
