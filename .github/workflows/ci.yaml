@@ -60,6 +60,7 @@ jobs:
           git branch -a
           git fetch
           git branch -a
+          git diff --name-only $(git rev-parse @~) $(git rev-parse @)
           if ${{ github.event_name }} == 'pull_request'; then
             # Gets the name out of the path
             BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
@@ -67,7 +68,7 @@ jobs:
           else
             # Gets previous commit hash
             echo pre changed
-            VAL=$(git rev-parse HEAD^1)
+            VAL=$(git rev-parse @~)
             echo "$VAL"
           fi
           echo '::set-output name=CHANGED::"$VAL"'
