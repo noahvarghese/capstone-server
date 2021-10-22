@@ -13,7 +13,7 @@ runs:
   using: "composite"
   steps:
     - name: "Check if files have changed, expectes values to be wrapped in quotes and comma seperated"
-      run: ./bin/files/changed ${{ inputs.files }} ,
+      run: ./bin/files/changed.sh ${{ inputs.files }} ,
       shell: bash
     - run: |
         if [ $? -eq 2 ];
