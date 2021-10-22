@@ -75,5 +75,28 @@ jobs:
         with:
           files: "\"src/models, test/jest, test/sample_data/model, database\""
           command: "npm run test:jest"
-      - name: bdd test
-        run: npm run test:cucumber
+      - name: auth tests
+        uses: ./.github/actions/run-on-file-change
+        with:
+          files: "\"src/routes/auth\""
+          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/auth"
+      - name: departments tests
+        uses: ./.github/actions/run-on-file-change
+        with:
+          files: "\"src/routes/departments\""
+          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/departments"
+      - name: roles tests
+        uses: ./.github/actions/run-on-file-change
+        with:
+          files: "\"src/routes/roles\""
+          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/roles"
+      - name: members tests
+        uses: ./.github/actions/run-on-file-change
+        with:
+          files: "\"src/routes/members\""
+          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/members"
+      - name: settings tests
+        uses: ./.github/actions/run-on-file-change
+        with:
+          files: "\"src/routes/settings\""
+          command: "npm run test:cucumber-feature -- ./test/cucumber/feature/settings"
