@@ -26,6 +26,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
+
 //
 
 CREATE TRIGGER membership_update
