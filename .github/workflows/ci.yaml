@@ -53,4 +53,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - id: changed
+        name: "Get changed"
+        run: |
+          if ${{ github.event_name }} == 'pull_request'; then
+            # Gets the name out of the path
+            BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
+            VAL=origin/"$(BASE_REF_NAME)"
+          else
+            # Gets previous commit hash
+            echo pre changed
+            VAL="$(git rev-parse HEAD^1)"
+            echo "$VAL"
+          fi
+          echo '::set-output name=CHANGED::"$VAL"'
+        shell: bash
       - uses: ./.github/actions/ci
+        with:
+         changed: ${{ steps.changed.outputs.CHANGED }}

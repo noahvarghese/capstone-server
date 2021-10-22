@@ -1,5 +1,10 @@
 name: "Continuous Integration"
 description: "continuous integration"
+inputs:
+  changed:
+    description: "either the commit hash or branch to compare against"
+    required: true
+    default: ""
 runs:
   using: composite
   steps:
@@ -10,20 +15,7 @@ runs:
       shell: bash
     - name: model tests
       run: |
-        # Runs only changed tests
-        pwd
-        ls -la
-        if ${{ github.event_name }} == 'pull_request'; then
-          # Gets the name out of the path
-          BASE_REF_NAME="$(echo ${{ github.base_ref }} | rev | cut -d / -f 1 | rev)"
-          CHANGED=origin/"$(BASE_REF_NAME)"
-        else
-          # Gets previous commit hash
-          echo pre changed
-          CHANGED="$(git rev-parse HEAD^1)"
-          echo "$CHANGED"
-        fi
-        npm run test:jest -- --changedSince "$CHANGED"
+        npm run test:jest -- --changedSince "${{ inputs.changed }}"
       shell: bash
     - name: api tests
       run: npm run test:cucumber
