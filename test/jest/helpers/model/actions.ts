@@ -1,4 +1,4 @@
-import JestBaseWorld from "../../support/base_world";
+import JestBaseWorld from "../../../support/base_world";
 import CucumberBaseWorld from "../../../cucumber/support/base_world";
 import User from "../../../../src/models/user/user";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";

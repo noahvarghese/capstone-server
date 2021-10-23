@@ -11,6 +11,7 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "typeRoots": ["@types", "./node_modules/@types"],
+        "types": ["node", "jest"],
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitThis": true,

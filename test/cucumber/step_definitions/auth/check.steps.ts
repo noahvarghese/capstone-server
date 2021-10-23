@@ -1,7 +1,7 @@
 import { Given, Then, When } from "@cucumber/cucumber";
 import BaseWorld from "../../support/base_world";
 import { expect } from "chai";
-import actions from "@test/cucumber/helpers/actions/auth";
+import actions from "@test/helpers/api/actions/auth";
 
 Given("I have been authenticated", actions.login);
 

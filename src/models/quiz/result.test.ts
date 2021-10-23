@@ -1,4 +1,4 @@
-import BaseWorld from "../../../test/jest/support/base_world";
+import BaseWorld from "../../../test/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
 import QuizResult, { QuizResultAttributes } from "./result";
 import ModelTestFail from "../../../test/jest/helpers/model/test/fail";

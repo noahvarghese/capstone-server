@@ -6,7 +6,7 @@ import attributes, {
     ForgotPasswordProps,
     ResetPasswordProps,
 } from "@test/sample_data/api/attributes";
-import loadAndCall from "@test/cucumber/helpers/actions";
+import loadAndCall from "@test/helpers/api/actions";
 import { Connection } from "typeorm";
 import { submitForm } from "@test/cucumber/helpers/submit_form";
 import { urls } from "@test/sample_data/api/dependencies";

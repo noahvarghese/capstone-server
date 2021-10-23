@@ -5,7 +5,7 @@ import {
     loadAttributes,
 } from "../../test/jest/helpers/model/test/setup";
 import { teardown } from "../../test/jest/helpers/model/test/teardown";
-import BaseWorld from "../../test/jest/support/base_world";
+import BaseWorld from "../../test/support/base_world";
 import DBConnection from "../../test/util/db_connection";
 import Membership, { MembershipAttributes } from "./membership";
 

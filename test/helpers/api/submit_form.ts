@@ -1,5 +1,5 @@
 import axios from "axios";
-import BaseWorld from "@test/cucumber/support/base_world";
+import BaseWorld from "@test/support/base_world";
 import { server } from "@util/permalink";
 import { getCookie } from "@test/util/request";
 

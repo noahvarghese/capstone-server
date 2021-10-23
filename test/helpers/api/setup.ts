@@ -1,5 +1,5 @@
 import api_attributes from "@test/sample_data/api/attributes";
-import BaseWorld from "../support/base_world";
+import BaseWorld from "@test/support/base_world";
 import dependencies, {
     ApiRoute,
     urls,
@@ -15,8 +15,9 @@ export function loadBody<T>(
     this.setCustomProp<T>("body", attributes as T);
 }
 
-export async function setup(this: BaseWorld): Promise<void> {
-    const tags = this.getTags();
+export async function setup(this: BaseWorld, setup: string): Promise<void> {
+    // const tags = this.getTags();
+    const tags = [setup];
     const keys = getKey<Array<ApiRoute>, typeof dependencies>(
         tags,
         "@setup_",

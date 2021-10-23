@@ -1,4 +1,4 @@
-import BaseWorld from "../../../test/jest/support/base_world";
+import BaseWorld from "../../../test/support/base_world";
 import DBConnection from "../../../test/util/db_connection";
 import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
 import ManualAssignment, { ManualAssignmentAttributes } from "./assignment";

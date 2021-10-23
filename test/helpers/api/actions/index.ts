@@ -1,5 +1,5 @@
 import { ApiRoute, urls } from "@test/sample_data/api/dependencies";
-import BaseWorld from "@test/cucumber/support/base_world";
+import BaseWorld from "@test/support/base_world";
 import { loadBody } from "../setup";
 import { submitForm } from "../submit_form";
 

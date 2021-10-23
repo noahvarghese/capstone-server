@@ -1,4 +1,4 @@
-import JestBaseWorld from "../../../support/base_world";
+import JestBaseWorld from "../../../../support/base_world";
 import CucumberBaseWorld from "../../../../cucumber/support/base_world";
 import ModelActions from "../actions";
 import types from "../../../../sample_data/model/types";

@@ -1,4 +1,3 @@
-import CucumberBaseWorld from "../support/base_world";
 import { Connection, DeepPartial } from "typeorm";
 import User from "@models/user/user";
 import Business from "../../../src/models/business";
@@ -9,6 +8,7 @@ import Membership from "../../../src/models/membership";
 import MembershipRequest from "../../../src/models/membership_request";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { getKey } from "./keytags";
+import JestBaseWorld from "@test/support/base_world";
 
 const unsetKey = async <T extends X & Record<string, unknown>, X>(
     ids: {
@@ -66,8 +66,9 @@ const unsetKey = async <T extends X & Record<string, unknown>, X>(
     }
 };
 
-export async function teardown(this: CucumberBaseWorld): Promise<void> {
-    const tags = this.getTags();
+export async function teardown(this: JestBaseWorld, key: string): Promise<void> {
+    // const tags = this.getTags();
+    const tags = [key];
     const topLevelModelKey = getKey<string, typeof dependencies>(
         tags,
         "@cleanup_",

@@ -59,7 +59,7 @@ export default class Permission
     @Column()
     public global_assign_users_to_department!: boolean;
     @Column()
-    global_assign_users_to_role!: boolean;
+    public global_assign_users_to_role!: boolean;
     @Column()
     public global_assign_resources_to_department!: boolean;
     @Column()

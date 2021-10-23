@@ -1,4 +1,4 @@
-import cors from "./cors";
+import cors from "./cors_helper";
 import cookieParser from "cookie-parser";
 import cluster from "cluster";
 import createConnection from "../config/database";

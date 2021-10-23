@@ -1,7 +1,7 @@
 import { Given, Then, When } from "@cucumber/cucumber";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
-import actions from "@test/cucumber/helpers/actions/auth";
+import actions from "@test/helpers/api/actions/auth";
 import attributes from "@test/sample_data/api/attributes";
 import BaseWorld from "@test/cucumber/support/base_world";
 import Membership from "@models/membership";

@@ -1,6 +1,6 @@
 import { Then, When } from "@cucumber/cucumber";
 import Role from "@models/role";
-import actions from "@test/cucumber/helpers/actions/auth";
+import actions from "@test/helpers/api/actions/auth";
 import BaseWorld from "@test/cucumber/support/base_world";
 import { MoreThan } from "typeorm";
 import { expect } from "chai";
