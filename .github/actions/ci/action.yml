@@ -26,6 +26,7 @@ runs:
     - name: model tests
       run: |
         npm run test:jest -- --changedSince "${{ steps.changed.outputs.CHANGED }}"
+        npm run badges
       shell: bash
     - name: api tests
       run: npm run test:cucumber

@@ -9,6 +9,7 @@
         "premodule-alias": "cp ./src/index.ts /tmp",
         "module-alias": "printf '%s\n%s\n' 'import \"module-alias/register\";' \"$(cat ./src/index.ts)\" > ./src/index.ts",
         "module-alias:cleanup": "mv /tmp/index.ts ./src/index.ts",
+        "badges": "jest-coverage-badges input './__test__/coverage/coverage-summary.json' output './__test__/coverage/badges'",
         "prebuild": "npm run module-alias",
         "build": "rm -rf ./build && tsc -p ./tsconfig.build.json",
         "postbuild": "npm run build:email-templates && npm run module-alias:cleanup && npm run build:package",
@@ -21,7 +22,8 @@
         "start": "NODE_ENV=prod node ./index.js",
         "test:cucumber": "NODE_ENV=test cucumber-js -p default -f @cucumber/pretty-formatter --exit",
         "test:cucumber-feature": "NODE_ENV=test cucumber-js -p feature -f @cucumber/pretty-formatter --exit",
-        "test:jest": "NODE_ENV=test jest --maxConcurrency=1 --runInBand --coverage ---bail --verbose false",
+        "test:jest": "NODE_ENV=test jest --runInBand",
+        "test:jest:recent": "npm run test:jest:base -- -o ; npm run badges",
         "test": "npm run test:jest && npm run test:cucumber"
     },
     "repository": {
@@ -68,6 +70,8 @@
         "eslint": "^7.24.0",
         "formdata": "^0.10.4",
         "jest": "^26.6.3",
+        "jest-coverage-badges": "^1.1.2",
+        "jest-html-reporter": "^3.4.1",
         "nodemon": "^2.0.7",
         "prettier": "^2.4.0",
         "ts-jest": "^26.5.5",

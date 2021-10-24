@@ -1,0 +1,307 @@
+<html><head><meta charset="utf-8"/><title>Test Report</title><style type="text/css">html,
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+body {
+  padding: 2rem 1rem;
+  font-size: 0.85rem;
+}
+#jesthtml-content {
+  margin: 0 auto;
+  max-width: 70rem;
+}
+header {
+  display: flex;
+  align-items: center;
+}
+#title {
+  margin: 0;
+  flex-grow: 1;
+}
+#logo {
+  height: 4rem;
+}
+#timestamp {
+  color: #777;
+  margin-top: 0.5rem;
+}
+
+/** SUMMARY */
+#summary {
+  color: #333;
+  margin: 2rem 0;
+  display: flex;
+  font-family: monospace;
+  font-size: 1rem;
+}
+#summary > div {
+  margin-right: 2rem;
+  background: #eee;
+  padding: 1rem;
+  min-width: 15rem;
+}
+#summary > div:last-child {
+  margin-right: 0;
+}
+@media only screen and (max-width: 720px) {
+  #summary {
+    flex-direction: column;
+  }
+  #summary > div {
+    margin-right: 0;
+    margin-top: 2rem;
+  }
+  #summary > div:first-child {
+    margin-top: 0;
+  }
+}
+
+.summary-total {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.summary-passed {
+  color: #4f8a10;
+  border-left: 0.4rem solid #4f8a10;
+  padding-left: 0.5rem;
+}
+.summary-failed,
+.summary-obsolete-snapshots {
+  color: #d8000c;
+  border-left: 0.4rem solid #d8000c;
+  padding-left: 0.5rem;
+}
+.summary-pending {
+  color: #9f6000;
+  border-left: 0.4rem solid #9f6000;
+  padding-left: 0.5rem;
+}
+.summary-empty {
+  color: #999;
+  border-left: 0.4rem solid #999;
+}
+
+.test-result {
+  padding: 1rem;
+  margin-bottom: 0.25rem;
+}
+.test-result:last-child {
+  border: 0;
+}
+.test-result.passed {
+  background-color: #dff2bf;
+  color: #4f8a10;
+}
+.test-result.failed {
+  background-color: #ffbaba;
+  color: #d8000c;
+}
+.test-result.pending {
+  background-color: #ffdf61;
+  color: #9f6000;
+}
+
+.test-info {
+  display: flex;
+  justify-content: space-between;
+}
+.test-suitename {
+  width: 20%;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-word;
+}
+.test-title {
+  width: 40%;
+  text-align: left;
+  font-style: italic;
+}
+.test-status {
+  width: 20%;
+  text-align: right;
+}
+.test-duration {
+  width: 10%;
+  text-align: right;
+  font-size: 0.75rem;
+}
+
+.failureMessages {
+  padding: 0 1rem;
+  margin-top: 1rem;
+  border-top: 1px dashed #d8000c;
+}
+.failureMessages.suiteFailure {
+  border-top: none;
+}
+.failureMsg {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.suite-container {
+  margin-bottom: 2rem;
+}
+.suite-info {
+  padding: 1rem;
+  background-color: #eee;
+  color: #777;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.suite-info .suite-path {
+  word-break: break-all;
+  flex-grow: 1;
+  font-family: monospace;
+  font-size: 1rem;
+}
+.suite-info .suite-time {
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.75rem;
+}
+.suite-info .suite-time.warn {
+  background-color: #d8000c;
+  color: #fff;
+}
+
+/* CONSOLE LOGS */
+.suite-consolelog {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: #efefef;
+}
+.suite-consolelog-header {
+  font-weight: bold;
+}
+.suite-consolelog-item {
+  padding: 0.5rem;
+}
+.suite-consolelog-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-consolelog-item-origin {
+  color: #777;
+  font-weight: bold;
+}
+.suite-consolelog-item-message {
+  color: #000;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+/* OBSOLETE SNAPSHOTS */
+.suite-obsolete-snapshots {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: #ffbaba;
+  color: #d8000c;
+}
+.suite-obsolete-snapshots-header {
+  font-weight: bold;
+}
+.suite-obsolete-snapshots-item {
+  padding: 0.5rem;
+}
+.suite-obsolete-snapshots-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-obsolete-snapshots-item-message {
+  color: #000;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+</style></head><body><div id="jesthtml-content"><header><h1 id="title">Test Report</h1></header><div id="metadata-container"><div id="timestamp">Started: 2021-10-24 16:48:21</div><div id="summary"><div id="suite-summary"><div class="summary-total">Suites (22)</div><div class="summary-passed">4 passed</div><div class="summary-failed">1 failed</div><div class="summary-pending summary-empty">0 pending</div></div><div id="test-summary"><div class="summary-total">Tests (34)</div><div class="summary-passed">30 passed</div><div class="summary-failed">4 failed</div><div class="summary-pending summary-empty">0 pending</div></div></div></div><div id="suite-1" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/user/user.test.ts</div><div class="suite-time warn">8.172s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create User</div><div class="test-status">passed</div><div class="test-duration">0.777s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update User</div><div class="test-status">passed</div><div class="test-duration">0.849s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete User</div><div class="test-status">passed</div><div class="test-duration">0.538s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Read User</div><div class="test-status">passed</div><div class="test-duration">0.791s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Token</div><div class="test-status">passed</div><div class="test-duration">0.117s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Updated user should have 1hr to update password</div><div class="test-status">passed</div><div class="test-duration">0.8s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Token Should Be Valid</div><div class="test-status">passed</div><div class="test-duration">0.589s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Invalid token expiry</div><div class="test-status">passed</div><div class="test-duration">0.582s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Wrong token should not match</div><div class="test-status">passed</div><div class="test-duration">0.535s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Reset Password</div><div class="test-status">passed</div><div class="test-duration">1.062s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Reset password empty</div><div class="test-status">passed</div><div class="test-duration">0.322s</div></div></div></div></div><div id="suite-2" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/manual.test.ts</div><div class="suite-time warn">11.783s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Manual</div><div class="test-status">passed</div><div class="test-duration">1.371s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Manual Without Department Or Role</div><div class="test-status">passed</div><div class="test-duration">1.398s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Manual Without Department Or Role</div><div class="test-status">passed</div><div class="test-duration">1.622s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Manual</div><div class="test-status">passed</div><div class="test-duration">1.402s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Manual</div><div class="test-status">passed</div><div class="test-duration">1.333s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Read User Role</div><div class="test-status">passed</div><div class="test-duration">1.379s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent Deletion of Manual</div><div class="test-status">passed</div><div class="test-duration">1.475s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent edit of manual</div><div class="test-status">passed</div><div class="test-duration">1.386s</div></div></div></div></div><div id="suite-3" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/membership_request.test.ts</div><div class="suite-time">3.56s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Membership request creates token and expiry</div><div class="test-status">passed</div><div class="test-duration">0.712s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update membership request token updates expiry</div><div class="test-status">passed</div><div class="test-duration">0.839s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">read membership request</div><div class="test-status">passed</div><div class="test-duration">0.701s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">delete membership request</div><div class="test-status">passed</div><div class="test-duration">0.714s</div></div></div></div></div><div id="suite-4" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/question/question.test.ts</div><div class="suite-time warn">13.623s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Quiz Question</div><div class="test-status">passed</div><div class="test-duration">1.783s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Quiz Question</div><div class="test-status">passed</div><div class="test-duration">1.89s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Quiz Question</div><div class="test-status">passed</div><div class="test-duration">2.031s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Read Quiz Question</div><div class="test-status">passed</div><div class="test-duration">1.753s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Question while Quiz is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.227s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Question while Quiz is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">1.902s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating question when quiz.prevent_edit is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.793s</div></div></div></div></div><div id="suite-5" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/routes/auth/login.test.ts</div><div class="suite-time">3.398s</div></div><div class="suite-tests"><div class="test-result failed"><div class="test-info"><div class="test-suitename">Login</div><div class="test-title">invalid email</div><div class="test-status">failed</div><div class="test-duration">0.652s</div></div><div class="failureMessages"> <pre class="failureMsg">Error: Business already exists
+Request failed with status code 400
+    at createError (/home/user/build/capstone-server/node_modules/axios/lib/core/createError.js:16:15)
+    at settle (/home/user/build/capstone-server/node_modules/axios/lib/core/settle.js:17:12)
+    at IncomingMessage.handleStreamEnd (/home/user/build/capstone-server/node_modules/axios/lib/adapters/http.js:269:11)
+    at IncomingMessage.emit (node:events:390:22)
+    at endReadableNT (node:internal/streams/readable:1307:12)
+    at processTicksAndRejections (node:internal/process/task_queues:81:21)</pre></div></div><div class="test-result failed"><div class="test-info"><div class="test-suitename">Login</div><div class="test-title">I have an invalid password</div><div class="test-status">failed</div><div class="test-duration">0.349s</div></div><div class="failureMessages"> <pre class="failureMsg">AlreadyHasActiveConnectionError: Cannot create a new connection named "default", because connection with such name already exist and it now has an active connection session.
+    at new AlreadyHasActiveConnectionError (/home/user/build/capstone-server/src/error/AlreadyHasActiveConnectionError.ts:8:9)
+    at ConnectionManager.Object.&lt;anonymous&gt;.ConnectionManager.create (/home/user/build/capstone-server/src/connection/ConnectionManager.ts:57:23)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/index.ts:230:35)
+    at step (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:143:27)
+    at Object.next (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:124:57)
+    at /home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:117:75
+    at new Promise (&lt;anonymous&gt;)
+    at Object.__awaiter (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:113:16)
+    at Object.createConnection (/home/user/build/capstone-server/node_modules/typeorm/index.js:204:20)
+    at Object.&lt;anonymous&gt;.exports.default (/home/user/build/capstone-server/src/config/database.ts:65:18)
+    at Object.setupServer [as default] (/home/user/build/capstone-server/src/util/server.ts:23:11)
+    at Function.start (/home/user/build/capstone-server/test/helpers/server/index.ts:9:47)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:21:25)
+    at Object.asyncJestLifecycle (/home/user/build/capstone-server/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:58:37)
+    at /home/user/build/capstone-server/node_modules/jest-jasmine2/build/queueRunner.js:45:12
+    at new Promise (&lt;anonymous&gt;)</pre><pre class="failureMsg">Error: No businesses found with name: Oakville Windows and Doors
+    at JestBaseWorld.teardown (/home/user/build/capstone-server/test/helpers/api/teardown.ts:98:19)
+    at processTicksAndRejections (node:internal/process/task_queues:94:5)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:32:9)</pre><pre class="failureMsg">Error: No businesses found with name: Oakville Windows and Doors
+    at JestBaseWorld.teardown (/home/user/build/capstone-server/test/helpers/api/teardown.ts:98:19)
+    at processTicksAndRejections (node:internal/process/task_queues:94:5)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:32:9)</pre></div></div><div class="test-result failed"><div class="test-info"><div class="test-suitename">Login</div><div class="test-title">Valid login</div><div class="test-status">failed</div><div class="test-duration">0.387s</div></div><div class="failureMessages"> <pre class="failureMsg">AlreadyHasActiveConnectionError: Cannot create a new connection named "default", because connection with such name already exist and it now has an active connection session.
+    at new AlreadyHasActiveConnectionError (/home/user/build/capstone-server/src/error/AlreadyHasActiveConnectionError.ts:8:9)
+    at ConnectionManager.Object.&lt;anonymous&gt;.ConnectionManager.create (/home/user/build/capstone-server/src/connection/ConnectionManager.ts:57:23)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/index.ts:230:35)
+    at step (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:143:27)
+    at Object.next (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:124:57)
+    at /home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:117:75
+    at new Promise (&lt;anonymous&gt;)
+    at Object.__awaiter (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:113:16)
+    at Object.createConnection (/home/user/build/capstone-server/node_modules/typeorm/index.js:204:20)
+    at Object.&lt;anonymous&gt;.exports.default (/home/user/build/capstone-server/src/config/database.ts:65:18)
+    at Object.setupServer [as default] (/home/user/build/capstone-server/src/util/server.ts:23:11)
+    at Function.start (/home/user/build/capstone-server/test/helpers/server/index.ts:9:47)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:21:25)
+    at Object.asyncJestLifecycle (/home/user/build/capstone-server/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:58:37)
+    at /home/user/build/capstone-server/node_modules/jest-jasmine2/build/queueRunner.js:45:12
+    at new Promise (&lt;anonymous&gt;)</pre><pre class="failureMsg">Error: No businesses found with name: Oakville Windows and Doors
+    at JestBaseWorld.teardown (/home/user/build/capstone-server/test/helpers/api/teardown.ts:98:19)
+    at processTicksAndRejections (node:internal/process/task_queues:94:5)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:32:9)</pre></div></div><div class="test-result failed"><div class="test-info"><div class="test-suitename">Login</div><div class="test-title">Haven't accepted invite</div><div class="test-status">failed</div><div class="test-duration">0.585s</div></div><div class="failureMessages"> <pre class="failureMsg">AlreadyHasActiveConnectionError: Cannot create a new connection named "default", because connection with such name already exist and it now has an active connection session.
+    at new AlreadyHasActiveConnectionError (/home/user/build/capstone-server/src/error/AlreadyHasActiveConnectionError.ts:8:9)
+    at ConnectionManager.Object.&lt;anonymous&gt;.ConnectionManager.create (/home/user/build/capstone-server/src/connection/ConnectionManager.ts:57:23)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/index.ts:230:35)
+    at step (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:143:27)
+    at Object.next (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:124:57)
+    at /home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:117:75
+    at new Promise (&lt;anonymous&gt;)
+    at Object.__awaiter (/home/user/build/capstone-server/node_modules/typeorm/node_modules/tslib/tslib.js:113:16)
+    at Object.createConnection (/home/user/build/capstone-server/node_modules/typeorm/index.js:204:20)
+    at Object.&lt;anonymous&gt;.exports.default (/home/user/build/capstone-server/src/config/database.ts:65:18)
+    at Object.setupServer [as default] (/home/user/build/capstone-server/src/util/server.ts:23:11)
+    at Function.start (/home/user/build/capstone-server/test/helpers/server/index.ts:9:47)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:21:25)
+    at Object.asyncJestLifecycle (/home/user/build/capstone-server/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:58:37)
+    at /home/user/build/capstone-server/node_modules/jest-jasmine2/build/queueRunner.js:45:12
+    at new Promise (&lt;anonymous&gt;)</pre><pre class="failureMsg">EntityNotFound: Could not find any entity of type "User" matching: {
+    "where": {
+        "email": "varghese.noah@gmail.com"
+    }
+}
+    at new EntityNotFoundError (/home/user/build/capstone-server/src/error/EntityNotFoundError.ts:11:9)
+    at /home/user/build/capstone-server/src/entity-manager/EntityManager.ts:827:39
+    at processTicksAndRejections (node:internal/process/task_queues:94:5)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:87:22)</pre><pre class="failureMsg">Error: No businesses found with name: Oakville Windows and Doors
+    at JestBaseWorld.teardown (/home/user/build/capstone-server/test/helpers/api/teardown.ts:98:19)
+    at processTicksAndRejections (node:internal/process/task_queues:94:5)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/src/routes/auth/login.test.ts:32:9)</pre></div></div></div></div></div></body></html>

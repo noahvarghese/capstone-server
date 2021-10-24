@@ -36,7 +36,6 @@ When("I log in", async function (this: BaseWorld) {
 });
 
 Given("I have been sent an invite", async function (this: BaseWorld) {
-    await actions.login.call(this);
     await actions.inviteUser.call(this, "new");
 
     // set password
