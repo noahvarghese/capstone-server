@@ -28,7 +28,7 @@ runs:
         npm run test -- --changedSince "${{ steps.changed.outputs.CHANGED }}"
       shell: bash
     - name: Upload test results
-      uses: actions/upload-atrifact@v2
+      uses: actions/upload-artifact@v2
       with:
         name: "test-results-and-coverage"
         path: |
