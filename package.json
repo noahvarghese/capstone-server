@@ -21,7 +21,7 @@
         "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --require tsconfig-paths/register --ignore build/ --ignore test/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
         "test": "NODE_ENV=test jest --coverage --runInBand",
-        "test:recent": "npm run test:jest -- -o ; npm run badges -- --ci"
+        "test:recent": "npm run test -- -o"
     },
     "repository": {
         "type": "git",

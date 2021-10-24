@@ -20,11 +20,18 @@ runs:
         fi
         echo "::set-output name=CHANGED::${VAL}"
       shell: bash
-    - name: install dependencies
-      run: npm ci
+    - id: cache-node-modules
+      run: .github/actions/cache-node-modules
       shell: bash
     - name: test
       run: |
         npm run test -- --changedSince "${{ steps.changed.outputs.CHANGED }}"
-        npm run badges -- --ci
       shell: bash
+    - name: Upload test results
+      uses: actions/upload-atrifact@v2
+      with:
+        name: "test-results-and-coverage"
+        path: |
+          __test__
+          !__test__/util
+          !__test__/index.ts
