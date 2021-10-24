@@ -12,11 +12,12 @@ module.exports = {
     bail: true,
     collectCoverage: true,
     coverageDirectory: "./__test__/coverage",
-    coveragePathIgnorePatterns: ["node_modules", "test"],
+    coveragePathIgnorePatterns: ["node_modules", "test", "__test__", "database", "bin"],
     coverageReporters: [
         "json-summary",
         "text",
-        "lcov"
+        "lcov",
+        "clover"
     ],
     errorOnDeprecated: true,
     maxConcurrency: 1,
@@ -28,6 +29,7 @@ module.exports = {
     reporters: [
         "default",
         ["./node_modules/jest-html-reporter", {
+            "dateFormat": "yyyy-mm-dd",
             "includeConsoleLog": true,
             "includeFailureMsg": true,
             "includeSuiteFailure": true,

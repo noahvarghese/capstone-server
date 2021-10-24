@@ -350,6 +350,20 @@ The urls are either a string or a function that returns a string if url paramete
 
 The template for the tests is necessary data is stored in an attribute "body" saved in the BaseWorld state, then an action 'submitForm' is performed that takes the data stored and submits it to the given url.
 
+### About
+
+Now using jest for all tests as it allows filtering of recently changed tests via the <a href="https://jestjs.io/docs/cli#--onlychanged">-o</a> and <a href="https://jestjs.io/docs/cli#--changedsince">--changedSince</a> options.
+
+### Process
+
+-   Run tests during development prior to commit.
+-   Generate badges prior to commit.
+-   Commit changes.
+-   Pre-commit hook runs only changed files.
+-   On success
+    -   Workflow runs any tests changed between the current and previous commit
+
+
 #### Stages
 
 1. Setup (Perform any user actions needed before the test can execute)
