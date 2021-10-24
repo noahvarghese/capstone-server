@@ -12,7 +12,7 @@ runs:
         key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
     - name: install dependencies
       run: |
-        if [[ ${{ steps.cache-node-modules.outpus.cache-hit != true ]];
+        if [[ ${{ steps.cache-node-modules.outpus.cache-hit }} != true ]];
         then
           npm ci
         fi
