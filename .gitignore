@@ -1,6 +1,6 @@
 /node_modules
 /build
-# __test__/coverage
+__test__/coverage
 .env
 .vscode
 output*
