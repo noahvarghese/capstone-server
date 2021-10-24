@@ -21,7 +21,7 @@ runs:
         echo "::set-output name=CHANGED::${VAL}"
       shell: bash
     - id: cache-node-modules
-      run: /.github/actions/cache-node-modules
+      run: ./.github/actions/cache-node-modules
       shell: bash
     - name: test
       run: |
