@@ -23,7 +23,7 @@
         "test:cucumber": "NODE_ENV=test cucumber-js -p default -f @cucumber/pretty-formatter --exit",
         "test:cucumber-feature": "NODE_ENV=test cucumber-js -p feature -f @cucumber/pretty-formatter --exit",
         "test:jest": "NODE_ENV=test jest --runInBand",
-        "test:jest:recent": "npm run test:jest:base -- -o ; npm run badges",
+        "test:jest:recent": "npm run test:jest -- -o ; npm run badges",
         "test": "npm run test:jest && npm run test:cucumber"
     },
     "repository": {
