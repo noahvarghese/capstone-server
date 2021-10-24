@@ -1,9 +1,9 @@
 ![Continuous Deployment](https://github.com/noahvarghese/capstone-server/actions/workflows/cd.yaml/badge.svg)
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
-![Statment Coverage](https://github.com/noahvarghese/capstone-server/coverage/badge-statements.svg)
-![Line Coverage](https://github.com/noahvarghese/capstone-server/coverage/badge-lines.svg)
-![Function Coverage](https://github.com/noahvarghese/capstone-server/coverage/badge-functions.svg)
-![Branch Coverage](https://github.com/noahvarghese/capstone-server/coverage/badge-branches.svg)
+![Statment Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badge-statements.svg)
+![Line Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badge-lines.svg)
+![Function Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badge-functions.svg)
+![Branch Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badge-branches.svg)
 
 # OnBoard - Backend
 
