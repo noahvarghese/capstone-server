@@ -16,4 +16,4 @@ runs:
         then
           npm ci
         fi
-      shell: ci
+      shell: bash
