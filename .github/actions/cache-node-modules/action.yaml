@@ -3,7 +3,8 @@ description: "cache node modules"
 runs:
   using: composite
   steps:
-    - name: Cache node modules
+    - id: check-cache
+      name: Cache node modules
       uses: actions/cache@v2
       env:
         cache-name: cache-node-modules
@@ -12,7 +13,7 @@ runs:
         key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
     - name: install dependencies
       run: |
-        if [[ ${{ steps.cache-node-modules.outpus.cache-hit }} != true ]];
+        if [[ ${{ steps.check-cache.outpus.cache-hit }} != true ]];
         then
           npm ci
         fi
