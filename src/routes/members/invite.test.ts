@@ -93,7 +93,7 @@ describe("Sending invites to join business", () => {
         // When a new user is added to the business
         await actions.inviteUser.call(baseWorld, "new");
         // Then I get an error
-        Request.failed.call(baseWorld, false);
+        Request.failed.call(baseWorld);
     });
 });
 

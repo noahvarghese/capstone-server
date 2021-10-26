@@ -30,7 +30,7 @@ describe("Global admin authorized", () => {
         // When I create a role
         await actions.createRole.call(baseWorld);
         // Then a new role exists
-        Request.succeeded.call(baseWorld, false);
+        Request.succeeded.call(baseWorld);
     });
 
     test.todo("Global admin can delete role");

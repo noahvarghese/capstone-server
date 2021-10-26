@@ -30,7 +30,7 @@ describe("Global admin authorized", () => {
         // When I create a department
         await actions.createDepartment.call(baseWorld);
         // Then a new department exists
-        Request.succeeded.call(baseWorld, false);
+        Request.succeeded.call(baseWorld, { auth: false });
     });
 
     test.todo("Global admin can delete department");
@@ -48,7 +48,7 @@ describe("User who lacks CRUD rights", () => {
         // When I create a department
         await actions.createDepartment.call(baseWorld);
         // Then I get an error
-        Request.failed.call(baseWorld, false);
+        Request.failed.call(baseWorld);
     });
     test.todo("User who lacks CRUD rights cannot delete department");
     // Scenario: User who lacks CRUD department rights cannot delete departments
