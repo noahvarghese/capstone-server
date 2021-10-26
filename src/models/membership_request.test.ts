@@ -1,34 +1,28 @@
 import { uid } from "rand-token";
-import ModelActions from "../../test/jest/helpers/model/actions";
-import ModelTestPass from "../../test/jest/helpers/model/test/pass";
-import {
-    createModels,
-    loadAttributes,
-} from "../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../test/jest/helpers/model/test/teardown";
-import BaseWorld from "../../test/support/base_world";
-import DBConnection from "../../test/util/db_connection";
+import ModelActions from "@test/helpers/model/actions";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
 import MembershipRequest, {
     MembershipRequestAttributes,
 } from "./membership_request";
+import Model from "@test/helpers/model";
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
+// Database setup
 beforeAll(DBConnection.InitConnection);
 afterAll(DBConnection.CloseConnection);
 
+// State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, MembershipRequest);
-    await createModels(baseWorld, MembershipRequest);
+    await Model.setup.call(baseWorld, MembershipRequest);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-    await teardown<MembershipRequest>(baseWorld, MembershipRequest);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, MembershipRequest);
+    baseWorld.resetProps();
 });
 
 test("Create Membership request creates token and expiry", async () => {

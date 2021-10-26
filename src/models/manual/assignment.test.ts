@@ -1,15 +1,11 @@
-import BaseWorld from "../../../test/support/base_world";
-import DBConnection from "../../../test/util/db_connection";
-import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
 import ManualAssignment, { ManualAssignmentAttributes } from "./assignment";
-import {
-    createModels,
-    loadAttributes,
-} from "../../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../../test/jest/helpers/model/test/teardown";
-import ModelTestFail from "../../../test/jest/helpers/model/test/fail";
+import ModelTestFail from "@test/helpers/model/test/fail";
+import Model from "@test/helpers/model";
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -18,17 +14,12 @@ afterAll(DBConnection.CloseConnection);
 // State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, ManualAssignment);
-    await createModels(baseWorld, ManualAssignment);
+    await Model.setup.call(baseWorld, ManualAssignment);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await teardown(baseWorld, ManualAssignment);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, ManualAssignment);
+    baseWorld.resetProps();
 });
 
 // Tests

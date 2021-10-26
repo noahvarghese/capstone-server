@@ -2,12 +2,12 @@ import { Given, When, Then } from "@cucumber/cucumber";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import { InviteUserProps } from "@routes/members/invite";
-import actions from "@test/helpers/api/actions/auth";
-import attributes from "@test/sample_data/api/attributes";
+import actions from "__test__/helpers/api/actions/auth";
+import attributes from "__test__/sample_data/api/attributes";
 import BaseWorld from "@test/cucumber/support/base_world";
 import { expect } from "chai";
 import Event from "@models/event";
-import loadAndCall from "@test/helpers/api/actions";
+import loadAndCall from "__test__/helpers/api/actions";
 import Business from "@models/business";
 import Membership from "@models/membership";
 

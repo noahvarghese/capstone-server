@@ -1,16 +1,12 @@
-import ModelTestPass from "../../../../test/jest/helpers/model/test/pass";
-import BaseWorld from "../../../../test/support/base_world";
-import DBConnection from "../../../../test/util/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
 import Manual, { ManualAttributes } from "../manual";
 import Policy, { PolicyAttributes } from "./policy";
-import { teardown } from "../../../../test/jest/helpers/model/test/teardown";
-import {
-    createModels,
-    loadAttributes,
-} from "../../../../test/jest/helpers/model/test/setup";
-import ModelTestParentPrevent from "../../../../test/jest/helpers/model/test/parent_prevent";
+import ModelTestParentPrevent from "@test/helpers/model/test/parent_prevent";
+import Model from "@test/helpers/model";
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.InitConnection);
@@ -19,18 +15,12 @@ afterAll(DBConnection.CloseConnection);
 // State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-
-    loadAttributes(baseWorld, Policy);
-    await createModels(baseWorld, Policy);
+    await Model.setup.call(baseWorld, Policy);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await teardown(baseWorld, Policy);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, Policy);
+    baseWorld.resetProps();
 });
 
 // Tests

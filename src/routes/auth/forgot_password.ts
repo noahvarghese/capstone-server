@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import User from "../../models/user/user";
-import Logs from "../../util/logs/logs";
+import User from "@models/user/user";
+import Logs from "@util/logs/logs";
 import { requestResetPasswordEmail } from "@services/email";
 
 const router = Router();
@@ -37,7 +37,8 @@ router.post("/", async (request: Request, response: Response) => {
     try {
         await requestResetPasswordEmail(user);
         response.sendStatus(200);
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         response.status(500).json({ message: "Unable to send email" });
     }

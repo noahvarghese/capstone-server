@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import Logs from "../../util/logs/logs";
+import Logs from "@util/logs/logs";
 
 const router = Router();
 
@@ -21,7 +21,8 @@ router.post("/", async (req: Request, res: Response) => {
 
             res.clearCookie(SESSION_ID);
             res.sendStatus(200);
-        } catch (e) {
+        } catch (_e) {
+            const e = _e as Error;
             Logs.Error(e.message);
             res.sendStatus(500);
         }

@@ -5,10 +5,10 @@ import Event from "@models/event";
 import { expect } from "chai";
 import attributes, {
     ForgotPasswordProps,
-} from "@test/sample_data/api/attributes";
+} from "__test__/sample_data/api/attributes";
 import { loadBody } from "@test/cucumber/helpers/setup";
 import { submitForm } from "@test/cucumber/helpers/submit_form";
-import { urls } from "@test/sample_data/api/dependencies";
+import { urls } from "__test__/sample_data/api/dependencies";
 
 Given("I am registered", function (this: BaseWorld) {
     loadBody.call(this, "forgotPassword");

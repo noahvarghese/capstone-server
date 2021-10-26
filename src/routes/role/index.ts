@@ -74,7 +74,8 @@ router.get("/", async (req: Request, res: Response) => {
             data: returnVal,
         });
         return;
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         res.status(500).json({ message: "Unable to get roles" });
         return;
@@ -132,7 +133,8 @@ router.post("/", async (req: Request, res: Response) => {
             res.sendStatus(201);
             return;
         }
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         res.status(500).json({ message: "Error creating role" });
     }

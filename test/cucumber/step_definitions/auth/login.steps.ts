@@ -1,15 +1,15 @@
 import { Given, Then, When } from "@cucumber/cucumber";
 import BaseWorld from "../../support/base_world";
-import { userAttributes } from "@test/sample_data/model/attributes";
+import { userAttributes } from "__test__/sample_data/model/attributes";
 import { expect } from "chai";
 import { loadBody } from "@test/cucumber/helpers/setup";
 import { submitForm } from "@test/cucumber/helpers/submit_form";
-import actions from "@test/helpers/api/actions/auth";
-import attributes from "@test/sample_data/api/attributes";
+import actions from "__test__/helpers/api/actions/auth";
+import attributes from "__test__/sample_data/api/attributes";
 import { InviteUserProps } from "@routes/members/invite";
 import { LoginProps } from "@routes/auth/login";
 import User from "@models/user/user";
-import { urls } from "@test/sample_data/api/dependencies";
+import { urls } from "__test__/sample_data/api/dependencies";
 
 const userAttr = userAttributes();
 

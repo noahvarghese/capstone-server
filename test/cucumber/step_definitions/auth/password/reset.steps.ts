@@ -5,11 +5,11 @@ import { expect } from "chai";
 import attributes, {
     ForgotPasswordProps,
     ResetPasswordProps,
-} from "@test/sample_data/api/attributes";
-import loadAndCall from "@test/helpers/api/actions";
+} from "__test__/sample_data/api/attributes";
+import loadAndCall from "__test__/helpers/api/actions";
 import { Connection } from "typeorm";
 import { submitForm } from "@test/cucumber/helpers/submit_form";
-import { urls } from "@test/sample_data/api/dependencies";
+import { urls } from "__test__/sample_data/api/dependencies";
 import { loadBody } from "@test/cucumber/helpers/setup";
 
 const { email } = attributes.forgotPassword() as ForgotPasswordProps;

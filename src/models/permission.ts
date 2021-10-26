@@ -106,7 +106,7 @@ export default class Permission
                 .getMany();
             return permissions;
         } catch (e) {
-            Logs.Error(e.message);
+            if (e instanceof Error) Logs.Error(e.message);
             return [];
         }
     }

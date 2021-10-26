@@ -55,7 +55,8 @@ router.post("/:token", async (request: Request, response: Response) => {
         )?.business_id;
         response.sendStatus(200);
         return;
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         response.sendStatus(500);
         return;

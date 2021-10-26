@@ -20,8 +20,9 @@ module.exports = {
         "clover"
     ],
     errorOnDeprecated: true,
+    forceExit: true,
     maxConcurrency: 1,
-    maxWorkers: 2,
+    maxWorkers: 1,
     moduleDirectories: ["node_modules", "./"],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),

@@ -1,13 +1,9 @@
-import BaseWorld from "../../test/support/base_world";
-import DBConnection from "../../test/util/db_connection";
-import ModelTestPass from "../../test/jest/helpers/model/test/pass";
-import ModelTestParentPrevent from "../../test/jest/helpers/model/test/parent_prevent";
+import BaseWorld from "@test/support/base_world";
+import Helpers from "@test/helpers";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestParentPrevent from "@test/helpers/model/test/parent_prevent";
 import Department, { DepartmentAttributes } from "./department";
-import {
-    createModels,
-    loadAttributes,
-} from "../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../test/jest/helpers/model/test/teardown";
+import DBConnection from "@test/support/db_connection";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -17,17 +13,13 @@ afterAll(DBConnection.CloseConnection);
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, Department);
-    await createModels(baseWorld, Department);
+    await Helpers.Model.setup.call(baseWorld, Department);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await teardown<Department>(baseWorld, Department);
-    baseWorld = undefined;
+    if (!baseWorld) throw new Error(BaseWorld.errorMessage);
+    await Helpers.Model.teardown.call(baseWorld, Department);
+    baseWorld.resetProps();
 });
 
 test("Create Department", async () => {

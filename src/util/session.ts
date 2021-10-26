@@ -7,7 +7,7 @@ import Logs from "./logs/logs";
 
 dotenv.config();
 
-const mySQLSessionStore = new (MySQLStore(session))({
+const options = {
     database: process.env.DB ?? "",
     host: process.env.DB_URL ?? "",
     user: process.env.DB_USER ?? "",
@@ -15,11 +15,13 @@ const mySQLSessionStore = new (MySQLStore(session))({
     port: Number(process.env.DB_PORT) ?? undefined,
     expiration: 8 * 60 * 60 * 1000,
     createDatabaseTable: true,
-});
+};
+
+const mySQLSessionStore = () => new (MySQLStore(session))(options);
 
 export const createSessionTable = async (): Promise<void> => {
-    return new Promise((res, rej) => {
-        mySQLSessionStore.createDatabaseTable((err) => {
+    return await new Promise((res, rej) => {
+        mySQLSessionStore().createDatabaseTable((err) => {
             if (err) {
                 Logs.Error(err);
                 rej(err);
@@ -53,6 +55,6 @@ export const createSession = async (): Promise<
             sameSite: "lax",
         },
         unset: "destroy",
-        store: mySQLSessionStore,
+        store: mySQLSessionStore(),
     });
 };

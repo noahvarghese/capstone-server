@@ -52,7 +52,10 @@ router.post("/", async (req: Request, res: Response) => {
         Object.assign(emptyInviteUser(), req.body)
     );
 
-    if (result) res.status(400).json(result);
+    if (result) {
+        res.status(400).json(result);
+        return;
+    }
 
     if (validator.isEmail(email) === false) {
         res.status(400).json({ message: "Invalid email.", field: "email" });
@@ -89,8 +92,9 @@ router.post("/", async (req: Request, res: Response) => {
             ).id;
 
             invitedUser = await connection.manager.findOneOrFail(User, userId);
-        } catch (e) {
-            Logs.Debug(e.message);
+        } catch (_e) {
+            const e = _e as Error;
+            Logs.Error(e.message);
             res.status(500).json({ message: e.message });
             return;
         }
@@ -130,8 +134,12 @@ router.post("/", async (req: Request, res: Response) => {
             MembershipRequest,
             membershipRequest
         );
-    } catch (e) {
-        res.status(500).json({ message: e.message });
+    } catch (_e) {
+        const e = _e as Error;
+        Logs.Error(e.message);
+        res.status(500).json({
+            message: "Unable to create membership request",
+        });
         return;
     }
 
@@ -146,19 +154,26 @@ router.post("/", async (req: Request, res: Response) => {
         businessId
     );
 
-    if (
-        await sendUserInviteEmail(
-            business,
-            membershipRequest,
-            sendingUser,
-            invitedUser
-        )
-    ) {
-        res.sendStatus(200);
-        return;
+    try {
+        if (
+            await sendUserInviteEmail(
+                business,
+                membershipRequest,
+                sendingUser,
+                invitedUser
+            )
+        ) {
+            res.sendStatus(200);
+            return;
+        }
+    } catch (_e) {
+        const e = _e as Error;
+        Logs.Error(e.message);
     }
 
-    res.status(500).json({ message: "failed to send invite" });
+    res.status(500).json({
+        message: "failed to send invite, but user is registered",
+    });
 });
 
 router.post("/:token", async (req: Request, res: Response) => {
@@ -172,7 +187,8 @@ router.post("/:token", async (req: Request, res: Response) => {
             MembershipRequest,
             { where: { token, token_expiry: MoreThan(new Date()) } }
         );
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Debug(e.message);
         res.status(400).json({
             message:
@@ -204,7 +220,8 @@ router.post("/:token", async (req: Request, res: Response) => {
                 default: setDefault,
             })
         );
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Debug(e.message);
         res.status(400).json({
             message: "User is already a member of the business",
@@ -224,7 +241,8 @@ router.post("/:token", async (req: Request, res: Response) => {
                 { token: user.createToken().token }
             );
         }
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Debug(e.message);
         res.status(400).json({
             message: "Could not find user",

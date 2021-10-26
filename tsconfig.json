@@ -23,11 +23,13 @@
         "outDir": "./build",
         "rootDir": "./",
         "paths": {
+            "@config/*": ["src/config/*"],
+            "@middleware/*": ["src/middleware/*"],
             "@models/*": ["src/models/*"],
             "@routes/*": ["src/routes/*"],
             "@services/*": ["src/services/*"],
             "@util/*": ["src/util/*"],
-            "@test/*": ["test/*"]
+            "@test/*": ["__test__/*"]
         }
     },
     "include": ["./**/*.ts", "./**/*.test.ts"]

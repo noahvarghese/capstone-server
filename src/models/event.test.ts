@@ -1,13 +1,9 @@
-import DBConnection from "../../test/util/db_connection";
-import ModelTestPass from "../../test/jest/helpers/model/test/pass";
-import ModelTestFail from "../../test/jest/helpers/model/test/fail";
-import BaseWorld from "../../test/support/base_world";
+import DBConnection from "@test/support/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestFail from "@test/helpers/model/test/fail";
+import BaseWorld from "@test/support/base_world";
 import Event, { EventAttributes } from "./event";
-import {
-    createModels,
-    loadAttributes,
-} from "../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../test/jest/helpers/model/test/teardown";
+import Helpers from "@test/helpers";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -16,23 +12,20 @@ afterAll(DBConnection.CloseConnection);
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, Event);
-    await createModels(baseWorld, Event);
+    await Helpers.Model.setup.call(baseWorld, Event);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-    await teardown<Event>(baseWorld, Event);
-    baseWorld = undefined;
+    if (!baseWorld) throw new Error(BaseWorld.errorMessage);
+    await Helpers.Model.teardown.call(baseWorld, Event);
+    baseWorld.resetProps();
 });
 
-test("Create Event", async () => {
+test("Create event success", async () => {
     await ModelTestPass.create<Event, EventAttributes>(baseWorld, Event);
 });
 
-test("Create Event without user_id or business_id", async () => {
+test("Create event without user_id or business_id", async () => {
     if (!baseWorld) {
         throw new Error(BaseWorld.errorMessage);
     }

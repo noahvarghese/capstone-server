@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import Logs from "../util/logs/logs";
-import { client } from "../util/permalink";
 import { getConnection } from "typeorm";
+import Logs from "@util/logs/logs";
+import { client } from "@util/permalink";
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     const publicRoutes: (string | RegExp)[] = [
@@ -81,7 +81,8 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
                 res.clearCookie(SESSION_ID);
                 res.redirect(client(""));
                 return;
-            } catch (e) {
+            } catch (_e) {
+                const e = _e as Error;
                 Logs.Error(e.message);
                 res.redirect(client(""));
                 return;
@@ -116,7 +117,8 @@ const parseRequestBodyToJSON = (
             typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
         next();
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         res.sendStatus(500);
     }

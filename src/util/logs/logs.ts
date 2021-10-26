@@ -88,7 +88,8 @@ export default class Logs {
                     Logs.getLogData(logLevel);
                 consoleFunction(prefix, ...args);
             } catch (e) {
-                console.error(e.message);
+                if (e instanceof Error) console.error(e.message);
+                else console.error(JSON.stringify(e));
             }
         }
     };

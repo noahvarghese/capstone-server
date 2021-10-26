@@ -8,11 +8,7 @@ import Email from "email-templates";
 import Model from "../../util/model";
 import Logs from "../../util/logs/logs";
 
-// const { NODE_ENV } = process.env;
 const TEMPLATE_DIR = `${__dirname}/templates`;
-// NODE_ENV === "dev" || NODE_ENV === "test"
-// ? `${__dirname}/templates`
-// : `${__dirname}/../email_templates`;
 
 const email = new Email({
     message: {
@@ -20,6 +16,8 @@ const email = new Email({
     },
     views: { root: TEMPLATE_DIR },
     send: true,
+    // causes errors due to cherrio
+    juice: false,
     transport: {
         service: "gmail",
         auth: {

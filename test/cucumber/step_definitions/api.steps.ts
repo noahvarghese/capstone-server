@@ -2,7 +2,7 @@ import { When, Then } from "@cucumber/cucumber";
 import { expect } from "chai";
 import BaseWorld from "../support/base_world";
 import { client, server } from "../../../src/util/permalink";
-import { getRedirectInfo } from "../../util/request";
+import { getRedirectInfo } from "../../../__test__/util/request";
 import Logs from "../../../src/util/logs/logs";
 
 When("I navigate to the root of the backend", async function (this: BaseWorld) {

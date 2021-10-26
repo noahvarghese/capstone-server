@@ -54,7 +54,8 @@ router.get("/:id", async (req: Request, res: Response) => {
             .getRawMany();
 
         res.status(200).json({ id: req.params.id, roles });
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         res.status(400).json({ message: "Bad id" });
     }
