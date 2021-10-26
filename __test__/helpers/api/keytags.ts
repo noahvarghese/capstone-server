@@ -1,4 +1,4 @@
-import { snakeToCamel } from "@util/string";
+import { snakeToCamel } from "@test/util/string";
 
 /**
  * Compares dependecies keys to tags

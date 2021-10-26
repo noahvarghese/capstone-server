@@ -1,7 +1,7 @@
 import cluster, { Worker } from "cluster";
 import dotenv from "dotenv";
 import os from "os";
-import Logs from "./logs/logs";
+import Logs from "../../util/logs/logs";
 
 dotenv.config();
 
@@ -32,4 +32,12 @@ export const setupMultiThreading = (): void => {
     });
 };
 
-export default enableMultiThreading;
+const multithread = async (fn: () => void | Promise<void>): Promise<void> => {
+    if (enableMultiThreading) {
+        setupMultiThreading();
+    } else {
+        await fn();
+    }
+};
+
+export default multithread;

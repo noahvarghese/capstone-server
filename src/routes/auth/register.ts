@@ -125,6 +125,7 @@ router.post("/", async (req: Request, res: Response) => {
         res.status(400).json({
             message: "User already exists, please use a different email",
         });
+        return;
     }
 
     // Create necessary records and associations

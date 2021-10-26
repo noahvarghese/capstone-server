@@ -48,8 +48,10 @@ export default class Api {
                 try {
                     await apiRequest.call(this, dependency, {
                         cookie: {
-                            withCookie: true,
-                            saveCookie: true,
+                            withCookie:
+                                dependency !== "forgotPassword" &&
+                                dependency !== "resetPassword",
+                            saveCookie: dependency !== "forgotPassword",
                         },
                         errorOnFail: true,
                     });
@@ -167,12 +169,12 @@ export default class Api {
                     )
                 ).map((member) => member.user_id)
             );
-
             // add top level dependency to delete
             const deps = apiTeardownDependencies[topLevelModelKey];
             deps.push(topLevelModelKey);
 
             // starting at the most dependent table
+            // unset locks
             for (let i = deps.length - 1; i >= 0; i--) {
                 const dependency = deps[i];
                 const type = types[dependency];
@@ -198,6 +200,7 @@ export default class Api {
             }
 
             // starting at the most dependent table
+            // delete
             for (let i = deps.length - 1; i >= 0; i--) {
                 const dependency = deps[i];
                 const type = types[dependency];
@@ -207,43 +210,34 @@ export default class Api {
                 // since user and business do not have the above keys
                 // delete by their ids
                 if (type === Business) {
-                    await connection.manager.remove<Business>(
+                    await connection.manager.delete<Business>(
                         Business,
-                        business[0]
+                        business[0].id
                     );
                 } else if (type === User) {
                     for (const id of member_ids) {
-                        const user = await connection.manager.findOne(User, id);
-                        if (user) {
-                            await connection.manager.remove<User>(User, user);
-                        }
+                        await connection.manager.delete<User>(User, id);
                     }
                 }
                 // delete any models by business or user ids
                 else {
                     if (Object.keys(attribute).includes("business_id")) {
-                        await connection.manager.remove(
-                            await connection
-                                .getRepository(type)
-                                .find({ business_id })
-                        );
+                        await connection.manager.delete(type, {
+                            business_id,
+                        });
                     }
                     if (Object.keys(attribute).includes("updated_by_user_id")) {
-                        for (const id of member_ids) {
-                            await connection.manager.remove(
-                                await connection
-                                    .getRepository(type)
-                                    .find({ updated_by_user_id: id })
-                            );
+                        for (const updated_by_user_id of member_ids) {
+                            await connection.manager.delete(type, {
+                                updated_by_user_id,
+                            });
                         }
                     }
                     if (Object.keys(attribute).includes("user_id")) {
-                        for (const id of member_ids) {
-                            await connection.manager.remove(
-                                await connection
-                                    .getRepository(type)
-                                    .find({ user_id: id })
-                            );
+                        for (const user_id of member_ids) {
+                            await connection.manager.delete(type, {
+                                user_id,
+                            });
                         }
                     }
                 }

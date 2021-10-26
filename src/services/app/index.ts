@@ -1,11 +1,11 @@
-import cors from "./cors_helper";
+import cors from "./origin";
 import cookieParser from "cookie-parser";
 import cluster from "cluster";
-import createConnection from "../config/database";
+import createConnection from "@config/database";
 import express from "express";
-import Logs from "./logs/logs";
-import middlewares from "../middleware";
-import router from "../routes";
+import Logs from "@util/logs/logs";
+import middlewares from "@middleware/index";
+import router from "@routes/index";
 import { createSession } from "./session";
 import { Server } from "http";
 import fileUpload from "express-fileupload";

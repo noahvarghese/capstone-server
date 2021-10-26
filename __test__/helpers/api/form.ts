@@ -38,6 +38,7 @@ export default class Form {
             status = res.status;
         } catch (_e) {
             const e = _e as Error & { response: AxiosResponse };
+            console.error(e.message);
             const { response } = e;
 
             if (response) {

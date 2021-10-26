@@ -1,4 +1,4 @@
-import { pascalToCamel } from "@util/string";
+import { pascalToCamel } from "@test/util/string";
 import BaseWorld from "@test/support/base_world";
 import ModelActions from "../actions";
 

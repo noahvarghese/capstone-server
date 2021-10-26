@@ -6,6 +6,10 @@
         "node": "14.17.5"
     },
     "scripts": {
+        "database:reset": "python3 ./bin/database/reset/main.py --files ./database --path .env",
+        "database:reset:test": "npm run database:reset -- -t",
+        "database:reset:dev": "npm run database:reset -- -d",
+        "database:reset:prod": "npm run database:reset -- -p",
         "premodule-alias": "cp ./src/index.ts /tmp",
         "module-alias": "printf '%s\n%s\n' 'import \"module-alias/register\";' \"$(cat ./src/index.ts)\" > ./src/index.ts",
         "module-alias:cleanup": "mv /tmp/index.ts ./src/index.ts",

@@ -1,7 +1,12 @@
 import BaseWorld from "@test/support/base_world";
 import User from "@models/user/user";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { checkType, formatter, FormatType, pascalToCamel } from "@util/string";
+import {
+    checkType,
+    formatter,
+    FormatType,
+    pascalToCamel,
+} from "@test/util/string";
 
 /**
  * Performs CRUD actions without assertions

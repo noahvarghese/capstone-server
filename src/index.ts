@@ -1,12 +1,8 @@
-import enableMultiThreading, {
-    setupMultiThreading,
-} from "./util/multithreading";
-import setupServer from "./util/server";
+import setupServer from "@services/app";
+import multithread from "@services/app/multithreading";
 
 (async () => {
-    if (enableMultiThreading) {
-        setupMultiThreading();
-    } else {
+    await multithread(async () => {
         if (
             process.argv.length > 2 &&
             ["test", "dev"].includes(process.argv[2])
@@ -15,5 +11,5 @@ import setupServer from "./util/server";
         } else {
             await setupServer();
         }
-    }
+    });
 })();

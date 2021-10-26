@@ -1,5 +1,5 @@
 import Logs from "@util/logs/logs";
-import setupServer from "@util/server";
+import setupServer from "@services/app";
 import { Server } from "http";
 
 export default class AppServer {

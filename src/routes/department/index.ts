@@ -114,7 +114,11 @@ router.post("/", async (req: Request, res: Response) => {
     try {
         const result = await SqlConnection.manager.insert(
             Department,
-            new Department(body)
+            new Department({
+                ...body,
+                updated_by_user_id: user_id,
+                business_id: current_business_id,
+            })
         );
 
         if (result.identifiers.length === 1) {

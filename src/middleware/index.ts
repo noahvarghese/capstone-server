@@ -61,6 +61,12 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         next();
         return;
     } else {
+        Logs.Error(
+            "Invalid request to ",
+            req.originalUrl,
+            " logged in = ",
+            loggedIn
+        );
         req.session.destroy((err) => {
             if (err) {
                 Logs.Error(err.message);

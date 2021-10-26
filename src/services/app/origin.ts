@@ -1,5 +1,5 @@
 import cors from "cors";
-import { client } from "./permalink";
+import { client } from "@util/permalink";
 
 let origin = client();
 

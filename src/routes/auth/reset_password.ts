@@ -22,19 +22,29 @@ router.post("/:token", async (request: Request, response: Response) => {
         return;
     }
 
-    const users = await connection.manager.find(User, {
-        where: { token, token_expiry: MoreThan(new Date()) },
-    });
+    let user: User;
 
-    if (users.length !== 1 || !users[0].compareToken(token)) {
+    try {
+        user = await connection.manager.findOneOrFail(User, {
+            where: {
+                token,
+                token_expiry: MoreThan(new Date()),
+            },
+        });
+    } catch (_e) {
+        const e = _e as Error;
+        Logs.Error(e.message);
         response.status(401).json({ message: "Invalid token." });
         return;
     }
 
-    const user = users[0];
-
     if (await user.resetPassword(password, token)) {
-        await connection.manager.save(User, user);
+        const { token, token_expiry, password } = user;
+        await connection.manager.update(
+            User,
+            { id: user.id },
+            { token, token_expiry, password }
+        );
     } else {
         response.status(403).json({ message: "Password not long enough" });
         return;
