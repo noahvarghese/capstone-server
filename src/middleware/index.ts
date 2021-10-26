@@ -99,6 +99,7 @@ const retrieveConnection = (
     const connection = getConnection();
 
     if (!connection) {
+        Logs.Error("Cannot get database connection");
         res.status(500).json({ message: "Could not connect to database." });
         return;
     }

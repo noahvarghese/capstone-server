@@ -6,7 +6,7 @@ export interface SessionData {
 }
 
 declare module "express-session" {
-    interface SessionData {
+    export interface SessionData {
         user_id: number;
         business_ids: number[];
         current_business_id: number;

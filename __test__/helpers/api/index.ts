@@ -53,7 +53,9 @@ export default class Api {
                         },
                         errorOnFail: true,
                     });
-                } catch (e) {
+                } catch (_e) {
+                    const e = _e as Error;
+                    console.error(e.message);
                     console.error(`Error setting up dependency: ${dependency}`);
                     throw e;
                 }

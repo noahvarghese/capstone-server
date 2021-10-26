@@ -19,8 +19,11 @@ module.exports = {
         "lcov",
         "clover"
     ],
+    detectOpenHandles: true,
     errorOnDeprecated: true,
     forceExit: true,
+    globalSetup: "<rootDir>/__test__/setup.ts",
+    globalTeardown: "<rootDir>/__test__/teardown.ts",
     maxConcurrency: 1,
     maxWorkers: 1,
     moduleDirectories: ["node_modules", "./"],

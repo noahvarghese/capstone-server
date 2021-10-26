@@ -12,15 +12,9 @@ import DBConnection from "@test/support/db_connection";
 let baseWorld: BaseWorld;
 const userAttr = userAttributes();
 
-beforeAll(async () => {
-    await DBConnection.InitConnection();
-    await Helpers.AppServer.setup(false);
-});
-
-afterAll(async () => {
-    await Helpers.AppServer.teardown();
-    await DBConnection.CloseConnection();
-});
+// Database setup
+beforeAll(DBConnection.InitConnection);
+afterAll(DBConnection.CloseConnection);
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.GetConnection());

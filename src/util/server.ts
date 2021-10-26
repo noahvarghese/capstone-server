@@ -50,12 +50,16 @@ const setupServer = async (
     app.use("/", router);
 
     /* Start the application already!!! */
-    return await new Promise((res) => {
-        const server = app.listen(port, () => {
-            const pid = cluster.isMaster
-                ? "parent process"
-                : `child process ${cluster.worker.process.pid}`;
+    return await new Promise<Server>((res) => {
+        const pid = cluster.isMaster
+            ? "parent process"
+            : `child process ${cluster.worker.process.pid}`;
 
+        const server = app.listen(port);
+
+        server.on("error", Logs.Error);
+
+        server.on("listening", () => {
             Logs.Event(`Server started on port: ${port} using ${pid}`);
             res(server);
         });

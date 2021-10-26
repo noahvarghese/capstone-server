@@ -62,7 +62,9 @@ export const connectionOptions = (
 });
 
 export default async (env?: "test" | "dev"): Promise<Connection> => {
-    return await createConnection(
-        connectionOptions(env ? (("_" + env) as "_test" | "_dev") : undefined)
-    );
+    return await createConnection({
+        ...connectionOptions(
+            env ? (("_" + env) as "_test" | "_dev") : undefined
+        ),
+    });
 };

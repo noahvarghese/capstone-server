@@ -12,6 +12,7 @@ export default class AppServer {
     public static async teardown(): Promise<void> {
         return await new Promise<void>((res, rej) => {
             AppServer.instance.close((err) => {
+                Logs.Event("Server terminated");
                 if (err) {
                     Logs.Test(err);
                     rej(err);
