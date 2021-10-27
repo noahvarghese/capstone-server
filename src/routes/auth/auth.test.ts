@@ -26,7 +26,7 @@ test("Authenticated user revisiting", async () => {
     // When I check if I am authenticated
     await actions.authCheck.call(baseWorld);
     // Then a confirmation is returned
-    Request.succeeded.call(baseWorld);
+    Request.succeeded.call(baseWorld, { auth: false });
 });
 
 test("Unauthenticated user revisiting", async () => {
