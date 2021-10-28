@@ -4,7 +4,7 @@ import Logs from "@util/logs/logs";
 export default class Model {
     public static create = async <T>(
         connection: Connection,
-        type: Constructor<T>,
+        type: new () => T,
         options: DeepPartial<T>
     ): Promise<ObjectLiteral> => {
         try {

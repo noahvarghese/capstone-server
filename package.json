@@ -22,7 +22,7 @@
         "build:package": "cp ./package*.json ./build && cd build && npm ci",
         "format": "prettier --write \"**/*.ts\"",
         "format:check": "prettier --check \"**/*.ts\"",
-        "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --ignore build/ --ignore __test__/ --ignore test/ --exec ts-node ./src/index.ts -- dev",
+        "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --ignore build/ --ignore __test__/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
         "test": "NODE_ENV=test jest --coverage --runInBand",
         "test:recent": "npm run test -- -o"
