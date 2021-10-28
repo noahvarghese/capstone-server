@@ -8,11 +8,12 @@ const {
     compilerOptions
 } = require('./tsconfig');
 
+
 module.exports = {
     bail: true,
     collectCoverage: true,
     coverageDirectory: "./__test__/coverage",
-    coveragePathIgnorePatterns: ["node_modules", "test", "__test__", "database", "bin"],
+    coveragePathIgnorePatterns: ["node_modules", "database", "bin", "build"],
     coverageReporters: [
         "json-summary",
         "text",
@@ -22,8 +23,6 @@ module.exports = {
     detectOpenHandles: true,
     errorOnDeprecated: true,
     forceExit: true,
-    globalSetup: "<rootDir>/__test__/setup.ts",
-    globalTeardown: "<rootDir>/__test__/teardown.ts",
     maxConcurrency: 1,
     maxWorkers: 1,
     moduleDirectories: ["node_modules", "./"],

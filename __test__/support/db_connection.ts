@@ -5,7 +5,7 @@ export default abstract class DBConnection {
     private static _connection: Connection | undefined;
     private static readonly _connectionName: string = "Test";
 
-    public static InitConnection = async (): Promise<void> => {
+    public static init = async (): Promise<void> => {
         DBConnection._connection = await createConnection({
             name: DBConnection._connectionName,
             ...connectionOptions("_test"),
@@ -13,12 +13,12 @@ export default abstract class DBConnection {
         });
     };
 
-    public static CloseConnection = async (): Promise<void> => {
+    public static close = async (): Promise<void> => {
         await DBConnection._connection?.close();
         DBConnection._connection = undefined;
     };
 
-    public static GetConnection = async (): Promise<Connection> => {
+    public static get = async (): Promise<Connection> => {
         // Set connection
         if (!DBConnection._connection) {
             try {
@@ -26,7 +26,7 @@ export default abstract class DBConnection {
                     DBConnection._connectionName
                 );
             } catch (e) {
-                await DBConnection.InitConnection();
+                await DBConnection.init();
             }
         }
 

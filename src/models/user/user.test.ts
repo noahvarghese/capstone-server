@@ -10,11 +10,12 @@ dotenv.config();
 let baseWorld: BaseWorld;
 
 // Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
+// State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
+    baseWorld = new BaseWorld(await DBConnection.get());
     await Model.setup.call(baseWorld, User);
 });
 

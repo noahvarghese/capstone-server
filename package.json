@@ -66,6 +66,7 @@
         "formdata": "^0.10.4",
         "istanbul-badges-readme": "^1.6.0",
         "jest": "^27.0.3",
+        "jest-environment-node": "^27.3.1",
         "jest-html-reporter": "^3.4.1",
         "nodemon": "^2.0.7",
         "prettier": "^2.4.0",

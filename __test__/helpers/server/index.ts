@@ -1,24 +1,15 @@
-import Logs from "@util/logs/logs";
-import setupServer from "@services/app";
+import setupServer, { shutdown } from "@services/app";
 import { Server } from "http";
+import { Connection } from "typeorm";
 
 export default class AppServer {
-    private static instance: Server;
+    private static app: { server: Server; connection: Connection };
 
     public static async setup(disableLogs?: boolean): Promise<void> {
-        AppServer.instance = await setupServer(disableLogs, "test");
+        this.app = await setupServer(disableLogs, "test");
     }
 
     public static async teardown(): Promise<void> {
-        return await new Promise<void>((res, rej) => {
-            AppServer.instance.close((err) => {
-                Logs.Event("Server terminated");
-                if (err) {
-                    Logs.Test(err);
-                    rej(err);
-                }
-                res();
-            });
-        });
+        await shutdown(this.app);
     }
 }

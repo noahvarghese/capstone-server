@@ -7,11 +7,12 @@ import Helpers from "@test/helpers";
 
 let baseWorld: BaseWorld | undefined;
 
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
+// State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
+    baseWorld = new BaseWorld(await DBConnection.get());
     await Helpers.Model.setup.call(baseWorld, Event);
 });
 

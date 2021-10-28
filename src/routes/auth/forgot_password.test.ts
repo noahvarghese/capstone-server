@@ -10,17 +10,23 @@ import attributes from "@test/sample_data/api/attributes";
 
 let baseWorld: BaseWorld;
 
-// Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(async () => {
+    await DBConnection.init();
+    await Helpers.AppServer.setup(false);
+});
+afterAll(async () => {
+    await Helpers.AppServer.teardown();
+    await DBConnection.close();
+});
 
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
+    baseWorld = new BaseWorld(await DBConnection.get());
     await Helpers.Api.setup.call(baseWorld, "@setup_forgot_password");
 });
 
 afterEach(async () => {
     await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    baseWorld.resetProps();
 });
 
 test("Forgot Password Token Created", async () => {

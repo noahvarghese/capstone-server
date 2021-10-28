@@ -8,11 +8,12 @@ import DBConnection from "@test/support/db_connection";
 let baseWorld: BaseWorld | undefined;
 
 // Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
+// State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
+    baseWorld = new BaseWorld(await DBConnection.get());
     await Helpers.Model.setup.call(baseWorld, Department);
 });
 

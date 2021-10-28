@@ -9,6 +9,7 @@ import router from "@routes/index";
 import { createSession } from "./session";
 import { Server } from "http";
 import fileUpload from "express-fileupload";
+import { Connection } from "typeorm";
 
 const port = process.env.PORT || 8081;
 
@@ -16,11 +17,11 @@ const port = process.env.PORT || 8081;
 const setupServer = async (
     disableLogs = false,
     env?: "test" | "dev"
-): Promise<Server> => {
+): Promise<{ server: Server; connection: Connection }> => {
     Logs.configureLogs(disableLogs);
     /* Connect to database */
     /* No try catch cuz if it fails theres a bigger issue */
-    await createConnection(env);
+    const connection = await createConnection(env);
 
     const app = express();
 
@@ -50,7 +51,7 @@ const setupServer = async (
     app.use("/", router);
 
     /* Start the application already!!! */
-    return await new Promise<Server>((res) => {
+    const server = await new Promise<Server>((res) => {
         const pid = cluster.isMaster
             ? "parent process"
             : `child process ${cluster.worker.process.pid}`;
@@ -64,6 +65,25 @@ const setupServer = async (
             res(server);
         });
     });
+
+    return { server, connection };
 };
 
+export const shutdown = async (app: {
+    server: Server;
+    connection: Connection;
+}): Promise<void> => {
+    await new Promise<void>((res, rej) => {
+        app.server.close((err) => {
+            Logs.Event("Server terminated");
+            if (err) {
+                Logs.Test(err);
+                rej(err);
+            }
+            res();
+        });
+    });
+
+    await app.connection.close();
+};
 export default setupServer;
