@@ -1,4 +1,3 @@
-import "module-alias/register";
 import setupServer, { shutdown as shutdownApp } from "@services/app";
 import multithread from "@services/app/multithreading";
 import { Server } from "http";
