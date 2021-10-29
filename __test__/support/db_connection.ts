@@ -15,6 +15,7 @@ export default abstract class DBConnection {
 
     public static close = async (): Promise<void> => {
         await DBConnection._connection?.close();
+
         DBConnection._connection = undefined;
     };
 
