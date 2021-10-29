@@ -12,8 +12,11 @@ const {
 module.exports = {
     bail: true,
     collectCoverage: true,
+    collectCoverageFrom: [
+        "**/*.ts",
+    ],
     coverageDirectory: "./__test__/coverage",
-    coveragePathIgnorePatterns: ["node_modules", "database", "bin", "build"],
+    coveragePathIgnorePatterns: ["node_modules", "database", "bin", "test.ts", "__test__"],
     coverageReporters: [
         "json-summary",
         "text",
@@ -32,7 +35,7 @@ module.exports = {
     reporters: [
         "default",
         ["./node_modules/jest-html-reporter", {
-            "dateFormat": "yyyy-mm-dd",
+            "dateFormat": "yyyy-mm-dd HH:MM:ss",
             "includeConsoleLog": true,
             "includeFailureMsg": true,
             "includeSuiteFailure": true,
@@ -40,7 +43,7 @@ module.exports = {
             "pageTitle": "Test Report",
         }]
     ],
-    roots: ["./"],
+    roots: ["src", "__test__"],
     testEnvironment: 'node',
     testRegex: '/src/.*\\.(test|spec)?\\.(ts|tsx)$',
     transform: {
