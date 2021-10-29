@@ -86,4 +86,5 @@ export const shutdown = async (app: {
 
     await app.connection.close();
 };
+
 export default setupServer;

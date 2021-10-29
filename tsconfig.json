@@ -1,27 +1,20 @@
 {
     "compilerOptions": {
-        "target": "es2020",
-        "strict": true,
-        "emitDecoratorMetadata": true,
-        "noEmitOnError": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "esModuleInterop": true,
-        "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "typeRoots": ["@types", "./node_modules/@types"],
-        "types": ["node", "jest"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noEmitOnError": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitThis": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
-        "baseUrl": ".",
-        "module": "commonjs",
-        "sourceMap": true,
         "outDir": "./build",
-        "rootDir": ".",
         "paths": {
             "@config/*": ["src/config/*"],
             "@middleware/*": ["src/middleware/*"],
@@ -30,7 +23,14 @@
             "@services/*": ["src/services/*"],
             "@util/*": ["src/util/*"],
             "@test/*": ["__test__/*"]
-        }
+        },
+        "rootDir": ".",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2020",
+        "typeRoots": ["@types", "./node_modules/@types"],
+        "types": ["node", "jest"]
     },
     "ts-node": {
         "require": ["tsconfig-paths/register"]
