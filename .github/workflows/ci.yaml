@@ -53,4 +53,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/ci
+      - id: ci
+        uses: ./.github/actions/ci
+      - name: Publish test results
+        if: ${{ steps.ci.outcome }} == "failure" || ${{ steps.ci.outcome }} == "success"
+        uses: actions/upload-artifact@v2
+        with:
+          name: "test-results-and-coverage"
+          path: |
+            __test__/test-report.html
+            __test__/coverage
