@@ -78,7 +78,7 @@ jobs:
           aws elasticbeanstalk create-application-version \
           --application-name ${{ secrets.AWS_APPLICATION_NAME }} \
           --version-label ${{ steps.version.outputs.VERSION }} \
-          --source-bundle S3Bucket="${{ secrets.AWS_S3_ARTIFACT_BUCKET }}",S3Key="${{ secrets.AWS_S3_ARTIFACT_LOCATION }}/deploy_${{ steps.version.outputs.VERSION }}.zip"
+          --source-bundle S3Bucket="${{ secrets.AWS_S3_ARTIFACT_BUCKET }}",S3Key="${{ secrets.AWS_S3_ARTIFACT_LOCATION }}deploy_${{ steps.version.outputs.VERSION }}.zip"
       - name: update application
         run: |
           aws elasticbeanstalk update-environment \
