@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-let multiplier = process.env.TIMEOUT_MULTIPLYER;
+let multiplier = process.env.TIMEOUT_MULTIPLIER;
 
 try {
     multiplier = Number(multiplier);
