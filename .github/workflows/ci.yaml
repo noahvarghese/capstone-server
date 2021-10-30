@@ -56,6 +56,12 @@ jobs:
       - id: ci
         uses: ./.github/actions/ci
         continue-on-error: true
+      - name: Publish npm log
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: "npm-log"
+          path: "/home/runner/.npm/_logs"
       - name: Publish test results
         if: always()
         uses: actions/upload-artifact@v2
