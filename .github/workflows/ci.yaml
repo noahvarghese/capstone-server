@@ -57,7 +57,7 @@ jobs:
         uses: ./.github/actions/ci
         continue-on-error: true
       - name: Publish test results
-        if: ${{ steps.ci.outcome }} == "failure" || ${{ steps.ci.outcome }} == "success"
+        if: always()
         uses: actions/upload-artifact@v2
         with:
           name: "test-results-and-coverage"
