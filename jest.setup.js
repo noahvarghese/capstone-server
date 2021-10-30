@@ -12,4 +12,5 @@ try {
     multiplier = 1;
 }
 
+console.debug(10000 * multiplier, multiplier);
 jest.setTimeout(10000 * multiplier);
