@@ -4,13 +4,12 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-let multiplier = process.env.TIMEOUT_MULTIPLIER;
+const {
+    TIMEOUT_MULTIPLIER
+} = process.env;
 
-try {
-    multiplier = Number(multiplier);
-} catch (_) {
-    multiplier = 1;
-}
+const DEFAULT_MULTIPLIER = 1;
 
-console.debug(10000 * multiplier, multiplier);
+const multiplier = isNan(Number(TIMEOUT_MULTIPLIER)) ? Number(TIMEOUT_MULTIPLIER) : DEFAULT_MULTIPLIER;
+
 jest.setTimeout(10000 * multiplier);
