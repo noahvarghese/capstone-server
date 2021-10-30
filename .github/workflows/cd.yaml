@@ -63,7 +63,9 @@ jobs:
       - uses: actions/setup-node@v2
       - id: version
         name: Increment version by one
-        run: echo '::set-output name=VERSION::"$(./bin/files/get_version_from_package_json.sh)"'
+        run: |
+          VERSION=$(./bin/files/get_version_from_package_json.sh)
+          echo '::set-output name=VERSION::$VERSION'
       - name: cache node modules
         uses: ./.github/actions/cache-node-modules
       - name: build
