@@ -1,8 +1,8 @@
 name: Continuous Deployment
 
 on:
-    push:
-        branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   continuous-integration:
@@ -29,6 +29,7 @@ jobs:
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       TARGET_ENV: ${{ secrets.TARGET_ENV }}
       SECONDARY_TEST_EMAIL: ${{ secrets.SECONDARY_TEST_EMAIL }}
+      TIMEOUT_MULTIPLIER: ${{ secrets.TIMEOUT_MULTIPLIER }}
     if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
     steps:
       - uses: actions/checkout@v2
@@ -42,12 +43,7 @@ jobs:
           path: "/home/runner/.npm/_logs"
       - name: Publish test results
         if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: "test-results-and-coverage"
-          path: |
-            __test__/test-report.html
-            __test__/coverage
+        uses: ./.github/actions/publish
 
   continuous-deployment:
     if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'cd skip') && !contains(github.event.head_commit.message, 'skip cd'))"
