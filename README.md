@@ -1,3 +1,14 @@
+![Continuous Deployment](https://github.com/noahvarghese/capstone-server/actions/workflows/cd.yaml/badge.svg)
+![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
+![Statement](#statements#)
+![Lines](https://img.shields.io/badge/lines-Unknown%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-Unknown%25-brightgreen.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-Unknown%25-brightgreen.svg?style=flat)
+<!-- ![Statment Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-statements.svg)
+![Line Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-lines.svg)
+![Function Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-functions.svg)
+![Branch Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-branches.svg) -->
+
 # OnBoard - Backend
 
 ## About
@@ -15,6 +26,310 @@ Any end to end tests will be located in the tests repo.
 Documentation - mockups, ERD, class diagrams are currently in my private DropBox.
 
 They may be moved into their own repo at the end of this to showcase all parts of this project.
+
+## API Documentation
+
+<table>
+    <thead>
+        <th>method</th>
+        <th>route</th>
+        <th>body</th>
+        <th>include credentials</th>
+        <th>return status</th>
+        <th>return type</th>
+        <th>error status(es)</th>
+        <th>error type(s)</th>
+        <th>description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>POST</td>
+            <td>/auth/login</td>
+            <td>
+            <pre>{email: string; password: string;}</pre></td>
+            <td>false</td>
+            <td>200</td>
+            <td>{}</td>
+            <td>400, 401</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>logs user in, sets session variable so that a cookie is returned for use</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/register</td>
+            <td><pre>
+            {
+                first_name: string;
+                last_name: string;
+                email: string;
+                phone: string;
+                address: string;
+                city: string;
+                postal_code: string;
+                province: string;
+                password: string;
+                confirm_password: string;
+                name: string;
+            }</pre></td>
+            <td>false</td>
+            <td>201</td>
+            <td><pre>{}</pre></td>
+            <td>400, 500</td>
+            <td><pre>{message?: string; field?: string; }</pre></td>
+            <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/logout</td>
+            <td><pre></pre></td>
+            <td>true</td>
+            <td></td>
+            <td><pre></pre></td>
+            <td></td>
+            <td><pre></pre></td>
+            <td>Not Implemented</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/forgot_password </td>
+            <td><pre>{email: string;}</pre></td>
+            <td>false</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>401, 500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>submit email to receive a link to reset password via email</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/auth/reset_password/{token}</td>
+            <td><pre>{password: string; confirm_password:string;}</pre></td>
+            <td>false</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>401, 403, 500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>this is the link sent via email to reset the password</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/members/invite</td>
+            <td>
+                <pre>
+                {
+                    first_name: string; 
+                    last_name: string; 
+                    email: string; 
+                    phone: string
+                }
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>This is how a business adds a new user, will add user to database if user does not exist, and send invite to user</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/members/invite</td>
+            <td>
+                <pre>
+                {
+                    first_name: string;
+                    last_name: string;
+                    email: string;
+                    phone: string;
+                }    
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Requires user sending request to have explicit permissions to create user. Checks if user exists before creating. Otherwise will just send the invite.</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/members/invite/:token</td>
+            <td><pre>{}</pre></td>
+            <td>false</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Checks that token is valid then converts user's link to business from membership_request to membership</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/settings/nav</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    home: boolean;
+                    members: boolean;
+                    departments: boolean;
+                    roles: boolean;
+                    manuals: boolean;
+                    quizzes: boolean;
+                    reports: boolean;
+                    scores: boolean;
+                    logout: boolean;
+                }: Permission     
+                </pre>
+            </td>
+            <td>500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>returns the pages the cleint has access to</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/departments/:id</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    name: string;
+                    numMembers: number;
+                    numRoles: number;
+                    ...more
+                }
+                </pre>
+            </td>
+            <td>403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Gets department, not implemented</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/departments</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    name: string;
+                    numMembers: number;
+                    numRoles: number;
+                }[]
+                </pre>
+            </td>
+            <td>403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Gets list of departments</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/departments</td>
+            <td><pre>{name: string;}</pre></td>
+            <td>true</td>
+            <td>201</td>
+            <td><pre>{}</pre></td>
+            <td>403,405,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Creates department</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/roles</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    name: string;
+                    numMembers: number;
+                    department: string;
+                }[]
+                </pre>
+            </td>
+            <td>403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Gets list of roles</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/roles</td>
+            <td>
+                <pre>
+                {
+                    name: string; 
+                    department: number; 
+                    home: boolean;
+                    members: boolean;
+                    departments: boolean;
+                    roles: boolean;
+                    manuals: boolean;
+                    quizzes: boolean;
+                    reports: boolean;
+                    scores: boolean;
+                    logout: boolean;
+                }
+                </pre>
+            </td>
+            <td>true</td>
+            <td>201</td>
+            <td><pre>{}</pre></td>
+            <td>403,405,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Creates role</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><pre></pre></td>
+            <td></td>
+            <td></td>
+            <td><pre></pre></td>
+            <td></td>
+            <td><pre></pre></td>
+            <td></td>
+        </tr>
+    </tbody>
+
+</table>
+
+
+## Environment Variables
+
+-   Env variables must be loaded into the Elastic Beanstalk as well as the job runner for CI/CD
+-   copy .env_blank to .env and provide your own values
+
+| name                  | type                       | description                                                                                                                      |
+| --------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| DB                    | string                     | the name of the SQL database to be connected to                                                                                  |
+| DB_PORT               | number                     | the port to connect on                                                                                                           |
+| DB_PWD                | string                     | the password to connect to the SQL database                                                                                      |
+| DB_TYPE               | "mysql" \| "postgres"      | the type of SQL database to be connected to                                                                                      |
+| DB_URL                | string                     | the FQDN or IP address of the SQL database                                                                                       |
+| DB_USER               | string                     | the user to connect as                                                                                                           |
+| ENABLE_MULTITHREADING | boolean                    | whether to run on multiple cores                                                                                                 |
+| ENV_LOCAL_CLIENT      | string                     | the url or ip address of the frontend in local development eg. protocol://path:port                                              |
+| ENV_DEV_CLIENT        | string                     | the url or ip address of the frontend in qa eg. protocol://path:port                                                             |
+| ENV_PROD_CLIENT       | string                     | the url or ip address of the frontend in production eg. protocol://path:port                                                     |
+| ENV_LOCAL_SERVER      | string                     | the url or ip address of the backend in local development eg. protocol://path:port                                               |
+| ENV_DEV_SERVER        | string                     | the url or ip address of the backend in qa eg. protocol://path:port                                                              |
+| ENV_PROD_SERVER       | string                     | the url or ip address of the backend in production eg. protocol://path:port                                                      |
+| TARGET_ENV            | "LOCAL" \| "DEV" \| "PROD" | which environment is being targeted                                                                                              |
+| MAIL_USER             | string                     | the email address of the gmail account to be used to send emails                                                                 |
+| MAIL_PWD              | string                     | the password or key for the gmail account (see <a href="https://www.npmjs.com/package/nodemailer">nodemailers</a> documentation) |
+| SESSION_ID            | string                     | id to use for session cookie                                                                                                     |
+| SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
+| LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
+| SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
+
 
 ## Tests
 
@@ -34,6 +349,20 @@ The dependencies to teardown are done by modifying the database directly and ski
 The urls are either a string or a function that returns a string if url parameters are required
 
 The template for the tests is necessary data is stored in an attribute "body" saved in the BaseWorld state, then an action 'submitForm' is performed that takes the data stored and submits it to the given url.
+
+### About
+
+Now using jest for all tests as it allows filtering of recently changed tests via the <a href="https://jestjs.io/docs/cli#--onlychanged">-o</a> and <a href="https://jestjs.io/docs/cli#--changedsince">--changedSince</a> options.
+
+### Process
+
+-   Run tests during development prior to commit.
+-   Generate badges prior to commit.
+-   Commit changes.
+-   Pre-commit hook runs only changed files.
+-   On success
+    -   Workflow runs any tests changed between the current and previous commit
+
 
 #### Stages
 
@@ -103,155 +432,6 @@ Triggers are added to the database to enforce business rules that do not affect 
 -   Checks that the user has appropriate permissions to modify/view resources (see permissions table)
 -   Checks if resources are locked before processinga change
 -   Checks that mandatory fields are filled in
-
-## Environment Variables
-
--   Env variables must be loaded into the Elastic Beanstalk as well as the job runner for CI/CD
--   copy .env_blank to .env and provide your own values
-
-| name                  | type                       | description                                                                                                                      |
-| --------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| DB                    | string                     | the name of the SQL database to be connected to                                                                                  |
-| DB_PORT               | number                     | the port to connect on                                                                                                           |
-| DB_PWD                | string                     | the password to connect to the SQL database                                                                                      |
-| DB_TYPE               | "mysql" \| "postgres"      | the type of SQL database to be connected to                                                                                      |
-| DB_URL                | string                     | the FQDN or IP address of the SQL database                                                                                       |
-| DB_USER               | string                     | the user to connect as                                                                                                           |
-| ENABLE_MULTITHREADING | boolean                    | whether to run on multiple cores                                                                                                 |
-| ENV_LOCAL_CLIENT      | string                     | the url or ip address of the frontend in local development eg. protocol://path:port                                              |
-| ENV_DEV_CLIENT        | string                     | the url or ip address of the frontend in qa eg. protocol://path:port                                                             |
-| ENV_PROD_CLIENT       | string                     | the url or ip address of the frontend in production eg. protocol://path:port                                                     |
-| ENV_LOCAL_SERVER      | string                     | the url or ip address of the backend in local development eg. protocol://path:port                                               |
-| ENV_DEV_SERVER        | string                     | the url or ip address of the backend in qa eg. protocol://path:port                                                              |
-| ENV_PROD_SERVER       | string                     | the url or ip address of the backend in production eg. protocol://path:port                                                      |
-| TARGET_ENV            | "LOCAL" \| "DEV" \| "PROD" | which environment is being targeted                                                                                              |
-| MAIL_USER             | string                     | the email address of the gmail account to be used to send emails                                                                 |
-| MAIL_PWD              | string                     | the password or key for the gmail account (see <a href="https://www.npmjs.com/package/nodemailer">nodemailers</a> documentation) |
-| SESSION_ID            | string                     | id to use for session cookie                                                                                                     |
-| SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
-| LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
-| SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
-
-## API Documentation
-
-<table>
-    <thead>
-        <th>method</th>
-        <th>route</th>
-        <th>body</th>
-        <th>include credentials</th>
-        <th>return status</th>
-        <th>return type</th>
-        <th>error status(es)</th>
-        <th>error type(s)</th>
-        <th>description</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>POST</td>
-            <td>/auth/login</td>
-            <td>
-            <pre>{email: string; password: string;}</pre></td>
-            <td>false</td>
-            <td>200</td>
-            <td>void</td>
-            <td>400, 401</td>
-            <td><pre>{message: string;} | void</pre></td>
-            <td>logs user in, sets session variable so that a cookie is returned for use</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/signup</td>
-            <td><pre>
-            {
-                first_name: string;
-                last_name: string;
-                email: string;
-                phone: string;
-                address: string;
-                city: string;
-                postal_code: string;
-                province: string;
-                password: string;
-                confirm_password: string;
-                name: string;
-            }</pre></td>
-            <td>false</td>
-            <td>201</td>
-            <td><pre>void</pre></td>
-            <td>400, 500</td>
-            <td><pre>{message: string; field: string; } | {message: string;}</pre></td>
-            <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/logout</td>
-            <td><pre></pre></td>
-            <td>true</td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td>Not Implemented</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/requestResetPassword </td>
-            <td><pre>{email: string;}</pre></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>void</pre></td>
-            <td>401, 500</td>
-            <td><pre>{message: string;}</pre></td>
-            <td>submit email to receive a link to reset password via email</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/resetPassword/{token}</td>
-            <td><pre>{password: string; confirm_password:string;}</pre></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>void</pre></td>
-            <td>401, 403, 500</td>
-            <td><pre>{message: string;} | void</pre></td>
-            <td>this is the link sent via email to reset the password</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/user/invite</td>
-            <td><pre>{first_name: string; last_name: string; email: string; phone: string}</pre></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>void</pre></td>
-            <td>400,500</td>
-            <td><pre>{message: string;}</pre></td>
-            <td>This is how a business adds a new user, will add user to database if user does not exist, and send invite to user</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/user/invite/:token</td>
-            <td><pre></pre></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>void</pre></td>
-            <td>400,500</td>
-            <td><pre>{message: string;}</pre></td>
-            <td>Not implmented</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-        </tr>
-    </tbody>
-
-</table>
 
 ## CI/CD
 

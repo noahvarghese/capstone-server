@@ -1,0 +1,33 @@
+name: "Run On File Change"
+description: "If given files changed, run the command"
+inputs:
+  files:
+    description: Array of partial files, globs not supported yet
+    required: true
+    default: ""
+  command:
+    description: "Command to run if files were changed"
+    required: true
+    default: ""
+runs:
+  using: composite
+  steps:
+    - id: files
+      name: Get changed files
+      uses: jitterbit/get-changed-files@v1
+      with:
+        format: "csv"
+    - id: changed
+      name: Compare changed files to watched files
+      run: |
+        echo '::set-output name=CHANGED::"$(./bin/files/changed.sh ${{ steps.files.outputs.all }} ${{ inputs.files }} ,)"'
+      shell: bash
+    - run: |
+        if [[ ${{ steps.changed.outputs.CHANGED }} == true ]];
+        then
+          echo Executing command "${{ inputs.command }}";
+          eval ${{ inputs.command }}; 
+        else
+          echo No files changed
+        fi
+      shell: bash

@@ -1,32 +1,24 @@
-import BaseWorld from "../../test/jest/support/base_world";
-import DBConnection from "../../test/util/db_connection";
-import ModelTestPass from "../../test/jest/helpers/model/test/pass";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
 import Permission, { PermissionAttributes } from "./permission";
-import { teardown } from "../../test/jest/helpers/model/test/teardown";
-import {
-    createModels,
-    loadAttributes,
-} from "../../test/jest/helpers/model/test/setup";
+import Model from "@test/helpers/model";
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
 // Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
 // State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, Permission);
-    await createModels(baseWorld, Permission);
+    baseWorld = new BaseWorld(await DBConnection.get());
+    await Model.setup.call(baseWorld, Permission);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-    await teardown(baseWorld, Permission);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, Permission);
+    baseWorld.resetProps();
 });
 
 // Tests
@@ -42,7 +34,7 @@ test("Update Permission", async () => {
         baseWorld,
         Permission,
 
-        { assign_resources_to_department: false }
+        { global_assign_resources_to_department: false }
     );
 });
 

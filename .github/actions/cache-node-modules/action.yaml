@@ -1,0 +1,16 @@
+name: "Cache Node Modules"
+description: "cache node modules"
+runs:
+  using: composite
+  steps:
+    - id: check-cache
+      name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+    - name: install dependencies
+      run: npm ci
+      shell: bash

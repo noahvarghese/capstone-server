@@ -1,35 +1,27 @@
-import BaseWorld from "../../../test/jest/support/base_world";
-import DBConnection from "../../../test/util/db_connection";
-import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
 import User, { UserAttributes } from "./user";
 import dotenv from "dotenv";
-import {
-    createModels,
-    loadAttributes,
-} from "../../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../../test/jest/helpers/model/test/teardown";
-import ModelActions from "../../../test/jest/helpers/model/actions";
+import Model from "@test/helpers/model";
+import ModelActions from "@test/helpers/model/actions";
 dotenv.config();
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
 // Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
+// State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, User);
-    await createModels(baseWorld, User);
+    baseWorld = new BaseWorld(await DBConnection.get());
+    await Model.setup.call(baseWorld, User);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    await teardown(baseWorld, User);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, User);
+    baseWorld.resetProps();
 });
 
 test("Create User", async () => {

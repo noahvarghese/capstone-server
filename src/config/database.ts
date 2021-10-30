@@ -1,26 +1,26 @@
 import { createConnection, ConnectionOptions, Connection } from "typeorm";
-import Business from "../models/business";
-import Department from "../models/department";
-import Permission from "../models/permission";
-import Role from "../models/role";
-import Content from "../models/manual/content";
-import Manual from "../models/manual/manual";
-import Policy from "../models/manual/policy/policy";
-import ManualSection from "../models/manual/section";
-import ManualAssignment from "../models/manual/assignment";
-import User from "../models/user/user";
-import UserRole from "../models/user/user_role";
-import DBLogger from "../util/logs/db_logger";
-import Quiz from "../models/quiz/quiz";
-import QuizSection from "../models/quiz/section";
-import Question from "../models/quiz/question/question";
-import Answer from "../models/quiz/question/answer";
-import Attempt from "../models/quiz/attempt";
-import Result from "../models/quiz/result";
-import Read from "../models/manual/policy/read";
-import Event from "../models/event";
-import Membership from "../models/membership";
-import MembershipRequest from "../models/membership_request";
+import Business from "@models/business";
+import Department from "@models/department";
+import Permission from "@models/permission";
+import Role from "@models/role";
+import Content from "@models/manual/content";
+import Manual from "@models/manual/manual";
+import Policy from "@models/manual/policy/policy";
+import ManualSection from "@models/manual/section";
+import ManualAssignment from "@models/manual/assignment";
+import User from "@models/user/user";
+import UserRole from "@models/user/user_role";
+import DBLogger from "@util/logs/db_logger";
+import Quiz from "@models/quiz/quiz";
+import QuizSection from "@models/quiz/section";
+import Question from "@models/quiz/question/question";
+import Answer from "@models/quiz/question/answer";
+import Attempt from "@models/quiz/attempt";
+import Result from "@models/quiz/result";
+import Read from "@models/manual/policy/read";
+import Event from "@models/event";
+import Membership from "@models/membership";
+import MembershipRequest from "@models/membership_request";
 
 const entities = [
     Business,
@@ -62,7 +62,9 @@ export const connectionOptions = (
 });
 
 export default async (env?: "test" | "dev"): Promise<Connection> => {
-    return await createConnection(
-        connectionOptions(env ? (("_" + env) as "_test" | "_dev") : undefined)
-    );
+    return await createConnection({
+        ...connectionOptions(
+            env ? (("_" + env) as "_test" | "_dev") : undefined
+        ),
+    });
 };

@@ -1,7 +1,7 @@
 import { uid } from "rand-token";
 import bcrypt from "bcryptjs";
 import { Entity, Column } from "typeorm";
-import BaseModel, { AttributeFactory } from "../abstract/base_model";
+import BaseModel, { AttributeFactory } from "@models/abstract/base_model";
 
 export interface UserAttributes {
     first_name: string;

@@ -1,15 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import Logs from "../util/logs/logs";
-import { client } from "../util/permalink";
 import { getConnection } from "typeorm";
-
-const clearCookie = (req: Request, res: Response, next: NextFunction) => {
-    if (req.cookies.sid && !req.session.user_id) {
-        Logs.Event("Cleared cookie");
-        res.clearCookie(process.env.SESSION_ID ?? "sid");
-    }
-    next();
-};
+import Logs from "@util/logs/logs";
+import { client } from "@util/permalink";
 
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     const publicRoutes: (string | RegExp)[] = [
@@ -17,7 +9,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         "/auth/register",
         /^\/auth\/forgot_password/,
         /^\/auth\/reset_password\/\w+$/,
-        /^\/user\/invite\/\w/,
+        /^\/members\/invite\/\w+/,
     ];
     const openRoutes: (string | RegExp)[] = [/^\/auth\/?$/];
 
@@ -58,9 +50,9 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     }
 
     const loggedIn =
-        req.session.user_id &&
-        req.session.current_business_id &&
-        req.session.business_ids;
+        Boolean(req.session.user_id) &&
+        Boolean(req.session.current_business_id) &&
+        Boolean(req.session.business_ids);
 
     if (
         (loggedIn ? !requestedPublicResource : requestedPublicResource) ||
@@ -69,6 +61,12 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
         next();
         return;
     } else {
+        Logs.Error(
+            "Invalid request to ",
+            req.originalUrl,
+            " logged in = ",
+            loggedIn
+        );
         req.session.destroy((err) => {
             if (err) {
                 Logs.Error(err.message);
@@ -87,11 +85,12 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
                 }
 
                 res.clearCookie(SESSION_ID);
-                res.redirect(client("login"));
+                res.redirect(client(""));
                 return;
-            } catch (e) {
+            } catch (_e) {
+                const e = _e as Error;
                 Logs.Error(e.message);
-                res.redirect(client("login"));
+                res.redirect(client(""));
                 return;
             }
         });
@@ -106,6 +105,7 @@ const retrieveConnection = (
     const connection = getConnection();
 
     if (!connection) {
+        Logs.Error("Cannot get database connection");
         res.status(500).json({ message: "Could not connect to database." });
         return;
     }
@@ -124,14 +124,14 @@ const parseRequestBodyToJSON = (
             typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
         next();
-    } catch (e) {
+    } catch (_e) {
+        const e = _e as Error;
         Logs.Error(e.message);
         res.sendStatus(500);
     }
 };
 
 const middlewares = {
-    clearCookie,
     requireAuth,
     retrieveConnection,
     parseRequestBodyToJSON,

@@ -1,6 +1,7 @@
 /node_modules
-/coverage
 /build
+__test__/coverage
+__test__/test-report.html
 .env
 .vscode
 output*
@@ -9,4 +10,3 @@ output*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-test/jest/coverage

@@ -1,32 +1,25 @@
-import BaseWorld from "../../../test/jest/support/base_world";
-import DBConnection from "../../../test/util/db_connection";
-import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestFail from "@test/helpers/model/test/fail";
+import Model from "@test/helpers/model";
 import UserRole, { UserRoleAttributes } from "./user_role";
-import {
-    createModels,
-    loadAttributes,
-} from "../../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../../test/jest/helpers/model/test/teardown";
-import ModelTestFail from "../../../test/jest/helpers/model/test/fail";
 
 let baseWorld: BaseWorld | undefined;
 
 // Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
 // State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, UserRole);
-    await createModels(baseWorld, UserRole);
+    baseWorld = new BaseWorld(await DBConnection.get());
+    await Model.setup.call(baseWorld, UserRole);
 });
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-    await teardown<UserRole>(baseWorld, UserRole);
-    baseWorld = undefined;
+    if (!baseWorld) throw new Error(BaseWorld.errorMessage);
+    await Model.teardown.call(baseWorld, UserRole);
+    baseWorld.resetProps();
 });
 
 // Tests

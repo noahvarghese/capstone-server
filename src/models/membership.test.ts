@@ -1,33 +1,28 @@
-import ModelTestFail from "../../test/jest/helpers/model/test/fail";
-import ModelTestPass from "../../test/jest/helpers/model/test/pass";
-import {
-    createModels,
-    loadAttributes,
-} from "../../test/jest/helpers/model/test/setup";
-import { teardown } from "../../test/jest/helpers/model/test/teardown";
-import BaseWorld from "../../test/jest/support/base_world";
-import DBConnection from "../../test/util/db_connection";
+import ModelTestFail from "@test/helpers/model/test/fail";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import Model from "@test/helpers/model";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
 import Membership, { MembershipAttributes } from "./membership";
 
 let baseWorld: BaseWorld | undefined;
 
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
+// State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, Membership);
-    await createModels(baseWorld, Membership);
+    baseWorld = new BaseWorld(await DBConnection.get());
+    await Model.setup.call(baseWorld, Membership);
 });
 
 afterEach(async () => {
     if (!baseWorld) throw new Error(BaseWorld.errorMessage);
-
-    await teardown(baseWorld, Membership);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, Membership);
+    baseWorld.resetProps();
 });
 
-test("Create membership", async () => {
+test("Create membership success", async () => {
     await ModelTestPass.create<Membership, MembershipAttributes>(
         baseWorld,
         Membership

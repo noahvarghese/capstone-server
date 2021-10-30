@@ -1,5 +1,5 @@
 import { Connection, DeepPartial, ObjectLiteral } from "typeorm";
-import Logs from "./logs/logs";
+import Logs from "@util/logs/logs";
 
 export default class Model {
     public static create = async <T>(
@@ -15,7 +15,8 @@ export default class Model {
             }
 
             return result.identifiers[0];
-        } catch (e) {
+        } catch (_e) {
+            const e = _e as Error;
             Logs.Error(e.message);
             throw new Error(`An error occurred creating the ${type.name}`);
         }

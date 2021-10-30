@@ -1,13 +1,12 @@
-name: Continuous Integration 
-
+name: Checks
 on:
   push:
     branches:
-        - "*"
-        - "!main"
+      - "*"
+      - "!main"
   pull_request:
-    branches: 
-     - '*'
+    branches:
+      - "*"
 
 jobs:
   check-formatting:
@@ -15,10 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - name: install dependencies
-        run: npm i
+      - name: cache node modules
+        uses: ./.github/actions/cache-node-modules
       - name: check formatting
         run: npm run format:check
+  check-api-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Check API Documentation"
+        uses: ./.github/actions/check-documentation
+        with:
+          doc: ./README.md
+          routes: ./src/routes/ 
   continuous-integration:
     env:
       DB: ${{ secrets.DB }}
@@ -43,17 +51,21 @@ jobs:
       TARGET_ENV: ${{ secrets.TARGET_ENV }}
       SECONDARY_TEST_EMAIL: ${{ secrets.SECONDARY_TEST_EMAIL }}
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - uses: actions/checkout@v2
-      # - uses: actions/setup-python@v2
-      # - name: install python dependencies
-      #   run: python -m pip install --upgrade mysql-connector-python python-dotenv wheel
-      # - name: reset test DB
-      #   run: python bin/reset_db/reset_db.py -t --files ./database/
-      - uses: actions/setup-node@v2
-      - name: install dependencies
-        run: npm i
-      - name: unit test
-        run: npm run test:jest
-      - name: bdd test
-        run: npm run test:cucumber
+      - id: ci
+        uses: ./.github/actions/ci
+      - name: Publish npm log
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: "npm-log"
+          path: "/home/runner/.npm/_logs"
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: "test-results-and-coverage"
+          path: |
+            __test__/test-report.html
+            __test__/coverage

@@ -4,4 +4,12 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-jest.setTimeout(10000);
+let multiplier = process.env.TIMEOUT_MULTIPLYER;
+
+try {
+    multiplier = Number(multiplier);
+} catch (_) {
+    multiplier = 1;
+}
+
+jest.setTimeout(10000 * multiplier);

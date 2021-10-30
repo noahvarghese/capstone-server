@@ -1,32 +1,38 @@
 {
     "compilerOptions": {
-        "target": "es2020",
-        "strict": true,
-        "emitDecoratorMetadata": true,
-        "noEmitOnError": true,
-        "experimentalDecorators": true,
-        "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
+        "baseUrl": "./",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "esModuleInterop": true,
-        "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "typeRoots": ["@types", "./node_modules/@types"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noEmitOnError": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitThis": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
-        "baseUrl": "./",
-        "module": "commonjs",
-        "sourceMap": true,
         "outDir": "./build",
-        "rootDir": "./",
         "paths": {
+            "@config/*": ["src/config/*"],
+            "@middleware/*": ["src/middleware/*"],
             "@models/*": ["src/models/*"],
             "@routes/*": ["src/routes/*"],
+            "@services/*": ["src/services/*"],
             "@util/*": ["src/util/*"],
-            "@test/*": ["test/*"]
-        }
+            "@test/*": ["__test__/*"]
+        },
+        "rootDir": "./",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2020",
+        "typeRoots": ["@types", "./node_modules/@types"]
     },
-    "include": ["./**/*.ts", "./**/*.test.ts"]
+    "ts-node": {
+        "require": ["tsconfig-paths/register"]
+    },
+    "include": ["./**/*.ts", "./**/*.test.ts", "./**/**/*.d.ts"]
 }

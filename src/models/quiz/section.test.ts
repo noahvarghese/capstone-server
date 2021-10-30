@@ -1,35 +1,26 @@
-import BaseWorld from "../../../test/jest/support/base_world";
-import DBConnection from "../../../test/util/db_connection";
-
-import ModelTestPass from "../../../test/jest/helpers/model/test/pass";
-import ModelTestParentPrevent from "../../../test/jest/helpers/model/test/parent_prevent";
+import BaseWorld from "@test/support/base_world";
+import DBConnection from "@test/support/db_connection";
+import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestParentPrevent from "@test/helpers/model/test/parent_prevent";
 import Quiz, { QuizAttributes } from "./quiz";
 import QuizSection, { QuizSectionAttributes } from "./section";
-import { teardown } from "../../../test/jest/helpers/model/test/teardown";
-import {
-    createModels,
-    loadAttributes,
-} from "../../../test/jest/helpers/model/test/setup";
+import Model from "@test/helpers/model";
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
 // Database setup
-beforeAll(DBConnection.InitConnection);
-afterAll(DBConnection.CloseConnection);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
 // State Setup
 beforeEach(async () => {
-    baseWorld = new BaseWorld(await DBConnection.GetConnection());
-    loadAttributes(baseWorld, QuizSection);
-    await createModels(baseWorld, QuizSection);
+    baseWorld = new BaseWorld(await DBConnection.get());
+    await Model.setup.call(baseWorld, QuizSection);
 });
 
 afterEach(async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-    await teardown(baseWorld, QuizSection);
-    baseWorld = undefined;
+    await Model.teardown.call(baseWorld, QuizSection);
+    baseWorld.resetProps();
 });
 
 // Tests

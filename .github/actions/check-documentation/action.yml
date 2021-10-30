@@ -1,0 +1,16 @@
+name: "API Docs"
+description: "check api documentation for routes"
+inputs:
+  doc:
+    description: "The path to the documentation"
+    required: true
+    default: ""
+  routes:
+    description: "The path to the directory of the routes, requires trailing slash"
+    required: true
+    default: ""
+runs:
+  using: composite
+  steps:
+    - run: ./bin/documentation/check_routes.sh ${{ inputs.doc }} ${{ inputs.routes }}
+      shell: bash
