@@ -10,6 +10,6 @@ const {
 
 const DEFAULT_MULTIPLIER = 1;
 
-const multiplier = isNan(Number(TIMEOUT_MULTIPLIER)) ? Number(TIMEOUT_MULTIPLIER) : DEFAULT_MULTIPLIER;
+const multiplier = isNaN(Number(TIMEOUT_MULTIPLIER)) ? Number(TIMEOUT_MULTIPLIER) : DEFAULT_MULTIPLIER;
 
 jest.setTimeout(10000 * multiplier);

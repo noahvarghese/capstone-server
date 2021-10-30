@@ -1,13 +1,13 @@
 ![Continuous Deployment](https://github.com/noahvarghese/capstone-server/actions/workflows/cd.yaml/badge.svg)
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
-![Statement](#statements#)
-![Lines](https://img.shields.io/badge/lines-Unknown%25-brightgreen.svg?style=flat)
-![Functions](https://img.shields.io/badge/functions-Unknown%25-brightgreen.svg?style=flat)
-![Branches](https://img.shields.io/badge/branches-Unknown%25-brightgreen.svg?style=flat)
-<!-- ![Statment Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-statements.svg)
-![Line Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-lines.svg)
-![Function Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-functions.svg)
-![Branch Coverage](https://github.com/noahvarghese/capstone-server/__test__/coverage/badges/badge-branches.svg) -->
+<br />
+![Statements](https://img.shields.io/badge/statements-74.15%25-red.svg?style=flat)
+<br />
+![Lines](https://img.shields.io/badge/lines-72.09%25-red.svg?style=flat)
+<br />
+![Functions](https://img.shields.io/badge/functions-78.41%25-red.svg?style=flat)
+<br />
+![Branches](https://img.shields.io/badge/branches-44.76%25-red.svg?style=flat)
 
 # OnBoard - Backend
 

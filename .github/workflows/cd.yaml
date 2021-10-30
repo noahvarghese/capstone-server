@@ -106,8 +106,6 @@ jobs:
         run: |
           # Apply new version number to package.json
           sed 's/\"version\":.*/\"version\": '\"${{ steps.version.outputs.VERSION }}\"',/g' -i package.json 
-      - name: Update badges
-        run: npm run badges
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
