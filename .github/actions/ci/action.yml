@@ -24,5 +24,6 @@ runs:
       uses: ./.github/actions/cache-node-modules
     - name: test
       run: |
-        npm run test -- --changedSince "${{ steps.changed.outputs.CHANGED }}"
+        # npm run test -- --changedSince "${{ steps.changed.outputs.CHANGED }}"
+        npm run test
       shell: bash
