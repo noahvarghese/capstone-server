@@ -1,4 +1,5 @@
 ![Continuous Deployment](https://github.com/noahvarghese/capstone-server/actions/workflows/cd.yaml/badge.svg)
+<br />
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
 <br />
 ![Statements](https://img.shields.io/badge/statements-74.15%25-red.svg?style=flat)
