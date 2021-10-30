@@ -16,7 +16,7 @@ module.exports = {
         "**/*.ts",
     ],
     coverageDirectory: "./__test__/coverage",
-    coveragePathIgnorePatterns: ["node_modules", "database", "bin", "test.ts", "__test__"],
+    coveragePathIgnorePatterns: ["node_modules", "database", "bin", "test.ts", "__test__", "src/util/logs", "src/index.ts"],
     coverageReporters: [
         "json-summary",
         "text",
