@@ -1,5 +1,6 @@
 /node_modules
 /build
+coverage
 __test__/coverage
 __test__/test-report.html
 .env
