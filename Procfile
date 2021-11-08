@@ -1,0 +1,1 @@
+web: pwd && ls -la && npm start

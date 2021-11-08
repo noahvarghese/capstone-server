@@ -1,6 +1,13 @@
-DROP DATABASE IF EXISTS capstone;
-CREATE DATABASE capstone;
-USE capstone;
+DROP DATABASE IF EXISTS ${DATABASE};
+CREATE DATABASE ${DATABASE};
+USE ${DATABASE};
+
+CREATE TABLE sessions (
+    session_id VARCHAR(128) NOT NULL,
+    expires INT UNSIGNED NOT NULL,
+    data MEDIUMTEXT DEFAULT NULL,
+    PRIMARY KEY(session_id)
+);
 
 CREATE TABLE business (
     id INT NOT NULL AUTO_INCREMENT,
@@ -9,10 +16,11 @@ CREATE TABLE business (
     city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
     postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
     province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
-    country VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
+    country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    UNIQUE(name),
     PRIMARY KEY(id)
 );
 
@@ -21,28 +29,58 @@ CREATE TABLE user (
     first_name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     last_name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     email VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    original_phone VARCHAR(50) NOT NULL,
     phone VARCHAR(50) NOT NULL,
     address VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
     postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
     province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
-    country VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
+    country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
     birthday DATETIME NOT NULL,
     password VARCHAR(255) NOT NULL,
+    token VARCHAR(32) DEFAULT NULL,
+    token_expiry DATETIME DEFAULT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    business_id INT NOT NULL,
-    /* access_level_id INT NOT NULL, */
-    FOREIGN KEY (business_id) REFERENCES business(id),
-    /* FOREIGN KEY (access_level_id) REFERENCES access_level(id), */
+    UNIQUE (email),
     PRIMARY KEY (id)
+);
+
+CREATE TABLE membership_request (
+    user_id INT NOT NULL,
+    business_id INT NOT NULL,
+    token VARCHAR(32) NOT NULL,
+    token_expiry DATETIME NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    updated_by_user_id INT NOT NULL,
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    UNIQUE(token),
+    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    PRIMARY KEY (business_id, user_id)
+);
+
+CREATE TABLE membership (
+    business_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    default_option TINYINT(1) NOT NULL,
+    updated_by_user_id INT NULL,
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    PRIMARY KEY (business_id, user_id)
 );
 
 CREATE TABLE department (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
+    prevent_edit TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -53,15 +91,28 @@ CREATE TABLE department (
     PRIMARY KEY (id)
 );
 
-/* Each role will have a set of permissions */
-
 CREATE TABLE permission (
     id INT NOT NULL AUTO_INCREMENT,
-    view_users TINYINT(1) NOT NULL,
-    edit_users TINYINT(1) NOT NULL,
-    remove_users TINYINT(1) NOT NULL,
-    edit_policies TINYINT(1) NOT NULL,
+    /* Global settings */
+    /* level_type_item */
+    global_crud_users TINYINT(1) NOT NULL,
+    global_crud_department TINYINT(1) NOT NULL,
+    global_crud_role TINYINT(1) NOT NULL,
+    global_crud_resources TINYINT(1) NOT NULL,
+    global_assign_users_to_department TINYINT(1) NOT NULL,
+    global_assign_users_to_role TINYINT(1) NOT NULL,
+    global_assign_resources_to_department TINYINT(1) NOT NULL,
+    global_assign_resources_to_role TINYINT(1) NOT NULL,
+    global_view_reports TINYINT(1) NOT NULL,
+    dept_crud_role TINYINT(1) NOT NULL,
+    dept_crud_resources TINYINT(1) NOT NULL,
+    dept_assign_users_to_role TINYINT(1) NOT NULL,
+    dept_assign_resources_to_role TINYINT(1) NOT NULL,
+    dept_view_reports TINYINT(1) NOT NULL,
     updated_by_user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -69,6 +120,8 @@ CREATE TABLE permission (
 CREATE TABLE role (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    prevent_edit TINYINT(1) NOT NULL DEFAULT 0,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -82,13 +135,16 @@ CREATE TABLE role (
 );
 
 CREATE TABLE user_role (
-    role_id INT NOT NULL,
     user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    primary_role_for_user TINYINT(1) NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    FOREIGN KEY(user_id) REFERENCES user(id),
+    FOREIGN KEY(role_id) REFERENCES role(id),
     PRIMARY KEY (user_id, role_id)
 );
 
@@ -98,10 +154,10 @@ CREATE TABLE manual (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    /* NEEDS DEPARTMENT OR ROLE */
-    /* THIS IS FOR THE OWNER OF the MANUAL */
-    role_id INT,
-    department_id INT,
+    prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
+    prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
+    role_id INT DEFAULT NULL,
+    department_id INT DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (role_id) REFERENCES role(id),
     FOREIGN KEY (department_id) REFERENCES department(id),
@@ -109,7 +165,23 @@ CREATE TABLE manual (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE section (
+CREATE TABLE manual_assignment (
+    id INT NOT NULL AUTO_INCREMENT,
+    role_id INT DEFAULT NULL,
+    department_id INT DEFAULT NULL,
+    manual_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    FOREIGN KEY (role_id) REFERENCES role(id),
+    FOREIGN KEY (department_id) REFERENCES department(id),
+    FOREIGN KEY (manual_id) REFERENCES manual(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE manual_section (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
@@ -128,9 +200,9 @@ CREATE TABLE policy (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    section_id INT NOT NULL,
+    manual_section_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY (section_id) REFERENCES section(id),
+    FOREIGN KEY (manual_section_id) REFERENCES manual_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -156,6 +228,8 @@ CREATE TABLE quiz (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
+    prevent_edit TINYINT(1) NOT NULL DEFAULT 0,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (manual_id) REFERENCES manual(id),
@@ -226,8 +300,10 @@ CREATE TABLE quiz_result (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    updated_by_user_id INT NOT NULL,
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
-    FOREIGN KEy (quiz_question_id) REFERENCES quiz_question(id),
+    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id),
     PRIMARY KEY (id)
 );
@@ -241,4 +317,17 @@ CREATE TABLE policy_read (
     FOREIGN KEY (policy_id) REFERENCES policy(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
     PRIMARY KEY (user_id, policy_id)
+);
+
+CREATE TABLE event (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50),
+    reason MEDIUMTEXT DEFAULT NULL,
+    status ENUM("PASS", "FAIL"),
+    user_id INT DEFAULT NULL,
+    business_id INT DEFAULT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (business_id) REFERENCES business(id),
+    PRIMARY KEY (id)
 );

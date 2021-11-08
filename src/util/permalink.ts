@@ -1,24 +1,25 @@
 import dotenv from "dotenv";
-import Logs, { LogLevels } from "./logs";
+import Logs from "./logs/logs";
 dotenv.config();
 
-const targetEnv = process.env.TARGET_ENV ?? "";
+const { TARGET_ENV } = process.env;
 
-const client = process.env[`ENV_${targetEnv}_CLIENT`] ?? "";
-const server = process.env[`ENV_${targetEnv}_SERVER`] ?? "";
+let clientURL: string = process.env[`ENV_${TARGET_ENV}_CLIENT`] ?? "";
+let serverURL: string = process.env[`ENV_${TARGET_ENV}_SERVER`] ?? "";
 
-if (client === "") {
-    Logs.addLog(
-        `No client origin found for environment ${targetEnv}`,
-        LogLevels.ERROR
-    );
+if (clientURL !== "") {
+    clientURL = `http${TARGET_ENV !== "LOCAL" ? "s" : ""}://${clientURL}/`;
+} else {
+    Logs.Error(`No client origin found for environment ${TARGET_ENV}`);
 }
 
-if (server === "") {
-    Logs.addLog(
-        `No server origin found for environment ${targetEnv}`,
-        LogLevels.ERROR
-    );
+if (serverURL !== "") {
+    serverURL = `http${TARGET_ENV !== "LOCAL" ? "s" : ""}://${serverURL}/`;
+} else {
+    Logs.Error(`No server origin found for environment ${TARGET_ENV}`);
 }
 
-export { client, server };
+export const client = (path = ""): string =>
+    clientURL + (path[0] === "/" ? path.substring(1) : path);
+export const server = (path = ""): string =>
+    serverURL + (path[0] === "/" ? path.substring(1) : path);
