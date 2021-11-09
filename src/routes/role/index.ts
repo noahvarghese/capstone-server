@@ -139,4 +139,9 @@ router.post("/", async (req: Request, res: Response) => {
         res.status(500).json({ message: "Error creating role" });
     }
 });
+
+router.delete("/", async (req: Request, res: Response) => {
+    Logs.Debug(req.body);
+    res.sendStatus(200);
+});
 export default router;
