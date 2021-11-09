@@ -1,7 +1,7 @@
 import Business from "@models/business";
 import Department from "@models/department";
 import Membership from "@models/membership";
-import Permission from "@models/permission";
+import Permission, { PermissionAttributes } from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -130,7 +130,8 @@ export async function createDepartment(
 export async function createRole(
     this: BaseWorld,
     name: string,
-    forDepartment: string
+    forDepartment: string,
+    permissions?: PermissionAttributes
 ): Promise<number> {
     const connection = this.getConnection();
     const admin = await getAdminUserId.call(this);
@@ -140,6 +141,7 @@ export async function createRole(
         Permission,
         new Permission({
             updated_by_user_id: admin,
+            ...permissions,
         })
     );
 

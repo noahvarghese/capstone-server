@@ -66,10 +66,9 @@ describe("Global admin authorized", () => {
 });
 
 describe("User who lacks CRUD rights", () => {
-    // Given I am logged in as a user
-    beforeEach(async () => await loginUser.call(baseWorld));
-
     test("User who lacks CRUD department rights cannot create departments", async () => {
+        // Given I am logged in as a user
+        await loginUser.call(baseWorld);
         // When I create a department
         await actions.createDepartment.call(baseWorld);
         // Then I get an error

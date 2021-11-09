@@ -103,12 +103,25 @@ describe("User who lacks CRUD rights", () => {
     // Scenario: User who lacks CRUD role rights cannot delete roles
     test("User who lacks CRUD rights cannot delete role", async () => {
         await actions.login.call(baseWorld);
-        const roleId = await createRole.call(baseWorld, "test", "Admin");
+        const assignedRoleId = await createRole.call(
+            baseWorld,
+            "assigned",
+            "Admin"
+        );
 
         //     Given I am logged in as a user
         const user = await loginUser.call(baseWorld);
         const admin = await getAdminUserId.call(baseWorld);
-        await assignUserToRole.call(baseWorld, user.id, roleId, admin, true);
+        await assignUserToRole.call(
+            baseWorld,
+            user.id,
+            assignedRoleId,
+            admin,
+            true
+        );
+
+        // And there is a role without any members
+        const roleId = await createRole.call(baseWorld, "test", "Admin");
         //     When I delete a role
         await actions.deleteRole.call(baseWorld, [roleId]);
 
