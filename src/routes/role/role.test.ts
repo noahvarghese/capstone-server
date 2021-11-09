@@ -1,9 +1,10 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/actions";
-import { loginUser } from "@test/util/actions";
+import actions from "@test/helpers/api/test-actions";
 import Request from "@test/helpers/api/request";
+import Role from "@models/role";
+import { createRole, loginUser } from "@test/helpers/api/setup-actions";
 
 let baseWorld: BaseWorld;
 
@@ -38,11 +39,26 @@ describe("Global admin authorized", () => {
         Request.succeeded.call(baseWorld, { auth: false });
     });
 
-    test.todo("Global admin can delete role");
     // Scenario: Global Admin Can Delete Role
-    //     Given I am logged in as an admin
-    //     When I delete a role
-    //     Then a role is deleted
+    test("Global admin can delete role", async () => {
+        //     Given I am logged in as an admin
+        // create role to delete
+        console.log("Called ");
+        const id = await createRole.call(baseWorld, "test");
+
+        console.log("Created");
+        //     When I delete a role
+        await actions.deleteRole.call(baseWorld, [id]);
+
+        console.log("Confirming");
+        //     Then a role is deleted
+        Request.succeeded.call(baseWorld, { auth: false });
+        const connection = baseWorld.getConnection();
+        const count = await connection.manager.count(Role, {
+            where: { id },
+        });
+        expect(count).toBe(0);
+    });
 });
 
 describe("User who lacks CRUD rights", () => {

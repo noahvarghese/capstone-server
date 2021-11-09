@@ -26,6 +26,7 @@ export async function apiRequest(
         token?: string | null;
         body?: unknown;
         errorOnFail?: boolean;
+        method?: "post" | "put" | "delete";
     }
 ): Promise<void> {
     if (!opts?.body) Form.load.call(this, key);
@@ -38,7 +39,8 @@ export async function apiRequest(
             : (urls[key] as string),
         Boolean(opts?.cookie?.saveCookie),
         Boolean(opts?.cookie?.withCookie),
-        opts?.errorOnFail
+        opts?.errorOnFail,
+        opts?.method
     );
 }
 
@@ -195,6 +197,14 @@ async function createRole(this: BaseWorld): Promise<void> {
     });
 }
 
+async function deleteRole(this: BaseWorld, ids: number[]): Promise<void> {
+    await apiRequest.call(this, "deleteRole", {
+        cookie: { saveCookie: true, withCookie: true },
+        body: { ids },
+        method: "delete",
+    });
+}
+
 async function createDepartment(this: BaseWorld): Promise<void> {
     await apiRequest.call(this, "createDepartment", {
         cookie: {
@@ -215,6 +225,7 @@ const actions: ActionFnMap = {
     authCheck,
     createDepartment,
     createRole,
+    deleteRole,
 };
 
 export default actions;

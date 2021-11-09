@@ -8,7 +8,7 @@ import attributes, {
     ForgotPasswordProps,
     ResetPasswordProps,
 } from "@test/sample_data/api/attributes";
-import { apiRequest } from "@test/helpers/api/actions";
+import { apiRequest } from "@test/helpers/api/test-actions";
 
 let baseWorld: BaseWorld;
 

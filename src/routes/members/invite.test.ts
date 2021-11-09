@@ -1,7 +1,7 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/actions";
+import actions from "@test/helpers/api/test-actions";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import attributes from "@test/sample_data/api/attributes";
@@ -9,7 +9,7 @@ import { InviteUserProps } from "./invite";
 import Membership from "@models/membership";
 import Request from "@test/helpers/api/request";
 import Event from "@models/event";
-import { loginUser } from "@test/util/actions";
+import { loginUser } from "@test/helpers/api/setup-actions";
 
 let baseWorld: BaseWorld;
 

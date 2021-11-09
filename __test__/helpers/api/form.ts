@@ -18,7 +18,8 @@ export default class Form {
         url: string,
         saveCookie: boolean,
         withCookie: boolean,
-        errorOnFail = false
+        errorOnFail = false,
+        method: "delete" | "put" | "post" = "post"
     ): Promise<void> {
         let cookie = "";
         let status: number | string = "";
@@ -28,10 +29,31 @@ export default class Form {
         const body = this.getCustomProp<T>("body");
 
         try {
-            const res = await axios.post(server(url), body, {
-                headers: withCookie && cookies ? { Cookie: cookies } : {},
-                withCredentials: true,
-            });
+            let res;
+            switch (method) {
+                case "post":
+                    res = await axios.post(server(url), body, {
+                        headers:
+                            withCookie && cookies ? { Cookie: cookies } : {},
+                        withCredentials: true,
+                    });
+                    break;
+                case "delete":
+                    res = await axios.delete(server(url), {
+                        headers:
+                            withCookie && cookies ? { Cookie: cookies } : {},
+                        withCredentials: true,
+                        data: body,
+                    });
+                    break;
+                case "put":
+                    res = await axios.put(server(url), {
+                        headers:
+                            withCookie && cookies ? { Cookie: cookies } : {},
+                        withCredentials: true,
+                        data: body,
+                    });
+            }
 
             cookie = getCookie(res.headers);
             message = res.data.message;
