@@ -4,7 +4,12 @@ import Helpers from "@test/helpers";
 import actions from "@test/helpers/api/test-actions";
 import Request from "@test/helpers/api/request";
 import Role from "@models/role";
-import { createRole, loginUser } from "@test/helpers/api/setup-actions";
+import {
+    assignUserToRole,
+    createRole,
+    getAdminUserId,
+    loginUser,
+} from "@test/helpers/api/setup-actions";
 
 let baseWorld: BaseWorld;
 
@@ -62,18 +67,28 @@ describe("Global admin authorized", () => {
 });
 
 describe("User who lacks CRUD rights", () => {
-    // Given I am logged in as a user
-    beforeEach(async () => await loginUser.call(baseWorld));
-
     test("User who lacks CRUD role rights cannot create roles", async () => {
+        // Given I am logged in as a user
+        await loginUser.call(baseWorld);
         // When I create a role
         await actions.createRole.call(baseWorld);
         // Then I get an error
         Request.failed.call(baseWorld);
     });
-    test.todo("User who lacks CRUD rights cannot delete role");
+
     // Scenario: User who lacks CRUD role rights cannot delete roles
-    //     Given I am logged in as a user
-    //     When I delete a role
-    //     Then I get an error
+    test.todo("User who lacks CRUD rights cannot delete role", async () => {
+        await actions.login.call(baseWorld);
+        const roleId = await createRole.call(baseWorld, "test");
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(baseWorld, user.id, roleId, admin, true);
+        //     When I delete a role
+        await actions.deleteRole.call(baseWorld, [roleId]);
+
+        //     Then I get an error
+        Request.failed.call(baseWorld);
+    });
 });

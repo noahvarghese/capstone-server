@@ -9,9 +9,10 @@ import { apiRequest } from "@test/helpers/api/test-actions";
 import attributes from "@test/sample_data/api/attributes";
 import BaseWorld from "@test/support/base_world";
 
-// to be merged with helpers actions at some point
-export async function loginUser(this: BaseWorld): Promise<void> {
-    const email = "automailr.noreply@gmail.com";
+export async function createRegularUser(
+    this: BaseWorld
+): Promise<{ id: number; password: string; email: string }> {
+    const email = process.env.MAIL_USER ?? "";
     const { password } = attributes.login();
     const { first_name, last_name } = attributes.inviteUser();
 
@@ -21,28 +22,28 @@ export async function loginUser(this: BaseWorld): Promise<void> {
     );
 
     const res = await connection.manager.insert(User, user);
+    const user_id = res.identifiers[0].id;
 
-    const business = await connection
-        .createQueryBuilder()
-        .select("b")
-        .from(Business, "b")
-        .where("b.name = :name", {
-            name: this.getCustomProp<string[]>("businessNames")[0],
-        })
-        .getOne();
+    const business_id = await getBusiness.call(this);
 
     await connection.manager.insert(
         Membership,
         new Membership({
-            business_id: business?.id,
-            user_id: res.identifiers[0].id,
+            business_id,
+            user_id,
             default: true,
         })
     );
 
-    // create new user in database with relationships
-    //login
+    return { id: user_id, password, email };
+}
 
+// to be merged with helpers actions at some point
+export async function loginUser(
+    this: BaseWorld
+): Promise<{ id: number; email: string; password: string }> {
+    const res = await createRegularUser.call(this);
+    const { email, password } = res;
     await apiRequest.call(this, "login", {
         cookie: {
             withCookie: false,
@@ -50,6 +51,7 @@ export async function loginUser(this: BaseWorld): Promise<void> {
         },
         body: { email, password },
     });
+    return res;
 }
 
 export async function getBusiness(this: BaseWorld): Promise<number> {
@@ -116,6 +118,7 @@ export async function createRole(
     const connection = this.getConnection();
     const admin = await getAdminUserId.call(this);
 
+    // all permissions false
     const permissionResult = await connection.manager.insert(
         Permission,
         new Permission({
@@ -138,4 +141,23 @@ export async function createRole(
     );
 
     return roleResult.identifiers[0].id;
+}
+
+export async function assignUserToRole(
+    this: BaseWorld,
+    user_id: number,
+    role_id: number,
+    admin_id?: number,
+    is_primary_role?: boolean
+): Promise<number> {
+    const connection = this.getConnection();
+
+    const res = await connection.manager.insert(UserRole, {
+        role_id,
+        user_id,
+        updated_by_user_id: admin_id ?? user_id,
+        primary_role_for_user: is_primary_role,
+    });
+
+    return res.identifiers[0].id;
 }
