@@ -22,6 +22,12 @@ const registerBusiness = (): RegisterBusinessProps =>
         phone: user.phone,
     });
 
+export interface DeleteRoleProps {
+    ids: number[];
+}
+
+const deleteRole = (): DeleteRoleProps => deepClone({ ids: [] });
+
 const login = (): LoginProps =>
     deepClone({
         email: user.email,
@@ -125,6 +131,7 @@ export interface IApiRoute {
     authCheck: () => AuthCheckProps;
     createDepartment: () => CreateDepartmentProps;
     createRole: () => CreateRoleProps;
+    deleteRole: () => DeleteRoleProps;
 }
 
 const attributes: IApiRoute = {
@@ -138,6 +145,7 @@ const attributes: IApiRoute = {
     authCheck,
     createDepartment,
     createRole,
+    deleteRole,
 };
 
 export default attributes;

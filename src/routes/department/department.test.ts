@@ -1,8 +1,8 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/actions";
-import { loginUser } from "@test/util/actions";
+import actions from "@test/helpers/api/test-actions";
+import { loginUser } from "@test/helpers/api/setup-actions";
 import Request from "@test/helpers/api/request";
 
 let baseWorld: BaseWorld;

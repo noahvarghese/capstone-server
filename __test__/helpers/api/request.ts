@@ -22,6 +22,11 @@ export default class Request {
         if (opts.message) expect(message).toMatch(opts.message);
     }
 
+    /**
+     *
+     * @param this
+     * @param opts The expected values to check for, whether the user was logged in after the api call finished, and what status code was returned
+     */
     public static succeeded(
         this: BaseWorld,
         opts: { auth: boolean; status?: RegExp } = { auth: true }

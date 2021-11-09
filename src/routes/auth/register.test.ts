@@ -4,7 +4,7 @@ import Helpers from "@test/helpers";
 import Form from "@test/helpers/api/form";
 import { urls } from "@test/sample_data/api/dependencies";
 import Request from "@test/helpers/api/request";
-import { apiRequest } from "@test/helpers/api/actions";
+import { apiRequest } from "@test/helpers/api/test-actions";
 import attributes from "@test/sample_data/api/attributes";
 
 let baseWorld: BaseWorld;

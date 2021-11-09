@@ -1,5 +1,9 @@
 name: "Get base"
 description: "Get git base"
+outputs:
+  changed:
+    description: the commit hash that represents the last change
+    value: ${{ steps.changed.outputs.CHANGED }}
 runs:
   using: composite
   steps:

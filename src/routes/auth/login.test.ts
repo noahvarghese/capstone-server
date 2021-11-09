@@ -2,7 +2,7 @@ import User from "@models/user/user";
 import { InviteUserProps } from "@routes/members/invite";
 import { LoginProps } from "./login";
 import Helpers from "@test/helpers";
-import actions, { apiRequest } from "@test/helpers/api/actions";
+import actions, { apiRequest } from "@test/helpers/api/test-actions";
 import Request from "@test/helpers/api/request";
 import attributes from "@test/sample_data/api/attributes";
 import { userAttributes } from "@test/sample_data/model/attributes";
