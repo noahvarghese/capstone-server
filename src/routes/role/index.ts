@@ -173,7 +173,7 @@ router.delete("/", async (req: Request, res: Response) => {
 
         if (count > 0) {
             const message = `There are users associated with ${
-                ids.length > 1 ? "at least one of these roles," : "this role"
+                ids.length > 1 ? "at least one of these roles," : "this role,"
             } please reassign them`;
 
             res.status(400).json({

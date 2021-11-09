@@ -8,6 +8,9 @@ import {
     assignUserToRole,
     createRole,
     getAdminUserId,
+    getBusiness,
+    getDepartmentInBusiness,
+    getRoleInDepartment,
     loginUser,
 } from "@test/helpers/api/setup-actions";
 
@@ -60,6 +63,30 @@ describe("Global admin authorized", () => {
             where: { id },
         });
         expect(count).toBe(0);
+    });
+
+    test("Deleting a role that has users still associated fails", async () => {
+        // Given there is a role with users associated
+        const role_id = await getRoleInDepartment.call(
+            baseWorld,
+            "General",
+            await getDepartmentInBusiness.call(
+                baseWorld,
+                "Admin",
+                await getBusiness.call(baseWorld)
+            )
+        );
+
+        // When a user tries to delete that role
+        await actions.deleteRole.call(baseWorld, [role_id]);
+
+        // It is not deleted
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^400$/,
+            message:
+                /^there are users associated with this role, please reassign them$/i,
+        });
     });
 });
 
