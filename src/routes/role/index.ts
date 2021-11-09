@@ -102,6 +102,11 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
+    if (!department_id) {
+        res.status(400).json({ message: "department is required" });
+        return;
+    }
+
     // check role exists
     const count = await SqlConnection.manager.count(Role, {
         where: { name, department_id },
@@ -137,6 +142,61 @@ router.post("/", async (req: Request, res: Response) => {
         const e = _e as Error;
         Logs.Error(e.message);
         res.status(500).json({ message: "Error creating role" });
+    }
+});
+
+router.delete("/", async (req: Request, res: Response) => {
+    const {
+        session: { current_business_id, user_id },
+        SqlConnection,
+        body: { ids },
+    } = req;
+
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        ["global_crud_role"]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    // check for any user_role associations
+    // need route to disassociate all users from role
+    try {
+        const count = await SqlConnection.manager.count(UserRole, {
+            where: ids.map((id: number) => ({ role_id: id })),
+        });
+
+        if (count > 0) {
+            const message = `There are users associated with ${
+                ids.length > 1 ? "at least one of these roles," : "this role,"
+            } please reassign them`;
+
+            res.status(400).json({
+                message,
+            });
+            return;
+        }
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error("Count error", message);
+        res.status(500).json({
+            message: "Unable to count user assignments to role",
+        });
+        return;
+    }
+
+    try {
+        await SqlConnection.manager.delete(Role, ids);
+        res.sendStatus(200);
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500).json({ message: "Unable to delete Role" });
     }
 });
 export default router;

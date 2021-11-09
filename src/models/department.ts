@@ -53,7 +53,7 @@ export default class Department
 
         try {
             await connection.manager.findOneOrFail(UserRole, {
-                where: { user_id, role_id: roles.map((r) => r.id) },
+                where: roles.map((r) => ({ user_id, role_id: r.id })),
             });
             return true;
         } catch (_) {

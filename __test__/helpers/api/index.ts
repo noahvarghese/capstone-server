@@ -5,7 +5,7 @@ import dependencies, { ApiRoute } from "@test/sample_data/api/dependencies";
 import BaseWorld from "@test/support/base_world";
 import { Connection, DeepPartial } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import actions, { apiRequest } from "./actions";
+import actions, { apiRequest } from "./test-actions";
 import { getKey } from "./keytags";
 import Request from "./request";
 import attributes, {

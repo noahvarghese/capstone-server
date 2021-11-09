@@ -1,6 +1,6 @@
 import BaseWorld from "@test/support/base_world";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/actions";
+import actions from "@test/helpers/api/test-actions";
 import Request from "@test/helpers/api/request";
 import DBConnection from "@test/support/db_connection";
 
