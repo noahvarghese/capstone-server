@@ -1,4 +1,5 @@
 import Department from "@models/department";
+import ManualAssignment from "@models/manual/assignment";
 import Permission from "@models/permission";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
@@ -152,6 +153,7 @@ router.delete("/", async (req: Request, res: Response) => {
         body: { ids },
     } = req;
 
+    // check permissions
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
@@ -164,8 +166,7 @@ router.delete("/", async (req: Request, res: Response) => {
         return;
     }
 
-    // check for any user_role associations
-    // need route to disassociate all users from role
+    // check if users are joined to role
     try {
         const count = await SqlConnection.manager.count(UserRole, {
             where: ids.map((id: number) => ({ role_id: id })),
@@ -190,13 +191,53 @@ router.delete("/", async (req: Request, res: Response) => {
         return;
     }
 
+    // remove non user associations
     try {
-        await SqlConnection.manager.delete(Role, ids);
+        await SqlConnection.transaction(async (transactionManager) => {
+            try {
+                await transactionManager
+                    .createQueryBuilder()
+                    .delete()
+                    .from(ManualAssignment)
+                    .where("role_id IN (:...ids)", { ids })
+                    .execute();
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete Manual Assignments");
+            }
+
+            // get permissions to delete after roles are deleted
+            const permissions = await transactionManager
+                .createQueryBuilder()
+                .select("p")
+                .from(Permission, "p")
+                .leftJoin(Role, "r", "r.permission_id = p.id")
+                .where("r.id IN (:...ids)", { ids })
+                .getMany();
+
+            try {
+                await transactionManager.delete(Role, ids);
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete roles");
+            }
+
+            try {
+                await transactionManager.remove(permissions);
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete permissions");
+            }
+        });
+
         res.sendStatus(200);
     } catch (_e) {
         const { message } = _e as Error;
         Logs.Error(message);
-        res.status(500).json({ message: "Unable to delete Role" });
+        res.status(500).json({ message: "Unable to delete role" });
     }
 });
 export default router;

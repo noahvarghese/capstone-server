@@ -182,8 +182,6 @@ export const manualAttributes = (): ManualAttributes =>
     AttributeFactory(
         {
             title: "Manual",
-            role_id: -1,
-            department_id: -1,
             prevent_edit: false,
             prevent_delete: false,
             updated_by_user_id: -1,

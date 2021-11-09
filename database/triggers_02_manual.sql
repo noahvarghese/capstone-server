@@ -1,18 +1,5 @@
 DELIMITER //
 
-CREATE TRIGGER manual_insert
-BEFORE INSERT
-ON manual FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualInsertError: Cannot add a manual without a role or department ', CAST(NEW.id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-END;
-
-// 
-
 CREATE TRIGGER manual_delete
 BEFORE DELETE
 ON manual FOR EACH ROW
@@ -33,10 +20,7 @@ ON manual FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
 
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualUpdateError: Cannot update a manual without a role and department ', CAST(NEW.id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    ELSEIF OLD.prevent_edit = 1 AND NEW.prevent_edit = 1 THEN
+    IF OLD.prevent_edit = 1 AND NEW.prevent_edit = 1 THEN
         SET msg = CONCAT('ManualUpdateError: Manual is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     ELSE 

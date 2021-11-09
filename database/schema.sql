@@ -156,11 +156,7 @@ CREATE TABLE manual (
     deleted_on DATETIME DEFAULT NULL,
     prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
     prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
-    role_id INT DEFAULT NULL,
-    department_id INT DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
-    FOREIGN KEY (role_id) REFERENCES role(id),
-    FOREIGN KEY (department_id) REFERENCES department(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );

@@ -2,8 +2,9 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import actions from "@test/helpers/api/test-actions";
-import { loginUser } from "@test/helpers/api/setup-actions";
+import { createDepartment, loginUser } from "@test/helpers/api/setup-actions";
 import Request from "@test/helpers/api/request";
+import Department from "@models/department";
 
 let baseWorld: BaseWorld;
 
@@ -39,11 +40,23 @@ describe("Global admin authorized", () => {
         Request.succeeded.call(baseWorld, { auth: false });
     });
 
-    test.todo("Global admin can delete department");
     // Scenario: Global Admin Can Delete Department
-    //     Given I am logged in as an admin
-    //     When I delete a department
-    //     Then a department is deleted
+    test("Global admin can delete department", async () => {
+        //     Given I am logged in as an admin
+        // And there is an empty department
+        const id = await createDepartment.call(baseWorld, "test");
+
+        //     When I delete a department
+        await actions.deleteDepartment.call(baseWorld, [id]);
+
+        //     Then a department is deleted
+        Request.succeeded.call(baseWorld, { auth: false });
+        const connection = baseWorld.getConnection();
+        const count = await connection.manager.count(Department, {
+            where: { id },
+        });
+        expect(count).toBe(0);
+    });
 });
 
 describe("User who lacks CRUD rights", () => {

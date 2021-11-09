@@ -111,6 +111,22 @@ export async function getAdminUserId(this: BaseWorld): Promise<number> {
     return user;
 }
 
+export async function createDepartment(
+    this: BaseWorld,
+    name: string
+): Promise<number> {
+    const connection = this.getConnection();
+    const business_id = await getBusiness.call(this);
+    const admin = await getAdminUserId.call(this);
+
+    const department = await connection.manager.insert(
+        Department,
+        new Department({ business_id, name, updated_by_user_id: admin })
+    );
+
+    return department.identifiers[0].id;
+}
+
 export async function createRole(
     this: BaseWorld,
     name: string
