@@ -214,6 +214,14 @@ async function createDepartment(this: BaseWorld): Promise<void> {
     });
 }
 
+async function deleteDepartment(this: BaseWorld, ids: number[]): Promise<void> {
+    await apiRequest.call(this, "deleteDepartment", {
+        cookie: { saveCookie: true, withCookie: true },
+        body: { ids },
+        method: "delete",
+    });
+}
+
 const actions: ActionFnMap = {
     registerBusiness,
     login,
@@ -224,6 +232,7 @@ const actions: ActionFnMap = {
     acceptInvite,
     authCheck,
     createDepartment,
+    deleteDepartment,
     createRole,
     deleteRole,
 };

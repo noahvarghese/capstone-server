@@ -22,6 +22,12 @@ const registerBusiness = (): RegisterBusinessProps =>
         phone: user.phone,
     });
 
+export interface DeleteDepartmentProps {
+    ids: number[];
+}
+
+const deleteDepartment = (): DeleteDepartmentProps => deepClone({ ids: [] });
+
 export interface DeleteRoleProps {
     ids: number[];
 }
@@ -132,6 +138,7 @@ export interface IApiRoute {
     createDepartment: () => CreateDepartmentProps;
     createRole: () => CreateRoleProps;
     deleteRole: () => DeleteRoleProps;
+    deleteDepartment: () => DeleteDepartmentProps;
 }
 
 const attributes: IApiRoute = {
@@ -146,6 +153,7 @@ const attributes: IApiRoute = {
     createDepartment,
     createRole,
     deleteRole,
+    deleteDepartment,
 };
 
 export default attributes;
