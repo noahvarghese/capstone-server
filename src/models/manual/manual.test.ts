@@ -28,37 +28,6 @@ test("Create Manual", async () => {
     await ModelTestPass.create<Manual, ManualAttributes>(baseWorld, Manual);
 });
 
-// Should fail
-test("Create Manual Without Department Or Role", async () => {
-    if (!baseWorld) {
-        throw new Error(BaseWorld.errorMessage);
-    }
-
-    baseWorld.setCustomProp<ManualAttributes>("manualAttributes", {
-        ...baseWorld.getCustomProp<ManualAttributes>("manualAttributes"),
-        department_id: null,
-        role_id: null,
-    });
-
-    await ModelTestFail.create(
-        baseWorld,
-        Manual,
-        /ManualInsertError: Cannot add a manual without a role or department/
-    );
-});
-
-test("Update Manual Without Department Or Role", async () => {
-    await ModelTestFail.update<Manual, ManualAttributes>(
-        baseWorld,
-        Manual,
-        {
-            role_id: null,
-            department_id: null,
-        },
-        /ManualUpdateError: Cannot update a manual without a role and department/
-    );
-});
-
 /* Dont test update as it is a concatenated primary  */
 /* Meaning that an update should be treated as a DELETE and INSERT */
 

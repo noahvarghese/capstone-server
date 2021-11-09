@@ -1,4 +1,5 @@
 import Department from "@models/department";
+import ManualAssignment from "@models/manual/assignment";
 import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
@@ -129,6 +130,124 @@ router.post("/", async (req: Request, res: Response) => {
         const e = _e as Error;
         Logs.Error(e.message);
         res.status(500).json({ message: "Error creating department" });
+    }
+});
+
+router.delete("/", async (req: Request, res: Response) => {
+    const {
+        session: { current_business_id, user_id },
+        SqlConnection,
+        body: { ids },
+    } = req;
+
+    // check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        ["global_crud_department"]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    // check if users are joined to department
+    try {
+        const numUsersInDepartment = await SqlConnection.createQueryBuilder()
+            .select("COUNT(ur.id)")
+            .from(UserRole, "ur")
+            .leftJoin(Role, "r", "r.id = ur.role_id")
+            .leftJoin(Department, "d", "d.id = r.department_id")
+            .where("d.id IN(:...ids)", { ids })
+            .getCount();
+
+        if (numUsersInDepartment > 0) {
+            const message = `There are users associated with ${
+                ids.length > 1
+                    ? "at least one of these departments,"
+                    : "this department,"
+            } please reassign them`;
+
+            res.status(400).json({
+                message,
+            });
+            return;
+        }
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error("Count error", message);
+        res.status(500).json({
+            message: "Unable to count user assignments to department",
+        });
+        return;
+    }
+
+    // remove non user associations
+    try {
+        await SqlConnection.transaction(async (transactionManager) => {
+            try {
+                await transactionManager
+                    .createQueryBuilder()
+                    .delete()
+                    .from(ManualAssignment)
+                    .where("department_id IN (:...ids)", { ids })
+                    .execute();
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete Manual Assignments");
+            }
+
+            // get permissions to delete after roles are deleted
+            const permissions = await transactionManager
+                .createQueryBuilder()
+                .select("p")
+                .from(Permission, "p")
+                .leftJoin(Role, "r", "r.permission_id = p.id")
+                .where("r.department_id IN (:...ids)", { ids })
+                .getMany();
+
+            try {
+                await transactionManager
+                    .createQueryBuilder()
+                    .delete()
+                    .from(Role)
+                    .where("department_id IN (:...ids)", { ids })
+                    .execute();
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete roles");
+            }
+
+            try {
+                await transactionManager.remove(permissions);
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete permissions");
+            }
+
+            try {
+                await transactionManager.delete(Department, ids);
+            } catch (_e) {
+                const { message } = _e as Error;
+                Logs.Error(message);
+                throw new Error("Unable to delete departments");
+            }
+        });
+
+        res.sendStatus(200);
+        return;
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500).json({
+            message,
+        });
+        return;
     }
 });
 
