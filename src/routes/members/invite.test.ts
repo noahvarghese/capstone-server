@@ -27,6 +27,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+    jest.setTimeout(30000);
     await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
