@@ -48,14 +48,11 @@ describe("Global admin authorized", () => {
     test("Global admin can delete role", async () => {
         //     Given I am logged in as an admin
         // create role to delete
-        console.log("Called ");
         const id = await createRole.call(baseWorld, "test");
 
-        console.log("Created");
         //     When I delete a role
         await actions.deleteRole.call(baseWorld, [id]);
 
-        console.log("Confirming");
         //     Then a role is deleted
         Request.succeeded.call(baseWorld, { auth: false });
         const connection = baseWorld.getConnection();
