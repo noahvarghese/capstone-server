@@ -11,7 +11,8 @@ export type ApiRoute =
     | "authCheck"
     | "createRole"
     | "deleteRole"
-    | "createDepartment";
+    | "createDepartment"
+    | "deleteDepartment";
 
 const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
     registerBusiness: [],
@@ -25,6 +26,7 @@ const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
     createDepartment: ["registerBusiness"],
     createRole: ["registerBusiness"],
     deleteRole: ["registerBusiness"],
+    deleteDepartment: ["registerBusiness"],
 };
 
 export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
@@ -39,6 +41,7 @@ export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
     createDepartment: "departments",
     createRole: "roles",
     deleteRole: "roles",
+    deleteDepartment: "departments",
 };
 
 export default dependencies;
@@ -54,5 +57,6 @@ export const teardown_dependencies: { [i in ApiRoute]: string[] } = {
     authCheck: modelDependencies["userRole"],
     createRole: modelDependencies["userRole"],
     deleteRole: modelDependencies["userRole"],
+    deleteDepartment: modelDependencies["userRole"],
     createDepartment: modelDependencies["userRole"],
 };
