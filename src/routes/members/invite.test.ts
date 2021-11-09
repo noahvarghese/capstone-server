@@ -12,6 +12,7 @@ import Event from "@models/event";
 import { loginUser } from "@test/helpers/api/setup-actions";
 
 let baseWorld: BaseWorld;
+jest.setTimeout(5000000);
 
 beforeAll(async () => {
     await DBConnection.init();
@@ -27,7 +28,6 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    jest.setTimeout(30000);
     await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
