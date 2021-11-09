@@ -129,7 +129,8 @@ export async function createDepartment(
 
 export async function createRole(
     this: BaseWorld,
-    name: string
+    name: string,
+    forDepartment: string
 ): Promise<number> {
     const connection = this.getConnection();
     const admin = await getAdminUserId.call(this);
@@ -149,7 +150,7 @@ export async function createRole(
             updated_by_user_id: admin,
             department_id: await getDepartmentInBusiness.call(
                 this,
-                "Admin",
+                forDepartment,
                 await getBusiness.call(this)
             ),
             permission_id: permissionResult.identifiers[0].id,

@@ -2,7 +2,13 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import actions from "@test/helpers/api/test-actions";
-import { createDepartment, loginUser } from "@test/helpers/api/setup-actions";
+import {
+    assignUserToRole,
+    createDepartment,
+    createRole,
+    getAdminUserId,
+    loginUser,
+} from "@test/helpers/api/setup-actions";
 import Request from "@test/helpers/api/request";
 import Department from "@models/department";
 
@@ -69,9 +75,26 @@ describe("User who lacks CRUD rights", () => {
         // Then I get an error
         Request.failed.call(baseWorld);
     });
-    test.todo("User who lacks CRUD rights cannot delete department");
+
     // Scenario: User who lacks CRUD department rights cannot delete departments
-    //     Given I am logged in as a user
-    //     When I delete a department
-    //     Then I get an error
+    test("User who lacks CRUD rights cannot delete department", async () => {
+        await actions.login.call(baseWorld);
+        const roleId = await createRole.call(baseWorld, "test", "Admin");
+        const departmentId = await createDepartment.call(baseWorld, "test");
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(baseWorld, user.id, roleId, admin, true);
+
+        //     When I delete a department
+        await actions.deleteDepartment.call(baseWorld, [departmentId]);
+
+        //     Then I get an error
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: /^Insufficient permissions$/i,
+        });
+    });
 });

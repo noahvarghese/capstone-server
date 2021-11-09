@@ -51,7 +51,7 @@ describe("Global admin authorized", () => {
     test("Global admin can delete role", async () => {
         //     Given I am logged in as an admin
         // create role to delete
-        const id = await createRole.call(baseWorld, "test");
+        const id = await createRole.call(baseWorld, "test", "Admin");
 
         //     When I delete a role
         await actions.deleteRole.call(baseWorld, [id]);
@@ -103,7 +103,7 @@ describe("User who lacks CRUD rights", () => {
     // Scenario: User who lacks CRUD role rights cannot delete roles
     test("User who lacks CRUD rights cannot delete role", async () => {
         await actions.login.call(baseWorld);
-        const roleId = await createRole.call(baseWorld, "test");
+        const roleId = await createRole.call(baseWorld, "test", "Admin");
 
         //     Given I am logged in as a user
         const user = await loginUser.call(baseWorld);
@@ -113,6 +113,10 @@ describe("User who lacks CRUD rights", () => {
         await actions.deleteRole.call(baseWorld, [roleId]);
 
         //     Then I get an error
-        Request.failed.call(baseWorld);
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: /^Insufficient permissions$/i,
+        });
     });
 });
