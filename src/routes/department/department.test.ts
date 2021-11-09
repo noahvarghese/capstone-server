@@ -7,6 +7,8 @@ import {
     createDepartment,
     createRole,
     getAdminUserId,
+    getBusiness,
+    getDepartmentInBusiness,
     loginUser,
 } from "@test/helpers/api/setup-actions";
 import Request from "@test/helpers/api/request";
@@ -62,6 +64,26 @@ describe("Global admin authorized", () => {
             where: { id },
         });
         expect(count).toBe(0);
+    });
+
+    test("Deleting a department that has users still associated fails", async () => {
+        // Given there is a department with users associated
+        const department_id = await getDepartmentInBusiness.call(
+            baseWorld,
+            "Admin",
+            await getBusiness.call(baseWorld)
+        );
+
+        // When a user tries to delete that department
+        await actions.deleteDepartment.call(baseWorld, [department_id]);
+
+        // It is not deleted
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^400$/,
+            message:
+                /^there are users associated with this department, please reassign them$/i,
+        });
     });
 });
 
