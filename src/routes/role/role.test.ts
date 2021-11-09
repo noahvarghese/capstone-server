@@ -77,7 +77,7 @@ describe("User who lacks CRUD rights", () => {
     });
 
     // Scenario: User who lacks CRUD role rights cannot delete roles
-    test.todo("User who lacks CRUD rights cannot delete role", async () => {
+    test("User who lacks CRUD rights cannot delete role", async () => {
         await actions.login.call(baseWorld);
         const roleId = await createRole.call(baseWorld, "test");
 
