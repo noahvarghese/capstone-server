@@ -86,7 +86,21 @@ describe("Global admin authorized", () => {
         });
     });
 
-    test.todo("User who has CRUD rights can edit department");
+    test.todo(
+        "User who has CRUD rights can edit department"
+
+        // async () => {
+        // // Given there is a department
+        // const department_id = await getDepartmentInBusiness.call(
+        //     baseWorld,
+        //     "Admin",
+        //     await getBusiness.call(baseWorld)
+        // );
+
+        // // When a user tries to delete that department
+        // await actions.editDepartment.call(baseWorld, [department_id]);
+        // }
+    );
 });
 
 describe("User who lacks CRUD rights", () => {

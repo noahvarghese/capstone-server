@@ -28,11 +28,9 @@ export interface CreateDepartmentProps {
 const createDepartment = (): CreateDepartmentProps =>
     deepClone({ name: "TEST" });
 
-export interface DeleteDepartmentProps {
-    ids: number[];
-}
+export type DeleteDepartmentProps = undefined;
 
-const deleteDepartment = (): DeleteDepartmentProps => deepClone({ ids: [] });
+const deleteDepartment = (): DeleteDepartmentProps => undefined;
 
 export interface EditDepartmentProps {
     name: string;
@@ -40,11 +38,9 @@ export interface EditDepartmentProps {
 
 const editDepartment = (): EditDepartmentProps => deepClone({ name: "YOLO" });
 
-export interface DeleteRoleProps {
-    ids: number[];
-}
+export type DeleteRoleProps = undefined;
 
-const deleteRole = (): DeleteRoleProps => deepClone({ ids: [] });
+const deleteRole = (): DeleteRoleProps => undefined;
 
 const login = (): LoginProps =>
     deepClone({
@@ -60,8 +56,7 @@ const inviteUser = (): InviteUserProps =>
         phone: "4168245567",
     });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface AcceptInviteProps {}
+export type AcceptInviteProps = Record<string, never>;
 
 const acceptInvite = (): AcceptInviteProps => deepClone({});
 
@@ -76,13 +71,11 @@ const resetPassword = (): ResetPasswordProps =>
         confirm_password: "newpassword",
     });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface LogoutProps {}
+export type LogoutProps = Record<string, never>;
 
 const logout = (): LogoutProps => deepClone({});
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface AuthCheckProps {}
+export type AuthCheckProps = Record<string, never>;
 
 const authCheck = (): AuthCheckProps => deepClone({});
 
