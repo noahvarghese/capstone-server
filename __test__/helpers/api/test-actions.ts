@@ -224,12 +224,17 @@ async function deleteDepartment(this: BaseWorld, ids: number[]): Promise<void> {
     });
 }
 
-async function editDepartment(this: BaseWorld, name: string): Promise<void> {
+async function editDepartment(
+    this: BaseWorld,
+    name: string,
+    id: number
+): Promise<void> {
     await apiRequest.call(this, "editDepartment", {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
+        query: { id },
         body: { name },
         method: "put",
     });
