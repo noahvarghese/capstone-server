@@ -24,9 +24,10 @@ export async function apiRequest(
             saveCookie: boolean;
         };
         token?: string | null;
-        body?: unknown;
+        body?: Record<string, unknown>;
+        query?: Record<string, unknown>;
         errorOnFail?: boolean;
-        method?: "post" | "put" | "delete";
+        method?: "get" | "post" | "put" | "delete";
     }
 ): Promise<void> {
     if (!opts?.body) Form.load.call(this, key);
@@ -40,7 +41,8 @@ export async function apiRequest(
         Boolean(opts?.cookie?.saveCookie),
         Boolean(opts?.cookie?.withCookie),
         opts?.errorOnFail,
-        opts?.method
+        opts?.method,
+        opts?.query
     );
 }
 
@@ -200,7 +202,7 @@ async function createRole(this: BaseWorld): Promise<void> {
 async function deleteRole(this: BaseWorld, ids: number[]): Promise<void> {
     await apiRequest.call(this, "deleteRole", {
         cookie: { saveCookie: true, withCookie: true },
-        body: { ids },
+        query: { ids },
         method: "delete",
     });
 }
@@ -217,8 +219,24 @@ async function createDepartment(this: BaseWorld): Promise<void> {
 async function deleteDepartment(this: BaseWorld, ids: number[]): Promise<void> {
     await apiRequest.call(this, "deleteDepartment", {
         cookie: { saveCookie: true, withCookie: true },
-        body: { ids },
+        query: { ids },
         method: "delete",
+    });
+}
+
+async function editDepartment(
+    this: BaseWorld,
+    name: string,
+    id: number
+): Promise<void> {
+    await apiRequest.call(this, "editDepartment", {
+        cookie: {
+            saveCookie: true,
+            withCookie: true,
+        },
+        query: { id },
+        body: { name },
+        method: "put",
     });
 }
 
@@ -233,6 +251,7 @@ const actions: ActionFnMap = {
     authCheck,
     createDepartment,
     deleteDepartment,
+    editDepartment,
     createRole,
     deleteRole,
 };

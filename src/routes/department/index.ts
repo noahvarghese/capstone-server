@@ -6,6 +6,8 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Response, Request } from "express";
+import { EntityManager } from "typeorm/entity-manager/EntityManager";
+import validator from "validator";
 
 const router = Router();
 
@@ -196,58 +198,60 @@ router.delete("/", async (req: Request, res: Response) => {
 
     // remove non user associations
     try {
-        await SqlConnection.transaction(async (transactionManager) => {
-            try {
-                await transactionManager
+        await SqlConnection.transaction(
+            async (transactionManager: EntityManager) => {
+                try {
+                    await transactionManager
+                        .createQueryBuilder()
+                        .delete()
+                        .from(ManualAssignment)
+                        .where("department_id IN (:...ids)", { ids })
+                        .execute();
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete Manual Assignments");
+                }
+
+                // get permissions to delete after roles are deleted
+                const permissions = await transactionManager
                     .createQueryBuilder()
-                    .delete()
-                    .from(ManualAssignment)
-                    .where("department_id IN (:...ids)", { ids })
-                    .execute();
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete Manual Assignments");
-            }
+                    .select("p")
+                    .from(Permission, "p")
+                    .leftJoin(Role, "r", "r.permission_id = p.id")
+                    .where("r.department_id IN (:...ids)", { ids })
+                    .getMany();
 
-            // get permissions to delete after roles are deleted
-            const permissions = await transactionManager
-                .createQueryBuilder()
-                .select("p")
-                .from(Permission, "p")
-                .leftJoin(Role, "r", "r.permission_id = p.id")
-                .where("r.department_id IN (:...ids)", { ids })
-                .getMany();
+                try {
+                    await transactionManager
+                        .createQueryBuilder()
+                        .delete()
+                        .from(Role)
+                        .where("department_id IN (:...ids)", { ids })
+                        .execute();
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete roles");
+                }
 
-            try {
-                await transactionManager
-                    .createQueryBuilder()
-                    .delete()
-                    .from(Role)
-                    .where("department_id IN (:...ids)", { ids })
-                    .execute();
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete roles");
-            }
+                try {
+                    await transactionManager.remove(permissions);
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete permissions");
+                }
 
-            try {
-                await transactionManager.remove(permissions);
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete permissions");
+                try {
+                    await transactionManager.delete(Department, ids);
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete departments");
+                }
             }
-
-            try {
-                await transactionManager.delete(Department, ids);
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete departments");
-            }
-        });
+        );
 
         res.sendStatus(200);
         return;
@@ -258,6 +262,54 @@ router.delete("/", async (req: Request, res: Response) => {
             message,
         });
         return;
+    }
+});
+
+router.put("/", async (req: Request, res: Response) => {
+    const {
+        session: { current_business_id, user_id },
+        SqlConnection,
+        query: { id: queryId },
+        body: { name },
+    } = req;
+
+    let id: number;
+
+    try {
+        if (validator.isNumeric(queryId as string)) {
+            id = Number(JSON.parse(queryId as string));
+        } else {
+            res.status(400).json({ message: "Invalid query parameter" });
+            return;
+        }
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(400).json({ message: "Invalid query format" });
+        return;
+    }
+
+    // check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        ["global_crud_department"]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    try {
+        await SqlConnection.manager.update(Department, { id }, { name });
+        res.sendStatus(200);
+        return;
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500).json({ message: "Unable to edit department" });
     }
 });
 

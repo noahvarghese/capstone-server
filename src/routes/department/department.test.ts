@@ -85,6 +85,26 @@ describe("Global admin authorized", () => {
                 /^there are users associated with this department, please reassign them$/i,
         });
     });
+
+    test("User who has CRUD rights can edit department", async () => {
+        const newName = "Noah's test department";
+        // Given there is a department
+        const departmentId = await createDepartment.call(baseWorld, "test");
+
+        // When a user tries to edit that department
+        await actions.editDepartment.call(baseWorld, newName, departmentId);
+
+        Request.succeeded.call(baseWorld, { auth: false });
+
+        // Then the department is updated
+        const updatedDepartment = await baseWorld
+            .getConnection()
+            .manager.findOneOrFail(Department, {
+                where: { id: departmentId },
+            });
+
+        expect(updatedDepartment.name).toBe(newName);
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
@@ -117,5 +137,38 @@ describe("User who lacks CRUD rights", () => {
             status: /^403$/,
             message: /^Insufficient permissions$/i,
         });
+    });
+
+    test("User who lacks CRUD rights cannot edit department", async () => {
+        // Given there is a user setup without crud permissions
+        await actions.login.call(baseWorld);
+        const roleId = await createRole.call(baseWorld, "test", "Admin");
+
+        // Given there is a department
+        const departmentId = await createDepartment.call(baseWorld, "test");
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(baseWorld, user.id, roleId, admin, true);
+
+        // When a user tries to edit that department
+        const newName = "Noah's test department";
+        await actions.editDepartment.call(baseWorld, newName, departmentId);
+
+        // Then the department is not updated
+        Request.failed.call(baseWorld, {
+            include404: false,
+            message: /^insufficient permissions$/i,
+            status: /^403$/,
+        });
+
+        const updatedDepartment = await baseWorld
+            .getConnection()
+            .manager.findOneOrFail(Department, {
+                where: { id: departmentId },
+            });
+
+        expect(updatedDepartment.name).not.toBe(newName);
     });
 });
