@@ -39,11 +39,20 @@ export default class Form {
                     });
                     break;
                 case "delete":
-                    res = await axios.delete(server(url), {
+                    // eslint-disable-next-line no-case-declarations
+                    let queryString = "/?";
+                    for (const [key, value] of Object.entries(body)) {
+                        queryString += `${key}=${JSON.stringify(value)}&`;
+                    }
+                    queryString = queryString.substring(
+                        0,
+                        queryString.length - 1
+                    );
+
+                    res = await axios.delete(server(url + queryString), {
                         headers:
                             withCookie && cookies ? { Cookie: cookies } : {},
                         withCredentials: true,
-                        data: body,
                     });
                     break;
                 case "put":

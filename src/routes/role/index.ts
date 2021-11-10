@@ -150,8 +150,18 @@ router.delete("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
         SqlConnection,
-        body: { ids },
+        query: { ids: queryIds },
     } = req;
+
+    let ids: number[] = [];
+
+    try {
+        ids = Array.from(JSON.parse(queryIds as string));
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(400).json({ message: "Invalid format" });
+    }
 
     // check permissions
     const hasPermission = await Permission.checkPermission(
