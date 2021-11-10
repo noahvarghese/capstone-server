@@ -22,17 +22,25 @@ const registerBusiness = (): RegisterBusinessProps =>
         phone: user.phone,
     });
 
-export interface DeleteDepartmentProps {
-    ids: number[];
+export interface CreateDepartmentProps {
+    name: string;
+}
+const createDepartment = (): CreateDepartmentProps =>
+    deepClone({ name: "TEST" });
+
+export type DeleteDepartmentProps = undefined;
+
+const deleteDepartment = (): DeleteDepartmentProps => undefined;
+
+export interface EditDepartmentProps {
+    name: string;
 }
 
-const deleteDepartment = (): DeleteDepartmentProps => deepClone({ ids: [] });
+const editDepartment = (): EditDepartmentProps => deepClone({ name: "YOLO" });
 
-export interface DeleteRoleProps {
-    ids: number[];
-}
+export type DeleteRoleProps = undefined;
 
-const deleteRole = (): DeleteRoleProps => deepClone({ ids: [] });
+const deleteRole = (): DeleteRoleProps => undefined;
 
 const login = (): LoginProps =>
     deepClone({
@@ -48,8 +56,7 @@ const inviteUser = (): InviteUserProps =>
         phone: "4168245567",
     });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface AcceptInviteProps {}
+export type AcceptInviteProps = Record<string, never>;
 
 const acceptInvite = (): AcceptInviteProps => deepClone({});
 
@@ -64,13 +71,11 @@ const resetPassword = (): ResetPasswordProps =>
         confirm_password: "newpassword",
     });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface LogoutProps {}
+export type LogoutProps = Record<string, never>;
 
 const logout = (): LogoutProps => deepClone({});
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface AuthCheckProps {}
+export type AuthCheckProps = Record<string, never>;
 
 const authCheck = (): AuthCheckProps => deepClone({});
 
@@ -80,12 +85,6 @@ export interface ForgotPasswordProps {
 
 const forgotPassword = (): ForgotPasswordProps =>
     deepClone({ email: user.email });
-
-export interface CreateDepartmentProps {
-    name: string;
-}
-const createDepartment = (): CreateDepartmentProps =>
-    deepClone({ name: "TEST" });
 
 export interface CreateRoleProps {
     name: string;
@@ -135,10 +134,11 @@ export interface IApiRoute {
     resetPassword: () => ResetPasswordProps;
     logout: () => LogoutProps;
     authCheck: () => AuthCheckProps;
-    createDepartment: () => CreateDepartmentProps;
     createRole: () => CreateRoleProps;
     deleteRole: () => DeleteRoleProps;
+    createDepartment: () => CreateDepartmentProps;
     deleteDepartment: () => DeleteDepartmentProps;
+    editDepartment: () => EditDepartmentProps;
 }
 
 const attributes: IApiRoute = {
@@ -150,10 +150,11 @@ const attributes: IApiRoute = {
     resetPassword,
     logout,
     authCheck,
-    createDepartment,
     createRole,
     deleteRole,
+    createDepartment,
     deleteDepartment,
+    editDepartment,
 };
 
 export default attributes;
