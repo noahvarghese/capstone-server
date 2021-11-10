@@ -22,11 +22,23 @@ const registerBusiness = (): RegisterBusinessProps =>
         phone: user.phone,
     });
 
+export interface CreateDepartmentProps {
+    name: string;
+}
+const createDepartment = (): CreateDepartmentProps =>
+    deepClone({ name: "TEST" });
+
 export interface DeleteDepartmentProps {
     ids: number[];
 }
 
 const deleteDepartment = (): DeleteDepartmentProps => deepClone({ ids: [] });
+
+export interface EditDepartmentProps {
+    name: string;
+}
+
+const editDepartment = (): EditDepartmentProps => deepClone({ name: "YOLO" });
 
 export interface DeleteRoleProps {
     ids: number[];
@@ -81,12 +93,6 @@ export interface ForgotPasswordProps {
 const forgotPassword = (): ForgotPasswordProps =>
     deepClone({ email: user.email });
 
-export interface CreateDepartmentProps {
-    name: string;
-}
-const createDepartment = (): CreateDepartmentProps =>
-    deepClone({ name: "TEST" });
-
 export interface CreateRoleProps {
     name: string;
     department: number[];
@@ -135,10 +141,11 @@ export interface IApiRoute {
     resetPassword: () => ResetPasswordProps;
     logout: () => LogoutProps;
     authCheck: () => AuthCheckProps;
-    createDepartment: () => CreateDepartmentProps;
     createRole: () => CreateRoleProps;
     deleteRole: () => DeleteRoleProps;
+    createDepartment: () => CreateDepartmentProps;
     deleteDepartment: () => DeleteDepartmentProps;
+    editDepartment: () => EditDepartmentProps;
 }
 
 const attributes: IApiRoute = {
@@ -150,10 +157,11 @@ const attributes: IApiRoute = {
     resetPassword,
     logout,
     authCheck,
-    createDepartment,
     createRole,
     deleteRole,
+    createDepartment,
     deleteDepartment,
+    editDepartment,
 };
 
 export default attributes;

@@ -85,6 +85,8 @@ describe("Global admin authorized", () => {
                 /^there are users associated with this department, please reassign them$/i,
         });
     });
+
+    test.todo("User who has CRUD rights can edit department");
 });
 
 describe("User who lacks CRUD rights", () => {
@@ -118,4 +120,6 @@ describe("User who lacks CRUD rights", () => {
             message: /^Insufficient permissions$/i,
         });
     });
+
+    test.todo("User who lacks CRUD rights cannot edit department");
 });
