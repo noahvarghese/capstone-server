@@ -42,18 +42,22 @@ export default class Form {
         withCookie: boolean,
         errorOnFail = false,
         method: "delete" | "get" | "put" | "post" = "post",
-        query?: X
+        query?: X,
+        param?: string
     ): Promise<void> {
         let cookie = "";
         let status: number | string = "";
         let message = "";
+        let data = {};
 
         const cookies = this.getCustomProp<string>("cookies");
         const body = this.getCustomProp<T>("body");
 
         try {
             let res;
-            const FQDN = server(url + getQueryString(query));
+            const FQDN = server(
+                url + (param ? "/" + param : "") + getQueryString(query)
+            );
 
             if (["get", "delete"].includes(method) && body) {
                 console.error(
@@ -96,6 +100,7 @@ export default class Form {
             }
 
             cookie = getCookie(res.headers);
+            data = res.data;
             message = res.data.message;
             status = res.status;
         } catch (_e) {
@@ -114,6 +119,7 @@ export default class Form {
 
             if (response) {
                 status = response.status;
+                data = response.data;
                 message = response.data.message;
             }
 
@@ -125,6 +131,7 @@ export default class Form {
 
         if (saveCookie) this.setCustomProp<string | null>("cookies", cookie);
 
+        this.setCustomProp("responseData", data);
         this.setCustomProp<number>("status", status as number);
         this.setCustomProp<string>("message", message);
     }
