@@ -63,7 +63,7 @@ jobs:
           git config user.email ${{ secrets.MAIL_USER }}
           git config user.name "GitHub CI"
           npm config set git-tag-version false
-          npm version patch
+          npm run version:bump
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
