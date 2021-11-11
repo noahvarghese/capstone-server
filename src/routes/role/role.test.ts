@@ -13,6 +13,7 @@ import {
     getRoleInDepartment,
     loginUser,
 } from "@test/helpers/api/setup-actions";
+import Permission, { PermissionAttributes } from "@models/permission";
 
 let baseWorld: BaseWorld;
 
@@ -88,6 +89,60 @@ describe("Global admin authorized", () => {
                 /^there are users associated with this role, please reassign them$/i,
         });
     });
+
+    test("User who has CRUD rights can edit role", async () => {
+        // Given there is a role
+        const roleId = await createRole.call(baseWorld, "test", "Admin");
+        const permission: Omit<PermissionAttributes, "updated_by_user_id"> = {
+            dept_crud_role: true,
+            global_view_reports: true,
+            global_crud_users: true,
+            global_crud_role: true,
+            global_crud_resources: true,
+            global_crud_department: true,
+            global_assign_users_to_role: true,
+            global_assign_users_to_department: true,
+            global_assign_resources_to_role: true,
+            dept_assign_resources_to_role: true,
+            dept_assign_users_to_role: true,
+            dept_crud_resources: true,
+            dept_view_reports: true,
+            global_assign_resources_to_department: true,
+        };
+
+        // When a user tries to edit that role
+        const newName = "Noah's test role";
+        await actions.editRole.call(
+            baseWorld,
+            newName,
+            permission,
+            roleId,
+            true
+        );
+
+        // Then the department is not updated
+        Request.succeeded.call(baseWorld, {
+            auth: false,
+        });
+
+        const updatedRole = await baseWorld
+            .getConnection()
+            .manager.findOneOrFail(Role, {
+                where: { id: roleId },
+            });
+
+        const updatedPermissions = await baseWorld
+            .getConnection()
+            .manager.findOneOrFail(Permission, {
+                where: { id: updatedRole.permission_id },
+            });
+
+        expect(updatedRole.name).toBe(newName);
+
+        for (const [key, value] of Object.entries(permission)) {
+            expect(updatedPermissions[key as keyof Permission]).toBe(value);
+        }
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
@@ -131,5 +186,74 @@ describe("User who lacks CRUD rights", () => {
             status: /^403$/,
             message: /^Insufficient permissions$/i,
         });
+    });
+
+    test("User who lacks CRUD rights cannot edit role", async () => {
+        // Given there is a user setup without crud permissions
+        await actions.login.call(baseWorld);
+        const assignedRoleId = await createRole.call(
+            baseWorld,
+            "assigned",
+            "Admin"
+        );
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(
+            baseWorld,
+            user.id,
+            assignedRoleId,
+            admin,
+            true
+        );
+
+        // And there is a role
+        const roleId = await createRole.call(baseWorld, "test", "Admin");
+        const permission: Omit<PermissionAttributes, "updated_by_user_id"> = {
+            dept_crud_role: true,
+            global_view_reports: true,
+            global_crud_users: true,
+            global_crud_role: true,
+            global_crud_resources: true,
+            global_crud_department: true,
+            global_assign_users_to_role: true,
+            global_assign_users_to_department: true,
+            global_assign_resources_to_role: true,
+            dept_assign_resources_to_role: true,
+            dept_assign_users_to_role: true,
+            dept_crud_resources: true,
+            dept_view_reports: true,
+            global_assign_resources_to_department: true,
+        };
+
+        // When a user tries to edit that role
+        const newName = "Noah's test role";
+        await actions.editRole.call(baseWorld, newName, permission, roleId);
+
+        // Then the department is not updated
+        Request.failed.call(baseWorld, {
+            include404: false,
+            message: /^insufficient permissions$/i,
+            status: /^403$/,
+        });
+
+        const updatedRole = await baseWorld
+            .getConnection()
+            .manager.findOneOrFail(Role, {
+                where: { id: roleId },
+            });
+
+        const updatedPermissions = await baseWorld
+            .getConnection()
+            .manager.findOneOrFail(Permission, {
+                where: { id: updatedRole.permission_id },
+            });
+
+        expect(updatedRole.name).not.toBe(newName);
+
+        for (const [key, value] of Object.entries(permission)) {
+            expect(updatedPermissions[key as keyof Permission]).not.toBe(value);
+        }
     });
 });

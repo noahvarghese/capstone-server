@@ -104,6 +104,7 @@ export default class Form {
             const seperator = "\n\t\t  ";
             console.error(
                 "[ REQUEST ]:",
+                method.toUpperCase(),
                 server(url),
                 seperator,
                 e.message,

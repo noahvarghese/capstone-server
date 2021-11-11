@@ -5,6 +5,7 @@ import Role from "@models/role";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Request, Response } from "express";
+import validator from "validator";
 
 const router = Router();
 
@@ -250,4 +251,71 @@ router.delete("/", async (req: Request, res: Response) => {
         res.status(500).json({ message: "Unable to delete role" });
     }
 });
+
+router.put("/", async (req: Request, res: Response) => {
+    const {
+        session: { current_business_id, user_id },
+        SqlConnection,
+        query: { id: queryId },
+        body: { name, department: department_id, permissions },
+    } = req;
+
+    let id: number;
+
+    try {
+        if (validator.isNumeric(queryId as string)) {
+            id = Number(JSON.parse(queryId as string));
+        } else {
+            res.status(400).json({ message: "Invalid query parameter" });
+            return;
+        }
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(400).json({ message: "Invalid query format" });
+        return;
+    }
+
+    // check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        ["global_crud_role"]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    try {
+        const currentRole = await SqlConnection.manager.findOneOrFail(Role, {
+            where: { id },
+        });
+
+        await SqlConnection.manager.update(
+            Role,
+            { id },
+            {
+                name: name ?? currentRole.name,
+                department_id: department_id ?? currentRole.department_id,
+            }
+        );
+
+        await SqlConnection.manager.update(
+            Permission,
+            { id: currentRole.permission_id },
+            { ...permissions }
+        );
+        res.sendStatus(200);
+        return;
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500).json({ message: "Unable to edit role" });
+        return;
+    }
+});
+
 export default router;

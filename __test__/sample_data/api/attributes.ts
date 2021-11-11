@@ -32,15 +32,17 @@ export type DeleteDepartmentProps = undefined;
 
 const deleteDepartment = (): DeleteDepartmentProps => undefined;
 
-export interface EditDepartmentProps {
-    name: string;
-}
+export type EditDepartmentProps = CreateDepartmentProps;
 
 const editDepartment = (): EditDepartmentProps => deepClone({ name: "YOLO" });
 
 export type DeleteRoleProps = undefined;
 
 const deleteRole = (): DeleteRoleProps => undefined;
+
+export type EditRoleProps = CreateRoleProps;
+
+const editRole = (): EditRoleProps => deepClone(createRole());
 
 const login = (): LoginProps =>
     deepClone({
@@ -136,6 +138,7 @@ export interface IApiRoute {
     authCheck: () => AuthCheckProps;
     createRole: () => CreateRoleProps;
     deleteRole: () => DeleteRoleProps;
+    editRole: () => EditRoleProps;
     createDepartment: () => CreateDepartmentProps;
     deleteDepartment: () => DeleteDepartmentProps;
     editDepartment: () => EditDepartmentProps;
@@ -152,6 +155,7 @@ const attributes: IApiRoute = {
     authCheck,
     createRole,
     deleteRole,
+    editRole,
     createDepartment,
     deleteDepartment,
     editDepartment,
