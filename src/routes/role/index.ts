@@ -1,6 +1,9 @@
 import Department from "@models/department";
 import ManualAssignment from "@models/manual/assignment";
-import Permission from "@models/permission";
+import Permission, {
+    EmptyPermissionAttributes,
+    PermissionAttributes,
+} from "@models/permission";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
@@ -8,6 +11,94 @@ import { Router, Request, Response } from "express";
 import validator from "validator";
 
 const router = Router();
+
+export interface RoleResponse {
+    id: number;
+    name: string;
+    department: {
+        id: number;
+        name: string;
+    };
+    permissions: PermissionAttributes & Pick<Permission, "id">;
+}
+
+router.get("/:id", async (req: Request, res: Response) => {
+    const {
+        session: { current_business_id, user_id },
+        SqlConnection,
+        params: { id },
+    } = req;
+
+    if (!validator.isNumeric(id)) {
+        res.status(400).json({ message: "Invalid id" });
+        return;
+    }
+
+    //check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        [
+            "global_crud_role",
+            "global_assign_resources_to_role",
+            "global_assign_users_to_role",
+        ]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    const role: RoleResponse = {
+        id: Number(id),
+        name: "",
+        department: {
+            id: 0,
+            name: "",
+        },
+        permissions: { ...EmptyPermissionAttributes(), id: 0 },
+    };
+
+    try {
+        const roleModel = await SqlConnection.manager.findOneOrFail(Role, {
+            where: { id },
+        });
+
+        role.name = roleModel.name;
+        role.department.id = roleModel.department_id;
+        role.permissions.id = roleModel.permission_id;
+    } catch (_e) {
+        res.status(400).json({ message: "Invalid role" });
+        return;
+    }
+
+    try {
+        const departmentModel = await SqlConnection.manager.findOneOrFail(
+            Department,
+            { where: { id: role.department.id } }
+        );
+        role.department.name = departmentModel.name;
+    } catch (_e) {
+        res.status(400).json({ message: "Invalid department id" });
+    }
+
+    try {
+        const permissionModel = await SqlConnection.manager.findOneOrFail(
+            Permission,
+            { where: { id: role.permissions.id } }
+        );
+        role.permissions = {
+            ...permissionModel,
+        };
+    } catch (_e) {
+        res.status(400).json({ message: "Invalid permission id" });
+        return;
+    }
+
+    res.status(200).json(role);
+});
 
 router.get("/", async (req: Request, res: Response) => {
     const {
