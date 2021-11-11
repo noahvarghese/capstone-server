@@ -12,6 +12,8 @@ import validator from "validator";
 
 const router = Router();
 
+// router.use(async (req: Request, res: Response, next: NextFunction) => {});
+
 export interface RoleResponse {
     id: number;
     name: string;
@@ -127,7 +129,6 @@ router.get("/", async (req: Request, res: Response) => {
         const returnVal: {
             id: number;
             name: string;
-            numMembers: number;
             department: string;
         }[] = [];
 
@@ -141,13 +142,6 @@ router.get("/", async (req: Request, res: Response) => {
             .getMany();
 
         for (const role of roles) {
-            const numMembers = await SqlConnection.createQueryBuilder()
-                .select("COUNT(ur.user_id)", "count")
-                .from(Role, "r")
-                .where("r.id = :role_id", { role_id: role.id })
-                .leftJoin(UserRole, "ur", "ur.role_id = r.id")
-                .getRawMany();
-
             const department = await SqlConnection.manager.findOneOrFail(
                 Department,
                 {
@@ -158,7 +152,6 @@ router.get("/", async (req: Request, res: Response) => {
             returnVal.push({
                 id: role.id,
                 name: role.name,
-                numMembers: numMembers[0].count,
                 department: department.name,
             });
         }
