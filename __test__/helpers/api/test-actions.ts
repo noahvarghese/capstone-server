@@ -26,6 +26,7 @@ export async function apiRequest(
         };
         token?: string | null;
         body?: Record<string, unknown>;
+        param?: string;
         query?: Record<string, unknown>;
         errorOnFail?: boolean;
         method?: "get" | "post" | "put" | "delete";
@@ -43,7 +44,8 @@ export async function apiRequest(
         Boolean(opts?.cookie?.withCookie),
         opts?.errorOnFail,
         opts?.method,
-        opts?.query
+        opts?.query,
+        opts?.param
     );
 }
 
@@ -260,6 +262,28 @@ async function editDepartment(
     });
 }
 
+async function readOneRole(this: BaseWorld, id: number): Promise<void> {
+    await apiRequest.call(this, "readOneRole", {
+        cookie: { saveCookie: true, withCookie: true },
+        param: id.toString(),
+        method: "get",
+    });
+}
+
+/**
+ * This will need parameters to sort and filter in the query
+ * @param this
+ */
+async function readManyRoles(this: BaseWorld): Promise<void> {
+    await apiRequest.call(this, "readManyRoles", {
+        cookie: {
+            saveCookie: true,
+            withCookie: true,
+        },
+        method: "get",
+    });
+}
+
 const actions: ActionFnMap = {
     registerBusiness,
     login,
@@ -275,6 +299,8 @@ const actions: ActionFnMap = {
     createRole,
     deleteRole,
     editRole,
+    readOneRole,
+    readManyRoles,
 };
 
 export default actions;

@@ -82,7 +82,7 @@ test("Forgot Password Token Created", async () => {
 
     expect(event.created_on).not.toBe(null);
 
-    expect(event.created_on?.getUTCMilliseconds()).toBeLessThan(
+    expect(event.created_on?.getUTCMilliseconds()).toBeLessThanOrEqual(
         new Date().getUTCMilliseconds() - 10
     );
 });
