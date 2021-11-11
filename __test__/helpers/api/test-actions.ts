@@ -9,6 +9,7 @@ import Department from "@models/department";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
+import { PermissionAttributes } from "@models/permission";
 
 export type ActionFnMap = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -207,6 +208,25 @@ async function deleteRole(this: BaseWorld, ids: number[]): Promise<void> {
     });
 }
 
+async function editRole(
+    this: BaseWorld,
+    name: string,
+    permissions: PermissionAttributes,
+    id: number,
+    errorOnFail = false
+): Promise<void> {
+    await apiRequest.call(this, "editRole", {
+        cookie: {
+            saveCookie: true,
+            withCookie: true,
+        },
+        errorOnFail,
+        query: { id },
+        body: { name, permissions },
+        method: "put",
+    });
+}
+
 async function createDepartment(this: BaseWorld): Promise<void> {
     await apiRequest.call(this, "createDepartment", {
         cookie: {
@@ -254,6 +274,7 @@ const actions: ActionFnMap = {
     editDepartment,
     createRole,
     deleteRole,
+    editRole,
 };
 
 export default actions;
