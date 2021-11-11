@@ -17,6 +17,8 @@ import Permission, { PermissionAttributes } from "@models/permission";
 import { RoleResponse } from ".";
 import Department from "@models/department";
 
+jest.setTimeout(5000000);
+
 let baseWorld: BaseWorld;
 type PermissionTestAttributes = Omit<
     PermissionAttributes,
