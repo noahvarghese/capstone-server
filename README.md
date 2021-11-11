@@ -288,6 +288,17 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>Creates role</td>
         </tr>
         <tr>
+            <td>GET</td>
+            <td>/businesses</td>
+            <td><pre>{}</pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{id: number; name: string; default: boolean;}[]</pre></td>
+            <td>500</td>
+            <td><pre>{message?: string}</pre></td>
+            <td>Retrieves list of businesses that the user is a member of</td>
+        </tr>
+        <tr>
             <td></td>
             <td></td>
             <td><pre></pre></td>
@@ -301,7 +312,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
     </tbody>
 
 </table>
-
 
 ## Environment Variables
 
@@ -330,7 +340,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
 | SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
 | SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
-
 
 ## Tests
 
@@ -363,7 +372,6 @@ Now using jest for all tests as it allows filtering of recently changed tests vi
 -   Pre-commit hook runs only changed files.
 -   On success
     -   Workflow runs any tests changed between the current and previous commit
-
 
 #### Stages
 
