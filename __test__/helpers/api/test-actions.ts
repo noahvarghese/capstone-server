@@ -49,6 +49,14 @@ export async function apiRequest(
     );
 }
 
+async function getBusinesses(this: BaseWorld): Promise<void> {
+    await apiRequest.call(this, "getBusinesses", {
+        cookie: { withCookie: true, saveCookie: true },
+        errorOnFail: true,
+        method: "get",
+    });
+}
+
 /**
  * Finds the token for the membership request
  * Then makes a rerquest to the url with the token
@@ -285,6 +293,7 @@ async function readManyRoles(this: BaseWorld): Promise<void> {
 }
 
 const actions: ActionFnMap = {
+    getBusinesses,
     registerBusiness,
     login,
     logout,

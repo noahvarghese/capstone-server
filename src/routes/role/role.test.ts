@@ -20,6 +20,7 @@ import Department from "@models/department";
 jest.setTimeout(5000000);
 
 let baseWorld: BaseWorld;
+
 type PermissionTestAttributes = Omit<
     PermissionAttributes,
     "updated_by_user_id"
@@ -175,7 +176,6 @@ describe("Global admin authorized", () => {
                 data: {
                     id: number;
                     name: string;
-                    numMembers: string;
                     department: string;
                 }[];
             }>("responseData");

@@ -7,6 +7,9 @@ import { deepClone } from "@test/util/obj";
 const business = modelAttributes.business();
 const user = modelAttributes.user();
 
+type GetBusinessesProps = undefined;
+const getBusinesses = (): GetBusinessesProps => undefined;
+
 const registerBusiness = (): RegisterBusinessProps =>
     deepClone({
         name: business.name,
@@ -128,6 +131,7 @@ const createRole = (): CreateRoleProps =>
     });
 
 export interface IApiRoute {
+    getBusinesses: () => GetBusinessesProps;
     registerBusiness: () => RegisterBusinessProps;
     forgotPassword: () => ForgotPasswordProps;
     login: () => LoginProps;
@@ -147,6 +151,7 @@ export interface IApiRoute {
 }
 
 const attributes: IApiRoute = {
+    getBusinesses,
     registerBusiness,
     forgotPassword,
     login,
