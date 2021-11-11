@@ -17,6 +17,8 @@ import Permission, { PermissionAttributes } from "@models/permission";
 import { RoleResponse } from ".";
 import Department from "@models/department";
 
+jest.setTimeout(5000000);
+
 let baseWorld: BaseWorld;
 type PermissionTestAttributes = Omit<
     PermissionAttributes,
@@ -184,7 +186,6 @@ describe("Global admin authorized", () => {
             expect(responseData.length).toBeGreaterThanOrEqual(1);
             expect(responseData[0].name).toBe("General");
             expect(responseData[0].department).toBe("Admin");
-            expect(responseData[0].numMembers).toBe("1");
         });
 
         test("User who has CRUD rights can edit role", async () => {
@@ -338,5 +339,66 @@ describe("User who lacks CRUD rights", () => {
         for (const [key, value] of Object.entries(permission)) {
             expect(updatedPermissions[key as keyof Permission]).not.toBe(value);
         }
+    });
+
+    test("User who has CRUD rights cannot read multiple roles", async () => {
+        // Given there is a user setup without crud permissions
+        await actions.login.call(baseWorld);
+        const assignedRoleId = await createRole.call(
+            baseWorld,
+            "assigned",
+            "Admin"
+        );
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(
+            baseWorld,
+            user.id,
+            assignedRoleId,
+            admin,
+            true
+        );
+
+        // When I try to read multiple roles
+        await actions.readManyRoles.call(baseWorld);
+
+        // I cannot
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: "Insufficient permissions",
+        });
+    });
+    test("User who has CRUD rights cannot read a singular role", async () => {
+        // Given there is a user setup without crud permissions
+        await actions.login.call(baseWorld);
+        const assignedRoleId = await createRole.call(
+            baseWorld,
+            "assigned",
+            "Admin"
+        );
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(
+            baseWorld,
+            user.id,
+            assignedRoleId,
+            admin,
+            true
+        );
+
+        // When I try to read multiple roles
+        await actions.readOneRole.call(baseWorld, assignedRoleId);
+
+        // I cannot
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: "Insufficient permissions",
+        });
     });
 });

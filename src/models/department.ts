@@ -1,7 +1,5 @@
-import { Entity, Column, Connection } from "typeorm";
+import { Entity, Column } from "typeorm";
 import BaseModel, { AttributeFactory } from "./abstract/base_model";
-import Role from "./role";
-import UserRole from "./user/user_role";
 
 export interface DepartmentAttributes {
     name: string;
@@ -41,32 +39,5 @@ export default class Department
             this,
             AttributeFactory(options, EmptyDeparmentAttributes)
         );
-    }
-
-    public async hasUser(
-        user_id: number,
-        connection: Connection
-    ): Promise<boolean> {
-        const roles = await connection.manager.find(Role, {
-            where: { department_id: this.id },
-        });
-
-        try {
-            await connection.manager.findOneOrFail(UserRole, {
-                where: roles.map((r) => ({ user_id, role_id: r.id })),
-            });
-            return true;
-        } catch (_) {
-            return false;
-        }
-    }
-
-    public static async getAdminForBusiness(
-        business_id: number,
-        connection: Connection
-    ): Promise<Department> {
-        return await connection.manager.findOneOrFail(Department, {
-            where: { business_id, name: "Admin" },
-        });
     }
 }
