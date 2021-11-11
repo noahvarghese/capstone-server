@@ -339,4 +339,7 @@ describe("User who lacks CRUD rights", () => {
             expect(updatedPermissions[key as keyof Permission]).not.toBe(value);
         }
     });
+
+    test.todo("User who has CRUD rights cannot read multiple roles");
+    test.todo("User who has CRUD rights cannot read a singular role");
 });
