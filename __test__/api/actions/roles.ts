@@ -2,7 +2,7 @@ import Business from "@models/business";
 import Department from "@models/department";
 import { PermissionAttributes } from "@models/permission";
 import BaseWorld from "@test/support/base_world";
-import { apiRequest } from "./";
+import { apiRequest } from "@test/api/actions";
 
 export async function createRole(this: BaseWorld): Promise<void> {
     const business = await this.getConnection().manager.findOneOrFail(

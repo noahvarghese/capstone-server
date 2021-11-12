@@ -1,6 +1,7 @@
-import attributes, { ModelKey } from "@test/sample_data/model/attributes";
-import dependencies from "@test/sample_data/model/dependencies";
-import types from "@test/sample_data/model/types";
+import ModelTest from "..";
+import attributes from "@test/model/attributes";
+import dependencies from "@test/model/dependencies";
+import types from "@test/model/types";
 import BaseWorld from "@test/support/base_world";
 import { deepClone } from "@test/util/obj";
 import { pascalToCamel, snakeToCamel } from "@test/util/string";
@@ -42,7 +43,7 @@ export default class Model {
                             ? "user"
                             : (snakeToCamel(
                                   key.substring(0, key.length - 3)
-                              ) as ModelKey);
+                              ) as ModelTest);
 
                     const nextType = types[nextModelName];
                     const nextModel =
@@ -58,7 +59,7 @@ export default class Model {
         };
 
         // get dependencies
-        const modelName = pascalToCamel(type.name) as ModelKey;
+        const modelName = pascalToCamel(type.name) as ModelTest;
         const deps = dependencies[modelName];
 
         for (let i = 0; i < deps.length; i++) {
@@ -85,8 +86,8 @@ export default class Model {
         this: BaseWorld,
         type: new () => T
     ): Promise<void> {
-        const modelName: ModelKey = pascalToCamel(type.name) as ModelKey;
-        const deps: ModelKey[] = dependencies[modelName];
+        const modelName: ModelTest = pascalToCamel(type.name) as ModelTest;
+        const deps: ModelTest[] = dependencies[modelName];
 
         for (let i = deps.length - 1; i > -1; i--) {
             const dependency = deps[i];

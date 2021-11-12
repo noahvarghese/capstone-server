@@ -1,14 +1,14 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import Form from "@test/helpers/api/form";
-import { urls } from "@test/sample_data/api/dependencies";
+import Form from "@test/api/helpers/form";
+import urls from "@test/api/urls";
 import User from "@models/user/user";
 import attributes, {
     ForgotPasswordProps,
     ResetPasswordProps,
-} from "@test/sample_data/api/attributes";
-import { apiRequest } from "@test/helpers/api/test-actions";
+} from "@test/api/attributes";
+import { apiRequest } from "@test/api/actions";
 
 let baseWorld: BaseWorld;
 

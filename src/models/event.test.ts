@@ -1,6 +1,6 @@
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/helpers/model/test/pass";
-import ModelTestFail from "@test/helpers/model/test/fail";
+import ModelTestPass from "@test/model/helpers/test/pass";
+import ModelTestFail from "@test/model/helpers/test/fail";
 import BaseWorld from "@test/support/base_world";
 import Event, { EventAttributes } from "./event";
 import Helpers from "@test/helpers";

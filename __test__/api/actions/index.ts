@@ -1,6 +1,7 @@
-import { ApiRoute, urls } from "@test/sample_data/api/dependencies";
+import urls from "@test/api/urls";
+import ApiTest from "@test/api";
 import BaseWorld from "@test/support/base_world";
-import Form from "../form";
+import Form from "../helpers/form";
 
 import * as business from "./business";
 import * as members from "./members";
@@ -10,14 +11,14 @@ import * as roles from "./roles";
 import * as departments from "./departments";
 import * as nav from "./nav";
 
-export type ActionFnMap = {
+export type ApiTestAction = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [i in ApiRoute]: (this: BaseWorld, ...args: any[]) => Promise<void>;
+    [i in ApiTest]: (this: BaseWorld, ...args: any[]) => Promise<void>;
 };
 
 export async function apiRequest(
     this: BaseWorld,
-    key: ApiRoute,
+    key: ApiTest,
     opts?: {
         cookie?: {
             withCookie: boolean;
@@ -48,7 +49,7 @@ export async function apiRequest(
     );
 }
 
-const actions: ActionFnMap = {
+const actions: ApiTestAction = {
     ...business,
     ...members,
     ...auth,

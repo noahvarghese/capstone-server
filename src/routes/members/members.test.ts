@@ -1,7 +1,7 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/test-actions";
+import actions from "@test/api/actions";
 
 let baseWorld: BaseWorld;
 

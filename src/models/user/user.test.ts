@@ -1,10 +1,11 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestPass from "@test/model/helpers/test/pass";
 import User, { UserAttributes } from "./user";
 import dotenv from "dotenv";
-import Model from "@test/helpers/model";
-import ModelActions from "@test/helpers/model/actions";
+import Model from "@test/model/helpers";
+import ModelActions from "@test/model/helpers/actions";
+
 dotenv.config();
 
 let baseWorld: BaseWorld;
