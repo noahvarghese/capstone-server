@@ -1,8 +1,8 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/test-actions";
-import Request from "@test/helpers/api/request";
+import actions from "@test/api/actions";
+import Request from "@test/api/helpers/request";
 import Role from "@models/role";
 import {
     assignUserToRole,
@@ -12,7 +12,7 @@ import {
     getDepartmentInBusiness,
     getRoleInDepartment,
     loginUser,
-} from "@test/helpers/api/setup-actions";
+} from "@test/api/helpers/setup-actions";
 import Permission, { PermissionAttributes } from "@models/permission";
 import { RoleResponse } from ".";
 import Department from "@models/department";

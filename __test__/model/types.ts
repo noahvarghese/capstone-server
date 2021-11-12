@@ -19,12 +19,12 @@ import Event from "@models/event";
 import ManualAssignment from "@models/manual/assignment";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
-import { ModelKey } from "./attributes";
+import ModelTest from ".";
 
 /**
  * Set of types so we can iterate over them in tests
  */
-const types: { [i in ModelKey]: new () => unknown } = {
+const types: { [i in ModelTest]: new () => unknown } = {
     business: Business,
     membership: Membership,
     membershipRequest: MembershipRequest,

@@ -1,8 +1,8 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestPass from "@test/model/helpers/test/pass";
 import Permission, { PermissionAttributes } from "./permission";
-import Model from "@test/helpers/model";
+import Model from "@test/model/helpers";
 
 let baseWorld: BaseWorld;
 

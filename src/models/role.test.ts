@@ -1,9 +1,9 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestPass from "@test/model/helpers/test/pass";
 import Role, { RoleAttributes } from "./role";
-import ModelTestParentPrevent from "@test/helpers/model/test/parent_prevent";
-import Model from "@test/helpers/model";
+import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
+import Model from "@test/model/helpers";
 
 let baseWorld: BaseWorld;
 

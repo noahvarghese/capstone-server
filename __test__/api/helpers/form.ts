@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import BaseWorld from "@test/support/base_world";
-import apiAttributes from "@test/sample_data/api/attributes";
+import apiAttributes from "@test/api/attributes";
 import { getCookie } from "@test/util/request";
 import { server } from "@util/permalink";
 

@@ -2,9 +2,9 @@ import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import { InviteUserProps } from "@routes/members/invite";
 import BaseWorld from "@test/support/base_world";
-import { apiRequest } from "./";
-import apiAttributes from "@test/sample_data/api/attributes";
-import { userAttributes } from "@test/sample_data/model/attributes";
+import { apiRequest } from "@test/api/actions";
+import apiAttributes from "@test/api/attributes";
+import { userAttributes } from "@test/model/attributes";
 import Membership from "@models/membership";
 
 /**

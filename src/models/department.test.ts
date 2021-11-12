@@ -1,7 +1,7 @@
 import BaseWorld from "@test/support/base_world";
 import Helpers from "@test/helpers";
-import ModelTestPass from "@test/helpers/model/test/pass";
-import ModelTestParentPrevent from "@test/helpers/model/test/parent_prevent";
+import ModelTestPass from "@test/model/helpers/test/pass";
+import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
 import Department, { DepartmentAttributes } from "./department";
 import DBConnection from "@test/support/db_connection";
 

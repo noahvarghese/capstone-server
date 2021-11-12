@@ -1,5 +1,5 @@
 import { RegisterBusinessProps } from "@routes/auth/register";
-import modelAttributes from "../model/attributes";
+import modelAttributes from "@test/model/attributes";
 import { LoginProps } from "@routes/auth/login";
 import { InviteUserProps } from "@routes/members/invite";
 import { deepClone } from "@util/obj";

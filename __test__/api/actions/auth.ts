@@ -1,5 +1,5 @@
 import BaseWorld from "@test/support/base_world";
-import { apiRequest } from "./";
+import { apiRequest } from "@test/api/actions";
 
 export async function login(this: BaseWorld): Promise<void> {
     await apiRequest.call(this, "login", {

@@ -1,9 +1,9 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelTestPass from "@test/model/helpers/test/pass";
 import ManualAssignment, { ManualAssignmentAttributes } from "./assignment";
-import ModelTestFail from "@test/helpers/model/test/fail";
-import Model from "@test/helpers/model";
+import ModelTestFail from "@test/model/helpers/test/fail";
+import Model from "@test/model/helpers";
 
 let baseWorld: BaseWorld;
 
