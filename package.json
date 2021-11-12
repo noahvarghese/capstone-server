@@ -20,7 +20,7 @@
         "postbuild": "npm run postbuild:email-templates && npm run module-alias:cleanup && npm run postbuild:package",
         "postbuild:email-templates": "cp -R ./src/services/email/templates ./build/services/email",
         "postbuild:package": "cp ./package*.json ./build && cd build && npm ci",
-        "format": "prettier --write \"**/*.ts\"",
+        "format": "prettier --write \"**/*.ts\" \"*.json\" \"*.js\"",
         "format:check": "prettier --check \"**/*.ts\"",
         "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --ignore build/ --ignore __test__/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
