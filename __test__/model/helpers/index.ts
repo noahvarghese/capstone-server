@@ -3,7 +3,7 @@ import attributes from "@test/model/attributes";
 import dependencies from "@test/model/dependencies";
 import types from "@test/model/types";
 import BaseWorld from "@test/support/base_world";
-import { deepClone } from "@test/util/obj";
+import { deepClone } from "@util/obj";
 import { pascalToCamel, snakeToCamel } from "@test/util/string";
 import ModelActions from "./actions";
 
