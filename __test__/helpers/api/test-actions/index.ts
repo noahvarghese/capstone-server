@@ -8,6 +8,7 @@ import * as auth from "./auth";
 import * as password from "./password";
 import * as roles from "./roles";
 import * as departments from "./departments";
+import * as nav from "./nav";
 
 export type ActionFnMap = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,6 +55,7 @@ const actions: ActionFnMap = {
     ...password,
     ...roles,
     ...departments,
+    ...nav,
 };
 
 export default actions;

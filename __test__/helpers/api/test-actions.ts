@@ -292,7 +292,18 @@ async function readManyRoles(this: BaseWorld): Promise<void> {
     });
 }
 
+async function getNav(this: BaseWorld): Promise<void> {
+    await apiRequest.call(this, "getNav", {
+        cookie: {
+            saveCookie: true,
+            withCookie: true,
+        },
+        method: "get",
+        errorOnFail: true,
+    });
+}
 const actions: ActionFnMap = {
+    getNav,
     getBusinesses,
     registerBusiness,
     login,
