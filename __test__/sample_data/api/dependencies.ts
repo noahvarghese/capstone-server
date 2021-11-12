@@ -1,6 +1,7 @@
 import modelDependencies from "../model/dependencies";
 
 export type ApiRoute =
+    | "getNav"
     | "getBusinesses"
     | "registerBusiness"
     | "login"
@@ -22,6 +23,7 @@ export type ApiRoute =
 const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
     registerBusiness: [],
     getBusinesses: ["registerBusiness"],
+    getNav: ["registerBusiness"],
     login: ["registerBusiness"],
     inviteUser: ["registerBusiness"],
     acceptInvite: ["registerBusiness", "inviteUser"],
@@ -40,6 +42,7 @@ const dependencies: { [i in ApiRoute]: ApiRoute[] } = {
 };
 
 export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
+    getNav: "settings/nav",
     registerBusiness: "auth/register",
     getBusinesses: "businesses",
     login: "auth/login",
@@ -62,6 +65,7 @@ export const urls: { [i in ApiRoute]: string | ((token: string) => string) } = {
 export default dependencies;
 
 export const teardown_dependencies: { [i in ApiRoute]: string[] } = {
+    getNav: modelDependencies["userRole"],
     registerBusiness: modelDependencies["userRole"],
     getBusinesses: modelDependencies["userRole"],
     login: modelDependencies["userRole"],
