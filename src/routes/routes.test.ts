@@ -1,4 +1,4 @@
-import AppServer from "@test/helpers/server";
+import AppServer from "@test/server/helpers";
 import BaseWorld from "@test/support/base_world";
 import { getRedirectInfo } from "@test/util/request";
 import { client, server } from "@util/permalink";

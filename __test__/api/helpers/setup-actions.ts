@@ -5,8 +5,8 @@ import Permission, { PermissionAttributes } from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import { apiRequest } from "@test/helpers/api/test-actions";
-import attributes from "@test/sample_data/api/attributes";
+import { apiRequest } from "@test/api/actions";
+import attributes from "@test/api/attributes";
 import BaseWorld from "@test/support/base_world";
 
 export async function createRegularUser(

@@ -1,12 +1,12 @@
 import { uid } from "rand-token";
-import ModelActions from "@test/helpers/model/actions";
-import ModelTestPass from "@test/helpers/model/test/pass";
+import ModelActions from "@test/model/helpers/actions";
+import ModelTestPass from "@test/model/helpers/test/pass";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import MembershipRequest, {
     MembershipRequestAttributes,
 } from "./membership_request";
-import Model from "@test/helpers/model";
+import Model from "@test/model/helpers";
 
 let baseWorld: BaseWorld;
 

@@ -1,15 +1,15 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/test-actions";
+import actions from "@test/api/actions";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
-import attributes from "@test/sample_data/api/attributes";
+import attributes from "@test/api/attributes";
 import { InviteUserProps } from "./invite";
 import Membership from "@models/membership";
-import Request from "@test/helpers/api/request";
+import Request from "@test/api/helpers/request";
 import Event from "@models/event";
-import { loginUser } from "@test/helpers/api/setup-actions";
+import { loginUser } from "@test/api/helpers/setup-actions";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(5000000);

@@ -1,6 +1,6 @@
-import ModelTestFail from "@test/helpers/model/test/fail";
-import ModelTestPass from "@test/helpers/model/test/pass";
-import Model from "@test/helpers/model";
+import ModelTestFail from "@test/model/helpers/test/fail";
+import ModelTestPass from "@test/model/helpers/test/pass";
+import Model from "@test/model/helpers";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Membership, { MembershipAttributes } from "./membership";

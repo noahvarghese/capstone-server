@@ -1,9 +1,9 @@
 import Business from "@models/business";
 import Membership from "@models/membership";
 import helpers from "@test/helpers";
-import Request from "@test/helpers/api/request";
-import { getAdminUserId, getBusiness } from "@test/helpers/api/setup-actions";
-import actions from "@test/helpers/api/test-actions";
+import Request from "@test/api/helpers/request";
+import { getAdminUserId, getBusiness } from "@test/api/helpers/setup-actions";
+import actions from "@test/api/actions";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 

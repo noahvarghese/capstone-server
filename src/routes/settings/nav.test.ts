@@ -1,7 +1,7 @@
 import helpers from "@test/helpers";
-import Request from "@test/helpers/api/request";
-import { loginUser } from "@test/helpers/api/setup-actions";
-import actions from "@test/helpers/api/test-actions";
+import Request from "@test/api/helpers/request";
+import { loginUser } from "@test/api/helpers/setup-actions";
+import actions from "@test/api/actions";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import { AdminNavLinks, DefaultNavLinks, Nav } from "./nav";

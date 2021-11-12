@@ -1,10 +1,10 @@
-import { ModelKey } from "../model/attributes";
+import ModelTest from ".";
 
 /**
  * Each array is ordered by what needs to be implemented first to last
  * The final one to implement is the key used to index this object
  */
-const dependencies: { [i in ModelKey]: ModelKey[] } = {
+const dependencies: { [i in ModelTest]: ModelTest[] } = {
     business: [],
     user: ["business"],
     membership: ["business", "user"],
@@ -17,11 +17,9 @@ const dependencies: { [i in ModelKey]: ModelKey[] } = {
         "business",
         "user",
         "membership",
-        "membershipRequest",
         "department",
         "permission",
         "role",
-        "event",
     ],
     manual: [
         "business",

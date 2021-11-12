@@ -1,19 +1,18 @@
 import Business from "@models/business";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
-import dependencies, { ApiRoute } from "@test/sample_data/api/dependencies";
+import dependencies from "@test/api/dependencies/setup";
+import ApiTest from "..";
 import BaseWorld from "@test/support/base_world";
 import { Connection, DeepPartial } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import actions, { apiRequest } from "./test-actions";
+import actions, { apiRequest } from "../actions";
 import { getKey } from "./keytags";
 import Request from "./request";
-import attributes, {
-    businessAttributes,
-    ModelKey,
-} from "@test/sample_data/model/attributes";
-import types from "@test/sample_data/model/types";
-import apiTeardownDependencies from "@test/sample_data/api/teardown_dependencies";
+import attributes, { businessAttributes } from "@test/model/attributes";
+import ModelTest from "@test/model";
+import types from "@test/model/types";
+import apiTeardownDependencies from "@test/api/dependencies/teardown";
 import User from "@models/user/user";
 
 export default class Api {
@@ -28,14 +27,14 @@ export default class Api {
         ]);
 
         const tags = [setup];
-        const keys = getKey<Array<ApiRoute>, typeof dependencies>(
+        const keys = getKey<Array<ApiTest>, typeof dependencies>(
             tags,
             "@setup_",
             dependencies,
             false
         );
 
-        const completedDependencies: ApiRoute[] = [];
+        const completedDependencies: ApiTest[] = [];
 
         for (const key of keys) {
             const deps = dependencies[key];
@@ -124,15 +123,15 @@ export default class Api {
     public static async teardown(this: BaseWorld, key: string): Promise<void> {
         // const tags = this.getTags();
         const tags = [key];
-        const topLevelModelKey = getKey<
-            ModelKey,
+        const topLevelModelTest = getKey<
+            ModelTest,
             typeof apiTeardownDependencies
         >(tags, "@cleanup_", apiTeardownDependencies, true);
 
         // don't run teardown if no model key found
         // as perhaps there are tests that will not require cleanup
         // or require a different cleanup
-        if ((topLevelModelKey as string) === "") {
+        if ((topLevelModelTest as string) === "") {
             return;
         }
 
@@ -170,8 +169,8 @@ export default class Api {
                 ).map((member) => member.user_id)
             );
             // add top level dependency to delete
-            const deps = apiTeardownDependencies[topLevelModelKey];
-            deps.push(topLevelModelKey);
+            const deps = apiTeardownDependencies[topLevelModelTest];
+            deps.push(topLevelModelTest);
 
             // starting at the most dependent table
             // unset locks

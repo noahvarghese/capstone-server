@@ -1,7 +1,7 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/helpers/api/test-actions";
+import actions from "@test/api/actions";
 import {
     assignUserToRole,
     createDepartment,
@@ -10,8 +10,8 @@ import {
     getBusiness,
     getDepartmentInBusiness,
     loginUser,
-} from "@test/helpers/api/setup-actions";
-import Request from "@test/helpers/api/request";
+} from "@test/api/helpers/setup-actions";
+import Request from "@test/api/helpers/request";
 import Department from "@models/department";
 
 let baseWorld: BaseWorld;

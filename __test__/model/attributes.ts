@@ -317,29 +317,6 @@ export const eventAttributes = (): EventAttributes =>
         EmptyEventAttributes
     );
 
-export type ModelKey =
-    | "business"
-    | "membership"
-    | "membershipRequest"
-    | "user"
-    | "permission"
-    | "department"
-    | "role"
-    | "userRole"
-    | "manual"
-    | "manualAssignment"
-    | "manualSection"
-    | "policy"
-    | "content"
-    | "policyRead"
-    | "quiz"
-    | "quizSection"
-    | "quizQuestion"
-    | "quizAnswer"
-    | "quizResult"
-    | "quizAttempt"
-    | "event";
-
 export default {
     business: businessAttributes,
     membership: membershipAttributes,

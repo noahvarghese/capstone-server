@@ -1,12 +1,12 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import Form from "@test/helpers/api/form";
-import { urls } from "@test/sample_data/api/dependencies";
+import Form from "@test/api/helpers/form";
+import urls from "@test/api/urls";
 import User from "@models/user/user";
 import Event from "@models/event";
-import { ForgotPasswordProps } from "@test/sample_data/api/attributes";
-import attributes from "@test/sample_data/api/attributes";
+import { ForgotPasswordProps } from "@test/api/attributes";
+import attributes from "@test/api/attributes";
 
 let baseWorld: BaseWorld;
 
