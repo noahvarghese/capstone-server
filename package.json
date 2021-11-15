@@ -6,6 +6,7 @@
         "node": "14.17.5"
     },
     "scripts": {
+        "enable:recursive": "shopt -s globstar",
         "database:reset": "python3 ./bin/database/reset/main.py --files ./database --path .env",
         "database:reset:test": "npm run database:reset -- -t",
         "database:reset:dev": "npm run database:reset -- -d",
@@ -17,15 +18,15 @@
         "prebuild": "npm run module-alias",
         "build": "rm -rf ./build && tsc -p ./tsconfig.build.json",
         "build:local": "npm run build && cp .env ./build",
-        "postbuild": "npm run postbuild:email-templates && npm run module-alias:cleanup && npm run postbuild:package",
+        "postbuild": "npm run postbuild:email-templates && npm run postbuild:package && npm run module-alias:cleanup",
         "postbuild:email-templates": "cp -R ./src/services/email/templates ./build/services/email",
-        "postbuild:package": "cp ./package*.json ./build && cd build && npm ci",
+        "postbuild:package": "cp ./package*.json ./build && cd build && npm install --only=production",
         "format": "prettier --write \"**/*.ts\" \"*.json\" \"*.js\"",
         "format:check": "prettier --check \"**/*.ts\"",
         "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --ignore build/ --ignore __test__/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
-        "test": "NODE_ENV=test jest --runInBand",
-        "test:debug": "NODE_ENV=test node --inspect-brk ./node_modules/.bin/jest --runInBand",
+        "test": "npm run enable:recursive && NODE_ENV=test jest --runInBand",
+        "test:debug": "npm run enable:recursive && NODE_ENV=test node --inspect-brk ./node_modules/.bin/jest --runInBand",
         "test:recent": "npm run test -- -o",
         "test:watch": "npm run test -- --watch",
         "version:bump": "npm version patch -m 'version bump [skip pipeline]'"
