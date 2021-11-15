@@ -6,7 +6,7 @@
         "node": "14.17.5"
     },
     "scripts": {
-        "enable:recursive": "shopt -s globstar",
+        "enable:recursive": "$(command -v shopt &>/dev/null) && shopt -s globstar ;",
         "database:reset": "python3 ./bin/database/reset/main.py --files ./database --path .env",
         "database:reset:test": "npm run database:reset -- -t",
         "database:reset:dev": "npm run database:reset -- -d",
