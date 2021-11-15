@@ -1,8 +1,6 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-var-requires */
-const dotenv = require("dotenv");
+import Logs from "@util/logs/logs";
 
-dotenv.config();
+Logs.Event("Jest setup loaded");
 
 const { TIMEOUT_MULTIPLIER } = process.env;
 

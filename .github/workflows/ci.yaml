@@ -59,6 +59,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: set npm shell
+        run: npm config set script-shell /bin/bash
+        shell: bash
       - id: ci
         uses: ./.github/actions/ci
       - name: build
