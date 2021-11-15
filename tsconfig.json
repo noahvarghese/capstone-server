@@ -15,6 +15,7 @@
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "outDir": "./build",
+        "resolveJsonModule": true,
         "paths": {
             "@config/*": ["src/config/*"],
             "@middleware/*": ["src/middleware/*"],

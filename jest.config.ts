@@ -1,25 +1,19 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-undef */
-const { pathsToModuleNameMapper } = require("ts-jest/utils");
+import Logs from "@util/logs/logs";
+import { pathsToModuleNameMapper } from "ts-jest/utils";
+import { compilerOptions } from "./tsconfig.json";
 
-const { compilerOptions } = require("./tsconfig");
+Logs.Event("Jest config loaded");
 
-module.exports = {
+export default {
     bail: true,
     collectCoverage: true,
-    collectCoverageFrom: ["**/*.ts"],
     coverageDirectory: "./__test__/coverage",
+    collectCoverageFrom: ["src/**/*.ts"],
     coveragePathIgnorePatterns: [
         "node_modules",
-        "database",
-        "bin",
-        "build",
-        "test.ts",
-        "__test__",
-        "src/util",
-        "src/services",
-        "src/config",
         "src/index.ts",
+        "src/util/logs",
+        "src/services",
     ],
     coverageReporters: ["json-summary", "text", "lcov", "clover"],
     detectOpenHandles: true,
@@ -30,7 +24,8 @@ module.exports = {
     moduleDirectories: ["node_modules", "./"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
-    setupFilesAfterEnv: ["./jest.setup.js"],
+    setupFiles: ["dotenv/config"],
+    setupFilesAfterEnv: ["./jest.setup.ts"],
     reporters: [
         "default",
         [

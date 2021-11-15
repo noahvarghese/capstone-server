@@ -34,5 +34,5 @@
         "require": ["tsconfig-paths/register"]
     },
     "include": ["./**/*.ts"],
-    "exclude": ["./**/*.test.ts", "__test__/*"]
+    "exclude": ["./**/*.test.ts", "__test__/*", "./jest.*.ts"]
 }
