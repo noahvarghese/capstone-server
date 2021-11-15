@@ -11,7 +11,6 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "typeRoots": ["@types", "./node_modules/@types"],
-        "resolveJsonModule": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitThis": true,
@@ -35,5 +34,5 @@
         "require": ["tsconfig-paths/register"]
     },
     "include": ["./**/*.ts"],
-    "exclude": ["./**/*.test.ts", "__test__/*"]
+    "exclude": ["./**/*.test.ts", "__test__/*", "./jest.*.ts"]
 }
