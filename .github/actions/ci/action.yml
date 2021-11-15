@@ -12,9 +12,6 @@ runs:
       uses: "./.github/actions/changed"
     - id: cache-node-modules
       uses: ./.github/actions/cache-node-modules
-    - name: check shell
-      run: echo $SHELL
-      shell: bash
     - name: test
       run: |
         npm run test -- --changedSince "${{ steps.changed.outputs.changed }}"
