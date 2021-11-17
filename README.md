@@ -12,6 +12,10 @@
 
 # OnBoard - Backend
 
+## Development
+
+After cloning the repository it is important to run `npm run init` in order to setup the hooks directory
+
 ## About
 
 This is my capstone project for college.
