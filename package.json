@@ -6,9 +6,9 @@
         "node": "14.17.5"
     },
     "scripts": {
-        "init": "npm run init:npm && npm run init:hooks && npm init:packages",
+        "init": "npm run init:npm-shell && npm run init:hooks && npm init:packages",
         "init:hooks": "git config core.hooksPath .githooks",
-        "init:npm": "npm config set script-shell /bin/bash",
+        "init:npm-shell": "npm config set script-shell /bin/bash",
         "init:packages": "npm i",
         "enable:recursive": "$(command -v shopt &>/dev/null) && shopt -s globstar ;",
         "database:reset": "python3 ./bin/database/reset/main.py --files ./database --path .env",

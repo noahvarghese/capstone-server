@@ -7,6 +7,6 @@
 #
 # To enable this hook, rename this file to "pre-commit".
 
-npm run init:npm
+npm run init:npm-shell
 npm ci
 npm run test:recent
