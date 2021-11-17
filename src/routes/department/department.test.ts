@@ -14,6 +14,7 @@ import {
 import Request from "@test/api/helpers/request";
 import Department from "@models/department";
 
+jest.setTimeout(500000);
 let baseWorld: BaseWorld;
 
 beforeAll(async () => {
