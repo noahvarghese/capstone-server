@@ -122,25 +122,59 @@ router.post("/", async (req: Request, res: Response) => {
 
     const businessId = req.session.current_business_id;
 
-    const membershipRequest = new MembershipRequest({
-        user_id: invitedUser.id,
-        business_id: businessId,
-        updated_by_user_id: req.session.user_id,
-    });
+    let membershipRequest: MembershipRequest;
 
     try {
-        await Model.create<MembershipRequest>(
-            connection,
+        membershipRequest = await connection.manager.findOneOrFail(
             MembershipRequest,
+            {
+                where: { business_id: businessId, user_id: invitedUser.id },
+            }
+        );
+
+        // update token and expiry
+        membershipRequest.generateToken();
+        const updateResult = await connection.manager.update(
+            MembershipRequest,
+            {
+                user_id: membershipRequest.user_id,
+                business_id: membershipRequest.business_id,
+            },
             membershipRequest
         );
+
+        if (!updateResult.affected || updateResult.affected < 1) {
+            res.status(500).json({
+                message: "Unable to update membership request",
+            });
+            return;
+        } else if (updateResult.affected > 1) {
+            res.status(500).json({
+                message: "Updated multiple membership requests",
+            });
+            return;
+        }
     } catch (_e) {
-        const e = _e as Error;
-        Logs.Error(e.message);
-        res.status(500).json({
-            message: "Unable to create membership request",
+        membershipRequest = new MembershipRequest({
+            user_id: invitedUser.id,
+            business_id: businessId,
+            updated_by_user_id: req.session.user_id,
         });
-        return;
+
+        try {
+            await Model.create<MembershipRequest>(
+                connection,
+                MembershipRequest,
+                membershipRequest
+            );
+        } catch (_e) {
+            const e = _e as Error;
+            Logs.Error(e.message);
+            res.status(500).json({
+                message: "Unable to create membership request",
+            });
+            return;
+        }
     }
 
     // send notification

@@ -7,6 +7,7 @@ export default class Request {
             include404: boolean;
             status?: RegExp;
             message?: string | RegExp;
+            checkCookie?: boolean;
         } = {
             include404: false,
         }
@@ -18,7 +19,7 @@ export default class Request {
         expect(status.toString()).toMatch(opts.status ?? /^[54]0/);
         if (opts.include404 === false)
             expect(status.toString()).not.toMatch(/^404$/);
-        expect(cookies).not.toBeTruthy();
+        if (opts.checkCookie) expect(cookies).not.toBeTruthy();
         if (opts.message) expect(message).toMatch(opts.message);
     }
 
