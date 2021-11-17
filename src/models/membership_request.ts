@@ -45,6 +45,10 @@ export default class MembershipRequest
             AttributeFactory(options, EmptyMembershipRequestAttributes)
         );
 
+        this.generateToken();
+    }
+
+    public generateToken(): void {
         this.token = uid(32);
 
         const tokenExpiry = new Date();

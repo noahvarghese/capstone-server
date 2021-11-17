@@ -6,6 +6,7 @@ import { apiRequest } from "@test/api/actions";
 import apiAttributes from "@test/api/attributes";
 import { userAttributes } from "@test/model/attributes";
 import Membership from "@models/membership";
+import attributes from "@test/api/attributes";
 
 /**
  * Finds the token for the membership request
@@ -46,10 +47,10 @@ export async function acceptInvite(this: BaseWorld): Promise<void> {
  */
 export async function inviteUser(
     this: BaseWorld,
-    userType: "new" | "existing"
+    userType: "create" | "default"
 ): Promise<void> {
     // create user before api call if required
-    if (userType === "existing") {
+    if (userType === "create") {
         const connection = this.getConnection();
         const adminUser = await connection.manager.findOneOrFail(User, {
             where: { email: userAttributes().email },
@@ -62,9 +63,7 @@ export async function inviteUser(
         await connection.manager.insert(
             User,
             new User({
-                email: process.env.SECONDARY_TEST_EMAIL,
-                first_name: "TEST",
-                last_name: "TEST",
+                ...attributes.inviteUser(),
                 password: userAttributes().password,
             })
         );
@@ -73,7 +72,7 @@ export async function inviteUser(
     await apiRequest.call(this, "inviteUser", {
         cookie: {
             withCookie: true,
-            saveCookie: true,
+            saveCookie: false,
         },
     });
 }
