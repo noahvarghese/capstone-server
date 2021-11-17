@@ -76,32 +76,68 @@ describe("Sending invites to join business", () => {
     beforeEach(async () => {
         await Helpers.Api.setup.call(baseWorld, "@setup_invite_user");
     });
+    describe("Given I am logged in as and admin", () => {
+        beforeEach(async () => {
+            // Given I am logged in as and admin
+            actions.login.call(baseWorld);
+        });
 
-    test("New user invited to business", async () => {
-        // Given I am logged in as an admin
-        await actions.login.call(baseWorld);
-        // When a new user is added to the business
-        await actions.inviteUser.call(baseWorld, "new");
-        // Then the user should get an invite
-        await receiveInvite.call(baseWorld);
-    });
+        test("New user invited to business", async () => {
+            // When a new user is added to the business
+            await actions.inviteUser.call(baseWorld, "default");
+            // Then the user should get an invite
+            await receiveInvite.call(baseWorld);
+        });
 
-    test("Existing user invited to business", async () => {
-        // Given I am logged in as an admin
-        await actions.login.call(baseWorld);
-        // When an existing user is added to the business
-        await actions.inviteUser.call(baseWorld, "existing");
-        // Then the user should get an invite
-        await receiveInvite.call(baseWorld);
+        test("Existing user invited to business", async () => {
+            // When an existing user is added to the business
+            await actions.inviteUser.call(baseWorld, "create");
+            // Then the user should get an invite
+            await receiveInvite.call(baseWorld);
+        });
+
+        test("User who has received an invite gets a new invite", async () => {
+            // Given a user has received an invite already
+            await actions.inviteUser.call(baseWorld, "default");
+            const connection = baseWorld.getConnection();
+
+            const user = await connection.manager.findOneOrFail(User, {
+                where: { email: attributes.inviteUser().email },
+            });
+
+            const { token: prevToken, token_expiry: prevTokenExpiry } =
+                await connection.manager.findOneOrFail(MembershipRequest, {
+                    where: { user_id: user.id },
+                });
+
+            // Retrieve the existing token and token expiry
+            // When the same user gets a new invite
+            await actions.inviteUser.call(baseWorld, "default");
+
+            const { token: newToken, token_expiry: newTokenExpiry } =
+                await connection.manager.findOneOrFail(MembershipRequest, {
+                    where: { user_id: user.id },
+                });
+
+            expect(newToken).not.toMatch(prevToken);
+            expect(newTokenExpiry.toString()).not.toMatch(
+                prevTokenExpiry.toString()
+            );
+        });
     });
 
     test("Non admin cannot invite user", async () => {
         // Given I am logged in as a user
         await loginUser.call(baseWorld);
         // When a new user is added to the business
-        await actions.inviteUser.call(baseWorld, "new");
+        await actions.inviteUser.call(baseWorld, "default");
         // Then I get an error
-        Request.failed.call(baseWorld);
+        Request.failed.call(baseWorld, {
+            checkCookie: false,
+            include404: false,
+            status: /^403$/,
+            message: /^insufficient permissions$/i,
+        });
     });
 });
 
@@ -122,8 +158,7 @@ test("User accepting invite joins business", async () => {
             where: { user_id: user.id },
         });
     } catch (e) {
-        console.log(e);
-        await actions.inviteUser.call(baseWorld, "new");
+        await actions.inviteUser.call(baseWorld, "default");
     }
 
     // When the user accepts the invite
