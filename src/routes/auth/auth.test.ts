@@ -27,9 +27,9 @@ afterEach(async () => {
 
 test("Authenticated user revisiting", async () => {
     // Given I have been authenticated
-    await actions.login.call(baseWorld);
+    await actions.login(baseWorld);
     // When I check if I am authenticated
-    await actions.authCheck.call(baseWorld);
+    await actions.authCheck(baseWorld);
     // Then a confirmation is returned
     Request.succeeded.call(baseWorld, { auth: false });
 });
@@ -38,7 +38,7 @@ test("Unauthenticated user revisiting", async () => {
     // Given I have not been authenticated
     baseWorld.setCustomProp<string>("cookies", "");
     // When I check if I am authenticated
-    await actions.authCheck.call(baseWorld);
+    await actions.authCheck(baseWorld);
     // Then an error is returned
     Request.failed.call(baseWorld);
 });

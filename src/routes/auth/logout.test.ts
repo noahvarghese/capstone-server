@@ -25,7 +25,7 @@ afterEach(async () => {
 });
 
 test("Logout authenticated user", async () => {
-    await actions.logout.call(baseWorld);
+    await actions.logout(baseWorld);
 
     const cookies = baseWorld.getCustomProp<string>("cookies");
     const expiredCookie = /Expires=Thu, 01 Jan 1970 00:00:00 GMT$/;

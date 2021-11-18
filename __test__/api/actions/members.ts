@@ -2,7 +2,7 @@ import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import { InviteUserProps } from "@routes/members/invite";
 import BaseWorld from "@test/support/base_world";
-import { apiRequest } from "@test/api/actions";
+import { apiRequest, ApiTestFn } from "@test/api/actions";
 import apiAttributes from "@test/api/attributes";
 import { userAttributes } from "@test/model/attributes";
 import Membership from "@models/membership";
@@ -11,13 +11,16 @@ import attributes from "@test/api/attributes";
 /**
  * Finds the token for the membership request
  * Then makes a rerquest to the url with the token
- * @param this
+ * @param baseWorld
  */
-export async function acceptInvite(this: BaseWorld): Promise<void> {
-    const connection = this.getConnection();
+export async function acceptInvite(
+    this: ApiTestFn,
+    baseWorld: BaseWorld
+): Promise<void> {
+    const connection = baseWorld.getConnection();
 
     // retrieve token
-    const { email } = apiAttributes.inviteUser() as InviteUserProps;
+    const { email } = apiAttributes.inviteMember() as InviteUserProps;
 
     const invitedUser = await connection.manager.findOneOrFail(User, {
         where: { email },
@@ -30,7 +33,7 @@ export async function acceptInvite(this: BaseWorld): Promise<void> {
         }
     );
 
-    await apiRequest.call(this, "acceptInvite", {
+    await apiRequest.call(baseWorld, this.name, {
         cookie: {
             withCookie: false,
             saveCookie: true,
@@ -39,19 +42,44 @@ export async function acceptInvite(this: BaseWorld): Promise<void> {
     });
 }
 
+export async function readOneMember(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    userId: number
+): Promise<void> {
+    await apiRequest.call(baseWorld, this.name, {
+        cookie: { withCookie: true, saveCookie: false },
+        param: userId.toString(),
+        errorOnFail: true,
+        method: "get",
+    });
+}
+
+export async function readManyMembers(
+    this: ApiTestFn,
+    baseWorld: BaseWorld
+): Promise<void> {
+    await apiRequest.call(baseWorld, this.name, {
+        cookie: { withCookie: true, saveCookie: false },
+        errorOnFail: true,
+        method: "get",
+    });
+}
+
 /**
  * Sending an invite can be done for a 'new' user or existing
  * if user exists in database before api call, only an invite gets created
- * @param this
+ * @param baseWorld
  * @param {"new" | "existing"} userType dictates whether to create a user via api
  */
-export async function inviteUser(
-    this: BaseWorld,
+export async function inviteMember(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
     userType: "create" | "default"
 ): Promise<void> {
     // create user before api call if required
     if (userType === "create") {
-        const connection = this.getConnection();
+        const connection = baseWorld.getConnection();
         const adminUser = await connection.manager.findOneOrFail(User, {
             where: { email: userAttributes().email },
         });
@@ -63,13 +91,13 @@ export async function inviteUser(
         await connection.manager.insert(
             User,
             new User({
-                ...attributes.inviteUser(),
+                ...attributes.inviteMember(),
                 password: userAttributes().password,
             })
         );
     }
 
-    await apiRequest.call(this, "inviteUser", {
+    await apiRequest.call(baseWorld, this.name, {
         cookie: {
             withCookie: true,
             saveCookie: false,

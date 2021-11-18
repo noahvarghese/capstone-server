@@ -9,11 +9,14 @@ import * as auth from "./auth";
 import * as password from "./password";
 import * as roles from "./roles";
 import * as departments from "./departments";
-import * as nav from "./nav";
+import * as settings from "./settings";
 
 export type ApiTestAction = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [i in ApiTest]: (this: BaseWorld, ...args: any[]) => Promise<void>;
+    [i in ApiTest]: (
+        baseWorld: BaseWorld,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...args: any[]
+    ) => Promise<void>;
 };
 
 export async function apiRequest(
@@ -56,7 +59,7 @@ const actions: ApiTestAction = {
     ...password,
     ...roles,
     ...departments,
-    ...nav,
+    ...settings,
 };
 
 export default actions;

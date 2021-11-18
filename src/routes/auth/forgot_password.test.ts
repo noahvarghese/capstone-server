@@ -5,8 +5,8 @@ import Form from "@test/api/helpers/form";
 import urls from "@test/api/urls";
 import User from "@models/user/user";
 import Event from "@models/event";
-import { ForgotPasswordProps } from "@test/api/attributes";
 import attributes from "@test/api/attributes";
+import { ForgotPasswordProps } from "@test/api/attributes/password";
 
 let baseWorld: BaseWorld;
 

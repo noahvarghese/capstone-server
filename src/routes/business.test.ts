@@ -44,9 +44,9 @@ test("User with multiple business receives list of business with one marked as d
         user_id: adminId,
     });
 
-    await actions.login.call(baseWorld);
+    await actions.login(baseWorld);
     // When the user requests the businesses they are apart of
-    await actions.getBusinesses.call(baseWorld);
+    await actions.getBusinesses(baseWorld);
 
     // Then the user gets a list back
     Request.succeeded.call(baseWorld, { auth: false });

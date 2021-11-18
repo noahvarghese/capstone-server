@@ -2,6 +2,7 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import actions from "@test/api/actions";
+import { getAdminUserId } from "@test/api/helpers/setup-actions";
 
 let baseWorld: BaseWorld;
 
@@ -26,7 +27,7 @@ afterEach(async () => {
 describe("Global admin authorized", () => {
     beforeEach(async () => {
         // Given I am logged in as an admin
-        await actions.login.call(baseWorld);
+        await actions.login(baseWorld);
     });
 
     test.todo(
@@ -47,6 +48,15 @@ describe("Global admin authorized", () => {
     //     Given I am logged in as an admin
     //     When I delete a membership
     //     Then a membership is deleted
+
+    test.todo("Global admin can read a list of members");
+    test.todo(
+        "Global admin can read individual members"
+        // , async () => {
+        // const user_id = await getAdminUserId.call(baseWorld);
+        // await actions.read;
+        // }
+    );
 });
 
 describe("User who lacks CRUD rights", () => {
@@ -61,4 +71,7 @@ describe("User who lacks CRUD rights", () => {
     //     Given I am logged in as a user
     //     When I delete a membership
     //     Then I get an error
+    test.todo("User who lacks CRUD rights cannot read a list of members");
+    test.todo("User who lacks CRUD rights can read their user");
+    test.todo("User who lacks CRUD rights cannot read individual users");
 });

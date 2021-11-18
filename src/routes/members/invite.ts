@@ -11,14 +11,14 @@ import { MoreThan } from "typeorm";
 import Membership from "@models/membership";
 import Permission from "@models/permission";
 
-export interface InviteUserProps {
+export interface InviteMemberProps {
     first_name: string;
     last_name: string;
     email: string;
     phone: string;
 }
 
-export const emptyInviteUser = (): InviteUserProps => ({
+export const emptyInviteUser = (): InviteMemberProps => ({
     first_name: "",
     last_name: "",
     email: "",
@@ -28,7 +28,8 @@ export const emptyInviteUser = (): InviteUserProps => ({
 const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
-    const { first_name, last_name, email, phone } = req.body as InviteUserProps;
+    const { first_name, last_name, email, phone } =
+        req.body as InviteMemberProps;
     const {
         session: { current_business_id, user_id },
     } = req;
@@ -48,7 +49,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // validate
-    const result = emptyChecker<InviteUserProps>(
+    const result = emptyChecker<InviteMemberProps>(
         Object.assign(emptyInviteUser(), req.body)
     );
 

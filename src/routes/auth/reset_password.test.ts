@@ -4,11 +4,12 @@ import Helpers from "@test/helpers";
 import Form from "@test/api/helpers/form";
 import urls from "@test/api/urls";
 import User from "@models/user/user";
-import attributes, {
+import attributes from "@test/api/attributes";
+import { apiRequest } from "@test/api/actions";
+import {
     ForgotPasswordProps,
     ResetPasswordProps,
-} from "@test/api/attributes";
-import { apiRequest } from "@test/api/actions";
+} from "@test/api/attributes/password";
 
 let baseWorld: BaseWorld;
 

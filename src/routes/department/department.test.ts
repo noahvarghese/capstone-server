@@ -39,12 +39,12 @@ afterEach(async () => {
 describe("Global admin authorized", () => {
     beforeEach(async () => {
         // Given I am logged in as an admin
-        await actions.login.call(baseWorld);
+        await actions.login(baseWorld);
     });
 
     test("Global admin can create department", async () => {
         // When I create a department
-        await actions.createDepartment.call(baseWorld);
+        await actions.createDepartment(baseWorld);
         // Then a new department exists
         Request.succeeded.call(baseWorld, { auth: false });
     });
@@ -56,7 +56,7 @@ describe("Global admin authorized", () => {
         const id = await createDepartment.call(baseWorld, "test");
 
         //     When I delete a department
-        await actions.deleteDepartment.call(baseWorld, [id]);
+        await actions.deleteDepartment(baseWorld, [id]);
 
         //     Then a department is deleted
         Request.succeeded.call(baseWorld, { auth: false });
@@ -76,7 +76,7 @@ describe("Global admin authorized", () => {
         );
 
         // When a user tries to delete that department
-        await actions.deleteDepartment.call(baseWorld, [department_id]);
+        await actions.deleteDepartment(baseWorld, [department_id]);
 
         // It is not deleted
         Request.failed.call(baseWorld, {
@@ -93,7 +93,7 @@ describe("Global admin authorized", () => {
         const departmentId = await createDepartment.call(baseWorld, "test");
 
         // When a user tries to edit that department
-        await actions.editDepartment.call(baseWorld, newName, departmentId);
+        await actions.editDepartment(baseWorld, newName, departmentId);
 
         Request.succeeded.call(baseWorld, { auth: false });
 
@@ -113,14 +113,14 @@ describe("User who lacks CRUD rights", () => {
         // Given I am logged in as a user
         await loginUser.call(baseWorld);
         // When I create a department
-        await actions.createDepartment.call(baseWorld);
+        await actions.createDepartment(baseWorld);
         // Then I get an error
         Request.failed.call(baseWorld);
     });
 
     // Scenario: User who lacks CRUD department rights cannot delete departments
     test("User who lacks CRUD rights cannot delete department", async () => {
-        await actions.login.call(baseWorld);
+        await actions.login(baseWorld);
         const roleId = await createRole.call(baseWorld, "test", "Admin");
         const departmentId = await createDepartment.call(baseWorld, "test");
 
@@ -130,7 +130,7 @@ describe("User who lacks CRUD rights", () => {
         await assignUserToRole.call(baseWorld, user.id, roleId, admin, true);
 
         //     When I delete a department
-        await actions.deleteDepartment.call(baseWorld, [departmentId]);
+        await actions.deleteDepartment(baseWorld, [departmentId]);
 
         //     Then I get an error
         Request.failed.call(baseWorld, {
@@ -142,7 +142,7 @@ describe("User who lacks CRUD rights", () => {
 
     test("User who lacks CRUD rights cannot edit department", async () => {
         // Given there is a user setup without crud permissions
-        await actions.login.call(baseWorld);
+        await actions.login(baseWorld);
         const roleId = await createRole.call(baseWorld, "test", "Admin");
 
         // Given there is a department
@@ -155,7 +155,7 @@ describe("User who lacks CRUD rights", () => {
 
         // When a user tries to edit that department
         const newName = "Noah's test department";
-        await actions.editDepartment.call(baseWorld, newName, departmentId);
+        await actions.editDepartment(baseWorld, newName, departmentId);
 
         // Then the department is not updated
         Request.failed.call(baseWorld, {

@@ -1,5 +1,5 @@
 import User from "@models/user/user";
-import { InviteUserProps } from "@routes/members/invite";
+import { InviteMemberProps } from "@routes/members/invite";
 import { LoginProps } from "./login";
 import Helpers from "@test/helpers";
 import actions, { apiRequest } from "@test/api/actions";
@@ -72,9 +72,9 @@ describe("Login with user that has not accepted an invite", () => {
     beforeEach(async () => {
         jest.setTimeout(20000);
         // login as user with permissions to invite user
-        await actions.login.call(baseWorld);
+        await actions.login(baseWorld);
         // create new user and send invitation
-        await actions.inviteUser.call(baseWorld, "new");
+        await actions.inviteMember(baseWorld, "new");
 
         // hash plaintext password
         const { email, password } = attributes.login() as LoginProps;
@@ -98,7 +98,7 @@ describe("Login with user that has not accepted an invite", () => {
             cookie: { withCookie: false, saveCookie: true },
             errorOnFail: false,
             body: {
-                email: (attributes.inviteUser() as InviteUserProps).email,
+                email: (attributes.inviteMember() as InviteMemberProps).email,
                 password,
             },
         });

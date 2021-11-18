@@ -1,6 +1,7 @@
 import Department from "@models/department";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
+import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -15,14 +16,31 @@ router.use("/invite", inviteRoute);
 router.get("/:id", async (req: Request, res: Response) => {
     const {
         params: { id },
-        session: { current_business_id },
-        SqlConnection: connection,
+        session: { current_business_id, user_id },
+        SqlConnection,
     } = req;
+
+    //check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        [
+            "global_crud_role",
+            "global_assign_resources_to_role",
+            "global_assign_users_to_role",
+        ]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
 
     try {
         const returnVal: { [o: string]: unknown } = {};
 
-        const user = await connection.manager.findOneOrFail(User, {
+        const user = await SqlConnection.manager.findOneOrFail(User, {
             where: { id },
         });
 
@@ -33,8 +51,7 @@ router.get("/:id", async (req: Request, res: Response) => {
         returnVal.roles = [];
         returnVal.departments = [];
 
-        const roles = await connection
-            .createQueryBuilder()
+        const roles = await SqlConnection.createQueryBuilder()
             .select([
                 "user.first_name",
                 "user.last_name",
