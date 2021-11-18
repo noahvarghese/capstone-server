@@ -6,7 +6,11 @@ runs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - uses: actions/setup-python@v2
     - uses: actions/setup-node@v2
+    - name: install python dependencies
+      run: pip install -r ./bin/database/requirements.txt
+      shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"

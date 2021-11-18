@@ -8,11 +8,9 @@ import { Connection } from "typeorm";
     let app: { server: Server; connection: Connection };
 
     await multithread(async () => {
-        if (
-            process.argv.length > 2 &&
-            ["test", "dev"].includes(process.argv[2])
-        ) {
-            app = await setupServer(false, process.argv[2] as "test" | "dev");
+        if (process.argv.length > 2) {
+            process.env["DB_ENV"] = "_" + process.argv[2];
+            app = await setupServer(false);
         } else {
             app = await setupServer();
         }

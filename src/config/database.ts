@@ -46,25 +46,38 @@ const entities = [
     Event,
 ];
 
-export const connectionOptions = (
-    env?: "_dev" | "_test" | undefined
-): ConnectionOptions => ({
-    database: (process.env.DB ?? "") + (env ?? ""),
-    host: process.env.DB_URL ?? "",
-    username: process.env.DB_USER ?? "",
-    password: process.env.DB_PWD ?? "",
-    // enforce strict typing by only applying
-    // a small subset of the potential database types
-    type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
-    entities,
-    logging: true,
-    logger: new DBLogger(),
-});
+export const connectionOptions = (): ConnectionOptions => {
+    let database = process.env.DB ?? "";
 
-export default async (env?: "test" | "dev"): Promise<Connection> => {
+    if (typeof process.env.DB_ENV === "string") {
+        if (process.env.DB_ENV.startsWith("_")) {
+            database += process.env.DB_ENV;
+        } else {
+            database += `_${process.env.DB_ENV}`;
+        }
+    }
+
+    return {
+        database,
+        host: process.env.DB_URL ?? "",
+        username: process.env.DB_USER ?? "",
+        password: process.env.DB_PWD ?? "",
+        // enforce strict typing by only applying
+        // a small subset of the potential database types
+        type: (process.env.DB_TYPE as "mysql" | "postgres") ?? "",
+        entities,
+        logging: true,
+        logger: new DBLogger(),
+        extra: {
+            connectionLimit: 3,
+        },
+    };
+};
+
+export default async (): Promise<Connection> => {
+    const opts = connectionOptions();
+
     return await createConnection({
-        ...connectionOptions(
-            env ? (("_" + env) as "_test" | "_dev") : undefined
-        ),
+        ...opts,
     });
 };
