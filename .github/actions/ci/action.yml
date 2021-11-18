@@ -7,7 +7,7 @@ runs:
       with:
         fetch-depth: 0
     - name: Check cwd
-      run: pwd
+      run: pwd ; ls -la
       shell: bash
     - uses: actions/setup-python@v2
     - uses: actions/setup-node@v2
