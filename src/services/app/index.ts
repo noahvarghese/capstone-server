@@ -15,7 +15,7 @@ const port = process.env.PORT || 8081;
 
 // allows configuration of server for automated testing
 const setupServer = async (
-    disableLogs = false,
+    disableLogs = false
 ): Promise<{ server: Server; connection: Connection }> => {
     Logs.configureLogs(disableLogs);
     /* Connect to database */
