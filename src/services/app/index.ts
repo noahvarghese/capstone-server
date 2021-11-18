@@ -16,12 +16,11 @@ const port = process.env.PORT || 8081;
 // allows configuration of server for automated testing
 const setupServer = async (
     disableLogs = false,
-    env?: "test" | "dev"
 ): Promise<{ server: Server; connection: Connection }> => {
     Logs.configureLogs(disableLogs);
     /* Connect to database */
     /* No try catch cuz if it fails theres a bigger issue */
-    const connection = await createConnection(env);
+    const connection = await createConnection();
 
     const app = express();
 

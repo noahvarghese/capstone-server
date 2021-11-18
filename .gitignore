@@ -7,6 +7,7 @@ __test__/test-report.html
 .vscode
 output*
 *.txt
+*__pycache__/
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
