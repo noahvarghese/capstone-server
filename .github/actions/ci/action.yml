@@ -6,6 +6,9 @@ runs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - name: Check cwd
+      run: pwd
+      shell: bash
     - uses: actions/setup-python@v2
     - uses: actions/setup-node@v2
     - name: install python dependencies
