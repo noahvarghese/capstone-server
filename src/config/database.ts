@@ -76,7 +76,6 @@ export const connectionOptions = (): ConnectionOptions => {
 
 export default async (): Promise<Connection> => {
     const opts = connectionOptions();
-    console.log(opts.database);
 
     return await createConnection({
         ...opts,
