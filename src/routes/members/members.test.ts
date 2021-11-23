@@ -121,6 +121,28 @@ describe("Global admin authorized", () => {
         const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
         expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
     });
+
+    test("limit the amount of users returned per page", async () => {
+        // Create a second user to test pagination with
+        await loginUser.call(baseWorld);
+        // login as admin who can read evey user
+        await login.call(login, baseWorld);
+        // request first page
+        await readManyMembers.call(readManyMembers, baseWorld, {
+            query: { limit: 1 },
+        });
+        const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+        expect(res1.length).toBe(1);
+
+        // request second page
+        await readManyMembers.call(readManyMembers, baseWorld, {
+            query: { limit: 2 },
+        });
+
+        // make sure a different user was returned
+        const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+        expect(res2.length).toBe(2);
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
