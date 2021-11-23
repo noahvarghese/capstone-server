@@ -6,8 +6,29 @@ import { getAdminUserId, loginUser } from "@test/api/helpers/setup-actions";
 import { readOneMember } from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
+import { inviteMember } from "@test/api/attributes/member";
 
 let baseWorld: BaseWorld;
+
+interface ReadMembers {
+    user: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        birthday?: Date | string;
+        phone: string;
+        id: number;
+    };
+    roles: {
+        default: boolean;
+        id: number;
+        name: string;
+        department: {
+            id: number;
+            name: string;
+        };
+    }[];
+}
 
 beforeAll(async () => {
     await DBConnection.init();
@@ -56,25 +77,8 @@ describe("Global admin authorized", () => {
     test("Global admin can read individual members", async () => {
         const user_id = await getAdminUserId.call(baseWorld);
         await readOneMember.call(readOneMember, baseWorld, user_id);
-        const { user, roles } = baseWorld.getCustomProp<{
-            user: {
-                first_name: string;
-                last_name: string;
-                email: string;
-                birthday?: Date | string;
-                phone: string;
-                id: number;
-            };
-            roles: {
-                default: boolean;
-                id: number;
-                name: string;
-                department: {
-                    id: number;
-                    name: string;
-                };
-            }[];
-        }>("responseData");
+        const { user, roles } =
+            baseWorld.getCustomProp<ReadMembers>("responseData");
 
         Request.succeeded.call(baseWorld);
         expect(roles.length).toBe(1);
@@ -96,7 +100,7 @@ describe("Global admin authorized", () => {
 describe("User who lacks CRUD rights", () => {
     beforeEach(async () => {
         // Given I am logged in as a user
-        baseWorld.setCustomProp("id", (await loginUser.call(baseWorld)).id);
+        baseWorld.setCustomProp("user", await loginUser.call(baseWorld));
     });
     test.todo(
         "User who lacks CRUD membership rights cannot create memberships"
@@ -110,13 +114,31 @@ describe("User who lacks CRUD rights", () => {
     //     When I delete a membership
     //     Then I get an error
     test.todo("User who lacks CRUD rights cannot read a list of members");
-    test.todo("User who lacks CRUD rights can read their user");
+    test("User who lacks CRUD rights can read their user", async () => {
+        const user = baseWorld.getCustomProp<{
+            id: number;
+            email: string;
+            password: string;
+        }>("user");
+        await readOneMember.call(readOneMember, baseWorld, user.id);
+        Request.succeeded.call(baseWorld);
+        const response = baseWorld.getCustomProp<ReadMembers>("responseData");
+
+        Request.succeeded.call(baseWorld);
+        // This is because the loginUser does not assign a role by default
+        expect(response.roles.length).toBe(0);
+
+        expect(response.user.birthday).toBe(null);
+        expect(response.user.first_name).toBe(inviteMember().first_name);
+        expect(response.user.last_name).toBe(inviteMember().last_name);
+        expect(response.user.email).toBe(user.email);
+        expect(response.user.phone).toBe(inviteMember().phone);
+        expect(response.user.id).toBe(user.id);
+    });
     test("User who lacks CRUD rights cannot read individual users", async () => {
-        await readOneMember.call(
-            readOneMember,
-            baseWorld,
-            baseWorld.getCustomProp("id")
-        );
+        const adminId = await getAdminUserId.call(baseWorld);
+        await readOneMember.call(readOneMember, baseWorld, adminId);
+
         Request.failed.call(baseWorld, {
             include404: false,
             message: "Insufficient permissions",

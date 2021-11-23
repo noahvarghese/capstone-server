@@ -20,21 +20,23 @@ router.get("/:id", async (req: Request, res: Response) => {
         SqlConnection,
     } = req;
 
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_role",
-            "global_assign_resources_to_role",
-            "global_assign_users_to_role",
-        ]
-    );
+    if (Number(id) !== Number(user_id)) {
+        //check permissions
+        const hasPermission = await Permission.checkPermission(
+            Number(user_id),
+            Number(current_business_id),
+            SqlConnection,
+            [
+                "global_crud_role",
+                "global_assign_resources_to_role",
+                "global_assign_users_to_role",
+            ]
+        );
 
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
+        if (!hasPermission) {
+            res.status(403).json({ message: "Insufficient permissions" });
+            return;
+        }
     }
 
     try {

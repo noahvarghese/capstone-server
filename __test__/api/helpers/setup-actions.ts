@@ -15,12 +15,15 @@ export async function createRegularUser(
 ): Promise<{ id: number; password: string; email: string }> {
     const email = process.env.MAIL_USER ?? "";
     const { password } = attributes.login();
-    const { first_name, last_name } = inviteMemberAttributes();
+    const { first_name, last_name, phone } = inviteMemberAttributes();
 
     const connection = this.getConnection();
-    const user = await new User({ email, first_name, last_name }).hashPassword(
-        password
-    );
+    const user = await new User({
+        email,
+        first_name,
+        last_name,
+        phone,
+    }).hashPassword(password);
 
     const res = await connection.manager.insert(User, user);
     const user_id = res.identifiers[0].id;
