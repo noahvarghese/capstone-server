@@ -6,7 +6,7 @@ import ApiTest from "..";
 import BaseWorld from "@test/support/base_world";
 import { Connection, DeepPartial } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import actions, { apiRequest } from "../actions";
+import { apiRequest } from "../actions";
 import { getKey } from "./keytags";
 import Request from "./request";
 import attributes, { businessAttributes } from "@test/model/attributes";
@@ -16,13 +16,15 @@ import apiTeardownDependencies from "@test/api/dependencies/teardown";
 import User from "@models/user/user";
 
 export default class Api {
-    public static Actions = actions;
     public static Request = Request;
 
-    public static async setup(this: BaseWorld, setup: string): Promise<void> {
-        // const tags = this.getTags();
+    public static async setup(
+        baseWorld: BaseWorld,
+        setup: string
+    ): Promise<void> {
+        // const tags = baseWorld.getTags();
         // set earlier
-        this.setCustomProp<string[]>("businessNames", [
+        baseWorld.setCustomProp<string[]>("businessNames", [
             businessAttributes().name,
         ]);
 
@@ -45,7 +47,7 @@ export default class Api {
                 else completedDependencies.push(dependency);
 
                 try {
-                    await apiRequest.call(this, dependency, {
+                    await apiRequest(baseWorld, dependency, {
                         cookie: {
                             withCookie:
                                 dependency !== "forgotPassword" &&
@@ -120,8 +122,11 @@ export default class Api {
         }
     };
 
-    public static async teardown(this: BaseWorld, key: string): Promise<void> {
-        // const tags = this.getTags();
+    public static async teardown(
+        baseWorld: BaseWorld,
+        key: string
+    ): Promise<void> {
+        // const tags = baseWorld.getTags();
         const tags = [key];
         const topLevelModelTest = getKey<
             ModelTest,
@@ -135,8 +140,9 @@ export default class Api {
             return;
         }
 
-        const connection = this.getConnection();
-        const businessNames = this.getCustomProp<string[]>("businessNames");
+        const connection = baseWorld.getConnection();
+        const businessNames =
+            baseWorld.getCustomProp<string[]>("businessNames");
 
         for (const name of businessNames) {
             // get business id to delete

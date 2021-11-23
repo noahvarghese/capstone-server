@@ -20,7 +20,7 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_register_business");
+    await Helpers.Api.setup(baseWorld, "@setup_register_business");
 });
 afterEach(async () => {
     baseWorld.resetProps();
@@ -28,13 +28,13 @@ afterEach(async () => {
 
 describe("Business created", () => {
     afterEach(async () => {
-        await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+        await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     });
 
     test("Valid inputs", async () => {
-        Form.load.call(baseWorld, "registerBusiness");
+        Form.load(baseWorld, "registerBusiness");
 
-        await Form.submit.call(
+        await Form.submit(
             baseWorld,
             urls.registerBusiness as string,
             true,
@@ -46,7 +46,7 @@ describe("Business created", () => {
 });
 
 test("Invalid email", async () => {
-    await apiRequest.call(baseWorld, "registerBusiness", {
+    await apiRequest(baseWorld, "registerBusiness", {
         cookie: { withCookie: false, saveCookie: true },
         errorOnFail: false,
         body: {
@@ -63,7 +63,7 @@ test("Invalid email", async () => {
 });
 
 test("Empty field", async () => {
-    await apiRequest.call(baseWorld, "registerBusiness", {
+    await apiRequest(baseWorld, "registerBusiness", {
         cookie: { withCookie: false, saveCookie: true },
         errorOnFail: false,
         body: {

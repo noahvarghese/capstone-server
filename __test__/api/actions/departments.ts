@@ -1,32 +1,37 @@
 import BaseWorld from "@test/support/base_world";
-import { apiRequest } from "@test/api/actions";
+import { apiRequest, ApiTestFn } from "@test/api/actions";
 
-export async function createDepartment(this: BaseWorld): Promise<void> {
-    await apiRequest.call(this, "createDepartment", {
+export const createDepartment = async function createDepartment(
+    this: ApiTestFn,
+    baseWorld: BaseWorld
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
     });
-}
+} as ApiTestFn;
 
-export async function deleteDepartment(
-    this: BaseWorld,
+export const deleteDepartment = async function deleteDepartment(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
     ids: number[]
 ): Promise<void> {
-    await apiRequest.call(this, "deleteDepartment", {
+    await apiRequest(baseWorld, this.name, {
         cookie: { saveCookie: true, withCookie: true },
         query: { ids },
         method: "delete",
     });
-}
+} as ApiTestFn;
 
-export async function editDepartment(
-    this: BaseWorld,
+export const editDepartment = async function editDepartment(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
     name: string,
     id: number
 ): Promise<void> {
-    await apiRequest.call(this, "editDepartment", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
@@ -35,4 +40,4 @@ export async function editDepartment(
         body: { name },
         method: "put",
     });
-}
+} as ApiTestFn;

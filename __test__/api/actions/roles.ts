@@ -2,20 +2,27 @@ import Business from "@models/business";
 import Department from "@models/department";
 import { PermissionAttributes } from "@models/permission";
 import BaseWorld from "@test/support/base_world";
-import { apiRequest } from "@test/api/actions";
+import { apiRequest, ApiTestFn } from "@test/api/actions";
 
-export async function createRole(this: BaseWorld): Promise<void> {
-    const business = await this.getConnection().manager.findOneOrFail(
-        Business,
-        { where: { name: this.getCustomProp<string[]>("businessNames")[0] } }
-    );
+export const createRole = async function createRole(
+    this: ApiTestFn,
+    baseWorld: BaseWorld
+): Promise<void> {
+    const business = await baseWorld
+        .getConnection()
+        .manager.findOneOrFail(Business, {
+            where: {
+                name: baseWorld.getCustomProp<string[]>("businessNames")[0],
+            },
+        });
 
-    const department = await this.getConnection().manager.findOneOrFail(
-        Department,
-        { where: { business_id: business.id, name: "Admin" } }
-    );
+    const department = await baseWorld
+        .getConnection()
+        .manager.findOneOrFail(Department, {
+            where: { business_id: business.id, name: "Admin" },
+        });
 
-    await apiRequest.call(this, "createRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
@@ -25,56 +32,65 @@ export async function createRole(this: BaseWorld): Promise<void> {
             department: department.id,
         },
     });
-}
+} as ApiTestFn;
 
-export async function deleteRole(
-    this: BaseWorld,
+export const deleteRole = async function deleteRole(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
     ids: number[]
 ): Promise<void> {
-    await apiRequest.call(this, "deleteRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: { saveCookie: true, withCookie: true },
         query: { ids },
         method: "delete",
     });
-}
+} as ApiTestFn;
 
-export async function editRole(
-    this: BaseWorld,
+export const editRole = async function editRole(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
     name: string,
     permissions: PermissionAttributes,
     id: number,
     errorOnFail = false
 ): Promise<void> {
-    await apiRequest.call(this, "editRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
-        errorOnFail,
+        errorOnFail: errorOnFail as boolean,
         query: { id },
         body: { name, permissions },
         method: "put",
     });
-}
+} as ApiTestFn;
 
-export async function readOneRole(this: BaseWorld, id: number): Promise<void> {
-    await apiRequest.call(this, "readOneRole", {
+export const readOneRole = async function readOneRole(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    id: number
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
         cookie: { saveCookie: true, withCookie: true },
         param: id.toString(),
         method: "get",
     });
-}
+} as ApiTestFn;
 
 /**
  * This will need parameters to sort and filter in the query
- * @param this
+ * @param baseWorld
  */
-export async function readManyRoles(this: BaseWorld): Promise<void> {
-    await apiRequest.call(this, "readManyRoles", {
+export const readManyRoles = async function readManyRoles(
+    this: ApiTestFn,
+    baseWorld: BaseWorld
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
         method: "get",
     });
-}
+} as ApiTestFn;

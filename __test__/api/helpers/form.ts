@@ -25,18 +25,18 @@ const getQueryString = <T extends Record<string, unknown>>(data?: T) => {
 
 export default class Form {
     public static load<T>(
-        this: BaseWorld,
+        baseWorld: BaseWorld,
         key: keyof typeof apiAttributes
     ): void {
         const attributes = apiAttributes[key]();
-        this.setCustomProp<T>("body", attributes as T);
+        baseWorld.setCustomProp<T>("body", attributes as T);
     }
 
     public static async submit<
         T extends Record<string, unknown>,
         X extends Record<string, unknown>
     >(
-        this: BaseWorld,
+        baseWorld: BaseWorld,
         url: string,
         saveCookie: boolean,
         withCookie: boolean,
@@ -50,8 +50,8 @@ export default class Form {
         let message = "";
         let data = {};
 
-        const cookies = this.getCustomProp<string>("cookies");
-        const body = this.getCustomProp<T>("body");
+        const cookies = baseWorld.getCustomProp<string>("cookies");
+        const body = baseWorld.getCustomProp<T>("body");
 
         try {
             let res;
@@ -129,10 +129,11 @@ export default class Form {
             }
         }
 
-        if (saveCookie) this.setCustomProp<string | null>("cookies", cookie);
+        if (saveCookie)
+            baseWorld.setCustomProp<string | null>("cookies", cookie);
 
-        this.setCustomProp("responseData", data);
-        this.setCustomProp<number>("status", status as number);
-        this.setCustomProp<string>("message", message);
+        baseWorld.setCustomProp("responseData", data);
+        baseWorld.setCustomProp<number>("status", status as number);
+        baseWorld.setCustomProp<string>("message", message);
     }
 }

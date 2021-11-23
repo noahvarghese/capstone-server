@@ -66,6 +66,16 @@ const LogDataTypes = {
     }),
 };
 
+function outputStack(layer: number): string {
+    const { stack } = new Error();
+    const frame = stack?.split("\n")[layer];
+    // const line = frame?.split(":").reverse()[1];
+    // const func = frame?.split(" ")[5];
+    // console.log(frame);
+    // return `${func}:${line}`;
+    return frame?.substring(4) ?? "";
+}
+
 export default class Logs {
     static logLevel: LogLevels = Number(process.env.LOG_LEVEL) ?? Infinity;
 
@@ -88,8 +98,8 @@ export default class Logs {
                     Logs.getLogData(logLevel);
                 consoleFunction(prefix, ...args);
             } catch (e) {
-                if (e instanceof Error) console.error(e.message);
-                else console.error(JSON.stringify(e));
+                const { message } = e as Error;
+                console.error(message);
             }
         }
     };
@@ -111,7 +121,7 @@ export default class Logs {
     }
 
     static Debug(...args: unknown[]): void {
-        Logs.add(LogLevels.DEBUG, ...args);
+        Logs.add(LogLevels.DEBUG, ...args, outputStack(3));
     }
 
     static Log(...args: unknown[]): void {

@@ -5,8 +5,8 @@ import Form from "@test/api/helpers/form";
 import urls from "@test/api/urls";
 import User from "@models/user/user";
 import Event from "@models/event";
-import { ForgotPasswordProps } from "@test/api/attributes";
 import attributes from "@test/api/attributes";
+import { ForgotPasswordProps } from "@test/api/attributes/password";
 
 let baseWorld: BaseWorld;
 
@@ -21,24 +21,19 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_forgot_password");
+    await Helpers.Api.setup(baseWorld, "@setup_forgot_password");
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
 
 test("Forgot Password Token Created", async () => {
     // Given I am registered
-    Form.load.call(baseWorld, "forgotPassword");
+    Form.load(baseWorld, "forgotPassword");
     // When I request to reset the password
-    await Form.submit.call(
-        baseWorld,
-        urls.forgotPassword as string,
-        true,
-        false
-    );
+    await Form.submit(baseWorld, urls.forgotPassword as string, true, false);
     const connection = baseWorld.getConnection();
     // Then a token should be created    const connection = baseWorld.getConnection();
     let user = (

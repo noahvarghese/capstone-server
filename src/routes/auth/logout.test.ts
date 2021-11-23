@@ -1,7 +1,7 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/api/actions";
+import { logout } from "@test/api/actions/auth";
 
 let baseWorld: BaseWorld;
 
@@ -16,16 +16,16 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_logout");
+    await Helpers.Api.setup(baseWorld, "@setup_logout");
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
 
 test("Logout authenticated user", async () => {
-    await actions.logout.call(baseWorld);
+    await logout.call(logout, baseWorld);
 
     const cookies = baseWorld.getCustomProp<string>("cookies");
     const expiredCookie = /Expires=Thu, 01 Jan 1970 00:00:00 GMT$/;

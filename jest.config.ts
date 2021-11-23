@@ -4,12 +4,14 @@ import { compilerOptions } from "./tsconfig.json";
 
 let database = process.env.DB ?? "";
 
-if (typeof process.env.DB_ENV === "string") {
-    if (process.env.DB_ENV.startsWith("_")) {
-        database += process.env.DB_ENV;
-    } else {
-        database += `_${process.env.DB_ENV}`;
-    }
+if (typeof process.env.DB_ENV !== "string") {
+    process.env.DB_ENV = "_test";
+}
+
+if (process.env.DB_ENV.startsWith("_")) {
+    database += process.env.DB_ENV;
+} else {
+    database += `_${process.env.DB_ENV}`;
 }
 
 Logs.Event(`Starting tests using database: ${database}`);

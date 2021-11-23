@@ -7,6 +7,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import { apiRequest } from "@test/api/actions";
 import attributes from "@test/api/attributes";
+import { inviteMember as inviteMemberAttributes } from "@test/api/attributes/member";
 import BaseWorld from "@test/support/base_world";
 
 export async function createRegularUser(
@@ -14,12 +15,15 @@ export async function createRegularUser(
 ): Promise<{ id: number; password: string; email: string }> {
     const email = process.env.MAIL_USER ?? "";
     const { password } = attributes.login();
-    const { first_name, last_name } = attributes.inviteUser();
+    const { first_name, last_name, phone } = inviteMemberAttributes();
 
     const connection = this.getConnection();
-    const user = await new User({ email, first_name, last_name }).hashPassword(
-        password
-    );
+    const user = await new User({
+        email,
+        first_name,
+        last_name,
+        phone,
+    }).hashPassword(password);
 
     const res = await connection.manager.insert(User, user);
     const user_id = res.identifiers[0].id;
@@ -44,7 +48,7 @@ export async function loginUser(
 ): Promise<{ id: number; email: string; password: string }> {
     const res = await createRegularUser.call(this);
     const { email, password } = res;
-    await apiRequest.call(this, "login", {
+    await apiRequest(this, "login", {
         cookie: {
             withCookie: false,
             saveCookie: true,
@@ -96,7 +100,7 @@ export async function getUserFromRole(
     const { user_id } = await connection.manager.findOneOrFail(UserRole, {
         where: { role_id },
     });
-    return user_id;
+    return user_id as number;
 }
 
 export async function getAdminUserId(this: BaseWorld): Promise<number> {

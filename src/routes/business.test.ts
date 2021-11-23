@@ -3,9 +3,10 @@ import Membership from "@models/membership";
 import helpers from "@test/helpers";
 import Request from "@test/api/helpers/request";
 import { getAdminUserId, getBusiness } from "@test/api/helpers/setup-actions";
-import actions from "@test/api/actions";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
+import { login } from "@test/api/actions/auth";
+import { getBusinesses } from "@test/api/actions/business";
 
 let baseWorld: BaseWorld;
 
@@ -21,11 +22,11 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await helpers.Api.setup.call(baseWorld, "@setup_invite_user");
+    await helpers.Api.setup(baseWorld, "@setup_invite_member");
 });
 
 afterEach(async () => {
-    await helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await helpers.Api.teardown(baseWorld, "@cleanup_user_role");
 });
 
 test("User with multiple business receives list of business with one marked as default", async () => {
@@ -44,9 +45,9 @@ test("User with multiple business receives list of business with one marked as d
         user_id: adminId,
     });
 
-    await actions.login.call(baseWorld);
+    await login.call(login, baseWorld);
     // When the user requests the businesses they are apart of
-    await actions.getBusinesses.call(baseWorld);
+    await getBusinesses.call(getBusinesses, baseWorld);
 
     // Then the user gets a list back
     Request.succeeded.call(baseWorld, { auth: false });

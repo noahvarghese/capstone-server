@@ -19,15 +19,16 @@ NODE_ENV=test
 
 ./node_modules/.bin/jest --runInBand "$@" ;
 
-false
+TEST_RESULT=$?
 
-if [ $? -gt 0 ]; then
+if [ $TEST_RESULT -gt 0 ]; then
     # If the database is empty then drop the database
     npm run database:is_empty -- $DB_ENV --tables business,user
 
     if [ $? -eq 0 ]; then
         npm run database:drop $DB_ENV
     fi
+    exit 1
 else
-    npm run database:drop
+    npm run database:drop $DB_ENV
 fi
