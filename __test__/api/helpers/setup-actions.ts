@@ -7,6 +7,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import { apiRequest } from "@test/api/actions";
 import attributes from "@test/api/attributes";
+import { inviteMember as inviteMemberAttributes } from "@test/api/attributes/member";
 import BaseWorld from "@test/support/base_world";
 
 export async function createRegularUser(
@@ -14,7 +15,7 @@ export async function createRegularUser(
 ): Promise<{ id: number; password: string; email: string }> {
     const email = process.env.MAIL_USER ?? "";
     const { password } = attributes.login();
-    const { first_name, last_name } = attributes.inviteMember();
+    const { first_name, last_name } = inviteMemberAttributes();
 
     const connection = this.getConnection();
     const user = await new User({ email, first_name, last_name }).hashPassword(
@@ -96,7 +97,7 @@ export async function getUserFromRole(
     const { user_id } = await connection.manager.findOneOrFail(UserRole, {
         where: { role_id },
     });
-    return user_id;
+    return user_id as number;
 }
 
 export async function getAdminUserId(this: BaseWorld): Promise<number> {

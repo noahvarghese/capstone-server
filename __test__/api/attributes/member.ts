@@ -6,8 +6,8 @@ import MemberKeys from "../keys/member";
 const user = modelAttributes.user();
 
 export type AcceptInviteProps = Record<string, never>;
-export type ReadOneMemberProps = Record<string, never>;
-export type ReadManyMemberProps = Record<string, never>;
+export type ReadOneMemberProps = undefined;
+export type ReadManyMemberProps = undefined;
 export type MemberTypes = Record<
     MemberKeys,
     () =>
@@ -17,16 +17,16 @@ export type MemberTypes = Record<
         | ReadOneMemberProps
 >;
 
-const inviteMember = (): InviteMemberProps =>
+export const inviteMember = (): InviteMemberProps =>
     deepClone({
         first_name: user.first_name,
         last_name: user.last_name,
         email: process.env.SECONDARY_TEST_EMAIL ?? "",
         phone: "4168245567",
     });
-const acceptInvite = (): AcceptInviteProps => deepClone({});
-const readOneMember = (): ReadOneMemberProps => deepClone({});
-const readManyMembers = (): ReadManyMemberProps => deepClone({});
+export const acceptInvite = (): AcceptInviteProps => deepClone({});
+export const readOneMember = (): ReadOneMemberProps => undefined;
+export const readManyMembers = (): ReadManyMemberProps => undefined;
 
 const attributes: MemberTypes = {
     inviteMember,

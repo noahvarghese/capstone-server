@@ -3,7 +3,7 @@ import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
-import memberAttributes from "@test/api/attributes/member";
+import { inviteMember as inviteMemberAttributes } from "@test/api/attributes/member";
 import Membership from "@models/membership";
 import Request from "@test/api/helpers/request";
 import Event from "@models/event";
@@ -35,7 +35,7 @@ afterEach(async () => {
 describe("Sending invites to join business", () => {
     async function receiveInvite(this: BaseWorld) {
         const connection = this.getConnection();
-        const { email } = memberAttributes.inviteMember();
+        const { email } = inviteMemberAttributes();
 
         const user = await connection.manager.find(User, {
             where: {
@@ -102,7 +102,7 @@ describe("Sending invites to join business", () => {
             const connection = baseWorld.getConnection();
 
             const user = await connection.manager.findOneOrFail(User, {
-                where: { email: memberAttributes.inviteMember().email },
+                where: { email: inviteMemberAttributes().email },
             });
 
             const { token: prevToken, token_expiry: prevTokenExpiry } =
@@ -150,7 +150,7 @@ test("User accepting invite joins business", async () => {
     const connection = baseWorld.getConnection();
 
     const user = await connection.manager.findOneOrFail(User, {
-        where: { email: memberAttributes.inviteMember().email },
+        where: { email: inviteMemberAttributes().email },
     });
 
     try {

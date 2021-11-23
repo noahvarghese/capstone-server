@@ -2,7 +2,7 @@ import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import BaseWorld from "@test/support/base_world";
 import { apiRequest, ApiTestFn } from "@test/api/actions";
-import memberAttributes from "@test/api/attributes/member";
+import { inviteMember as inviteMemberAttributes } from "@test/api/attributes/member";
 import { userAttributes } from "@test/model/attributes";
 import Membership from "@models/membership";
 
@@ -18,7 +18,7 @@ export const acceptInvite = async function acceptInvite(
     const connection = baseWorld.getConnection();
 
     // retrieve token
-    const { email } = memberAttributes.inviteMember();
+    const { email } = inviteMemberAttributes();
 
     const invitedUser = await connection.manager.findOneOrFail(User, {
         where: { email },
@@ -89,7 +89,7 @@ export const inviteMember = async function inviteMember(
         await connection.manager.insert(
             User,
             new User({
-                ...memberAttributes.inviteMember(),
+                ...inviteMemberAttributes(),
                 password: userAttributes().password,
             })
         );

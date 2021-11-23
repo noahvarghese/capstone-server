@@ -38,39 +38,55 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        const returnVal: { [o: string]: unknown } = {};
-
-        const user = await SqlConnection.manager.findOneOrFail(User, {
-            where: { id },
-        });
-
-        returnVal.name = (user.first_name + " " + user.last_name).trim();
-        returnVal.birthday = user.birthday;
-        returnVal.email = user.email;
-        returnVal.phone = user.phone;
-        returnVal.roles = [];
-        returnVal.departments = [];
+        const { email, first_name, last_name, phone, birthday } =
+            await SqlConnection.manager.findOneOrFail(User, {
+                where: { id },
+            });
 
         const roles = await SqlConnection.createQueryBuilder()
             .select([
-                "user.first_name",
-                "user.last_name",
-                "user.email",
-                "user.phone",
-                "user.birthday",
+                "r.id",
+                "ur.primary_role_for_user",
+                "r.name",
+                "d.id",
+                "d.name",
             ])
-            .addSelect(["role"])
-            .from(Role, "role")
-            .where("dept.business_id = :business_id", {
+            .from(UserRole, "ur")
+            .where("ur.user_id = :user_id", { user_id: id })
+            .andWhere("d.business_id = :business_id", {
                 business_id: current_business_id,
             })
-            .andWhere("user_role.user_id = :user_id", { user_id: id })
-            .innerJoin(Department, "dept", "dept.id = role.department_id")
-            .leftJoin(UserRole, "user_role", "user_role.role_id = role.id")
-            .leftJoin(User, "user", "user.id = user_role.user_id")
+            .innerJoin(Role, "r", "r.id = ur.role_id")
+            .innerJoin(Department, "d", "d.id = r.department_id")
             .getRawMany();
 
-        res.status(200).json({ id: req.params.id, roles });
+        res.status(200).json({
+            user: {
+                first_name,
+                last_name,
+                email,
+                phone,
+                birthday,
+                id: Number(id),
+            },
+            roles: roles.map(
+                (r: {
+                    ur_primary_role_for_user: number;
+                    r_id: number;
+                    r_name: string;
+                    d_id: number;
+                    d_name: string;
+                }) => ({
+                    default: r.ur_primary_role_for_user === 1,
+                    id: r.r_id,
+                    name: r.r_name,
+                    department: {
+                        id: r.d_id,
+                        name: r.d_name,
+                    },
+                })
+            ),
+        });
     } catch (_e) {
         const e = _e as Error;
         Logs.Error(e.message);
@@ -111,7 +127,7 @@ router.get("/", async (req: Request, res: Response) => {
         .getMany();
 
     res.status(200).json({
-        data: result.map((u) => ({
+        data: result.map((u: User) => ({
             ...u,
             name: (u.first_name + " " + u.last_name).trim(),
             first_name: undefined,

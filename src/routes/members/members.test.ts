@@ -2,7 +2,9 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import { login } from "@test/api/actions/auth";
-// import { getAdminUserId } from "@test/api/helpers/setup-actions";
+import { getAdminUserId } from "@test/api/helpers/setup-actions";
+import { readOneMember } from "@test/api/actions/members";
+import { registerBusiness } from "@test/api/attributes/business";
 
 let baseWorld: BaseWorld;
 
@@ -50,13 +52,43 @@ describe("Global admin authorized", () => {
     //     Then a membership is deleted
 
     test.todo("Global admin can read a list of members");
-    test.todo(
-        "Global admin can read individual members"
-        // , async () => {
-        // const user_id = await getAdminUserId.call(baseWorld);
-        // await actions.read;
-        // }
-    );
+    test("Global admin can read individual members", async () => {
+        const user_id = await getAdminUserId.call(baseWorld);
+        await readOneMember.call(readOneMember, baseWorld, user_id);
+        const { user, roles } = baseWorld.getCustomProp<{
+            user: {
+                first_name: string;
+                last_name: string;
+                email: string;
+                birthday?: Date | string;
+                phone: string;
+                id: number;
+            };
+            roles: {
+                default: boolean;
+                id: number;
+                name: string;
+                department: {
+                    id: number;
+                    name: string;
+                };
+            }[];
+        }>("responseData");
+
+        expect(roles.length).toBe(1);
+
+        const role = roles[0];
+
+        expect(user.birthday).toBe(null);
+        expect(user.first_name).toBe(registerBusiness().first_name);
+        expect(user.last_name).toBe(registerBusiness().last_name);
+        expect(user.email).toBe(registerBusiness().email);
+        expect(user.phone).toBe(registerBusiness().phone);
+        expect(user.id).toBe(user_id);
+        expect(role.default).toBe(true);
+        expect(role.name).toBe("General");
+        expect(role.department.name).toBe("Admin");
+    });
 });
 
 describe("User who lacks CRUD rights", () => {

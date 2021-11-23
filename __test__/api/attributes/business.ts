@@ -12,8 +12,8 @@ export type BusinessTypes = Record<
     () => GetBusinessesProps | RegisterBusinessProps
 >;
 
-const getBusinesses = (): GetBusinessesProps => undefined;
-const registerBusiness = (): RegisterBusinessProps =>
+export const getBusinesses = (): GetBusinessesProps => undefined;
+export const registerBusiness = (): RegisterBusinessProps =>
     deepClone({
         name: business.name,
         address: business.address,
