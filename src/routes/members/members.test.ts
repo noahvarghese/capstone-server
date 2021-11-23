@@ -1,8 +1,8 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/api/actions";
-import { getAdminUserId } from "@test/api/helpers/setup-actions";
+import { login } from "@test/api/actions/auth";
+// import { getAdminUserId } from "@test/api/helpers/setup-actions";
 
 let baseWorld: BaseWorld;
 
@@ -17,17 +17,17 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_invite_user");
+    await Helpers.Api.setup(baseWorld, "@setup_invite_member");
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
 });
 
 describe("Global admin authorized", () => {
     beforeEach(async () => {
         // Given I am logged in as an admin
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
     });
 
     test.todo(

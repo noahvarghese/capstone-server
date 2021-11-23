@@ -3,14 +3,11 @@ import ApiTest from "@test/api";
 import BaseWorld from "@test/support/base_world";
 import Form from "../helpers/form";
 
-import * as business from "./business";
-import * as members from "./members";
-import * as auth from "./auth";
-import * as password from "./password";
-import * as roles from "./roles";
-import * as departments from "./departments";
-import * as settings from "./settings";
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface ApiTestFn {
+    (this: ApiTestFn, baseWorld: BaseWorld, ...args: unknown[]): Promise<void>;
+    name: ApiTest;
+}
 export type ApiTestAction = {
     [i in ApiTest]: (
         baseWorld: BaseWorld,
@@ -20,7 +17,7 @@ export type ApiTestAction = {
 };
 
 export async function apiRequest(
-    this: BaseWorld,
+    baseWorld: BaseWorld,
     key: ApiTest,
     opts?: {
         cookie?: {
@@ -35,11 +32,11 @@ export async function apiRequest(
         method?: "get" | "post" | "put" | "delete";
     }
 ): Promise<void> {
-    if (!opts?.body) Form.load.call(this, key);
-    else this.setCustomProp<typeof opts.body>("body", opts.body);
+    if (!opts?.body) Form.load(baseWorld, key);
+    else baseWorld.setCustomProp<typeof opts.body>("body", opts.body);
 
-    await Form.submit.call(
-        this,
+    await Form.submit(
+        baseWorld,
         typeof urls[key] === "function"
             ? (urls[key] as (token: string) => string)(opts?.token ?? "")
             : (urls[key] as string),
@@ -51,15 +48,3 @@ export async function apiRequest(
         opts?.param
     );
 }
-
-const actions: ApiTestAction = {
-    ...business,
-    ...members,
-    ...auth,
-    ...password,
-    ...roles,
-    ...departments,
-    ...settings,
-};
-
-export default actions;

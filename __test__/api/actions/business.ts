@@ -1,25 +1,25 @@
 import BaseWorld from "@test/support/base_world";
 import { apiRequest, ApiTestFn } from "@test/api/actions";
 
-export async function getBusinesses(
+export const getBusinesses = async function getBusinesses(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "getBusinesses", {
+    await apiRequest(baseWorld, this.name, {
         cookie: { withCookie: true, saveCookie: true },
         errorOnFail: true,
         method: "get",
     });
-}
+} as ApiTestFn;
 
-export async function registerBusiness(
+export const registerBusiness = async function registerBusiness(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "registerBusiness", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: false,
         },
     });
-}
+} as ApiTestFn;

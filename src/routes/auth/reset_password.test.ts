@@ -27,17 +27,17 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_reset_password");
+    await Helpers.Api.setup(baseWorld, "@setup_reset_password");
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
 
 describe("Reset password", () => {
     async function resetPassword(this: BaseWorld) {
-        Form.load.call(this, "resetPassword");
+        Form.load(this, "resetPassword");
 
         const invalid_token = this.getCustomProp<string | undefined>(
             "invalid_token"
@@ -65,11 +65,11 @@ describe("Reset password", () => {
             });
         }
 
-        await Form.submit.call(this, url, true, false);
+        await Form.submit(this, url, true, false);
     }
 
     beforeEach(async () => {
-        await apiRequest.call(baseWorld, "forgotPassword", {
+        await apiRequest(baseWorld, "forgotPassword", {
             cookie: { withCookie: false, saveCookie: false },
         });
     });

@@ -2,12 +2,14 @@ import User from "@models/user/user";
 import { InviteMemberProps } from "@routes/members/invite";
 import { LoginProps } from "./login";
 import Helpers from "@test/helpers";
-import actions, { apiRequest } from "@test/api/actions";
+import { apiRequest } from "@test/api/actions";
 import Request from "@test/api/helpers/request";
 import attributes from "@test/api/attributes";
 import { userAttributes } from "@test/model/attributes";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
+import { inviteMember } from "@test/api/actions/members";
+import { login } from "@test/api/actions/auth";
 
 let baseWorld: BaseWorld;
 const userAttr = userAttributes();
@@ -23,17 +25,17 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_login");
+    await Helpers.Api.setup(baseWorld, "@setup_login");
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
 
 describe("Login with user that has already accepted an invite to a business", () => {
     test("invalid email", async () => {
-        await apiRequest.call(baseWorld, "login", {
+        await apiRequest(baseWorld, "login", {
             cookie: { withCookie: false, saveCookie: true },
             body: {
                 email: "invalid",
@@ -45,7 +47,7 @@ describe("Login with user that has already accepted an invite to a business", ()
     });
 
     test("I have an invalid password", async () => {
-        await apiRequest.call(baseWorld, "login", {
+        await apiRequest(baseWorld, "login", {
             cookie: { withCookie: false, saveCookie: true },
             body: {
                 email: userAttr.email,
@@ -57,7 +59,7 @@ describe("Login with user that has already accepted an invite to a business", ()
     });
 
     test("Valid login", async () => {
-        apiRequest.call(baseWorld, "login", {
+        apiRequest(baseWorld, "login", {
             cookie: {
                 withCookie: false,
                 saveCookie: true,
@@ -72,9 +74,9 @@ describe("Login with user that has not accepted an invite", () => {
     beforeEach(async () => {
         jest.setTimeout(20000);
         // login as user with permissions to invite user
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
         // create new user and send invitation
-        await actions.inviteMember(baseWorld, "new");
+        await inviteMember.call(inviteMember, baseWorld, "new");
 
         // hash plaintext password
         const { email, password } = attributes.login() as LoginProps;
@@ -94,7 +96,7 @@ describe("Login with user that has not accepted an invite", () => {
     test("Valid credentials", async () => {
         const { password } = attributes.login() as LoginProps;
 
-        await apiRequest.call(baseWorld, "login", {
+        await apiRequest(baseWorld, "login", {
             cookie: { withCookie: false, saveCookie: true },
             errorOnFail: false,
             body: {

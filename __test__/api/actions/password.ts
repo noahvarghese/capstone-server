@@ -3,19 +3,19 @@ import { userAttributes } from "@test/model/attributes";
 import BaseWorld from "@test/support/base_world";
 import { apiRequest, ApiTestFn } from "@test/api/actions";
 
-export async function forgotPassword(
+export const forgotPassword = async function forgotPassword(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "forgotPassword", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: false,
             withCookie: false,
         },
     });
-}
+} as ApiTestFn;
 
-export async function resetPassword(
+export const resetPassword = async function resetPassword(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
@@ -26,8 +26,8 @@ export async function resetPassword(
         where: { email: userAttributes().email },
     });
 
-    await apiRequest.call(baseWorld, "resetPassword", {
+    await apiRequest(baseWorld, this.name, {
         cookie: { saveCookie: true, withCookie: false },
         token,
     });
-}
+} as ApiTestFn;

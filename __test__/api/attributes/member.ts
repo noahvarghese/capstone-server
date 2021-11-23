@@ -1,4 +1,4 @@
-import { InviteUserProps } from "@routes/members/invite";
+import { InviteMemberProps } from "@routes/members/invite";
 import { deepClone } from "@util/obj";
 import modelAttributes from "@test/model/attributes";
 import MemberKeys from "../keys/member";
@@ -12,12 +12,12 @@ export type MemberTypes = Record<
     MemberKeys,
     () =>
         | AcceptInviteProps
-        | InviteUserProps
+        | InviteMemberProps
         | ReadManyMemberProps
         | ReadOneMemberProps
 >;
 
-const inviteMember = (): InviteUserProps =>
+const inviteMember = (): InviteMemberProps =>
     deepClone({
         first_name: user.first_name,
         last_name: user.last_name,

@@ -1,10 +1,11 @@
 import helpers from "@test/helpers";
 import Request from "@test/api/helpers/request";
 import { loginUser } from "@test/api/helpers/setup-actions";
-import actions from "@test/api/actions";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import { AdminNavLinks, DefaultNavLinks, Nav } from "./nav";
+import { getNav } from "@test/api/actions/settings";
+import { login } from "@test/api/actions/auth";
 
 let baseWorld: BaseWorld;
 
@@ -20,18 +21,18 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await helpers.Api.setup.call(baseWorld, "@setup_invite_user");
+    await helpers.Api.setup(baseWorld, "@setup_invite_member");
 });
 
 afterEach(async () => {
-    await helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await helpers.Api.teardown(baseWorld, "@cleanup_user_role");
 });
 
 test("user with no permissions has less nav options", async () => {
     // Given I am logged in as a user
     await loginUser.call(baseWorld);
     // When I get the nav links
-    await actions.getNav.call(baseWorld);
+    await getNav.call(getNav, baseWorld);
     // then the request is succesful
     Request.succeeded.call(baseWorld, { auth: false });
     // and i get the correct data
@@ -41,9 +42,9 @@ test("user with no permissions has less nav options", async () => {
 });
 test("user with all permissions has all nav options", async () => {
     // Given I am logged in as an admin
-    await actions.login.call(baseWorld);
+    await login.call(login, baseWorld);
     // When I get the nav links
-    await actions.getNav.call(baseWorld);
+    await getNav.call(getNav, baseWorld);
     // then the request is succesful
     Request.succeeded.call(baseWorld, { auth: false });
     // and i get the correct data

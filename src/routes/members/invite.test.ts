@@ -1,14 +1,15 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/api/actions";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
-import attributes from "@test/api/attributes";
+import memberAttributes from "@test/api/attributes/member";
 import Membership from "@models/membership";
 import Request from "@test/api/helpers/request";
 import Event from "@models/event";
 import { loginUser } from "@test/api/helpers/setup-actions";
+import { login } from "@test/api/actions/auth";
+import { acceptInvite, inviteMember } from "@test/api/actions/members";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(5000000);
@@ -27,14 +28,14 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
 });
 
 describe("Sending invites to join business", () => {
     async function receiveInvite(this: BaseWorld) {
         const connection = this.getConnection();
-        const { email } = attributes.inviteMember();
+        const { email } = memberAttributes.inviteMember();
 
         const user = await connection.manager.find(User, {
             where: {
@@ -73,35 +74,35 @@ describe("Sending invites to join business", () => {
     }
 
     beforeEach(async () => {
-        await Helpers.Api.setup.call(baseWorld, "@setup_invite_user");
+        await Helpers.Api.setup(baseWorld, "@setup_invite_member");
     });
     describe("Given I am logged in as and admin", () => {
         beforeEach(async () => {
             // Given I am logged in as and admin
-            actions.login(baseWorld);
+            login.call(login, baseWorld);
         });
 
         test("New user invited to business", async () => {
             // When a new user is added to the business
-            await actions.inviteMember(baseWorld, "default");
+            await inviteMember.call(inviteMember, baseWorld, "default");
             // Then the user should get an invite
             await receiveInvite.call(baseWorld);
         });
 
         test("Existing user invited to business", async () => {
             // When an existing user is added to the business
-            await actions.inviteMember(baseWorld, "create");
+            await inviteMember.call(inviteMember, baseWorld, "create");
             // Then the user should get an invite
             await receiveInvite.call(baseWorld);
         });
 
         test("User who has received an invite gets a new invite", async () => {
             // Given a user has received an invite already
-            await actions.inviteMember(baseWorld, "default");
+            await inviteMember.call(inviteMember, baseWorld, "default");
             const connection = baseWorld.getConnection();
 
             const user = await connection.manager.findOneOrFail(User, {
-                where: { email: attributes.inviteMember().email },
+                where: { email: memberAttributes.inviteMember().email },
             });
 
             const { token: prevToken, token_expiry: prevTokenExpiry } =
@@ -111,7 +112,7 @@ describe("Sending invites to join business", () => {
 
             // Retrieve the existing token and token expiry
             // When the same user gets a new invite
-            await actions.inviteMember(baseWorld, "default");
+            await inviteMember.call(inviteMember, baseWorld, "default");
 
             const { token: newToken, token_expiry: newTokenExpiry } =
                 await connection.manager.findOneOrFail(MembershipRequest, {
@@ -129,7 +130,7 @@ describe("Sending invites to join business", () => {
         // Given I am logged in as a user
         await loginUser.call(baseWorld);
         // When a new user is added to the business
-        await actions.inviteMember(baseWorld, "default");
+        await inviteMember.call(inviteMember, baseWorld, "default");
         // Then I get an error
         Request.failed.call(baseWorld, {
             checkCookie: false,
@@ -143,13 +144,14 @@ describe("Sending invites to join business", () => {
 // Scenario: User accepting invite joins business
 test("User accepting invite joins business", async () => {
     // before
-    await Helpers.Api.setup.call(baseWorld, "@setup_accept_invite");
+    await Helpers.Api.setup(baseWorld, "@setup_invite_member");
 
     // Given the user has received an invite
+    await inviteMember.call(inviteMember, baseWorld);
     const connection = baseWorld.getConnection();
 
     const user = await connection.manager.findOneOrFail(User, {
-        where: { email: attributes.inviteMember().email },
+        where: { email: memberAttributes.inviteMember().email },
     });
 
     try {
@@ -157,11 +159,11 @@ test("User accepting invite joins business", async () => {
             where: { user_id: user.id },
         });
     } catch (e) {
-        await actions.inviteMember(baseWorld, "default");
+        await inviteMember.call(inviteMember, baseWorld, "default");
     }
 
     // When the user accepts the invite
-    await actions.acceptInvite(baseWorld);
+    await acceptInvite.call(acceptInvite, baseWorld);
 
     // Then the user is a member of the business
     const membership = await connection.manager.findOneOrFail(Membership, {

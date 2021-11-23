@@ -1,7 +1,6 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
-import actions from "@test/api/actions";
 import Request from "@test/api/helpers/request";
 import Role from "@models/role";
 import {
@@ -16,6 +15,14 @@ import {
 import Permission, { PermissionAttributes } from "@models/permission";
 import { RoleResponse } from ".";
 import Department from "@models/department";
+import { login } from "@test/api/actions/auth";
+import {
+    createRole as createRoleAction,
+    deleteRole,
+    editRole,
+    readManyRoles,
+    readOneRole,
+} from "@test/api/actions/roles";
 
 jest.setTimeout(5000000);
 
@@ -37,22 +44,23 @@ afterAll(async () => {
 
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Helpers.Api.setup.call(baseWorld, "@setup_invite_user");
+    await Helpers.Api.setup(baseWorld, "@setup_invite_member");
 });
 
 afterEach(async () => {
-    await Helpers.Api.teardown.call(baseWorld, "@cleanup_user_role");
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
 });
 
 describe("Global admin authorized", () => {
     beforeEach(async () => {
         // Given I am logged in as an admin
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
     });
 
     test("Global admin can create role", async () => {
         // When I create a role
-        await actions.createRole(baseWorld);
+
+        await createRoleAction.call(createRoleAction, baseWorld);
         // Then a new role exists
         Request.succeeded.call(baseWorld, { auth: false });
     });
@@ -64,7 +72,7 @@ describe("Global admin authorized", () => {
         const id = await createRole.call(baseWorld, "test", "Admin");
 
         //     When I delete a role
-        await actions.deleteRole(baseWorld, [id]);
+        await deleteRole.call(deleteRole, baseWorld, [id]);
 
         //     Then a role is deleted
         Request.succeeded.call(baseWorld, { auth: false });
@@ -88,7 +96,7 @@ describe("Global admin authorized", () => {
         );
 
         // When a user tries to delete that role
-        await actions.deleteRole(baseWorld, [role_id]);
+        await deleteRole.call(deleteRole, baseWorld, [role_id]);
 
         // It is not deleted
         Request.failed.call(baseWorld, {
@@ -130,7 +138,7 @@ describe("Global admin authorized", () => {
         test("User who has CRUD rights can read singular role", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
 
-            await actions.readOneRole(baseWorld, roleId);
+            await readOneRole.call(readOneRole, baseWorld, roleId);
             Request.succeeded.call(baseWorld, { auth: false });
             const retrievedRole =
                 baseWorld.getCustomProp<RoleResponse>("responseData");
@@ -170,7 +178,7 @@ describe("Global admin authorized", () => {
         });
 
         test("User who has CRUD rights can read multiple roles", async () => {
-            await actions.readManyRoles(baseWorld);
+            await readManyRoles.call(readManyRoles, baseWorld);
             Request.succeeded.call(baseWorld, { auth: false });
             const data = baseWorld.getCustomProp<{
                 data: {
@@ -195,7 +203,8 @@ describe("Global admin authorized", () => {
 
             // When a user tries to edit that role
             const newName = "Noah's test role";
-            await actions.editRole(
+            await editRole.call(
+                editRole,
                 baseWorld,
                 newName,
                 permission,
@@ -234,14 +243,14 @@ describe("User who lacks CRUD rights", () => {
         // Given I am logged in as a user
         await loginUser.call(baseWorld);
         // When I create a role
-        await actions.createRole(baseWorld);
+        await createRoleAction.call(createRoleAction, baseWorld);
         // Then I get an error
         Request.failed.call(baseWorld);
     });
 
     // Scenario: User who lacks CRUD role rights cannot delete roles
     test("User who lacks CRUD rights cannot delete role", async () => {
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
         const assignedRoleId = await createRole.call(
             baseWorld,
             "assigned",
@@ -262,7 +271,7 @@ describe("User who lacks CRUD rights", () => {
         // And there is a role without any members
         const roleId = await createRole.call(baseWorld, "test", "Admin");
         //     When I delete a role
-        await actions.deleteRole(baseWorld, [roleId]);
+        await deleteRole.call(deleteRole, baseWorld, [roleId]);
 
         //     Then I get an error
         Request.failed.call(baseWorld, {
@@ -274,7 +283,7 @@ describe("User who lacks CRUD rights", () => {
 
     test("User who lacks CRUD rights cannot edit role", async () => {
         // Given there is a user setup without crud permissions
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
         const assignedRoleId = await createRole.call(
             baseWorld,
             "assigned",
@@ -313,7 +322,7 @@ describe("User who lacks CRUD rights", () => {
 
         // When a user tries to edit that role
         const newName = "Noah's test role";
-        await actions.editRole(baseWorld, newName, permission, roleId);
+        await editRole.call(editRole, baseWorld, newName, permission, roleId);
 
         // Then the department is not updated
         Request.failed.call(baseWorld, {
@@ -343,7 +352,7 @@ describe("User who lacks CRUD rights", () => {
 
     test("User who has CRUD rights cannot read multiple roles", async () => {
         // Given there is a user setup without crud permissions
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
         const assignedRoleId = await createRole.call(
             baseWorld,
             "assigned",
@@ -362,7 +371,7 @@ describe("User who lacks CRUD rights", () => {
         );
 
         // When I try to read multiple roles
-        await actions.readManyRoles(baseWorld);
+        await readManyRoles.call(readManyRoles, baseWorld);
 
         // I cannot
         Request.failed.call(baseWorld, {
@@ -373,7 +382,7 @@ describe("User who lacks CRUD rights", () => {
     });
     test("User who has CRUD rights cannot read a singular role", async () => {
         // Given there is a user setup without crud permissions
-        await actions.login(baseWorld);
+        await login.call(login, baseWorld);
         const assignedRoleId = await createRole.call(
             baseWorld,
             "assigned",
@@ -392,7 +401,7 @@ describe("User who lacks CRUD rights", () => {
         );
 
         // When I try to read multiple roles
-        await actions.readOneRole(baseWorld, assignedRoleId);
+        await readOneRole.call(readOneRole, baseWorld, assignedRoleId);
 
         // I cannot
         Request.failed.call(baseWorld, {

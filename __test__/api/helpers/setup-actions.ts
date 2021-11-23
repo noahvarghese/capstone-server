@@ -14,7 +14,7 @@ export async function createRegularUser(
 ): Promise<{ id: number; password: string; email: string }> {
     const email = process.env.MAIL_USER ?? "";
     const { password } = attributes.login();
-    const { first_name, last_name } = attributes.inviteUser();
+    const { first_name, last_name } = attributes.inviteMember();
 
     const connection = this.getConnection();
     const user = await new User({ email, first_name, last_name }).hashPassword(
@@ -44,7 +44,7 @@ export async function loginUser(
 ): Promise<{ id: number; email: string; password: string }> {
     const res = await createRegularUser.call(this);
     const { email, password } = res;
-    await apiRequest.call(this, "login", {
+    await apiRequest(this, "login", {
         cookie: {
             withCookie: false,
             saveCookie: true,

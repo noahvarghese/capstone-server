@@ -1,38 +1,38 @@
 import BaseWorld from "@test/support/base_world";
 import { apiRequest, ApiTestFn } from "@test/api/actions";
 
-export async function login(
+export const login = async function login(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "login", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: false,
         },
     });
-}
+} as ApiTestFn;
 
-export async function logout(
+export const logout = async function logout(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "logout", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
     });
-}
+} as ApiTestFn;
 
-export async function authCheck(
+export const authCheck = async function authCheck(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "authCheck", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
     });
-}
+} as ApiTestFn;

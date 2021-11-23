@@ -4,7 +4,7 @@ import { PermissionAttributes } from "@models/permission";
 import BaseWorld from "@test/support/base_world";
 import { apiRequest, ApiTestFn } from "@test/api/actions";
 
-export async function createRole(
+export const createRole = async function createRole(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
@@ -22,7 +22,7 @@ export async function createRole(
             where: { business_id: business.id, name: "Admin" },
         });
 
-    await apiRequest.call(baseWorld, "createRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
@@ -32,21 +32,21 @@ export async function createRole(
             department: department.id,
         },
     });
-}
+} as ApiTestFn;
 
-export async function deleteRole(
+export const deleteRole = async function deleteRole(
     this: ApiTestFn,
     baseWorld: BaseWorld,
     ids: number[]
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "deleteRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: { saveCookie: true, withCookie: true },
         query: { ids },
         method: "delete",
     });
-}
+} as ApiTestFn;
 
-export async function editRole(
+export const editRole = async function editRole(
     this: ApiTestFn,
     baseWorld: BaseWorld,
     name: string,
@@ -54,43 +54,43 @@ export async function editRole(
     id: number,
     errorOnFail = false
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "editRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
-        errorOnFail,
+        errorOnFail: errorOnFail as boolean,
         query: { id },
         body: { name, permissions },
         method: "put",
     });
-}
+} as ApiTestFn;
 
-export async function readOneRole(
+export const readOneRole = async function readOneRole(
     this: ApiTestFn,
     baseWorld: BaseWorld,
     id: number
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "readOneRole", {
+    await apiRequest(baseWorld, this.name, {
         cookie: { saveCookie: true, withCookie: true },
         param: id.toString(),
         method: "get",
     });
-}
+} as ApiTestFn;
 
 /**
  * This will need parameters to sort and filter in the query
  * @param baseWorld
  */
-export async function readManyRoles(
+export const readManyRoles = async function readManyRoles(
     this: ApiTestFn,
     baseWorld: BaseWorld
 ): Promise<void> {
-    await apiRequest.call(baseWorld, "readManyRoles", {
+    await apiRequest(baseWorld, this.name, {
         cookie: {
             saveCookie: true,
             withCookie: true,
         },
         method: "get",
     });
-}
+} as ApiTestFn;
