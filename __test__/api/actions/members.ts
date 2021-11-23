@@ -55,12 +55,16 @@ export const readOneMember = async function readOneMember(
 
 export const readManyMembers = async function readManyMembers(
     this: ApiTestFn,
-    baseWorld: BaseWorld
+    baseWorld: BaseWorld,
+    opts?: {
+        query: { page: number; limit: number };
+    }
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: { withCookie: true, saveCookie: false },
         errorOnFail: false,
         method: "get",
+        query: opts?.query ?? {},
     });
 } as ApiTestFn;
 
