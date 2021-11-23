@@ -2,9 +2,10 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import { login } from "@test/api/actions/auth";
-import { getAdminUserId } from "@test/api/helpers/setup-actions";
+import { getAdminUserId, loginUser } from "@test/api/helpers/setup-actions";
 import { readOneMember } from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
+import Request from "@test/api/helpers/request";
 
 let baseWorld: BaseWorld;
 
@@ -75,6 +76,7 @@ describe("Global admin authorized", () => {
             }[];
         }>("responseData");
 
+        Request.succeeded.call(baseWorld);
         expect(roles.length).toBe(1);
 
         const role = roles[0];
@@ -92,6 +94,10 @@ describe("Global admin authorized", () => {
 });
 
 describe("User who lacks CRUD rights", () => {
+    beforeEach(async () => {
+        // Given I am logged in as a user
+        baseWorld.setCustomProp("id", (await loginUser.call(baseWorld)).id);
+    });
     test.todo(
         "User who lacks CRUD membership rights cannot create memberships"
     );
@@ -105,5 +111,16 @@ describe("User who lacks CRUD rights", () => {
     //     Then I get an error
     test.todo("User who lacks CRUD rights cannot read a list of members");
     test.todo("User who lacks CRUD rights can read their user");
-    test.todo("User who lacks CRUD rights cannot read individual users");
+    test("User who lacks CRUD rights cannot read individual users", async () => {
+        await readOneMember.call(
+            readOneMember,
+            baseWorld,
+            baseWorld.getCustomProp("id")
+        );
+        Request.failed.call(baseWorld, {
+            include404: false,
+            message: "Insufficient permissions",
+            status: /^403$/,
+        });
+    });
 });

@@ -48,7 +48,7 @@ export const readOneMember = async function readOneMember(
     await apiRequest(baseWorld, this.name, {
         cookie: { withCookie: true, saveCookie: false },
         param: userId.toString(),
-        errorOnFail: true,
+        errorOnFail: false,
         method: "get",
     });
 } as ApiTestFn;
