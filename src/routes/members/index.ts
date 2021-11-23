@@ -147,7 +147,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     // TODO: Add validation of what fields can be sort by
 
-    const users = await connection
+    const users: { u_id: number }[] = await connection
         .createQueryBuilder()
         .select("u.id")
         .from(User, "u")
