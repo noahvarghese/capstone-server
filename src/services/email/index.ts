@@ -1,12 +1,12 @@
+import { getConnection } from "typeorm";
+import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
-import { client } from "../../util/permalink";
-import { getConnection } from "typeorm";
 import Business from "@models/business";
 import MembershipRequest from "@models/membership_request";
-import Email from "email-templates";
-import Model from "../../util/model";
-import Logs from "../../util/logs/logs";
+import Logs from "@util/logs/logs";
+import Model from "@util/model";
+import { client } from "@util/permalink";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
 
@@ -15,7 +15,7 @@ const email = new Email({
         from: process.env.MAIL_USER ?? "noreply@onboard.com",
     },
     views: { root: TEMPLATE_DIR },
-    send: true,
+    send: process.env.NODE_ENV !== "test",
     // causes errors due to cherrio
     juice: false,
     transport: {

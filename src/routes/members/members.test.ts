@@ -99,6 +99,28 @@ describe("Global admin authorized", () => {
         expect(role.name).toBe("General");
         expect(role.department.name).toBe("Admin");
     });
+
+    test("Pagination works", async () => {
+        // Create a second user to test pagination with
+        await loginUser.call(baseWorld);
+        // login as admin who can read evey user
+        await login.call(login, baseWorld);
+        // request first page
+        await readManyMembers.call(readManyMembers, baseWorld, {
+            query: { page: 1, limit: 1 },
+        });
+
+        const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+
+        // request second page
+        await readManyMembers.call(readManyMembers, baseWorld, {
+            query: { page: 2, limit: 1 },
+        });
+
+        // make sure a different user was returned
+        const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+        expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
