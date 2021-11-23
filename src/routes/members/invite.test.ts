@@ -144,10 +144,9 @@ describe("Sending invites to join business", () => {
 // Scenario: User accepting invite joins business
 test("User accepting invite joins business", async () => {
     // before
-    await Helpers.Api.setup(baseWorld, "@setup_invite_member");
+    await Helpers.Api.setup(baseWorld, "@setup_accept_invite");
 
     // Given the user has received an invite
-    await inviteMember.call(inviteMember, baseWorld);
     const connection = baseWorld.getConnection();
 
     const user = await connection.manager.findOneOrFail(User, {
