@@ -59,7 +59,7 @@ export const readManyMembers = async function readManyMembers(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: { withCookie: true, saveCookie: false },
-        errorOnFail: true,
+        errorOnFail: false,
         method: "get",
     });
 } as ApiTestFn;

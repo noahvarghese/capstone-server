@@ -1,9 +1,18 @@
 #!/bin/sh
+
 printf "\n\n"
 echo "******************* PRE COMMIT HOOK STARTED ***********************"
 printf "\n\n"
+
 npm ci
 npm run test:recent
+
+TEST_RESULT=$?
+
 printf "\n\n"
 echo "******************* PRE COMMIT HOOK FINISHED ***********************"
 printf "\n\n"
+
+if [ $TEST_RESULT -gt 0 ]; then
+    exit 1
+fi

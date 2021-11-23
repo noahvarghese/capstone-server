@@ -7,28 +7,9 @@ import { readManyMembers, readOneMember } from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
 import { inviteMember } from "@test/api/attributes/member";
+import { ReadMembers } from ".";
 
 let baseWorld: BaseWorld;
-
-interface ReadMembers {
-    user: {
-        first_name: string;
-        last_name: string;
-        email: string;
-        birthday?: Date | string;
-        phone: string;
-        id: number;
-    };
-    roles: {
-        default: boolean;
-        id: number;
-        name: string;
-        department: {
-            id: number;
-            name: string;
-        };
-    }[];
-}
 
 beforeAll(async () => {
     await DBConnection.init();
