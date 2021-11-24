@@ -62,7 +62,10 @@ export const readManyMembers = async function readManyMembers(
             limit?: number;
             sortField?: string;
             sortOrder?: "ASC" | "DESC" | "" | undefined;
-            filter?: string;
+            filter?: {
+                field: string;
+                ids: number[];
+            };
             search?: string;
         };
     }

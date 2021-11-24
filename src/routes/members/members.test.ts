@@ -9,6 +9,10 @@ import Request from "@test/api/helpers/request";
 import { inviteMember } from "@test/api/attributes/member";
 import { ReadMembers } from ".";
 import { deepClone } from "@util/obj";
+import Logs from "@util/logs/logs";
+import Department from "@models/department";
+import Role from "@models/role";
+import User from "@models/user/user";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -102,50 +106,6 @@ describe("Global admin authorized", () => {
         expect(role.department.name).toBe("Admin");
     });
 
-    test("Pagination works", async () => {
-        // Create a second user to test pagination with
-        await loginUser.call(baseWorld);
-        // login as admin who can read evey user
-        await login.call(login, baseWorld);
-        // request first page
-        await readManyMembers.call(readManyMembers, baseWorld, {
-            query: { page: 1, limit: 1 },
-        });
-
-        const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
-
-        // request second page
-        await readManyMembers.call(readManyMembers, baseWorld, {
-            query: { page: 2, limit: 1 },
-        });
-
-        // make sure a different user was returned
-        const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
-        expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
-    });
-
-    test("limit the amount of users returned per page", async () => {
-        // Create a second user to test pagination with
-        await loginUser.call(baseWorld);
-        // login as admin who can read evey user
-        await login.call(login, baseWorld);
-        // request first page
-        await readManyMembers.call(readManyMembers, baseWorld, {
-            query: { limit: 1 },
-        });
-        const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
-        expect(res1.length).toBe(1);
-
-        // request second page
-        await readManyMembers.call(readManyMembers, baseWorld, {
-            query: { limit: 2 },
-        });
-
-        // make sure a different user was returned
-        const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
-        expect(res2.length).toBe(2);
-    });
-
     test("Invalid sort field", async () => {
         await readManyMembers.call(readManyMembers, baseWorld, {
             query: { sortField: "TEST123" },
@@ -157,111 +117,162 @@ describe("Global admin authorized", () => {
             include404: false,
         });
     });
-    describe("Sort utility", () => {
-        const cases = [
-            ["birthday", "ASC"],
-            ["birthday", "DESC"],
-            ["first_name", "ASC"],
-            ["first_name", "DESC"],
-            ["last_name", "ASC"],
-            ["last_name", "DESC"],
-            ["email", "ASC"],
-            ["email", "DESC"],
-            ["phone", "ASC"],
-            ["phone", "DESC"],
-        ];
 
+    describe("Create 2 users, but operate as admin", () => {
         beforeEach(async () => {
             // Create a second user to test pagination with
             await loginUser.call(baseWorld);
             // login as admin who can read evey user
             await login.call(login, baseWorld);
         });
-        test.each(cases)(
-            "given sort field %p and sort order %p, the results will match",
-            async (sortField, sortOrder) => {
-                await readManyMembers.call(readManyMembers, baseWorld, {
-                    query: { sortField, sortOrder },
-                });
+        test("Pagination works", async () => {
+            // request first page
+            await readManyMembers.call(readManyMembers, baseWorld, {
+                query: { page: 1, limit: 1 },
+            });
 
-                const res =
-                    baseWorld.getCustomProp<ReadMembers[]>("responseData");
-                expect(res.length).toBeGreaterThan(1);
-                const resCopy = deepClone(res);
-                const sortedRes = resCopy.sort((a, b): number => {
-                    const aVal = JSON.stringify(
-                        (a.user as unknown as { [o: string]: string })[
-                            sortField
-                        ]
-                    );
+            const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
 
-                    const bVal = JSON.stringify(
-                        (b.user as unknown as { [o: string]: string })[
-                            sortField
-                        ]
-                    );
+            // request second page
+            await readManyMembers.call(readManyMembers, baseWorld, {
+                query: { page: 2, limit: 1 },
+            });
 
-                    if (sortOrder === "ASC") {
-                        return aVal < bVal ? -1 : aVal === bVal ? 0 : 1;
-                    } else if (sortOrder === "DESC") {
-                        return aVal < bVal ? 1 : aVal === bVal ? 0 : -1;
-                    } else throw new Error("Invalid sort order");
-                });
-
-                expect(JSON.stringify(res)).toBe(JSON.stringify(sortedRes));
-            }
-        );
-    });
-
-    describe("Search utility", () => {
-        const cases = [
-            // Searches based on Department
-            [["roles", 0, "department", "name"], "adm"],
-            // Search based on first_name
-            [["user", "first_name"], "No"],
-            // last_name
-            [["user", "last_name"], "Va"],
-            // email
-            [["user", "email"], "gmai"],
-            // role
-            [["roles", 0, "name"], "gene"],
-            // birthday
-            [["user", "birthday"], "1996"],
-            // phone
-            [["user", "phone"], "647"],
-        ];
-
-        beforeEach(async () => {
-            // Create a second user to test pagination with
-            await loginUser.call(baseWorld);
-            // login as admin who can read evey user
-            await login.call(login, baseWorld);
+            // make sure a different user was returned
+            const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
         });
 
-        test.each(cases)(
-            "Search field %p, search item %p",
-            async (keys, searchItem) => {
-                await readManyMembers.call(readManyMembers, baseWorld, {
-                    query: { search: searchItem },
-                });
+        test("limit the amount of users returned per page", async () => {
+            // request first page
+            await readManyMembers.call(readManyMembers, baseWorld, {
+                query: { limit: 1 },
+            });
+            const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            expect(res1.length).toBe(1);
 
-                const res =
-                    baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            // request second page
+            await readManyMembers.call(readManyMembers, baseWorld, {
+                query: { limit: 2 },
+            });
 
-                for (const member of res) {
-                    let result: ReadMembers | string | unknown = member;
-                    for (const key of keys) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        result = (result as any)[
-                            key as keyof typeof keys
-                        ] as string;
-                    }
-                    expect((result as string).toLowerCase()).toContain(
-                        searchItem.toString().toLowerCase()
-                    );
+            // make sure a different user was returned
+            const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            expect(res2.length).toBe(2);
+        });
+        describe("Sort utility", () => {
+            const cases = [
+                ["birthday", "ASC"],
+                ["birthday", "DESC"],
+                ["first_name", "ASC"],
+                ["first_name", "DESC"],
+                ["last_name", "ASC"],
+                ["last_name", "DESC"],
+                ["email", "ASC"],
+                ["email", "DESC"],
+                ["phone", "ASC"],
+                ["phone", "DESC"],
+            ];
+
+            test.each(cases)(
+                "given sort field %p and sort order %p, the results will match",
+                async (sortField, sortOrder) => {
+                    await readManyMembers.call(readManyMembers, baseWorld, {
+                        query: { sortField, sortOrder },
+                    });
+
+                    const res =
+                        baseWorld.getCustomProp<ReadMembers[]>("responseData");
+                    expect(res.length).toBeGreaterThan(1);
+                    const resCopy = deepClone(res);
+                    const sortedRes = resCopy.sort((a, b): number => {
+                        const aVal = JSON.stringify(
+                            (a.user as unknown as { [o: string]: string })[
+                                sortField
+                            ]
+                        );
+
+                        const bVal = JSON.stringify(
+                            (b.user as unknown as { [o: string]: string })[
+                                sortField
+                            ]
+                        );
+
+                        if (sortOrder === "ASC") {
+                            return aVal < bVal ? -1 : aVal === bVal ? 0 : 1;
+                        } else if (sortOrder === "DESC") {
+                            return aVal < bVal ? 1 : aVal === bVal ? 0 : -1;
+                        } else throw new Error("Invalid sort order");
+                    });
+
+                    expect(JSON.stringify(res)).toBe(JSON.stringify(sortedRes));
                 }
-            }
-        );
+            );
+        });
+
+        describe("Search utility", () => {
+            const cases = [
+                // Searches based on Department
+                [["roles", 0, "department", "name"], "adm"],
+                // Search based on first_name
+                [["user", "first_name"], "No"],
+                // last_name
+                [["user", "last_name"], "Va"],
+                // email
+                [["user", "email"], "gmai"],
+                // role
+                [["roles", 0, "name"], "gene"],
+                // birthday
+                [["user", "birthday"], "1996"],
+                // phone
+                [["user", "phone"], "647"],
+            ];
+
+            test.each(cases)(
+                "Search field %p, search item %p",
+                async (keys, searchItem) => {
+                    await readManyMembers.call(readManyMembers, baseWorld, {
+                        query: { search: searchItem },
+                    });
+
+                    const res =
+                        baseWorld.getCustomProp<ReadMembers[]>("responseData");
+
+                    for (const member of res) {
+                        let result: ReadMembers | string | unknown = member;
+                        for (const key of keys) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            result = (result as any)[
+                                key as keyof typeof keys
+                            ] as string;
+                        }
+                        expect((result as string).toLowerCase()).toContain(
+                            searchItem.toString().toLowerCase()
+                        );
+                    }
+                }
+            );
+        });
+
+        describe("Filtering", () => {
+            const cases = [["department"], ["role"]];
+            test.each(cases)("Filtering by %p", async (field) => {
+                const connection = baseWorld.getConnection();
+
+                Logs.Debug(await connection.manager.find(User));
+                Logs.Debug(
+                    await connection.manager.find(
+                        field === "department" ? Department : Role
+                    )
+                );
+
+                const ids: number[] = [];
+
+                await readManyMembers.call(readManyMembers, baseWorld, {
+                    filter: { field, ids },
+                });
+            });
+        });
     });
 });
 
