@@ -3,6 +3,7 @@ import BaseWorld from "@test/support/base_world";
 import apiAttributes from "@test/api/attributes";
 import { getCookie } from "@test/util/request";
 import { server } from "@util/permalink";
+import { outputStack } from "@util/logs/logs";
 
 /**
  *
@@ -107,14 +108,15 @@ export default class Form {
             const e = _e as Error & { response: AxiosResponse };
             const { response } = e;
             const seperator = "\n\t\t  ";
-            console.error(
+            console.log(
                 "[ REQUEST ]:",
                 method.toUpperCase(),
                 server(url),
                 seperator,
                 e.message,
                 seperator,
-                response?.data.message ?? undefined
+                response?.data.message ?? undefined,
+                outputStack(2)
             );
 
             if (response) {

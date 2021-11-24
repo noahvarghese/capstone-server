@@ -143,6 +143,19 @@ describe("Global admin authorized", () => {
         const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
         expect(res2.length).toBe(2);
     });
+
+    test("Invalid sort field", async () => {
+        // request first page
+        await readManyMembers.call(readManyMembers, baseWorld, {
+            query: { sortField: "TEST123" },
+        });
+
+        Request.failed.call(baseWorld, {
+            status: /^400$/,
+            message: /^invalid field to sort by$/i,
+            include404: false,
+        });
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
