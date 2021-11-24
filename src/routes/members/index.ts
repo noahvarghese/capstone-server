@@ -6,6 +6,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Request, Response } from "express";
+import { Brackets } from "typeorm";
 import inviteRoute from "./invite";
 
 const router = Router();
@@ -150,7 +151,7 @@ router.get("/", async (req: Request, res: Response) => {
     const limit = isNaN(Number(query.limit)) ? 50 : Number(query.limit);
     const page = isNaN(Number(query.page)) ? 1 : Number(query.page);
 
-    const { sortField, sortOrder } = req.query;
+    const { sortField, sortOrder, search } = req.query;
 
     if (
         !["ASC", "DESC", "", undefined].includes(
@@ -174,21 +175,60 @@ router.get("/", async (req: Request, res: Response) => {
         return;
     }
 
-    const users: { u_id: number }[] = await connection
+    const sqlizedSearchItem = `%${search}%`;
+
+    let userQuery = connection
         .createQueryBuilder()
         .select("u.id")
         .from(User, "u")
         .where("m.business_id = :business_id", {
             business_id: current_business_id,
-        })
-        .leftJoin(Membership, "m", "m.user_id = u.id")
+        });
+
+    if (search) {
+        userQuery = userQuery.andWhere(
+            new Brackets((qb) => {
+                qb.where("u.birthday like :birthday", {
+                    birthday: sqlizedSearchItem,
+                })
+                    .orWhere("u.first_name like :first_name", {
+                        first_name: sqlizedSearchItem,
+                    })
+                    .orWhere("u.last_name like :last_name", {
+                        last_name: sqlizedSearchItem,
+                    })
+                    .orWhere("u.email like :email", {
+                        email: sqlizedSearchItem,
+                    })
+                    .orWhere("u.phone like :phone", {
+                        phone: sqlizedSearchItem,
+                    })
+                    .orWhere("r.name like :role", { role: sqlizedSearchItem })
+                    .orWhere("d.name like :department", {
+                        department: sqlizedSearchItem,
+                    });
+            })
+        );
+    }
+
+    userQuery = userQuery.leftJoin(Membership, "m", "m.user_id = u.id");
+
+    if (search) {
+        userQuery = userQuery
+            .innerJoin(UserRole, "ur", "ur.user_id = u.id")
+            .innerJoin(Role, "r", "r.id = ur.role_id")
+            .innerJoin(Department, "d", "d.id = r.department_id");
+    }
+
+    userQuery = userQuery
         .orderBy(
             sortField ? `u.${sortField}` : "u.created_on",
             (sortOrder as "ASC" | "DESC") ?? "DESC"
         )
         .limit(limit)
-        .offset(page * limit - limit)
-        .getRawMany();
+        .offset(page * limit - limit);
+
+    const users: { u_id: number }[] = await userQuery.getRawMany();
 
     try {
         const userInfo: ReadMembers[] = await Promise.all(

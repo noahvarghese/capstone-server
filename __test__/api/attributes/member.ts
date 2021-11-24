@@ -1,9 +1,6 @@
 import { InviteMemberProps } from "@routes/members/invite";
 import { deepClone } from "@util/obj";
-import modelAttributes from "@test/model/attributes";
 import MemberKeys from "../keys/member";
-
-const user = modelAttributes.user();
 
 export type AcceptInviteProps = Record<string, never>;
 export type ReadOneMemberProps = undefined;
@@ -19,8 +16,8 @@ export type MemberTypes = Record<
 
 export const inviteMember = (): InviteMemberProps =>
     deepClone({
-        first_name: user.first_name,
-        last_name: user.last_name,
+        first_name: "Second",
+        last_name: "User",
         email: process.env.SECONDARY_TEST_EMAIL ?? "",
         phone: "4168245567",
     });
