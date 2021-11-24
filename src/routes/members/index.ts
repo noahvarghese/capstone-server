@@ -118,7 +118,6 @@ router.get("/:id", async (req: Request, res: Response) => {
 const sortFields = (fields: readonly string[]) => {
     type FieldType = typeof fields[number];
     return (val: string): val is FieldType => {
-        Logs.Debug(val);
         return typeof val === "string" && fields.includes(val);
     };
 };
@@ -244,7 +243,6 @@ router.get("/", async (req: Request, res: Response) => {
                 };
             })
         );
-        Logs.Debug(userInfo);
 
         res.status(200).json(userInfo);
     } catch (_e) {

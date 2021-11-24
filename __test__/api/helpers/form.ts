@@ -15,7 +15,7 @@ const getQueryString = <T extends Record<string, unknown>>(data?: T) => {
 
     let queryString = "/?";
     for (const [key, value] of Object.entries(data ?? {})) {
-        queryString += `${key}=${JSON.stringify(value)}&`;
+        queryString += `${key}=${JSON.stringify(value).replace(/^"|"$/g, "")}&`;
     }
     queryString = queryString.substring(
         0,
@@ -54,11 +54,12 @@ export default class Form {
         const cookies = baseWorld.getCustomProp<string>("cookies");
         const body = baseWorld.getCustomProp<T>("body");
 
+        const FQDN = server(
+            url + (param ? "/" + param : "") + getQueryString(query)
+        );
+
         try {
             let res;
-            const FQDN = server(
-                url + (param ? "/" + param : "") + getQueryString(query)
-            );
 
             if (["get", "delete"].includes(method) && body) {
                 console.error(
@@ -111,7 +112,7 @@ export default class Form {
             console.log(
                 "[ REQUEST ]:",
                 method.toUpperCase(),
-                server(url),
+                FQDN,
                 seperator,
                 e.message,
                 seperator,
