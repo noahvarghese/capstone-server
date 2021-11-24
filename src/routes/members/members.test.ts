@@ -11,6 +11,7 @@ import { ReadMembers } from ".";
 import { deepClone } from "@util/obj";
 
 let baseWorld: BaseWorld;
+jest.setTimeout(500000);
 
 beforeAll(async () => {
     await DBConnection.init();
