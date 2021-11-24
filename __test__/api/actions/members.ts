@@ -57,7 +57,14 @@ export const readManyMembers = async function readManyMembers(
     this: ApiTestFn,
     baseWorld: BaseWorld,
     opts?: {
-        query: { page: number; limit: number };
+        query: {
+            page?: number;
+            limit?: number;
+            sortField?: string;
+            sortOrder?: "ASC" | "DESC" | "" | undefined;
+            filter?: string;
+            search?: string;
+        };
     }
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {

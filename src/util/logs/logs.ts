@@ -66,7 +66,7 @@ const LogDataTypes = {
     }),
 };
 
-function outputStack(layer: number): string {
+export function outputStack(layer: number): string {
     const { stack } = new Error();
     const frame = stack?.split("\n")[layer];
     // const line = frame?.split(":").reverse()[1];

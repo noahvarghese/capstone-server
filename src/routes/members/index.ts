@@ -115,6 +115,13 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
+const sortFields = (fields: readonly string[]) => {
+    type FieldType = typeof fields[number];
+    return (val: string): val is FieldType => {
+        return typeof val === "string" && fields.includes(val);
+    };
+};
+
 // get all users that are associated with business
 router.get("/", async (req: Request, res: Response) => {
     const {
@@ -145,7 +152,27 @@ router.get("/", async (req: Request, res: Response) => {
 
     const { sortField, sortOrder } = req.query;
 
-    // TODO: Add validation of what fields can be sort by
+    if (
+        !["ASC", "DESC", "", undefined].includes(
+            sortOrder as string | undefined
+        )
+    ) {
+        res.status(400).json({ message: "Unknown option for sort order" });
+        return;
+    }
+
+    const isSortField = sortFields([
+        "birthday",
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+    ]);
+
+    if (sortField !== undefined && !isSortField(sortField as string)) {
+        res.status(400).json({ message: "Invalid field to sort by" });
+        return;
+    }
 
     const users: { u_id: number }[] = await connection
         .createQueryBuilder()
@@ -216,7 +243,6 @@ router.get("/", async (req: Request, res: Response) => {
                 };
             })
         );
-        Logs.Debug(userInfo);
 
         res.status(200).json(userInfo);
     } catch (_e) {

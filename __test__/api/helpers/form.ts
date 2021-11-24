@@ -3,6 +3,7 @@ import BaseWorld from "@test/support/base_world";
 import apiAttributes from "@test/api/attributes";
 import { getCookie } from "@test/util/request";
 import { server } from "@util/permalink";
+import { outputStack } from "@util/logs/logs";
 
 /**
  *
@@ -14,7 +15,7 @@ const getQueryString = <T extends Record<string, unknown>>(data?: T) => {
 
     let queryString = "/?";
     for (const [key, value] of Object.entries(data ?? {})) {
-        queryString += `${key}=${JSON.stringify(value)}&`;
+        queryString += `${key}=${JSON.stringify(value).replace(/^"|"$/g, "")}&`;
     }
     queryString = queryString.substring(
         0,
@@ -53,11 +54,12 @@ export default class Form {
         const cookies = baseWorld.getCustomProp<string>("cookies");
         const body = baseWorld.getCustomProp<T>("body");
 
+        const FQDN = server(
+            url + (param ? "/" + param : "") + getQueryString(query)
+        );
+
         try {
             let res;
-            const FQDN = server(
-                url + (param ? "/" + param : "") + getQueryString(query)
-            );
 
             if (["get", "delete"].includes(method) && body) {
                 console.error(
@@ -107,14 +109,15 @@ export default class Form {
             const e = _e as Error & { response: AxiosResponse };
             const { response } = e;
             const seperator = "\n\t\t  ";
-            console.error(
+            console.log(
                 "[ REQUEST ]:",
                 method.toUpperCase(),
-                server(url),
+                FQDN,
                 seperator,
                 e.message,
                 seperator,
-                response?.data.message ?? undefined
+                response?.data.message ?? undefined,
+                outputStack(2)
             );
 
             if (response) {

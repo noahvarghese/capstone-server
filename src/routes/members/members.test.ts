@@ -8,8 +8,10 @@ import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
 import { inviteMember } from "@test/api/attributes/member";
 import { ReadMembers } from ".";
+import { deepClone } from "@util/obj";
 
 let baseWorld: BaseWorld;
+jest.setTimeout(500000);
 
 beforeAll(async () => {
     await DBConnection.init();
@@ -142,6 +144,73 @@ describe("Global admin authorized", () => {
         // make sure a different user was returned
         const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
         expect(res2.length).toBe(2);
+    });
+
+    test("Invalid sort field", async () => {
+        await readManyMembers.call(readManyMembers, baseWorld, {
+            query: { sortField: "TEST123" },
+        });
+
+        Request.failed.call(baseWorld, {
+            status: /^400$/,
+            message: /^invalid field to sort by$/i,
+            include404: false,
+        });
+    });
+
+    const cases = [
+        ["birthday", "ASC"],
+        ["birthday", "DESC"],
+        ["first_name", "ASC"],
+        ["first_name", "DESC"],
+        ["last_name", "ASC"],
+        ["last_name", "DESC"],
+        ["email", "ASC"],
+        ["email", "DESC"],
+        ["phone", "ASC"],
+        ["phone", "DESC"],
+    ];
+    describe("Sort utility", () => {
+        beforeEach(async () => {
+            // Create a second user to test pagination with
+            await loginUser.call(baseWorld);
+            // login as admin who can read evey user
+            await login.call(login, baseWorld);
+        });
+        test.each(cases)(
+            "given sort field %p and sort order %p, the results will match",
+            async (sortField, sortOrder) => {
+                await readManyMembers.call(readManyMembers, baseWorld, {
+                    query: { sortField, sortOrder },
+                });
+
+                const res =
+                    baseWorld.getCustomProp<ReadMembers[]>("responseData");
+                expect(res.length).toBeGreaterThan(1);
+                const resCopy = deepClone(res);
+                const sortedRes = resCopy.sort((a, b): number => {
+                    const aVal = JSON.stringify(
+                        (a.user as unknown as { [o: string]: string })[
+                            sortField
+                        ]
+                    );
+
+                    const bVal = JSON.stringify(
+                        (b.user as unknown as { [o: string]: string })[
+                            sortField
+                        ]
+                    );
+
+                    if (sortOrder === "ASC") {
+                        return aVal < bVal ? -1 : aVal === bVal ? 0 : 1;
+                    } else if (sortOrder === "DESC") {
+                        return aVal < bVal ? 1 : aVal === bVal ? 0 : -1;
+                    } else throw new Error("Invalid sort order");
+                });
+
+                expect(JSON.stringify(res)).toBe(JSON.stringify(sortedRes));
+            }
+        );
     });
 });
 

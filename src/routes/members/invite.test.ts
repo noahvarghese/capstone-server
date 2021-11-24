@@ -110,9 +110,14 @@ describe("Sending invites to join business", () => {
                     where: { user_id: user.id },
                 });
 
+            await new Promise<void>((res) => {
+                setTimeout(() => res(), 2000);
+            });
+
             // Retrieve the existing token and token expiry
             // When the same user gets a new invite
             await inviteMember.call(inviteMember, baseWorld, "default");
+            Request.succeeded.call(baseWorld);
 
             const { token: newToken, token_expiry: newTokenExpiry } =
                 await connection.manager.findOneOrFail(MembershipRequest, {
