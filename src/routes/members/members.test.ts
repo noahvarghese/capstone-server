@@ -157,20 +157,20 @@ describe("Global admin authorized", () => {
             include404: false,
         });
     });
-
-    const cases = [
-        ["birthday", "ASC"],
-        ["birthday", "DESC"],
-        ["first_name", "ASC"],
-        ["first_name", "DESC"],
-        ["last_name", "ASC"],
-        ["last_name", "DESC"],
-        ["email", "ASC"],
-        ["email", "DESC"],
-        ["phone", "ASC"],
-        ["phone", "DESC"],
-    ];
     describe("Sort utility", () => {
+        const cases = [
+            ["birthday", "ASC"],
+            ["birthday", "DESC"],
+            ["first_name", "ASC"],
+            ["first_name", "DESC"],
+            ["last_name", "ASC"],
+            ["last_name", "DESC"],
+            ["email", "ASC"],
+            ["email", "DESC"],
+            ["phone", "ASC"],
+            ["phone", "DESC"],
+        ];
+
         beforeEach(async () => {
             // Create a second user to test pagination with
             await loginUser.call(baseWorld);
@@ -209,6 +209,57 @@ describe("Global admin authorized", () => {
                 });
 
                 expect(JSON.stringify(res)).toBe(JSON.stringify(sortedRes));
+            }
+        );
+    });
+
+    describe("Search utility", () => {
+        const cases = [
+            // Searches based on Department
+            [["roles", 0, "department", "name"], "adm"],
+            // Search based on first_name
+            [["user", "first_name"], "No"],
+            // last_name
+            [["user", "last_name"], "Va"],
+            // email
+            [["user", "email"], "gmai"],
+            // role
+            [["roles", 0, "name"], "gene"],
+            // birthday
+            [["user", "birthday"], "1996"],
+            // phone
+            [["user", "phone"], "647"],
+        ];
+
+        beforeEach(async () => {
+            // Create a second user to test pagination with
+            await loginUser.call(baseWorld);
+            // login as admin who can read evey user
+            await login.call(login, baseWorld);
+        });
+
+        test.each(cases)(
+            "Search field %p, search item %p",
+            async (keys, searchItem) => {
+                await readManyMembers.call(readManyMembers, baseWorld, {
+                    query: { search: searchItem },
+                });
+
+                const res =
+                    baseWorld.getCustomProp<ReadMembers[]>("responseData");
+
+                for (const member of res) {
+                    let result: ReadMembers | string | unknown = member;
+                    for (const key of keys) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        result = (result as any)[
+                            key as keyof typeof keys
+                        ] as string;
+                    }
+                    expect((result as string).toLowerCase()).toContain(
+                        searchItem.toString().toLowerCase()
+                    );
+                }
             }
         );
     });
