@@ -117,7 +117,7 @@ export default class Form {
                 e.message,
                 seperator,
                 response?.data.message ?? undefined,
-                outputStack(2)
+                outputStack(3)
             );
 
             if (response) {

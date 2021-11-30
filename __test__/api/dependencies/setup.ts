@@ -9,6 +9,7 @@ const dependencies: { [i in ApiTest]: ApiTest[] } = {
     acceptInvite: ["registerBusiness", "inviteMember"],
     readManyMembers: ["registerBusiness"],
     readOneMember: ["registerBusiness"],
+    deleteMember: ["registerBusiness"],
     forgotPassword: ["registerBusiness"],
     resetPassword: ["registerBusiness"],
     logout: ["registerBusiness"],
