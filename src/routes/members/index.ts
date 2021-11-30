@@ -116,7 +116,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
-const sortFields = (fields: readonly string[]) => {
+const isSortFieldFactory = (fields: readonly string[]) => {
     type FieldType = typeof fields[number];
     return (val: string): val is FieldType => {
         return typeof val === "string" && fields.includes(val);
@@ -148,10 +148,17 @@ router.get("/", async (req: Request, res: Response) => {
         return;
     }
 
-    const limit = isNaN(Number(query.limit)) ? 50 : Number(query.limit);
-    const page = isNaN(Number(query.page)) ? 1 : Number(query.page);
+    // Validate query items
+    const limit =
+        isNaN(Number(query.limit)) || Number(query.limit) < 1
+            ? 50
+            : Number(query.limit);
+    const page =
+        isNaN(Number(query.page)) || Number(query.page) < 1
+            ? 1
+            : Number(query.page);
 
-    const { sortField, sortOrder, search } = req.query;
+    const { sortField, sortOrder, search, filterField, filterIds } = req.query;
 
     if (
         !["ASC", "DESC", "", undefined].includes(
@@ -162,7 +169,7 @@ router.get("/", async (req: Request, res: Response) => {
         return;
     }
 
-    const isSortField = sortFields([
+    const isSortField = isSortFieldFactory([
         "birthday",
         "first_name",
         "last_name",
@@ -177,6 +184,17 @@ router.get("/", async (req: Request, res: Response) => {
 
     const sqlizedSearchItem = `%${search}%`;
 
+    const filterArray = JSON.parse(filterIds ? (filterIds as string) : "{}");
+    const filter = Array.isArray(filterArray) && filterField !== undefined;
+
+    if (filter) {
+        if (["department", "role"].includes(filterField as string) === false) {
+            res.status(400).json({ message: "Invalid field" });
+            return;
+        }
+    }
+
+    // common start of query
     let userQuery = connection
         .createQueryBuilder()
         .select("u.id")
@@ -185,6 +203,7 @@ router.get("/", async (req: Request, res: Response) => {
             business_id: current_business_id,
         });
 
+    // only search portion
     if (search) {
         userQuery = userQuery.andWhere(
             new Brackets((qb) => {
@@ -211,15 +230,26 @@ router.get("/", async (req: Request, res: Response) => {
         );
     }
 
+    // only filter portion
+    if (filter) {
+        userQuery = userQuery.andWhere(
+            `${filterField === "department" ? "d.id" : "r.id"} IN (:...ids)`,
+            { ids: filterArray }
+        );
+    }
+
+    // always join
     userQuery = userQuery.leftJoin(Membership, "m", "m.user_id = u.id");
 
-    if (search) {
+    // only join others if searching or filtering
+    if (search || filter) {
         userQuery = userQuery
             .innerJoin(UserRole, "ur", "ur.user_id = u.id")
             .innerJoin(Role, "r", "r.id = ur.role_id")
             .innerJoin(Department, "d", "d.id = r.department_id");
     }
 
+    // apply sorting and pagination
     userQuery = userQuery
         .orderBy(
             sortField ? `u.${sortField}` : "u.created_on",
@@ -230,6 +260,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     const users: { u_id: number }[] = await userQuery.getRawMany();
 
+    // get role and department information
     try {
         const userInfo: ReadMembers[] = await Promise.all(
             users.map(async ({ u_id: id }) => {

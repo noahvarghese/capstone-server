@@ -2,17 +2,22 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import { login } from "@test/api/actions/auth";
-import { getAdminUserId, loginUser } from "@test/api/helpers/setup-actions";
+import {
+    assignUserToRole,
+    createDepartment,
+    createRole,
+    getAdminUserId,
+    loginUser,
+} from "@test/api/helpers/setup-actions";
 import { readManyMembers, readOneMember } from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
 import { inviteMember } from "@test/api/attributes/member";
 import { ReadMembers } from ".";
 import { deepClone } from "@util/obj";
-import Logs from "@util/logs/logs";
 import Department from "@models/department";
 import Role from "@models/role";
-import User from "@models/user/user";
+import { EmptyPermissionAttributes } from "@models/permission";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -125,7 +130,7 @@ describe("Global admin authorized", () => {
             // login as admin who can read evey user
             await login.call(login, baseWorld);
         });
-        test("Pagination works", async () => {
+        test("Pagination", async () => {
             // request first page
             await readManyMembers.call(readManyMembers, baseWorld, {
                 query: { page: 1, limit: 1 },
@@ -255,23 +260,71 @@ describe("Global admin authorized", () => {
         });
 
         describe("Filtering", () => {
-            const cases = [["department"], ["role"]];
-            test.each(cases)("Filtering by %p", async (field) => {
-                const connection = baseWorld.getConnection();
+            const cases: [string, typeof Department | typeof Role][] = [
+                ["department", Department],
+                ["role", Role],
+            ];
+            const name = "TEST";
 
-                Logs.Debug(await connection.manager.find(User));
-                Logs.Debug(
-                    await connection.manager.find(
-                        field === "department" ? Department : Role
-                    )
-                );
-
-                const ids: number[] = [];
-
-                await readManyMembers.call(readManyMembers, baseWorld, {
-                    filter: { field, ids },
+            beforeEach(async () => {
+                // create second department and role
+                // assign 2nd user to it
+                await createDepartment.call(baseWorld, name);
+                const roleId = await createRole.call(baseWorld, name, name, {
+                    ...EmptyPermissionAttributes(),
+                    updated_by_user_id: await getAdminUserId.call(baseWorld),
                 });
+                const { id } = await loginUser.call(baseWorld);
+                await assignUserToRole.call(
+                    baseWorld,
+                    id,
+                    roleId,
+                    undefined,
+                    true
+                );
+                await login.call(login, baseWorld);
             });
+            test.each(cases)(
+                "Filtering by %p",
+                async (fieldName, fieldType) => {
+                    const connection = baseWorld.getConnection();
+
+                    const model = await connection.manager.findOne(fieldType, {
+                        where: { name },
+                    });
+
+                    await readManyMembers.call(readManyMembers, baseWorld, {
+                        query: {
+                            filterField: fieldName,
+                            filterIds: [model?.id],
+                        },
+                    });
+
+                    Request.succeeded.call(baseWorld);
+
+                    const res =
+                        baseWorld.getCustomProp<ReadMembers[]>("responseData");
+
+                    // Because we are only creating one extra user
+                    expect(res.length).toBe(1);
+
+                    for (const item of res) {
+                        if (fieldName === "department") {
+                            const foundDepartment = item.roles.find((r) => {
+                                const res = r.department.name === name;
+                                return res;
+                            });
+                            expect(foundDepartment).toBeTruthy();
+                        } else {
+                            const foundRole = item.roles.find((r) => {
+                                const res = r.name === name;
+                                return res;
+                            });
+                            expect(foundRole).toBeTruthy();
+                        }
+                    }
+                }
+            );
         });
     });
 });

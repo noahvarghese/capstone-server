@@ -18,6 +18,15 @@ export async function createRegularUser(
     const { first_name, last_name, phone } = inviteMemberAttributes();
 
     const connection = this.getConnection();
+
+    const foundUser = await connection.manager.findOne(User, {
+        where: { email },
+    });
+
+    if (foundUser) {
+        return { id: foundUser.id, password, email };
+    }
+
     const user = await new User({
         email,
         first_name,
@@ -166,6 +175,15 @@ export async function createRole(
     return roleResult.identifiers[0].id;
 }
 
+/**
+ *
+ * @param this
+ * @param user_id
+ * @param role_id
+ * @param admin_id the id of the administrator assigning the user to the role, if not provided user_id is used
+ * @param is_primary_role
+ * @returns
+ */
 export async function assignUserToRole(
     this: BaseWorld,
     user_id: number,

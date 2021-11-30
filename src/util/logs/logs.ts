@@ -105,7 +105,7 @@ export default class Logs {
     };
 
     static Test(...args: unknown[]): void {
-        Logs.add(LogLevels.TEST, ...args);
+        Logs.add(LogLevels.TEST, ...args, outputStack(3));
     }
 
     static Event(...args: unknown[]): void {
@@ -113,7 +113,7 @@ export default class Logs {
     }
 
     static Error(...args: unknown[]): void {
-        Logs.add(LogLevels.ERROR, ...args);
+        Logs.add(LogLevels.ERROR, ...args, outputStack(3));
     }
 
     static Warning(...args: unknown[]): void {
