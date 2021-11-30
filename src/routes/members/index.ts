@@ -6,7 +6,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Request, Response } from "express";
-import { Brackets } from "typeorm";
+import { Brackets, WhereExpressionBuilder } from "typeorm";
 import inviteRoute from "./invite";
 
 const router = Router();
@@ -208,7 +208,7 @@ router.get("/", async (req: Request, res: Response) => {
     // only search portion
     if (search) {
         userQuery = userQuery.andWhere(
-            new Brackets((qb) => {
+            new Brackets((qb: WhereExpressionBuilder) => {
                 qb.where("u.birthday like :birthday", {
                     birthday: sqlizedSearchItem,
                 })
