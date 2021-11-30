@@ -10,7 +10,7 @@ import {
     loginUser,
 } from "@test/api/helpers/setup-actions";
 import {
-    // deleteMember,
+    deleteMember,
     readManyMembers,
     readOneMember,
 } from "@test/api/actions/members";
@@ -23,8 +23,6 @@ import Department from "@models/department";
 import Role from "@models/role";
 import { EmptyPermissionAttributes } from "@models/permission";
 // import Membership from "@models/membership";
-// import Logs from "@util/logs/logs";
-// import User from "@models/user/user";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -392,22 +390,19 @@ describe("User who lacks CRUD rights", () => {
     });
 
     // Scenario: User who lacks CRUD membership rights cannot delete memberships
-    // test("User who lacks CRUD rights cannot delete membership", async () => {
-    //     //     Given I am logged in as a user
-    //     // const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-    //     const admin = await getAdminUserId.call(baseWorld);
+    test("User who lacks CRUD rights cannot delete membership", async () => {
+        //     Given I am logged in as a user
+        // const { id } = baseWorld.getCustomProp<{ id: number }>("user");
+        const admin = await getAdminUserId.call(baseWorld);
 
-    //     Logs.Test(await baseWorld.getConnection().manager.find(User));
-    //     Logs.Test(await baseWorld.getConnection().manager.find(Membership));
+        //     When I delete a membership
+        await deleteMember.call(deleteMember, baseWorld, admin);
 
-    //     //     When I delete a membership
-    //     await deleteMember.call(deleteMember, baseWorld, admin);
-
-    //     //     Then I get an error
-    //     Request.failed.call(baseWorld, {
-    //         include404: false,
-    //         status: /^403$/,
-    //         message: /^insufficient permissions$/i,
-    //     });
-    // });
+        //     Then I get an error
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: /^insufficient permissions$/i,
+        });
+    });
 });
