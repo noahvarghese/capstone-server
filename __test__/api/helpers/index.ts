@@ -248,5 +248,7 @@ export default class Api {
                 }
             }
         }
+
+        await connection.manager.remove(await connection.manager.find(User));
     }
 }
