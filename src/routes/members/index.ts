@@ -47,14 +47,14 @@ router.get("/:id", async (req: Request, res: Response) => {
             Number(current_business_id),
             SqlConnection,
             [
-                "global_crud_role",
-                "global_assign_resources_to_role",
-                "global_assign_users_to_role",
-
-                // "global_crud_users",
-                // "global_assign_users_to_department",
+                // "global_crud_role",
+                // "global_assign_resources_to_role",
                 // "global_assign_users_to_role",
-                // "dept_assign_users_to_role",
+
+                "global_crud_users",
+                "global_assign_users_to_department",
+                "global_assign_users_to_role",
+                "dept_assign_users_to_role",
             ]
         );
 
@@ -142,14 +142,14 @@ router.get("/", async (req: Request, res: Response) => {
         Number(current_business_id),
         connection,
         [
-            "global_crud_role",
-            "global_assign_resources_to_role",
-            "global_assign_users_to_role",
-
-            // "global_crud_users",
-            // "global_assign_users_to_department",
+            // "global_crud_role",
+            // "global_assign_resources_to_role",
             // "global_assign_users_to_role",
-            // "dept_assign_users_to_role",
+
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role",
         ]
     );
 
