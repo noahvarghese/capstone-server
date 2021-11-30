@@ -22,7 +22,7 @@ import { deepClone } from "@util/obj";
 import Department from "@models/department";
 import Role from "@models/role";
 import { EmptyPermissionAttributes } from "@models/permission";
-// import Membership from "@models/membership";
+import Membership from "@models/membership";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -112,7 +112,7 @@ describe("Global admin authorized", () => {
     describe("Create 2 users, but operate as admin", () => {
         beforeEach(async () => {
             // Create a second user to test pagination with
-            await loginUser.call(baseWorld);
+            baseWorld.setCustomProp("user", await loginUser.call(baseWorld));
             // login as admin who can read evey user
             await login.call(login, baseWorld);
         });
@@ -260,7 +260,7 @@ describe("Global admin authorized", () => {
                     ...EmptyPermissionAttributes(),
                     updated_by_user_id: await getAdminUserId.call(baseWorld),
                 });
-                const { id } = await loginUser.call(baseWorld);
+                const { id } = baseWorld.getCustomProp<{ id: number }>("user");
                 await assignUserToRole.call(
                     baseWorld,
                     id,
@@ -268,7 +268,6 @@ describe("Global admin authorized", () => {
                     undefined,
                     true
                 );
-                await login.call(login, baseWorld);
             });
             test.each(cases)(
                 "Filtering by %p",
@@ -312,34 +311,31 @@ describe("Global admin authorized", () => {
                 }
             );
         });
-
         // Scenario: Global Admin Can Delete Membership
-        // test("Deleting a user from business", async () => {
-        //     const connection = baseWorld.getConnection();
+        test("Deleting a user from business", async () => {
+            const connection = baseWorld.getConnection();
 
-        //     const { id } = await loginUser.call(baseWorld);
-        //     //     Given I am logged in as an admin
-        //     await login.call(login, baseWorld);
+            const { id } = baseWorld.getCustomProp<{ id: number }>("user");
 
-        //     // pre test check
-        //     let membership = await connection.manager.findOne(Membership, {
-        //         where: { user_id: id },
-        //     });
+            // pre test check
+            let membership = await connection.manager.findOne(Membership, {
+                where: { user_id: id },
+            });
 
-        //     expect(membership).not.toBe(undefined);
+            expect(membership).not.toBe(undefined);
 
-        //     //     When I delete a membership
-        //     await deleteMember.call(deleteMember, baseWorld, id);
+            //     When I delete a membership
+            await deleteMember.call(deleteMember, baseWorld, id);
 
-        //     // check success
-        //     Request.succeeded.call(baseWorld);
-        //     membership = await connection.manager.findOne(Membership, {
-        //         where: { user_id: id },
-        //     });
+            // check success
+            Request.succeeded.call(baseWorld);
+            membership = await connection.manager.findOne(Membership, {
+                where: { user_id: id },
+            });
 
-        //     //     Then a membership is deleted);
-        //     expect(membership).toBe(undefined);
-        // });
+            //     Then a membership is deleted);
+            expect(membership).toBe(undefined);
+        });
     });
 });
 
