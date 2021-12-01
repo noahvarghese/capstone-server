@@ -6,6 +6,7 @@ export type AcceptInviteProps = Record<string, never>;
 export type ReadOneMemberProps = undefined;
 export type ReadManyMemberProps = undefined;
 export type DeleteMemberProps = undefined;
+export type UpdateMemberProps = InviteMemberProps & { birthday: Date };
 export type MemberTypes = Record<
     MemberKeys,
     () =>
@@ -14,6 +15,7 @@ export type MemberTypes = Record<
         | ReadManyMemberProps
         | ReadOneMemberProps
         | DeleteMemberProps
+        | UpdateMemberProps
 >;
 
 export const inviteMember = (): InviteMemberProps =>
@@ -27,6 +29,8 @@ export const acceptInvite = (): AcceptInviteProps => deepClone({});
 export const readOneMember = (): ReadOneMemberProps => undefined;
 export const readManyMembers = (): ReadManyMemberProps => undefined;
 export const deleteMember = (): DeleteMemberProps => undefined;
+export const updateMember = (): UpdateMemberProps =>
+    deepClone({ ...inviteMember(), birthday: new Date() });
 
 const attributes: MemberTypes = {
     inviteMember,
@@ -34,6 +38,7 @@ const attributes: MemberTypes = {
     readManyMembers,
     readOneMember,
     deleteMember,
+    updateMember,
 };
 
 export default attributes;
