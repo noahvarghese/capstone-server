@@ -8,11 +8,7 @@ import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Model from "@util/model";
-import {
-    emptyChecker,
-    phoneValidator,
-    postalCodeValidator,
-} from "@util/validators";
+import { emptyChecker, isPhone, isPostalCode } from "@util/validators";
 
 const router = Router();
 
@@ -76,14 +72,14 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    if (!phoneValidator(phone)) {
+    if (!isPhone(phone)) {
         res.status(400).json({
             message: "Invalid phone number",
             field: "phone",
         });
         return;
     }
-    if (!postalCodeValidator(postal_code)) {
+    if (!isPostalCode(postal_code)) {
         res.status(400).json({
             message: "Invalid postal code",
             field: "postal_code",

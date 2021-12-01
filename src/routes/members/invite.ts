@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { emptyChecker, phoneValidator } from "@util/validators";
+import { emptyChecker, isPhone } from "@util/validators";
 import validator from "validator";
 import Model from "@util/model";
 import User from "@models/user/user";
@@ -63,7 +63,7 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    if (!phoneValidator(phone)) {
+    if (!isPhone(phone)) {
         res.status(400).json({
             message: "Invalid phone number",
             field: "phone",
