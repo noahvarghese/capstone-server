@@ -6,7 +6,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Request, Response } from "express";
-import { Brackets } from "typeorm";
+import { Brackets, WhereExpressionBuilder } from "typeorm";
 import inviteRoute from "./invite";
 
 const router = Router();
@@ -47,9 +47,10 @@ router.get("/:id", async (req: Request, res: Response) => {
             Number(current_business_id),
             SqlConnection,
             [
-                "global_crud_role",
-                "global_assign_resources_to_role",
+                "global_crud_users",
+                "global_assign_users_to_department",
                 "global_assign_users_to_role",
+                "dept_assign_users_to_role",
             ]
         );
 
@@ -137,9 +138,10 @@ router.get("/", async (req: Request, res: Response) => {
         Number(current_business_id),
         connection,
         [
-            "global_crud_role",
-            "global_assign_resources_to_role",
+            "global_crud_users",
+            "global_assign_users_to_department",
             "global_assign_users_to_role",
+            "dept_assign_users_to_role",
         ]
     );
 
@@ -206,7 +208,7 @@ router.get("/", async (req: Request, res: Response) => {
     // only search portion
     if (search) {
         userQuery = userQuery.andWhere(
-            new Brackets((qb) => {
+            new Brackets((qb: WhereExpressionBuilder) => {
                 qb.where("u.birthday like :birthday", {
                     birthday: sqlizedSearchItem,
                 })
@@ -322,6 +324,47 @@ router.get("/", async (req: Request, res: Response) => {
         res.status(500).json({
             message: "Error retrieving members",
         });
+        return;
+    }
+});
+
+router.delete("/:id", async (req: Request, res: Response) => {
+    const {
+        SqlConnection,
+        params: { id: user_id },
+        session: { current_business_id, user_id: current_user_id },
+    } = req;
+
+    // check for permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(current_user_id),
+        Number(current_business_id),
+        SqlConnection,
+        ["global_crud_users"]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    const membership = await SqlConnection.manager.findOne(Membership, {
+        where: { user_id, business_id: current_business_id },
+    });
+
+    if (!membership) {
+        res.sendStatus(200);
+        return;
+    }
+
+    try {
+        SqlConnection.manager.delete(Membership, membership);
+        res.sendStatus(200);
+        return;
+    } catch (e) {
+        const { message } = e as Error;
+        Logs.Error(message);
+        res.status(500);
         return;
     }
 });

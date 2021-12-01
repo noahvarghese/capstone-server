@@ -9,7 +9,11 @@ import {
     getAdminUserId,
     loginUser,
 } from "@test/api/helpers/setup-actions";
-import { readManyMembers, readOneMember } from "@test/api/actions/members";
+import {
+    deleteMember,
+    readManyMembers,
+    readOneMember,
+} from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
 import { inviteMember } from "@test/api/attributes/member";
@@ -18,6 +22,7 @@ import { deepClone } from "@util/obj";
 import Department from "@models/department";
 import Role from "@models/role";
 import { EmptyPermissionAttributes } from "@models/permission";
+import Membership from "@models/membership";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -45,25 +50,6 @@ describe("Global admin authorized", () => {
         // Given I am logged in as an admin
         await login.call(login, baseWorld);
     });
-
-    test.todo(
-        "Global admin can create membership"
-
-        // , async () => {
-        // // When I create a membership
-
-        // await actions.createMembership.call(baseWorld);
-
-        // // Then a new membership exists
-        // Request.success.call(baseWorld);
-        // }
-    );
-
-    test.todo("Global admin can delete membership");
-    // Scenario: Global Admin Can Delete Membership
-    //     Given I am logged in as an admin
-    //     When I delete a membership
-    //     Then a membership is deleted
 
     test("Global admin can read a list of members", async () => {
         const user_id = await getAdminUserId.call(baseWorld);
@@ -126,7 +112,7 @@ describe("Global admin authorized", () => {
     describe("Create 2 users, but operate as admin", () => {
         beforeEach(async () => {
             // Create a second user to test pagination with
-            await loginUser.call(baseWorld);
+            baseWorld.setCustomProp("user", await loginUser.call(baseWorld));
             // login as admin who can read evey user
             await login.call(login, baseWorld);
         });
@@ -165,7 +151,7 @@ describe("Global admin authorized", () => {
             const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
             expect(res2.length).toBe(2);
         });
-        describe("Sort utility", () => {
+        describe("Sorting", () => {
             const cases = [
                 ["birthday", "ASC"],
                 ["birthday", "DESC"],
@@ -215,7 +201,7 @@ describe("Global admin authorized", () => {
             );
         });
 
-        describe("Search utility", () => {
+        describe("Searching", () => {
             const cases = [
                 // Searches based on Department
                 [["roles", 0, "department", "name"], "adm"],
@@ -274,7 +260,7 @@ describe("Global admin authorized", () => {
                     ...EmptyPermissionAttributes(),
                     updated_by_user_id: await getAdminUserId.call(baseWorld),
                 });
-                const { id } = await loginUser.call(baseWorld);
+                const { id } = baseWorld.getCustomProp<{ id: number }>("user");
                 await assignUserToRole.call(
                     baseWorld,
                     id,
@@ -282,7 +268,6 @@ describe("Global admin authorized", () => {
                     undefined,
                     true
                 );
-                await login.call(login, baseWorld);
             });
             test.each(cases)(
                 "Filtering by %p",
@@ -326,6 +311,31 @@ describe("Global admin authorized", () => {
                 }
             );
         });
+        // Scenario: Global Admin Can Delete Membership
+        test("Deleting a user from business", async () => {
+            const connection = baseWorld.getConnection();
+
+            const { id } = baseWorld.getCustomProp<{ id: number }>("user");
+
+            // pre test check
+            let membership = await connection.manager.findOne(Membership, {
+                where: { user_id: id },
+            });
+
+            expect(membership).not.toBe(undefined);
+
+            //     When I delete a membership
+            await deleteMember.call(deleteMember, baseWorld, id);
+
+            // check success
+            Request.succeeded.call(baseWorld);
+            membership = await connection.manager.findOne(Membership, {
+                where: { user_id: id },
+            });
+
+            //     Then a membership is deleted);
+            expect(membership).toBe(undefined);
+        });
     });
 });
 
@@ -334,17 +344,6 @@ describe("User who lacks CRUD rights", () => {
         // Given I am logged in as a user
         baseWorld.setCustomProp("user", await loginUser.call(baseWorld));
     });
-    test.todo(
-        "User who lacks CRUD membership rights cannot create memberships"
-    );
-    // Given I am logged in as a user
-    // When I create a membership
-    // Then I get an error
-    test.todo("User who lacks CRUD rights cannot delete membership");
-    // Scenario: User who lacks CRUD membership rights cannot delete memberships
-    //     Given I am logged in as a user
-    //     When I delete a membership
-    //     Then I get an error
     test("User who lacks CRUD rights cannot read a list of members", async () => {
         await readManyMembers.call(readManyMembers, baseWorld);
 
@@ -383,6 +382,23 @@ describe("User who lacks CRUD rights", () => {
             include404: false,
             message: "Insufficient permissions",
             status: /^403$/,
+        });
+    });
+
+    // Scenario: User who lacks CRUD membership rights cannot delete memberships
+    test("User who lacks CRUD rights cannot delete membership", async () => {
+        //     Given I am logged in as a user
+        // const { id } = baseWorld.getCustomProp<{ id: number }>("user");
+        const admin = await getAdminUserId.call(baseWorld);
+
+        //     When I delete a membership
+        await deleteMember.call(deleteMember, baseWorld, admin);
+
+        //     Then I get an error
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: /^insufficient permissions$/i,
         });
     });
 });

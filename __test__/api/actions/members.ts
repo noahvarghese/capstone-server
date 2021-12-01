@@ -53,6 +53,19 @@ export const readOneMember = async function readOneMember(
     });
 } as ApiTestFn;
 
+export const deleteMember = async function deleteMember(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    userId: number
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
+        cookie: { withCookie: true, saveCookie: false },
+        errorOnFail: false,
+        method: "delete",
+        param: userId.toString(),
+    });
+} as ApiTestFn;
+
 export const readManyMembers = async function readManyMembers(
     this: ApiTestFn,
     baseWorld: BaseWorld,
