@@ -13,6 +13,7 @@ import {
     deleteMember,
     readManyMembers,
     readOneMember,
+    updateMember,
 } from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
@@ -23,6 +24,7 @@ import Department from "@models/department";
 import Role from "@models/role";
 import { EmptyPermissionAttributes } from "@models/permission";
 import Membership from "@models/membership";
+import User from "@models/user/user";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -104,7 +106,7 @@ describe("Global admin authorized", () => {
 
         Request.failed.call(baseWorld, {
             status: /^400$/,
-            message: /^invalid field to sort by$/i,
+            message: /^invalid field to sort by \w*$/i,
             include404: false,
         });
     });
@@ -336,6 +338,54 @@ describe("Global admin authorized", () => {
             //     Then a membership is deleted);
             expect(membership).toBe(undefined);
         });
+
+        describe("Update user", () => {
+            const cases: [
+                "birthday" | "first_name" | "last_name" | "email" | "phone",
+                string | Date
+            ][] = [
+                ["birthday", new Date(2021, 11, 21)],
+                ["first_name", "NOT_TEST"],
+                ["last_name", "NOT_TEST"],
+                ["email", "this_is_a_test@test.com"],
+                ["phone", "9058279585"],
+            ];
+            test.each(cases)(
+                "Update user field %p value %p",
+                async (field, val) => {
+                    const { id } =
+                        baseWorld.getCustomProp<{ id: number }>("user");
+                    const connection = baseWorld.getConnection();
+
+                    const user = await connection.manager.findOne(User, {
+                        where: { id },
+                    });
+
+                    if (!user) throw new Error("User not defined");
+
+                    if (field === "birthday") user[field] = val as Date;
+                    else user[field] = val as string;
+
+                    await updateMember.call(updateMember, baseWorld, user);
+
+                    Request.succeeded.call(baseWorld);
+
+                    const updatedUser = await connection.manager.findOne(User, {
+                        where: { id },
+                    });
+
+                    if (!updatedUser)
+                        throw new Error("Updated user not defined");
+
+                    expect(updatedUser.updated_on.toISOString()).not.toBe(
+                        user.updated_on.toISOString()
+                    );
+                    expect(updatedUser[field].toString()).toBe(
+                        user[field].toString()
+                    );
+                }
+            );
+        });
     });
 });
 
@@ -388,13 +438,49 @@ describe("User who lacks CRUD rights", () => {
     // Scenario: User who lacks CRUD membership rights cannot delete memberships
     test("User who lacks CRUD rights cannot delete membership", async () => {
         //     Given I am logged in as a user
-        // const { id } = baseWorld.getCustomProp<{ id: number }>("user");
         const admin = await getAdminUserId.call(baseWorld);
 
         //     When I delete a membership
         await deleteMember.call(deleteMember, baseWorld, admin);
 
         //     Then I get an error
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: /^insufficient permissions$/i,
+        });
+    });
+
+    test("Update self", async () => {
+        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
+        const connection = baseWorld.getConnection();
+
+        const user = await connection.manager.findOne(User, { where: { id } });
+        if (!user) throw new Error("Cannot find user");
+        user.first_name = "NON_ADMIN";
+
+        await updateMember.call(updateMember, baseWorld, user);
+        Request.succeeded.call(baseWorld);
+
+        const updatedUser = await connection.manager.findOne(User, {
+            where: { id },
+        });
+
+        if (!updatedUser) throw new Error("Cannot find user");
+
+        expect(updatedUser.updated_on).not.toBe(user.updated_on);
+        expect(updatedUser.first_name).toBe(user.first_name);
+    });
+
+    test("Update another should fail", async () => {
+        const id = await getAdminUserId.call(baseWorld);
+        const connection = baseWorld.getConnection();
+
+        const user = await connection.manager.findOne(User, { where: { id } });
+        if (!user) throw new Error("Cannot find admin");
+        user.first_name = "ADMIN";
+
+        await updateMember.call(updateMember, baseWorld, user);
         Request.failed.call(baseWorld, {
             include404: false,
             status: /^403$/,

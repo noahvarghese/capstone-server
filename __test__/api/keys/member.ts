@@ -3,6 +3,7 @@ type MemberKeys =
     | "readOneMember"
     | "readManyMembers"
     | "acceptInvite"
-    | "deleteMember";
+    | "deleteMember"
+    | "updateMember";
 
 export default MemberKeys;

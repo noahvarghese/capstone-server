@@ -11,6 +11,7 @@ const urls: { [i in ApiTest]: string | ((token: string) => string) } = {
     resetPassword: (token: string) => `auth/reset_password/${token}`,
     readOneMember: "members",
     deleteMember: "members",
+    updateMember: "members",
     readManyMembers: "members",
     logout: "auth/logout",
     authCheck: "auth",

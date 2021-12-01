@@ -66,6 +66,28 @@ export const deleteMember = async function deleteMember(
     });
 } as ApiTestFn;
 
+export const updateMember = async function updateMember(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    { id, first_name, last_name, email, phone, birthday }: User
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
+        cookie: { withCookie: true, saveCookie: false },
+        errorOnFail: false,
+        method: "put",
+        param: id.toString(),
+        body: {
+            first_name,
+            last_name,
+            email,
+            phone,
+            birthday: !isNaN(birthday.getTime())
+                ? birthday.toISOString()
+                : undefined,
+        },
+    });
+} as ApiTestFn;
+
 export const readManyMembers = async function readManyMembers(
     this: ApiTestFn,
     baseWorld: BaseWorld,
