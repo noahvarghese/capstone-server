@@ -5,8 +5,10 @@ import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
+import { isPhone } from "@util/validators";
 import { Router, Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
+import validator from "validator";
 import inviteRoute from "./invite";
 
 const router = Router();
@@ -180,7 +182,9 @@ router.get("/", async (req: Request, res: Response) => {
     ]);
 
     if (sortField !== undefined && !isSortField(sortField as string)) {
-        res.status(400).json({ message: "Invalid field to sort by" });
+        res.status(400).json({
+            message: "Invalid field to sort by " + sortField,
+        });
         return;
     }
 
@@ -365,6 +369,85 @@ router.delete("/:id", async (req: Request, res: Response) => {
         const { message } = e as Error;
         Logs.Error(message);
         res.status(500);
+        return;
+    }
+});
+
+router.put("/:id", async (req: Request, res: Response) => {
+    const {
+        SqlConnection,
+        params: { id: user_id },
+        session: { current_business_id, user_id: current_user_id },
+        body: { first_name, last_name, email, phone, birthday },
+    } = req;
+
+    // check for permissions
+    if (Number(user_id) !== Number(current_user_id)) {
+        const hasPermission = await Permission.checkPermission(
+            Number(current_user_id),
+            Number(current_business_id),
+            SqlConnection,
+            ["global_crud_users"]
+        );
+
+        if (!hasPermission) {
+            res.status(403).json({ message: "Insufficient permissions" });
+            return;
+        }
+    }
+
+    if (validator.isEmpty(first_name)) {
+        res.status(400).json({
+            message: "First name cannot be empty",
+            field: "first_name",
+        });
+        return;
+    }
+
+    if (validator.isEmpty(last_name)) {
+        res.status(400).json({
+            message: "Last name cannot be empty",
+            field: "last_name",
+        });
+        return;
+    }
+
+    if (validator.isEmail(email) === false) {
+        res.status(400).json({ message: "Invalid email.", field: "email" });
+        return;
+    }
+
+    if (!isPhone(phone)) {
+        res.status(400).json({
+            message: "Invalid phone number",
+            field: "phone",
+        });
+        return;
+    }
+
+    // Allowed to be blank
+    if (birthday && isNaN(Date.parse(birthday))) {
+        res.status(400).json({
+            message: "Invalid birthday " + birthday,
+            field: "birthday",
+        });
+        return;
+    }
+
+    try {
+        await SqlConnection.manager.update(User, user_id, {
+            first_name,
+            last_name,
+            email,
+            phone,
+            birthday,
+        });
+        res.sendStatus(200);
+        return;
+    } catch (e) {
+        const { message } = e as Error;
+        Logs.Error(message);
+        res.sendStatus(500);
         return;
     }
 });

@@ -76,7 +76,15 @@ export const updateMember = async function updateMember(
         errorOnFail: false,
         method: "put",
         param: id.toString(),
-        body: { first_name, last_name, email, phone, birthday },
+        body: {
+            first_name,
+            last_name,
+            email,
+            phone,
+            birthday: !isNaN(birthday.getTime())
+                ? birthday.toISOString()
+                : undefined,
+        },
     });
 } as ApiTestFn;
 
