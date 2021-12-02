@@ -175,4 +175,8 @@ test("User accepting invite joins business", async () => {
     });
 
     expect(membership).toBeTruthy();
+    const oldRequest = await connection.manager.findOne(MembershipRequest, {
+        where: { user_id: user.id },
+    });
+    expect(oldRequest).toBe(undefined);
 });
