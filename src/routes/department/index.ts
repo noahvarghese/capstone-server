@@ -87,7 +87,7 @@ router.post("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
         SqlConnection,
-        body,
+        body: { name, prevent_delete, prevent_edit },
     } = req;
 
     //check permissions
@@ -105,7 +105,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     // check department exists
     const count = await SqlConnection.manager.count(Department, {
-        where: { ...body },
+        where: { name, business_id: current_business_id },
     });
 
     if (count > 0) {
@@ -113,12 +113,13 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    // try create
     try {
         const result = await SqlConnection.manager.insert(
             Department,
             new Department({
-                ...body,
+                name,
+                prevent_delete,
+                prevent_edit,
                 updated_by_user_id: user_id,
                 business_id: current_business_id,
             })
