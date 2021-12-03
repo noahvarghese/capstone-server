@@ -90,7 +90,18 @@ export const readOneRole = async function readOneRole(
  */
 export const readManyRoles = async function readManyRoles(
     this: ApiTestFn,
-    baseWorld: BaseWorld
+    baseWorld: BaseWorld,
+    opts?: {
+        query: {
+            page?: number;
+            limit?: number;
+            sortField?: string;
+            sortOrder?: "ASC" | "DESC" | "" | undefined;
+            filterField?: string;
+            filterIds?: number[];
+            search?: string;
+        };
+    }
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
@@ -98,6 +109,7 @@ export const readManyRoles = async function readManyRoles(
             withCookie: true,
         },
         method: "get",
+        query: opts?.query ?? {},
     });
 } as ApiTestFn;
 
