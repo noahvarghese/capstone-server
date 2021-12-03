@@ -11,7 +11,7 @@ import {
 import { EmptyPermissionAttributes } from "@models/permission";
 import Request from "@test/api/helpers/request";
 import UserRole from "@models/user/user_role";
-import { memberAssignment } from "@test/api/actions/roles";
+import { memberAssignment, memberRemoval } from "@test/api/actions/roles";
 
 let baseWorld: BaseWorld;
 const name = "TEST";
@@ -68,6 +68,38 @@ describe("Global admin authorized", () => {
             })
         ).not.toBe(undefined);
     });
+    test("Can remove role from user(s)", async () => {
+        const connection = baseWorld.getConnection();
+        // assign role to user
+        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
+        const role_id = baseWorld.getCustomProp("role");
+
+        await memberAssignment.call(memberAssignment, baseWorld, {
+            user_ids: [id],
+            role_id,
+        });
+
+        // pre action check
+        expect(
+            await connection.manager.findOne(UserRole, {
+                where: { role_id, user_id: id },
+            })
+        ).not.toBe(undefined);
+
+        // test action
+        await memberRemoval.call(memberRemoval, baseWorld, {
+            user_ids: [id],
+            role_id,
+        });
+
+        // check result
+        Request.succeeded.call(baseWorld, { status: /^20/, auth: false });
+        expect(
+            await connection.manager.findOne(UserRole, {
+                where: { role_id, user_id: id },
+            })
+        ).toBe(undefined);
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
@@ -102,5 +134,19 @@ describe("User who lacks CRUD rights", () => {
                 where: { role_id, user_id: adminId },
             })
         ).toBe(undefined);
+    });
+
+    test("Cannot remove role from user(s)", async () => {
+        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
+        const role_id = baseWorld.getCustomProp("role");
+        await memberRemoval.call(memberRemoval, baseWorld, {
+            user_ids: [id],
+            role_id,
+        });
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: /^insufficient permissions$/i,
+        });
     });
 });
