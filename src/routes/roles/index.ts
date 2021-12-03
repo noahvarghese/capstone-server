@@ -163,6 +163,7 @@ router.get("/", async (req: Request, res: Response) => {
         });
         return;
     }
+    Logs.Debug(sortField, sortOrder);
 
     // const sqlizedSearchItem = `%${search}%`;
 
@@ -210,9 +211,7 @@ router.get("/", async (req: Request, res: Response) => {
             });
         }
 
-        res.status(200).json({
-            data: returnVal,
-        });
+        res.status(200).json(returnVal);
         return;
     } catch (_e) {
         const e = _e as Error;
