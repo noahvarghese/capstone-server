@@ -163,3 +163,17 @@ export const roleAssignment = async function roleAssignment(
         errorOnFail: false,
     });
 } as ApiTestFn;
+
+export const roleRemoval = async function roleRemoval(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    user_id: number,
+    role_ids: number[]
+) {
+    await apiRequest(baseWorld, this.name, {
+        cookie: { withCookie: true, saveCookie: false },
+        method: "delete",
+        query: { user_id, role_ids },
+        errorOnFail: false,
+    });
+} as ApiTestFn;

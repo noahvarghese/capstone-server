@@ -94,4 +94,57 @@ router.post("/", async (req: Request, res: Response) => {
     return;
 });
 
+router.delete("/", async (req: Request, res: Response) => {
+    const {
+        SqlConnection,
+        query: { user_id, role_ids },
+        session: { current_business_id, user_id: current_user_id },
+    } = req;
+
+    if (!Array.isArray(JSON.parse(role_ids as string))) {
+        res.status(400).json({ message: "Must be an array of roles" });
+        return;
+    }
+
+    //check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(current_user_id),
+        Number(current_business_id),
+        SqlConnection,
+        [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role",
+        ]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    // may find a way to use promise.all
+    for (const id of JSON.parse(role_ids as string)) {
+        try {
+            const userRole = await SqlConnection.manager.findOneOrFail(
+                UserRole,
+                {
+                    where: { user_id, role_id: id },
+                }
+            );
+
+            await SqlConnection.manager.delete(UserRole, userRole);
+        } catch (e) {
+            const { message } = e as Error;
+            Logs.Error(message);
+            res.status(500).json({ message: "Invalid role assignment" });
+            return;
+        }
+    }
+
+    res.sendStatus(200);
+    return;
+});
+
 export default router;

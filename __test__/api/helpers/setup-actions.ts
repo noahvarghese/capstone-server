@@ -190,7 +190,7 @@ export async function assignUserToRole(
     role_id: number,
     admin_id?: number,
     is_primary_role?: boolean
-): Promise<number> {
+): Promise<{ user_id: number; role_id: number }> {
     const connection = this.getConnection();
 
     const res = await connection.manager.insert(UserRole, {
@@ -200,5 +200,5 @@ export async function assignUserToRole(
         primary_role_for_user: is_primary_role,
     });
 
-    return res.identifiers[0].id;
+    return res.identifiers[0] as { user_id: number; role_id: number };
 }

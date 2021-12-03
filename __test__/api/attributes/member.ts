@@ -8,6 +8,7 @@ export type ReadManyMemberProps = undefined;
 export type DeleteMemberProps = undefined;
 export type UpdateMemberProps = InviteMemberProps & { birthday: Date };
 export type RoleAssignmentProps = { user_id: number; role_ids: number[] };
+export type RoleRemovalProps = undefined;
 export type MemberTypes = Record<
     MemberKeys,
     () =>
@@ -18,6 +19,7 @@ export type MemberTypes = Record<
         | DeleteMemberProps
         | UpdateMemberProps
         | RoleAssignmentProps
+        | RoleRemovalProps
 >;
 
 export const inviteMember = (): InviteMemberProps =>
@@ -35,6 +37,7 @@ export const updateMember = (): UpdateMemberProps =>
     deepClone({ ...inviteMember(), birthday: new Date() });
 export const roleAssignment = (): RoleAssignmentProps =>
     deepClone({ user_id: NaN, role_ids: [] });
+export const roleRemoval = (): RoleRemovalProps => undefined;
 
 const attributes: MemberTypes = {
     inviteMember,
@@ -44,6 +47,7 @@ const attributes: MemberTypes = {
     deleteMember,
     updateMember,
     roleAssignment,
+    roleRemoval,
 };
 
 export default attributes;
