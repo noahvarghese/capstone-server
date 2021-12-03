@@ -196,7 +196,7 @@ describe("Global admin authorized", () => {
             expect(responseData[0].department).toBe("Admin");
         });
 
-        test("User who has CRUD rights can edit role", async () => {
+        test("User who has CRUD rights can change role name", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
             const permission =
                 baseWorld.getCustomProp<PermissionTestAttributes>("permission");
