@@ -173,7 +173,7 @@ export const roleRemoval = async function roleRemoval(
     await apiRequest(baseWorld, this.name, {
         cookie: { withCookie: true, saveCookie: false },
         method: "delete",
-        body: { user_id, role_ids },
+        query: { user_id, role_ids },
         errorOnFail: false,
     });
 } as ApiTestFn;
