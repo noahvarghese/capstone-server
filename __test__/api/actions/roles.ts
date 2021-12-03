@@ -49,9 +49,15 @@ export const deleteRole = async function deleteRole(
 export const editRole = async function editRole(
     this: ApiTestFn,
     baseWorld: BaseWorld,
-    name: string,
-    permissions: PermissionAttributes,
-    id: number,
+    {
+        id,
+        ...details
+    }: {
+        id: number;
+        name?: string;
+        permissions?: PermissionAttributes;
+        department_id?: number;
+    },
     errorOnFail = false
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
@@ -60,8 +66,8 @@ export const editRole = async function editRole(
             withCookie: true,
         },
         errorOnFail: errorOnFail as boolean,
-        query: { id },
-        body: { name, permissions },
+        param: id.toString(),
+        body: { ...details },
         method: "put",
     });
 } as ApiTestFn;

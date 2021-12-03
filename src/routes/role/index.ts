@@ -336,12 +336,12 @@ router.delete("/", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
         SqlConnection,
-        query: { id: queryId },
-        body: { name, department: department_id, permissions },
+        params: { id: queryId },
+        body: { name, department_id, permissions },
     } = req;
 
     let id: number;
@@ -387,11 +387,13 @@ router.put("/", async (req: Request, res: Response) => {
             }
         );
 
-        await SqlConnection.manager.update(
-            Permission,
-            { id: currentRole.permission_id },
-            { ...permissions }
-        );
+        if (permissions) {
+            await SqlConnection.manager.update(
+                Permission,
+                { id: currentRole.permission_id },
+                { ...permissions }
+            );
+        }
         res.sendStatus(200);
         return;
     } catch (_e) {
