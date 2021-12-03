@@ -1,4 +1,5 @@
 import Department from "@models/department";
+import Membership from "@models/membership";
 import Permission from "@models/permission";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
@@ -37,9 +38,22 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
+    // check user is a member
+    const membership = await SqlConnection.manager.findOne(Membership, {
+        where: { user_id, business_id: current_business_id },
+    });
+
+    if (!membership) {
+        res.status(400).json({
+            message: "User is not a member of the business",
+        });
+        return;
+    }
+
     // may find a way to use promise.all
     for (const id of role_ids) {
         try {
+            // check role is part of business
             const role = await SqlConnection.createQueryBuilder()
                 .select("r")
                 .from(Role, "r")
@@ -85,7 +99,9 @@ router.post("/", async (req: Request, res: Response) => {
         } catch (e) {
             const { message } = e as Error;
             Logs.Error(message);
-            res.status(500).json({ message: "Unable to assign user to role" });
+            res.status(500).json({
+                message: "Unable to assign user to role(s)",
+            });
             return;
         }
     }

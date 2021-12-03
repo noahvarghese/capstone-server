@@ -100,3 +100,35 @@ export const readManyRoles = async function readManyRoles(
         method: "get",
     });
 } as ApiTestFn;
+
+export const memberAssignment = async function memberAssignment(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    body: { user_ids: number[]; role_id: number }
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
+        cookie: {
+            withCookie: true,
+            saveCookie: false,
+        },
+        method: "post",
+        body,
+        errorOnFail: false,
+    });
+} as ApiTestFn;
+
+export const memberRemoval = async function memberRemoval(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    query: { user_ids: number[]; role_id: number }
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
+        cookie: {
+            withCookie: true,
+            saveCookie: false,
+        },
+        method: "delete",
+        query,
+        errorOnFail: false,
+    });
+};

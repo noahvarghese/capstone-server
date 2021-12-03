@@ -3,6 +3,8 @@ type RoleKeys =
     | "deleteRole"
     | "readManyRoles"
     | "readOneRole"
-    | "editRole";
+    | "editRole"
+    | "memberAssignment"
+    | "memberRemoval";
 
 export default RoleKeys;

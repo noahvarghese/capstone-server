@@ -39,6 +39,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         <th>method</th>
         <th>route</th>
         <th>body</th>
+        <th>query</th>
         <th>include credentials</th>
         <th>return status</th>
         <th>return type</th>
@@ -52,6 +53,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>/auth/login</td>
             <td>
             <pre>{email: string; password: string;}</pre></td>
+            <td></td>
             <td>false</td>
             <td>200</td>
             <td>{}</td>
@@ -76,6 +78,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
                 confirm_password: string;
                 name: string;
             }</pre></td>
+            <td></td>
             <td>false</td>
             <td>201</td>
             <td><pre>{}</pre></td>
@@ -87,6 +90,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/logout</td>
             <td><pre></pre></td>
+            <td></td>
             <td>true</td>
             <td></td>
             <td><pre></pre></td>
@@ -98,6 +102,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/auth/forgot_password </td>
             <td><pre>{email: string;}</pre></td>
+            <td></td>
             <td>false</td>
             <td>200</td>
             <td><pre>{}</pre></td>
@@ -107,14 +112,91 @@ They may be moved into their own repo at the end of this to showcase all parts o
         </tr>
         <tr>
             <td>POST</td>
-            <td>/auth/reset_password/{token}</td>
+            <td>/auth/reset_password/:token</td>
             <td><pre>{password: string; confirm_password:string;}</pre></td>
+            <td></td>
             <td>false</td>
             <td>200</td>
             <td><pre>{}</pre></td>
             <td>401, 403, 500</td>
             <td><pre>{message?: string;}</pre></td>
             <td>this is the link sent via email to reset the password</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/members/:id</td>
+            <td><pre></pre></td>
+            <td><pre></pre></td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    first_name: string;
+                    last_name: string;
+                    email: string;
+                    phone: string;
+                    birthday: string;
+                    roles: {
+                        default: boolean;
+                        id: number;
+                        name: string;
+                        department: {
+                            id: number;
+                            name: string;
+                        }
+                    }[]
+                }
+                </pre>
+            </td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Get one member</td>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>/members</td>
+            <td><pre></pre></td>
+            <td>
+                <pre>
+                {
+                    search?: string; 
+                    limit: number; 
+                    page: number; 
+                    sortField?: "birthday" | "first_name" | "last_name" | "email" | "phone"; 
+                    sortOrder?: "ASC" | "DESC"; 
+                    filterField?: "department" | "role"; 
+                    filterIds?: number[];
+                }
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td>
+                <pre>
+                {
+                    id: number;
+                    first_name: string;
+                    last_name: string;
+                    email: string;
+                    phone: string;
+                    birthday: string;
+                    roles: {
+                        default: boolean;
+                        id: number;
+                        name: string;
+                        department: {
+                            id: number;
+                            name: string;
+                        }
+                    }[]
+                }[]
+                </pre>
+            </td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Allows searching, sorting, filtering, and pagination of members</td>
         </tr>
         <tr>
             <td>POST</td>
@@ -126,9 +208,10 @@ They may be moved into their own repo at the end of this to showcase all parts o
                     last_name: string;
                     email: string;
                     phone: string;
-                }    
+                }
                 </pre>
             </td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td><pre>{}</pre></td>
@@ -144,9 +227,10 @@ They may be moved into their own repo at the end of this to showcase all parts o
                 {
                     user_id: number;
                     role_ids: number[];
-                }    
+                }
                 </pre>
             </td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td><pre>{}</pre></td>
@@ -157,12 +241,13 @@ They may be moved into their own repo at the end of this to showcase all parts o
         <tr>
             <td>DELETE</td>
             <td>/members/role_assignment</td>
+            <td><pre></pre></td>
             <td>
                 <pre>
                 {
                     user_id: number;
                     role_ids: number[];
-                }    
+                }
                 </pre>
             </td>
             <td>true</td>
@@ -176,6 +261,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/members/invite/:token</td>
             <td><pre>{}</pre></td>
+            <td></td>
             <td>false</td>
             <td>200</td>
             <td><pre>{}</pre></td>
@@ -187,6 +273,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>GET</td>
             <td>/settings/nav</td>
             <td><pre>{}</pre></td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td>
@@ -201,7 +288,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
                     reports: boolean;
                     scores: boolean;
                     logout: boolean;
-                }: Permission     
+                }: Permission
                 </pre>
             </td>
             <td>500</td>
@@ -212,6 +299,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>GET</td>
             <td>/departments/:id</td>
             <td><pre>{}</pre></td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td>
@@ -233,6 +321,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>GET</td>
             <td>/departments</td>
             <td><pre>{}</pre></td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td>
@@ -253,6 +342,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>POST</td>
             <td>/departments</td>
             <td><pre>{name: string;}</pre></td>
+            <td></td>
             <td>true</td>
             <td>201</td>
             <td><pre>{}</pre></td>
@@ -264,6 +354,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>GET</td>
             <td>/roles</td>
             <td><pre>{}</pre></td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td>
@@ -286,8 +377,8 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>
                 <pre>
                 {
-                    name: string; 
-                    department: number; 
+                    name: string;
+                    department: number;
                     home: boolean;
                     members: boolean;
                     departments: boolean;
@@ -300,6 +391,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
                 }
                 </pre>
             </td>
+            <td></td>
             <td>true</td>
             <td>201</td>
             <td><pre>{}</pre></td>
@@ -308,9 +400,48 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>Creates role</td>
         </tr>
         <tr>
+            <td>POST</td>
+            <td>/roles/member_assignment</td>
+            <td>
+                <pre>
+                {
+                    user_ids: number[];
+                    role_id: number;
+                }
+                </pre>
+            </td>
+            <td></td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Assigns multiple users to role</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/roles/member_assignment</td>
+            <td><pre></pre></td>
+            <td>
+                <pre>
+                {
+                    user_ids: number[];
+                    role_id: number;
+                }
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Removes multiple users from role</td>
+        </tr>
+        <tr>
             <td>GET</td>
             <td>/businesses</td>
             <td><pre>{}</pre></td>
+            <td></td>
             <td>true</td>
             <td>200</td>
             <td><pre>{id: number; name: string; default: boolean;}[]</pre></td>
@@ -321,6 +452,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
         <tr>
             <td></td>
             <td></td>
+            <td><pre></pre></td>
             <td><pre></pre></td>
             <td></td>
             <td></td>

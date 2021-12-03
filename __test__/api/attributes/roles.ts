@@ -20,15 +20,20 @@ export interface CreateRoleProps {
     dept_view_reports: boolean;
 }
 export type EditRoleProps = CreateRoleProps;
+export type MemberAssignmentProps = { user_ids: number[]; role_id: number };
+export type MemberRemovalProps = undefined;
 export type DeleteRoleProps = undefined;
 export type ReadOneRoleProps = undefined;
 export type ReadManyRoleProps = undefined;
-export type RoleTypes = Record<RoleKeys, () => CreateRoleProps | undefined>;
+export type RoleTypes = Record<
+    RoleKeys,
+    () => CreateRoleProps | MemberAssignmentProps | undefined
+>;
 
 const createRole = (): CreateRoleProps =>
     deepClone({
         name: "TEST",
-        department: [-1],
+        department: [],
         dept_assign_resources_to_role: false,
         dept_assign_users_to_role: false,
         dept_crud_resources: false,
@@ -48,6 +53,9 @@ const editRole = (): EditRoleProps => deepClone(createRole());
 const deleteRole = (): DeleteRoleProps => undefined;
 const readOneRole = (): ReadOneRoleProps => undefined;
 const readManyRoles = (): ReadManyRoleProps => undefined;
+const memberAssignment = (): MemberAssignmentProps =>
+    deepClone({ user_ids: [], role_id: NaN });
+const memberRemoval = (): MemberRemovalProps => undefined;
 
 const attributes: RoleTypes = {
     createRole,
@@ -55,6 +63,8 @@ const attributes: RoleTypes = {
     readManyRoles,
     readOneRole,
     editRole,
+    memberAssignment,
+    memberRemoval,
 };
 
 export default attributes;
