@@ -20,7 +20,7 @@ router.use("/businesses", businessRouter);
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {
-    Logs.Log("Invalid request to", req.originalUrl);
+    Logs.Error("Invalid request to", req.originalUrl);
 
     let redirectURL = client();
 

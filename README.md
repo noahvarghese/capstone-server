@@ -122,26 +122,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>
                 <pre>
                 {
-                    first_name: string; 
-                    last_name: string; 
-                    email: string; 
-                    phone: string
-                }
-                </pre>
-            </td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>This is how a business adds a new user, will add user to database if user does not exist, and send invite to user</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/members/invite</td>
-            <td>
-                <pre>
-                {
                     first_name: string;
                     last_name: string;
                     email: string;
@@ -155,6 +135,42 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>400,403,500</td>
             <td><pre>{message?: string;}</pre></td>
             <td>Requires user sending request to have explicit permissions to create user. Checks if user exists before creating. Otherwise will just send the invite.</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/members/role_assignment</td>
+            <td>
+                <pre>
+                {
+                    user_id: number;
+                    role_ids: number[];
+                }    
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Assigns multiple roles to user</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/members/role_assignment</td>
+            <td>
+                <pre>
+                {
+                    user_id: number;
+                    role_ids: number[];
+                }    
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Removes multiple roles from user</td>
         </tr>
         <tr>
             <td>POST</td>
@@ -347,8 +363,36 @@ They may be moved into their own repo at the end of this to showcase all parts o
 
 ## Tests
 
-In the test/sample_data directory is the configuration for setup and teardown of each test case
-Since we have tests for the models and the api, I have seperated the dependencies so as to provide common actions for setup teardown and running of each test within the context of the test areas.
+### Adding new api tests
+
+1. Create file in \_\_test\_\_/api/actions
+2. Create file in \_\_test\_\_/api/attributes
+3. Add entry to \_\_test\_\_/api/dependencies/setup.ts
+4. Create file in \_\_test\_\_/api/keys
+5. Add entry to \_\_test\_\_/api/urls.ts
+
+### Flow
+
+-   Pre commit hook is triggered to run any changed tests
+-   Once pushed to GitHub, CI job runs same tests
+-   Once branch is complete and pull request created, CI jobs run again with anything that has changed compared to the base branch
+
+#### Notes
+
+-   Test script generates a new database name each run using the branch name and timestamp, this allows concurrent tests to run on different machines
+-   Since we are testing the whole server instead of just the routes, small changes result in lots of tests (may need to rewrite the \_\_test\_\_/server logic)
+
+### Description
+
+'api' contains API specific helpers
+'model' contains model/database/sql specific helpers
+'server' contains helpers to start/stop the server and configure which database it connects to for testing
+'support' Contains helpful files that are used with each test run.
+'util' Has test specific utilities
+
+### Sample Data
+
+Is contained within each helper folder
 
 ### Models
 

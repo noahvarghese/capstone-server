@@ -149,3 +149,17 @@ export const inviteMember = async function inviteMember(
         },
     });
 } as ApiTestFn;
+
+export const roleAssignment = async function roleAssignment(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    user_id: number,
+    role_ids: number[]
+) {
+    await apiRequest(baseWorld, this.name, {
+        cookie: { withCookie: true, saveCookie: false },
+        method: "post",
+        body: { user_id, role_ids },
+        errorOnFail: false,
+    });
+} as ApiTestFn;

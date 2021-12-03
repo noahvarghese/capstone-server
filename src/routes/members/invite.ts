@@ -265,6 +265,17 @@ router.post("/:token", async (req: Request, res: Response) => {
     }
 
     try {
+        await connection.manager.delete(MembershipRequest, membershipRequest);
+    } catch (e) {
+        const { message } = e as Error;
+        Logs.Error(message);
+        res.status(500).json({
+            message: "Unable to delete membership request",
+        });
+        return;
+    }
+
+    try {
         const user = await connection.manager.findOneOrFail(User, {
             where: { id: membershipRequest.user_id },
         });
