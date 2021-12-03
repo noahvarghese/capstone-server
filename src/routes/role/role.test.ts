@@ -350,7 +350,7 @@ describe("User who lacks CRUD rights", () => {
         }
     });
 
-    test("User who has CRUD rights cannot read multiple roles", async () => {
+    test("User who lacks CRUD rights cannot read multiple roles", async () => {
         // Given there is a user setup without crud permissions
         await login.call(login, baseWorld);
         const assignedRoleId = await createRole.call(
@@ -380,7 +380,7 @@ describe("User who lacks CRUD rights", () => {
             message: "Insufficient permissions",
         });
     });
-    test("User who has CRUD rights cannot read a singular role", async () => {
+    test("User who lacks CRUD rights cannot read a singular role", async () => {
         // Given there is a user setup without crud permissions
         await login.call(login, baseWorld);
         const assignedRoleId = await createRole.call(
