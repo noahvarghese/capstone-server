@@ -24,6 +24,7 @@ import {
     readManyRoles,
     readOneRole,
 } from "@test/api/actions/roles";
+import { deepClone } from "@util/obj";
 
 jest.setTimeout(5000000);
 
@@ -157,6 +158,50 @@ describe("Global admin authorized", () => {
             expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
         });
 
+        describe("Sorting", () => {
+            const cases = [
+                ["department", "ASC"],
+                ["department", "DESC"],
+                ["role", "ASC"],
+                ["role", "DESC"],
+            ];
+
+            test.each(cases)(
+                "given sort field %p and sort order %p, the results will match",
+                async (sortField, sortOrder) => {
+                    await readManyRoles.call(readManyRoles, baseWorld, {
+                        query: { sortField, sortOrder },
+                    });
+
+                    const res =
+                        baseWorld.getCustomProp<RoleResponse[]>("responseData");
+                    expect(res.length).toBeGreaterThan(1);
+                    const resCopy = deepClone(res);
+                    const sortedRes = resCopy.sort((a, b): number => {
+                        const aVal = JSON.stringify(
+                            sortField === "department"
+                                ? a.department.name
+                                : a.name
+                        );
+
+                        const bVal = JSON.stringify(
+                            sortField === "department"
+                                ? b.department.name
+                                : b.name
+                        );
+
+                        if (sortOrder === "ASC") {
+                            return aVal < bVal ? -1 : aVal === bVal ? 0 : 1;
+                        } else if (sortOrder === "DESC") {
+                            return aVal < bVal ? 1 : aVal === bVal ? 0 : -1;
+                        } else throw new Error("Invalid sort order");
+                    });
+
+                    expect(JSON.stringify(res)).toBe(JSON.stringify(sortedRes));
+                }
+            );
+        });
+
         test("User who has CRUD rights can read singular role", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
 
@@ -202,14 +247,13 @@ describe("Global admin authorized", () => {
         test("User who has CRUD rights can read multiple roles", async () => {
             await readManyRoles.call(readManyRoles, baseWorld);
             Request.succeeded.call(baseWorld, { auth: false });
-            const data = baseWorld.getCustomProp<{
-                data: {
+            const responseData = baseWorld.getCustomProp<
+                {
                     id: number;
                     name: string;
                     department: string;
-                }[];
-            }>("responseData");
-            const responseData = data.data;
+                }[]
+            >("responseData");
 
             // check that the default Admin department is the first
             // we can compare others but there will be other tests for this route about sorting and filtering
