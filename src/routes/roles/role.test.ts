@@ -137,6 +137,26 @@ describe("Global admin authorized", () => {
             );
         });
 
+        test("Pagination", async () => {
+            // request first page
+            await readManyRoles.call(readManyRoles, baseWorld, {
+                query: { page: 1, limit: 1 },
+            });
+
+            const res1 =
+                baseWorld.getCustomProp<RoleResponse[]>("responseData");
+
+            // request second page
+            await readManyRoles.call(readManyRoles, baseWorld, {
+                query: { page: 2, limit: 1 },
+            });
+
+            // make sure a different user was returned
+            const res2 =
+                baseWorld.getCustomProp<RoleResponse[]>("responseData");
+            expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
+        });
+
         test("User who has CRUD rights can read singular role", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
 
