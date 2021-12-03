@@ -7,6 +7,7 @@ import Permission, {
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
+import isSortFieldFactory from "@util/sortFieldFactory";
 import { Router, Request, Response } from "express";
 import validator from "validator";
 import memberAssignmentRouter from "./member_assignment";
@@ -106,6 +107,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 router.get("/", async (req: Request, res: Response) => {
     const {
+        query,
         session: { current_business_id, user_id },
         SqlConnection,
     } = req;
@@ -127,6 +129,46 @@ router.get("/", async (req: Request, res: Response) => {
         return;
     }
 
+    // Validate query items
+    const limit =
+        isNaN(Number(query.limit)) || Number(query.limit) < 1
+            ? 50
+            : Number(query.limit);
+    const page =
+        isNaN(Number(query.page)) || Number(query.page) < 1
+            ? 1
+            : Number(query.page);
+
+    const {
+        sortField,
+        sortOrder,
+        // search,
+        // filterIds
+    } = req.query;
+
+    if (
+        !["ASC", "DESC", "", undefined].includes(
+            sortOrder as string | undefined
+        )
+    ) {
+        res.status(400).json({ message: "Unknown option for sort order" });
+        return;
+    }
+
+    const isSortField = isSortFieldFactory(["department", "role"]);
+
+    if (sortField !== undefined && !isSortField(sortField as string)) {
+        res.status(400).json({
+            message: "Invalid field to sort by " + sortField,
+        });
+        return;
+    }
+
+    // const sqlizedSearchItem = `%${search}%`;
+
+    // const filterArray = JSON.parse(filterIds ? (filterIds as string) : "{}");
+    // const filter = Array.isArray(filterArray);
+
     try {
         const returnVal: {
             id: number;
@@ -141,6 +183,16 @@ router.get("/", async (req: Request, res: Response) => {
             .where("d.business_id = :business_id", {
                 business_id: current_business_id,
             })
+            .orderBy(
+                sortField === "department"
+                    ? "d.name"
+                    : sortField === "role"
+                    ? "r.name"
+                    : "r.created_on",
+                (sortOrder as "ASC" | "DESC") ?? "DESC"
+            )
+            .limit(limit)
+            .offset(page * limit - limit)
             .getMany();
 
         for (const role of roles) {

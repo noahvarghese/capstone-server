@@ -5,6 +5,7 @@ import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
+import isSortFieldFactory from "@util/sortFieldFactory";
 import { isPhone } from "@util/validators";
 import { Router, Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
@@ -120,13 +121,6 @@ router.get("/:id", async (req: Request, res: Response) => {
         res.status(400).json({ message: "Bad id" });
     }
 });
-
-const isSortFieldFactory = (fields: readonly string[]) => {
-    type FieldType = typeof fields[number];
-    return (val: string): val is FieldType => {
-        return typeof val === "string" && fields.includes(val);
-    };
-};
 
 // get all users that are associated with business
 router.get("/", async (req: Request, res: Response) => {

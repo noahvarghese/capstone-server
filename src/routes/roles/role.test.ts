@@ -194,7 +194,7 @@ describe("Global admin authorized", () => {
             // check that the default Admin department is the first
             // we can compare others but there will be other tests for this route about sorting and filtering
             expect(responseData.length).toBeGreaterThanOrEqual(1);
-            expect(responseData[0].name).toBe("General");
+            expect(responseData[0].name).toBe(ROLE_NAME);
             expect(responseData[0].department).toBe("Admin");
         });
 
