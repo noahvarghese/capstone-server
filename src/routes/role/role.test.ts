@@ -5,6 +5,7 @@ import Request from "@test/api/helpers/request";
 import Role from "@models/role";
 import {
     assignUserToRole,
+    createDepartment,
     createRole,
     getAdminUserId,
     getBusiness,
@@ -27,6 +28,7 @@ import {
 jest.setTimeout(5000000);
 
 let baseWorld: BaseWorld;
+const ROLE_NAME = "TEST";
 
 type PermissionTestAttributes = Omit<
     PermissionAttributes,
@@ -69,7 +71,7 @@ describe("Global admin authorized", () => {
     test("Global admin can delete role", async () => {
         //     Given I am logged in as an admin
         // create role to delete
-        const id = await createRole.call(baseWorld, "test", "Admin");
+        const id = await createRole.call(baseWorld, ROLE_NAME, "Admin");
 
         //     When I delete a role
         await deleteRole.call(deleteRole, baseWorld, [id]);
@@ -110,7 +112,7 @@ describe("Global admin authorized", () => {
     describe("requires a premade role", () => {
         beforeEach(async () => {
             // Given there is a role
-            const roleId = await createRole.call(baseWorld, "test", "Admin");
+            const roleId = await createRole.call(baseWorld, ROLE_NAME, "Admin");
             const permission: PermissionTestAttributes = {
                 dept_crud_role: true,
                 global_view_reports: true,
@@ -196,9 +198,35 @@ describe("Global admin authorized", () => {
             expect(responseData[0].department).toBe("Admin");
         });
 
+        test("User who has CRUD rights can reassign role to different department", async () => {
+            const roleId = baseWorld.getCustomProp<number>("roleId");
+            const connection = baseWorld.getConnection();
+            const prevRole = await connection.manager.findOne(Role, roleId);
+
+            if (!prevRole) throw new Error("Role not defined");
+
+            const department_id = await createDepartment.call(
+                baseWorld,
+                "TEST"
+            );
+
+            await editRole.call(
+                editRole,
+                baseWorld,
+                { id: roleId, department_id },
+                true
+            );
+            Request.succeeded.call(baseWorld, { auth: false, status: /^200$/ });
+
+            const currRole = await connection.manager.findOne(Role, roleId);
+            if (!currRole) throw new Error("Role not defined");
+
+            expect(prevRole.department_id).not.toBe(currRole.department_id);
+        });
+
         test("User who has CRUD rights can change role name", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
-            const permission =
+            const permissions =
                 baseWorld.getCustomProp<PermissionTestAttributes>("permission");
 
             // When a user tries to edit that role
@@ -206,9 +234,11 @@ describe("Global admin authorized", () => {
             await editRole.call(
                 editRole,
                 baseWorld,
-                newName,
-                permission,
-                roleId,
+                {
+                    name: newName,
+                    permissions,
+                    id: roleId,
+                },
                 true
             );
 
@@ -231,7 +261,7 @@ describe("Global admin authorized", () => {
 
             expect(updatedRole.name).toBe(newName);
 
-            for (const [key, value] of Object.entries(permission)) {
+            for (const [key, value] of Object.entries(permissions)) {
                 expect(updatedPermissions[key as keyof Permission]).toBe(value);
             }
         });
@@ -269,7 +299,7 @@ describe("User who lacks CRUD rights", () => {
         );
 
         // And there is a role without any members
-        const roleId = await createRole.call(baseWorld, "test", "Admin");
+        const roleId = await createRole.call(baseWorld, ROLE_NAME, "Admin");
         //     When I delete a role
         await deleteRole.call(deleteRole, baseWorld, [roleId]);
 
@@ -302,8 +332,8 @@ describe("User who lacks CRUD rights", () => {
         );
 
         // And there is a role
-        const roleId = await createRole.call(baseWorld, "test", "Admin");
-        const permission: Omit<PermissionAttributes, "updated_by_user_id"> = {
+        const roleId = await createRole.call(baseWorld, ROLE_NAME, "Admin");
+        const permissions: Omit<PermissionAttributes, "updated_by_user_id"> = {
             dept_crud_role: true,
             global_view_reports: true,
             global_crud_users: true,
@@ -322,7 +352,11 @@ describe("User who lacks CRUD rights", () => {
 
         // When a user tries to edit that role
         const newName = "Noah's test role";
-        await editRole.call(editRole, baseWorld, newName, permission, roleId);
+        await editRole.call(editRole, baseWorld, {
+            name: newName,
+            permissions,
+            id: roleId,
+        });
 
         // Then the department is not updated
         Request.failed.call(baseWorld, {
@@ -345,7 +379,7 @@ describe("User who lacks CRUD rights", () => {
 
         expect(updatedRole.name).not.toBe(newName);
 
-        for (const [key, value] of Object.entries(permission)) {
+        for (const [key, value] of Object.entries(permissions)) {
             expect(updatedPermissions[key as keyof Permission]).not.toBe(value);
         }
     });
