@@ -5,6 +5,7 @@ type MemberKeys =
     | "acceptInvite"
     | "deleteMember"
     | "updateMember"
-    | "roleAssignment";
+    | "roleAssignment"
+    | "roleRemoval";
 
 export default MemberKeys;
