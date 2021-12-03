@@ -3,7 +3,7 @@ import Logs from "@util/logs/logs";
 import { client } from "@util/permalink";
 import authRouter from "./auth";
 import departmentRouter from "./department";
-import roleRouter from "./role";
+import roleRouter from "./roles";
 import settingsRoute from "./settings";
 import memberRoute from "./members";
 import businessRouter from "./business";
