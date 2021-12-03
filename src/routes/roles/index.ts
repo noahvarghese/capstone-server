@@ -9,6 +9,7 @@ import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import isSortFieldFactory from "@util/sortFieldFactory";
 import { Router, Request, Response } from "express";
+import { Brackets, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
 import memberAssignmentRouter from "./member_assignment";
 
@@ -142,7 +143,7 @@ router.get("/", async (req: Request, res: Response) => {
     const {
         sortField,
         sortOrder,
-        // search,
+        search,
         // filterIds
     } = req.query;
 
@@ -165,7 +166,7 @@ router.get("/", async (req: Request, res: Response) => {
     }
     Logs.Debug(sortField, sortOrder);
 
-    // const sqlizedSearchItem = `%${search}%`;
+    const sqlizedSearchItem = `%${search}%`;
 
     // const filterArray = JSON.parse(filterIds ? (filterIds as string) : "{}");
     // const filter = Array.isArray(filterArray);
@@ -177,13 +178,27 @@ router.get("/", async (req: Request, res: Response) => {
             department: string;
         }[] = [];
 
-        const roles = await SqlConnection.createQueryBuilder()
+        let roleQuery = SqlConnection.createQueryBuilder()
             .select("r")
             .from(Role, "r")
             .leftJoin(Department, "d", "d.id = r.department_id")
             .where("d.business_id = :business_id", {
                 business_id: current_business_id,
-            })
+            });
+
+        if (search) {
+            roleQuery = roleQuery.andWhere(
+                new Brackets((qb: WhereExpressionBuilder) => {
+                    qb.where("r.name like :role_name", {
+                        role_name: sqlizedSearchItem,
+                    }).orWhere("d.name like :department_name", {
+                        department_name: sqlizedSearchItem,
+                    });
+                })
+            );
+        }
+
+        const roles = await roleQuery
             .orderBy(
                 sortField === "department"
                     ? "d.name"

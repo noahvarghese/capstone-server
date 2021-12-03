@@ -202,6 +202,48 @@ describe("Global admin authorized", () => {
             );
         });
 
+        describe("Searching", () => {
+            const cases = [
+                // Searches based on department
+                ["department", "adm"],
+                // Search based on role
+                ["name", "TE"],
+            ];
+
+            test.each(cases)(
+                "Search field %p, search item %p",
+                async (searchField, searchItem) => {
+                    await readManyRoles.call(readManyRoles, baseWorld, {
+                        query: { search: searchItem },
+                    });
+
+                    const res =
+                        baseWorld.getCustomProp<RoleResponse[]>("responseData");
+
+                    for (const role of res) {
+                        expect(
+                            (
+                                role[
+                                    searchField as keyof RoleResponse
+                                ] as string
+                            ).toLowerCase()
+                        ).toContain(searchItem.toString().toLowerCase());
+                    }
+                }
+            );
+        });
+
+        test("Invalid sort field", async () => {
+            await readManyRoles.call(readManyRoles, baseWorld, {
+                query: { sortField: "TEST123" },
+            });
+
+            Request.failed.call(baseWorld, {
+                status: /^400$/,
+                message: /^invalid field to sort by \w*$/i,
+                include404: false,
+            });
+        });
         test("User who has CRUD rights can read singular role", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
 
