@@ -13,7 +13,10 @@ import {
     getRoleInDepartment,
     loginUser,
 } from "@test/api/helpers/setup-actions";
-import Permission, { PermissionAttributes } from "@models/permission";
+import Permission, {
+    EmptyPermissionAttributes,
+    PermissionAttributes,
+} from "@models/permission";
 import { RoleResponse } from ".";
 import Department from "@models/department";
 import { login } from "@test/api/actions/auth";
@@ -222,10 +225,9 @@ describe("Global admin authorized", () => {
 
                     for (const role of res) {
                         expect(
-                            (
-                                role[
-                                    searchField as keyof RoleResponse
-                                ] as string
+                            (searchField === "department"
+                                ? role.department.name
+                                : role.name
                             ).toLowerCase()
                         ).toContain(searchItem.toString().toLowerCase());
                     }
@@ -244,6 +246,56 @@ describe("Global admin authorized", () => {
                 include404: false,
             });
         });
+
+        describe("Filtering", () => {
+            beforeEach(async () => {
+                // create test department
+                const departmentId = await createDepartment.call(
+                    baseWorld,
+                    ROLE_NAME
+                );
+
+                const roleId = await createRole.call(
+                    baseWorld,
+                    ROLE_NAME,
+                    ROLE_NAME,
+                    {
+                        ...EmptyPermissionAttributes(),
+                        updated_by_user_id: await getAdminUserId.call(
+                            baseWorld
+                        ),
+                    }
+                );
+
+                baseWorld.setCustomProp("departmentId", departmentId);
+                baseWorld.setCustomProp("roleId", roleId);
+            });
+            test("Filtering", async () => {
+                const departmentId = baseWorld.getCustomProp("departmentId");
+
+                await readManyRoles.call(readManyRoles, baseWorld, {
+                    query: {
+                        filterIds: [departmentId],
+                    },
+                });
+
+                Request.succeeded.call(baseWorld, {
+                    auth: false,
+                    status: /^200$/,
+                });
+
+                const res =
+                    baseWorld.getCustomProp<RoleResponse[]>("responseData");
+
+                // Because we are only creating one extra user
+                expect(res.length).toBe(1);
+
+                for (const item of res) {
+                    expect(item.department.id).toBe(departmentId);
+                }
+            });
+        });
+
         test("User who has CRUD rights can read singular role", async () => {
             const roleId = baseWorld.getCustomProp<number>("roleId");
 
@@ -289,19 +341,14 @@ describe("Global admin authorized", () => {
         test("User who has CRUD rights can read multiple roles", async () => {
             await readManyRoles.call(readManyRoles, baseWorld);
             Request.succeeded.call(baseWorld, { auth: false });
-            const responseData = baseWorld.getCustomProp<
-                {
-                    id: number;
-                    name: string;
-                    department: string;
-                }[]
-            >("responseData");
+            const responseData =
+                baseWorld.getCustomProp<RoleResponse[]>("responseData");
 
             // check that the default Admin department is the first
             // we can compare others but there will be other tests for this route about sorting and filtering
             expect(responseData.length).toBeGreaterThanOrEqual(1);
             expect(responseData[0].name).toBe(ROLE_NAME);
-            expect(responseData[0].department).toBe("Admin");
+            expect(responseData[0].department.name).toBe("Admin");
         });
 
         test("User who has CRUD rights can reassign role to different department", async () => {

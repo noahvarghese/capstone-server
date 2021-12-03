@@ -140,12 +140,7 @@ router.get("/", async (req: Request, res: Response) => {
             ? 1
             : Number(query.page);
 
-    const {
-        sortField,
-        sortOrder,
-        search,
-        // filterIds
-    } = req.query;
+    const { sortField, sortOrder, search, filterIds } = req.query;
 
     if (
         !["ASC", "DESC", "", undefined].includes(
@@ -164,18 +159,17 @@ router.get("/", async (req: Request, res: Response) => {
         });
         return;
     }
-    Logs.Debug(sortField, sortOrder);
 
     const sqlizedSearchItem = `%${search}%`;
 
-    // const filterArray = JSON.parse(filterIds ? (filterIds as string) : "{}");
-    // const filter = Array.isArray(filterArray);
+    const filterArray = JSON.parse(filterIds ? (filterIds as string) : "{}");
+    const filter = Array.isArray(filterArray);
 
     try {
         const returnVal: {
             id: number;
             name: string;
-            department: string;
+            department: { id: number; name: string };
         }[] = [];
 
         let roleQuery = SqlConnection.createQueryBuilder()
@@ -196,6 +190,12 @@ router.get("/", async (req: Request, res: Response) => {
                     });
                 })
             );
+        }
+
+        if (filter) {
+            roleQuery = roleQuery.andWhere("d.id IN (:...ids)", {
+                ids: filterArray,
+            });
         }
 
         const roles = await roleQuery
@@ -222,7 +222,10 @@ router.get("/", async (req: Request, res: Response) => {
             returnVal.push({
                 id: role.id,
                 name: role.name,
-                department: department.name,
+                department: {
+                    name: department.name,
+                    id: department.id,
+                },
             });
         }
 
