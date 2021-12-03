@@ -22,6 +22,8 @@ const urls: { [i in ApiTest]: string | ((token: string) => string) } = {
     createRole: "roles",
     deleteRole: "roles",
     editRole: "roles",
+    memberAssignment: "roles/member_assignment",
+    memberRemoval: "roles/member_assignment",
     createDepartment: "departments",
     deleteDepartment: "departments",
     editDepartment: "departments",

@@ -19,6 +19,8 @@ const dependencies: { [i in ApiTest]: ApiTest[] } = {
     authCheck: ["registerBusiness"],
     createRole: ["registerBusiness"],
     deleteRole: ["registerBusiness"],
+    memberAssignment: ["registerBusiness"],
+    memberRemoval: ["registerBusiness"],
     editRole: ["registerBusiness"],
     readOneRole: ["registerBusiness"],
     readManyRoles: ["registerBusiness"],

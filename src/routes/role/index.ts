@@ -9,9 +9,11 @@ import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import { Router, Request, Response } from "express";
 import validator from "validator";
+import memberAssignmentRouter from "./member_assignment";
 
 const router = Router();
 
+router.use("/member_assignment", memberAssignmentRouter);
 // router.use(async (req: Request, res: Response, next: NextFunction) => {});
 
 export interface RoleResponse {
