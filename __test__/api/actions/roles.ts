@@ -131,4 +131,4 @@ export const memberRemoval = async function memberRemoval(
         query,
         errorOnFail: false,
     });
-};
+} as ApiTestFn;
