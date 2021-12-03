@@ -122,26 +122,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>
                 <pre>
                 {
-                    first_name: string; 
-                    last_name: string; 
-                    email: string; 
-                    phone: string
-                }
-                </pre>
-            </td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>This is how a business adds a new user, will add user to database if user does not exist, and send invite to user</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/members/invite</td>
-            <td>
-                <pre>
-                {
                     first_name: string;
                     last_name: string;
                     email: string;
@@ -155,6 +135,42 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>400,403,500</td>
             <td><pre>{message?: string;}</pre></td>
             <td>Requires user sending request to have explicit permissions to create user. Checks if user exists before creating. Otherwise will just send the invite.</td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>/members/role_assignment</td>
+            <td>
+                <pre>
+                {
+                    user_id: number;
+                    role_ids: number[];
+                }    
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Assigns multiple roles to user</td>
+        </tr>
+        <tr>
+            <td>DELETE</td>
+            <td>/members/role_assignment</td>
+            <td>
+                <pre>
+                {
+                    user_id: number;
+                    role_ids: number[];
+                }    
+                </pre>
+            </td>
+            <td>true</td>
+            <td>200</td>
+            <td><pre>{}</pre></td>
+            <td>400,403,500</td>
+            <td><pre>{message?: string;}</pre></td>
+            <td>Removes multiple roles from user</td>
         </tr>
         <tr>
             <td>POST</td>
