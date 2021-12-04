@@ -41,3 +41,38 @@ export const editDepartment = async function editDepartment(
         method: "put",
     });
 } as ApiTestFn;
+
+export const readOneDepartment = async function readOneDepartment(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    id: number
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
+        cookie: { saveCookie: true, withCookie: true },
+        param: id.toString(),
+        method: "get",
+    });
+} as ApiTestFn;
+
+export const readManyDepartments = async function readManyDepartments(
+    this: ApiTestFn,
+    baseWorld: BaseWorld,
+    opts?: {
+        query: {
+            page?: number;
+            limit?: number;
+            sortField?: string;
+            sortOrder?: "ASC" | "DESC" | "" | undefined;
+            search?: string;
+        };
+    }
+): Promise<void> {
+    await apiRequest(baseWorld, this.name, {
+        cookie: {
+            saveCookie: true,
+            withCookie: true,
+        },
+        method: "get",
+        query: opts?.query ?? {},
+    });
+} as ApiTestFn;
