@@ -29,6 +29,7 @@ let baseWorld: BaseWorld;
 beforeAll(async () => {
     await DBConnection.init();
     await Helpers.AppServer.setup(false);
+    // test
 });
 afterAll(async () => {
     await Helpers.AppServer.teardown();
