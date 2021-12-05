@@ -13,6 +13,9 @@ if os.name == 'nt':
 
 
 def hide_cursor() -> None:
+    if not os.environ["TERM"]:
+        return
+
     if os.name == 'nt':
         ci = _cursor_info()
         handle = ctypes.windll.kernel32.GetStdHandle(-11)
@@ -25,6 +28,9 @@ def hide_cursor() -> None:
 
 
 def show_cursor() -> None:
+    if not os.environ["TERM"]:
+        return
+
     if os.name == 'nt':
         ci = _cursor_info()
         handle = ctypes.windll.kernel32.GetStdHandle(-11)
@@ -50,6 +56,9 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
         fill        - Optional  : bar fill character (Str)
         printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
+    if not os.environ["TERM"]:
+        return
+
     percent = ("{0:." + str(decimals) + "f}").format(100 *
                                                      (iteration / float(total)))
     filled_length = int(length * iteration // total)
