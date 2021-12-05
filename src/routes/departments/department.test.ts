@@ -21,6 +21,7 @@ import {
 import Request from "@test/api/helpers/request";
 import Department from "@models/department";
 import { DepartmentResponse } from ".";
+import { deepClone } from "@util/obj";
 
 jest.setTimeout(500000);
 let baseWorld: BaseWorld;
@@ -92,6 +93,73 @@ describe("Global admin authorized", () => {
                     search.toLowerCase()
                 );
             }
+        });
+
+        test("Invalid sort field", async () => {
+            await readManyDepartments.call(readManyDepartments, baseWorld, {
+                query: { sortField: "TEST123" },
+            });
+
+            Request.failed.call(baseWorld, {
+                status: /^400$/,
+                message: /^invalid field to sort by \w*$/i,
+                include404: false,
+            });
+        });
+
+        describe("Sorting", () => {
+            const cases = [
+                ["name", "ASC"],
+                ["name", "DESC"],
+                ["numMembers", "ASC"],
+                ["numMembers", "DESC"],
+                ["numRoles", "ASC"],
+                ["numRoles", "DESC"],
+            ];
+
+            test.each(cases)(
+                "given sort field %p and sort order %p, the results will match",
+                async (sortField, sortOrder) => {
+                    await readManyDepartments.call(
+                        readManyDepartments,
+                        baseWorld,
+                        {
+                            query: { sortField, sortOrder },
+                        }
+                    );
+
+                    const res =
+                        baseWorld.getCustomProp<DepartmentResponse[]>(
+                            "responseData"
+                        );
+                    expect(res.length).toBeGreaterThan(1);
+                    const resCopy = deepClone(res);
+
+                    const sortedRes = resCopy.sort((a, b) => {
+                        const aSortVal = a[
+                            sortField as keyof DepartmentResponse
+                        ]
+                            .toString()
+                            .toUpperCase();
+                        const bSortVal = b[
+                            sortField as keyof DepartmentResponse
+                        ]
+                            .toString()
+                            .toUpperCase();
+                        if (sortOrder === "ASC") {
+                            if (aSortVal < bSortVal) return -1;
+                            else if (aSortVal === bSortVal) return 0;
+                            else return 1;
+                        } else {
+                            if (aSortVal > bSortVal) return -1;
+                            else if (aSortVal === bSortVal) return 0;
+                            else return 1;
+                        }
+                    });
+
+                    expect(JSON.stringify(res)).toBe(JSON.stringify(sortedRes));
+                }
+            );
         });
     });
 
