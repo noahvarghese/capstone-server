@@ -13,7 +13,7 @@ if os.name == 'nt':
 
 
 def hide_cursor() -> None:
-    if os.environ.get("TERM") is None:
+    if "TERM" not in os.environ:
         return
 
     if os.name == 'nt':
@@ -28,7 +28,7 @@ def hide_cursor() -> None:
 
 
 def show_cursor() -> None:
-    if os.environ.get("TERM") is None:
+    if "TERM" not in os.environ:
         return
 
     if os.name == 'nt':
@@ -56,7 +56,7 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
         fill        - Optional  : bar fill character (Str)
         printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
-    if os.environ.get("TERM") is None:
+    if "TERM" not in os.environ:
         return
 
     percent = ("{0:." + str(decimals) + "f}").format(100 *
@@ -70,7 +70,7 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
 
 
 def clear() -> None:
-    if os.environ.get("TERM") is None:
+    if "TERM" not in os.environ:
         return
 
     # for windows
