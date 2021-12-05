@@ -76,6 +76,23 @@ describe("Global admin authorized", () => {
                 baseWorld.getCustomProp<DepartmentResponse[]>("responseData");
             expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
         });
+
+        test("Search", async () => {
+            const search = "adm";
+
+            await readManyDepartments.call(readManyDepartments, baseWorld, {
+                query: { search },
+            });
+
+            const res =
+                baseWorld.getCustomProp<DepartmentResponse[]>("responseData");
+
+            for (const department of res) {
+                expect(department.name.toLowerCase()).toContain(
+                    search.toLowerCase()
+                );
+            }
+        });
     });
 
     test("Global admin can create department", async () => {
