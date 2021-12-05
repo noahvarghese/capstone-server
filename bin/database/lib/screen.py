@@ -70,6 +70,9 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
 
 
 def clear() -> None:
+    if not os.environ["TERM"]:
+        return
+
     # for windows
     if os.name == 'nt':
         _ = system('cls')
