@@ -11,6 +11,13 @@ import validator from "validator";
 
 const router = Router();
 
+export interface DepartmentResponse {
+    id: number;
+    name: string;
+    numMembers: number;
+    numRoles: number;
+}
+
 router.get("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
@@ -35,12 +42,7 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     try {
-        const returnVal: {
-            id: number;
-            name: string;
-            numMembers: number;
-            numRoles: number;
-        }[] = [];
+        const returnVal: DepartmentResponse[] = [];
 
         const departments = await SqlConnection.manager.find(Department, {
             where: { business_id: current_business_id },
@@ -71,9 +73,7 @@ router.get("/", async (req: Request, res: Response) => {
             });
         }
 
-        res.status(200).json({
-            data: returnVal,
-        });
+        res.status(200).json(returnVal);
         return;
     } catch (_e) {
         const e = _e as Error;

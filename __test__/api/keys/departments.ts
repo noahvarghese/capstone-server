@@ -1,6 +1,8 @@
 type DepartmentKeys =
     | "createDepartment"
     | "deleteDepartment"
-    | "editDepartment";
+    | "editDepartment"
+    | "readManyDepartments"
+    | "readOneDepartment";
 
 export default DepartmentKeys;

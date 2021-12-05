@@ -27,6 +27,8 @@ const urls: { [i in ApiTest]: string | ((token: string) => string) } = {
     createDepartment: "departments",
     deleteDepartment: "departments",
     editDepartment: "departments",
+    readManyDepartments: "departments",
+    readOneDepartment: "departments",
 };
 
 export default urls;

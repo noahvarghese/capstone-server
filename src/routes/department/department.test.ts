@@ -15,9 +15,11 @@ import {
     createDepartment,
     deleteDepartment,
     editDepartment,
+    readManyDepartments,
 } from "@test/api/actions/departments";
 import Request from "@test/api/helpers/request";
 import Department from "@models/department";
+import { DepartmentResponse } from ".";
 
 jest.setTimeout(500000);
 let baseWorld: BaseWorld;
@@ -118,9 +120,50 @@ describe("Global admin authorized", () => {
 
         expect(updatedDepartment.name).toBe(newName);
     });
+
+    test("can read multiple departments", async () => {
+        await readManyDepartments.call(readManyDepartments, baseWorld);
+        Request.succeeded.call(baseWorld, { auth: false });
+        const responseData =
+            baseWorld.getCustomProp<DepartmentResponse[]>("responseData");
+
+        // check that the default Admin department is the first
+        // we can compare others but there will be other tests for this route about sorting and filtering
+        expect(responseData.length).toBeGreaterThanOrEqual(1);
+        expect(responseData[0].name).toBe("Admin");
+    });
 });
 
 describe("User who lacks CRUD rights", () => {
+    test("cannot read multiple roles", async () => {
+        // Given there is a user setup without crud permissions
+        const assignedRoleId = await createRole.call(
+            baseWorld,
+            "assigned",
+            "Admin"
+        );
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(
+            baseWorld,
+            user.id,
+            assignedRoleId,
+            admin,
+            true
+        );
+
+        // When I try to read multiple roles
+        await readManyDepartments.call(readManyDepartments, baseWorld);
+
+        // I cannot
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: "Insufficient permissions",
+        });
+    });
     test("User who lacks CRUD department rights cannot create departments", async () => {
         // Given I am logged in as a user
         await loginUser.call(baseWorld);
