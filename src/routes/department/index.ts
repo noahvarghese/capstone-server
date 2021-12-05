@@ -266,11 +266,11 @@ router.delete("/", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
         SqlConnection,
-        query: { id: queryId },
+        params: { id: queryId },
         body: { name },
     } = req;
 
