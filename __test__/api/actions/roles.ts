@@ -24,7 +24,7 @@ export const createRole = async function createRole(
 
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
         body: {
@@ -40,7 +40,7 @@ export const deleteRole = async function deleteRole(
     ids: number[]
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
-        cookie: { saveCookie: true, withCookie: true },
+        cookie: { saveCookie: false, withCookie: true },
         query: { ids },
         method: "delete",
     });
@@ -62,7 +62,7 @@ export const editRole = async function editRole(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
         errorOnFail: errorOnFail as boolean,
@@ -78,7 +78,7 @@ export const readOneRole = async function readOneRole(
     id: number
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
-        cookie: { saveCookie: true, withCookie: true },
+        cookie: { saveCookie: false, withCookie: true },
         param: id.toString(),
         method: "get",
     });
@@ -105,7 +105,7 @@ export const readManyRoles = async function readManyRoles(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
         method: "get",
