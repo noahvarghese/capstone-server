@@ -5,6 +5,7 @@ import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
+import isSortFieldFactory from "@util/sortFieldFactory";
 import { Router, Response, Request } from "express";
 import { EntityManager } from "typeorm/entity-manager/EntityManager";
 import validator from "validator";
@@ -117,27 +118,21 @@ router.get("/", async (req: Request, res: Response) => {
             ? 1
             : Number(query.page);
 
-    const {
-        // sortField, sortOrder,
-        search,
-    } = req.query;
-    // if (
-    //     !["ASC", "DESC", "", undefined].includes(
-    //         sortOrder as string | undefined
-    //     )
-    // ) {
-    //     res.status(400).json({ message: "Unknown option for sort order" });
-    //     return;
-    // }
+    const { sortField, sortOrder, search } = req.query;
 
-    // const isSortField = isSortFieldFactory(["department", "role"]);
+    if (!["ASC", "DESC", undefined].includes(sortOrder as string | undefined)) {
+        res.status(400).json({ message: "Unknown option for sort order" });
+        return;
+    }
 
-    // if (sortField !== undefined && !isSortField(sortField as string)) {
-    //     res.status(400).json({
-    //         message: "Invalid field to sort by " + sortField,
-    //     });
-    //     return;
-    // }
+    const isSortField = isSortFieldFactory(["name", "numMembers", "numRoles"]);
+
+    if (sortField !== undefined && !isSortField(sortField as string)) {
+        res.status(400).json({
+            message: "Invalid field to sort by " + sortField,
+        });
+        return;
+    }
 
     const sqlizedSearchItem = `%${search}%`;
 
@@ -155,6 +150,16 @@ router.get("/", async (req: Request, res: Response) => {
             departmentQuery = departmentQuery.andWhere(
                 "d.name LIKE :department_name",
                 { department_name: sqlizedSearchItem }
+            );
+        }
+
+        if (!sortField && !sortOrder) {
+            departmentQuery = departmentQuery.orderBy("d.created_on", "DESC");
+        } else if (sortField === "name") {
+            departmentQuery = departmentQuery.orderBy(
+                "d.name",
+                // check was done earlier
+                sortOrder as "ASC" | "DESC"
             );
         }
 
@@ -186,6 +191,28 @@ router.get("/", async (req: Request, res: Response) => {
                 numMembers: numMembers.count,
                 numRoles: numRoles.count,
             });
+        }
+
+        if (sortField && sortField !== "name") {
+            const sortedVal = returnVal.sort((a, b) => {
+                const aSortVal = a[sortField as keyof DepartmentResponse]
+                    .toString()
+                    .toUpperCase();
+                const bSortVal = b[sortField as keyof DepartmentResponse]
+                    .toString()
+                    .toUpperCase();
+                if (sortOrder === "ASC") {
+                    if (aSortVal < bSortVal) return -1;
+                    else if (aSortVal === bSortVal) return 0;
+                    else return 1;
+                } else {
+                    if (aSortVal > bSortVal) return -1;
+                    else if (aSortVal === bSortVal) return 0;
+                    else return 1;
+                }
+            });
+            res.status(200).json(sortedVal);
+            return;
         }
 
         res.status(200).json(returnVal);
