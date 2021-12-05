@@ -18,6 +18,71 @@ export interface DepartmentResponse {
     numRoles: number;
 }
 
+router.get("/:id", async (req: Request, res: Response) => {
+    const {
+        session: { current_business_id, user_id },
+        params: { id },
+        SqlConnection,
+    } = req;
+
+    //check permissions
+    const hasPermission = await Permission.checkPermission(
+        Number(user_id),
+        Number(current_business_id),
+        SqlConnection,
+        [
+            "global_crud_department",
+            "global_assign_resources_to_department",
+            "global_assign_users_to_department",
+        ]
+    );
+
+    if (!hasPermission) {
+        res.status(403).json({ message: "Insufficient permissions" });
+        return;
+    }
+
+    try {
+        const department = await SqlConnection.manager.findOne(Department, {
+            where: { business_id: current_business_id, id },
+        });
+
+        if (!department) {
+            res.status(400).json({ message: "Invalid department" });
+            return;
+        }
+
+        const numMembers = await SqlConnection.createQueryBuilder()
+            .select("COUNT(user.id)", "count")
+            .from(Department, "d")
+            .leftJoin(Role, "r", "r.department_id = d.id")
+            .where("d.id = :dept_id", { dept_id: department.id })
+            .leftJoin(UserRole, "ur", "ur.role_id = r.id")
+            .leftJoin(User, "user", "user.id = ur.user_id")
+            .getRawOne();
+
+        const numRoles = await SqlConnection.createQueryBuilder()
+            .select("COUNT(r.id)", "count")
+            .from(Department, "d")
+            .leftJoin(Role, "r", "r.department_id = d.id")
+            .where("d.id = :dept_id", { dept_id: department.id })
+            .getRawOne();
+
+        res.status(200).json({
+            id: department.id,
+            name: department.name,
+            numMembers: numMembers.count,
+            numRoles: numRoles.count,
+        });
+        return;
+    } catch (_e) {
+        const e = _e as Error;
+        Logs.Error(e.message);
+        res.status(500).json({ message: "Unable to get departments" });
+        return;
+    }
+});
+
 router.get("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
