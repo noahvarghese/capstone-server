@@ -117,7 +117,10 @@ router.get("/", async (req: Request, res: Response) => {
             ? 1
             : Number(query.page);
 
-    // const { sortField, sortOrder, search } = req.query;
+    const {
+        // sortField, sortOrder,
+        search,
+    } = req.query;
     // if (
     //     !["ASC", "DESC", "", undefined].includes(
     //         sortOrder as string | undefined
@@ -136,17 +139,26 @@ router.get("/", async (req: Request, res: Response) => {
     //     return;
     // }
 
-    // const sqlizedSearchItem = `%${search}%`;
+    const sqlizedSearchItem = `%${search}%`;
 
     try {
         const returnVal: DepartmentResponse[] = [];
 
-        const departments = await SqlConnection.createQueryBuilder()
+        let departmentQuery = SqlConnection.createQueryBuilder()
             .select("d")
             .from(Department, "d")
             .where("d.business_id = :business_id", {
                 business_id: current_business_id,
-            })
+            });
+
+        if (search) {
+            departmentQuery = departmentQuery.andWhere(
+                "d.name LIKE :department_name",
+                { department_name: sqlizedSearchItem }
+            );
+        }
+
+        const departments = await departmentQuery
             .limit(limit)
             .offset(page * limit - limit)
             .getMany();
