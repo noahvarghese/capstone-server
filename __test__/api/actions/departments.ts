@@ -7,7 +7,7 @@ export const createDepartment = async function createDepartment(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
     });
@@ -19,7 +19,7 @@ export const deleteDepartment = async function deleteDepartment(
     ids: number[]
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
-        cookie: { saveCookie: true, withCookie: true },
+        cookie: { saveCookie: false, withCookie: true },
         query: { ids },
         method: "delete",
     });
@@ -33,7 +33,7 @@ export const editDepartment = async function editDepartment(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
         param: id.toString(),
@@ -48,7 +48,7 @@ export const readOneDepartment = async function readOneDepartment(
     id: number
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
-        cookie: { saveCookie: true, withCookie: true },
+        cookie: { saveCookie: false, withCookie: true },
         param: id.toString(),
         method: "get",
     });
@@ -69,7 +69,7 @@ export const readManyDepartments = async function readManyDepartments(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
         method: "get",

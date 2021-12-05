@@ -146,6 +146,7 @@ describe("Global admin authorized", () => {
             await readManyRoles.call(readManyRoles, baseWorld, {
                 query: { page: 1, limit: 1 },
             });
+            Request.succeeded.call(baseWorld, { auth: false, status: /^200$/ });
 
             const res1 =
                 baseWorld.getCustomProp<RoleResponse[]>("responseData");
@@ -154,6 +155,7 @@ describe("Global admin authorized", () => {
             await readManyRoles.call(readManyRoles, baseWorld, {
                 query: { page: 2, limit: 1 },
             });
+            Request.succeeded.call(baseWorld, { auth: false, status: /^200$/ });
 
             // make sure a different user was returned
             const res2 =

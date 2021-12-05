@@ -162,7 +162,7 @@ export default class Api {
                 await connection.manager.find<Membership>(Membership, {
                     where: { business_id },
                 })
-            ).map((member) => member.user_id);
+            ).map((member: Membership) => member.user_id);
 
             member_ids = member_ids.concat(
                 (
@@ -172,7 +172,7 @@ export default class Api {
                             where: { business_id },
                         }
                     )
-                ).map((member) => member.user_id)
+                ).map((member: MembershipRequest) => member.user_id)
             );
             // add top level dependency to delete
             const deps = apiTeardownDependencies[topLevelModelTest];

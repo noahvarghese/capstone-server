@@ -9,7 +9,7 @@ import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import isSortFieldFactory from "@util/sortFieldFactory";
 import { Router, Request, Response } from "express";
-import { Brackets, WhereExpressionBuilder } from "typeorm";
+import { Brackets, EntityManager, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
 import memberAssignmentRouter from "./member_assignment";
 
@@ -359,45 +359,47 @@ router.delete("/", async (req: Request, res: Response) => {
 
     // remove non user associations
     try {
-        await SqlConnection.transaction(async (transactionManager) => {
-            try {
-                await transactionManager
+        await SqlConnection.transaction(
+            async (transactionManager: EntityManager) => {
+                try {
+                    await transactionManager
+                        .createQueryBuilder()
+                        .delete()
+                        .from(ManualAssignment)
+                        .where("role_id IN (:...ids)", { ids })
+                        .execute();
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete Manual Assignments");
+                }
+
+                // get permissions to delete after roles are deleted
+                const permissions = await transactionManager
                     .createQueryBuilder()
-                    .delete()
-                    .from(ManualAssignment)
-                    .where("role_id IN (:...ids)", { ids })
-                    .execute();
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete Manual Assignments");
-            }
+                    .select("p")
+                    .from(Permission, "p")
+                    .leftJoin(Role, "r", "r.permission_id = p.id")
+                    .where("r.id IN (:...ids)", { ids })
+                    .getMany();
 
-            // get permissions to delete after roles are deleted
-            const permissions = await transactionManager
-                .createQueryBuilder()
-                .select("p")
-                .from(Permission, "p")
-                .leftJoin(Role, "r", "r.permission_id = p.id")
-                .where("r.id IN (:...ids)", { ids })
-                .getMany();
+                try {
+                    await transactionManager.delete(Role, ids);
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete roles");
+                }
 
-            try {
-                await transactionManager.delete(Role, ids);
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete roles");
+                try {
+                    await transactionManager.remove(permissions);
+                } catch (_e) {
+                    const { message } = _e as Error;
+                    Logs.Error(message);
+                    throw new Error("Unable to delete permissions");
+                }
             }
-
-            try {
-                await transactionManager.remove(permissions);
-            } catch (_e) {
-                const { message } = _e as Error;
-                Logs.Error(message);
-                throw new Error("Unable to delete permissions");
-            }
-        });
+        );
 
         res.sendStatus(200);
     } catch (_e) {

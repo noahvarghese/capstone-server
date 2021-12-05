@@ -50,6 +50,34 @@ describe("Global admin authorized", () => {
         await login.call(login, baseWorld);
     });
 
+    describe("requires a premade department", () => {
+        beforeEach(async () => {
+            const department = await createDepartment2.call(baseWorld, "TEST");
+            baseWorld.setCustomProp("departmentId", department);
+        });
+        test("Pagination", async () => {
+            // request first page
+            await readManyDepartments.call(readManyDepartments, baseWorld, {
+                query: { page: 1, limit: 1 },
+            });
+            Request.succeeded.call(baseWorld, { auth: false, status: /^200$/ });
+
+            const res1 =
+                baseWorld.getCustomProp<DepartmentResponse[]>("responseData");
+
+            // request second page
+            await readManyDepartments.call(readManyDepartments, baseWorld, {
+                query: { page: 2, limit: 1 },
+            });
+            Request.succeeded.call(baseWorld, { auth: false, status: /^200$/ });
+
+            // make sure a different user was returned
+            const res2 =
+                baseWorld.getCustomProp<DepartmentResponse[]>("responseData");
+            expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
+        });
+    });
+
     test("Global admin can create department", async () => {
         // When I create a department
         await createDepartment.call(createDepartment, baseWorld);

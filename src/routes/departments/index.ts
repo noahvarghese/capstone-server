@@ -85,6 +85,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 router.get("/", async (req: Request, res: Response) => {
     const {
+        query,
         session: { current_business_id, user_id },
         SqlConnection,
     } = req;
@@ -106,12 +107,49 @@ router.get("/", async (req: Request, res: Response) => {
         return;
     }
 
+    // Validate query items
+    const limit =
+        isNaN(Number(query.limit)) || Number(query.limit) < 1
+            ? 50
+            : Number(query.limit);
+    const page =
+        isNaN(Number(query.page)) || Number(query.page) < 1
+            ? 1
+            : Number(query.page);
+
+    // const { sortField, sortOrder, search } = req.query;
+    // if (
+    //     !["ASC", "DESC", "", undefined].includes(
+    //         sortOrder as string | undefined
+    //     )
+    // ) {
+    //     res.status(400).json({ message: "Unknown option for sort order" });
+    //     return;
+    // }
+
+    // const isSortField = isSortFieldFactory(["department", "role"]);
+
+    // if (sortField !== undefined && !isSortField(sortField as string)) {
+    //     res.status(400).json({
+    //         message: "Invalid field to sort by " + sortField,
+    //     });
+    //     return;
+    // }
+
+    // const sqlizedSearchItem = `%${search}%`;
+
     try {
         const returnVal: DepartmentResponse[] = [];
 
-        const departments = await SqlConnection.manager.find(Department, {
-            where: { business_id: current_business_id },
-        });
+        const departments = await SqlConnection.createQueryBuilder()
+            .select("d")
+            .from(Department, "d")
+            .where("d.business_id = :business_id", {
+                business_id: current_business_id,
+            })
+            .limit(limit)
+            .offset(page * limit - limit)
+            .getMany();
 
         for (const dept of departments) {
             const numMembers = await SqlConnection.createQueryBuilder()
@@ -121,20 +159,20 @@ router.get("/", async (req: Request, res: Response) => {
                 .where("d.id = :dept_id", { dept_id: dept.id })
                 .leftJoin(UserRole, "ur", "ur.role_id = r.id")
                 .leftJoin(User, "user", "user.id = ur.user_id")
-                .getRawMany();
+                .getRawOne();
 
             const numRoles = await SqlConnection.createQueryBuilder()
                 .select("COUNT(r.id)", "count")
                 .from(Department, "d")
                 .leftJoin(Role, "r", "r.department_id = d.id")
                 .where("d.id = :dept_id", { dept_id: dept.id })
-                .getRawMany();
+                .getRawOne();
 
             returnVal.push({
                 id: dept.id,
                 name: dept.name,
-                numMembers: numMembers[0].count,
-                numRoles: numRoles[0].count,
+                numMembers: numMembers.count,
+                numRoles: numRoles.count,
             });
         }
 
