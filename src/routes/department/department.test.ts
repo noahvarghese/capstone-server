@@ -16,6 +16,7 @@ import {
     deleteDepartment,
     editDepartment,
     readManyDepartments,
+    readOneDepartment,
 } from "@test/api/actions/departments";
 import Request from "@test/api/helpers/request";
 import Department from "@models/department";
@@ -54,6 +55,27 @@ describe("Global admin authorized", () => {
         await createDepartment.call(createDepartment, baseWorld);
         // Then a new department exists
         Request.succeeded.call(baseWorld, { auth: false });
+    });
+
+    test("can read singular department", async () => {
+        const departmentId = await getDepartmentInBusiness.call(
+            baseWorld,
+            "Admin",
+            await getBusiness.call(baseWorld)
+        );
+
+        await readOneDepartment.call(
+            readOneDepartment,
+            baseWorld,
+            departmentId
+        );
+
+        Request.succeeded.call(baseWorld, { auth: false, status: /^200$/ });
+        const res = baseWorld.getCustomProp<DepartmentResponse>("responseData");
+        expect(res.numMembers).toBe("1");
+        expect(res.numRoles).toBe("1");
+        expect(res.name).toBe("Admin");
+        expect(res.id).toBe(departmentId);
     });
 
     // Scenario: Global Admin Can Delete Department
@@ -135,7 +157,7 @@ describe("Global admin authorized", () => {
 });
 
 describe("User who lacks CRUD rights", () => {
-    test("cannot read multiple roles", async () => {
+    test("cannot read multiple departments", async () => {
         // Given there is a user setup without crud permissions
         const assignedRoleId = await createRole.call(
             baseWorld,
@@ -233,5 +255,45 @@ describe("User who lacks CRUD rights", () => {
             });
 
         expect(updatedDepartment.name).not.toBe(newName);
+    });
+
+    test("cannot read a singular depatment", async () => {
+        // Given there is a user setup without crud permissions
+        await login.call(login, baseWorld);
+        const assignedRoleId = await createRole.call(
+            baseWorld,
+            "assigned",
+            "Admin"
+        );
+        const departmentId = await getDepartmentInBusiness.call(
+            baseWorld,
+            "Admin",
+            await getBusiness.call(baseWorld)
+        );
+
+        //     Given I am logged in as a user
+        const user = await loginUser.call(baseWorld);
+        const admin = await getAdminUserId.call(baseWorld);
+        await assignUserToRole.call(
+            baseWorld,
+            user.id,
+            assignedRoleId,
+            admin,
+            true
+        );
+
+        // When I try to read multiple roles
+        await readOneDepartment.call(
+            readOneDepartment,
+            baseWorld,
+            departmentId
+        );
+
+        // I cannot
+        Request.failed.call(baseWorld, {
+            include404: false,
+            status: /^403$/,
+            message: "Insufficient permissions",
+        });
     });
 });

@@ -36,7 +36,7 @@ export const editDepartment = async function editDepartment(
             saveCookie: true,
             withCookie: true,
         },
-        query: { id },
+        param: id.toString(),
         body: { name },
         method: "put",
     });
