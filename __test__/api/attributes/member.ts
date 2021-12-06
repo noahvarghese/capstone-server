@@ -1,4 +1,4 @@
-import { InviteMemberProps } from "@routes/members/invite";
+import { InviteMemberProps } from "@services/data/user";
 import { deepClone } from "@util/obj";
 import MemberKeys from "../keys/member";
 

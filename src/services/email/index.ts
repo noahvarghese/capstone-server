@@ -3,7 +3,6 @@ import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
 import Business from "@models/business";
-import MembershipRequest from "@models/membership_request";
 import Logs from "@util/logs/logs";
 import Model from "@util/model";
 import { client } from "@util/permalink";
@@ -39,11 +38,11 @@ export interface MailOpts {
 
 export const sendUserInviteEmail = async (
     business: Business,
-    membershipRequest: MembershipRequest,
+    token: string,
     sendingUser: User,
     receivingUser: User
 ): Promise<boolean> => {
-    const url = client(`member/invite/${membershipRequest.token}`);
+    const url = client(`member/invite/${token}`);
 
     return await sendMail(
         {

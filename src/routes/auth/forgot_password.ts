@@ -1,46 +1,33 @@
 import { Request, Response, Router } from "express";
 import User from "@models/user/user";
-import Logs from "@util/logs/logs";
-import { requestResetPasswordEmail } from "@services/email";
+import { enablePasswordReset } from "@services/data/user";
+import ServiceError from "@util/errors/service_error";
 
 const router = Router();
 
-router.post("/", async (request: Request, response: Response) => {
-    const { email } = request.body;
-    const { SqlConnection: connection } = request;
-    const users = await connection.manager.find(User, { where: { email } });
+router.post("/", async (req: Request, res: Response) => {
+    const {
+        SqlConnection,
+        body: { email },
+    } = req;
 
-    if (users.length === 0) {
-        response.status(401).json({ message: `Invalid email ${email}.` });
-        return;
-    } else if (users.length > 1) {
-        response.status(500).json({ message: `Multiple records returned` });
+    const user = await SqlConnection.manager.findOne(User, {
+        where: { email },
+    });
+
+    if (!user) {
+        res.status(400).json({ message: "Invalid email" });
         return;
     }
 
-    const user = users[0];
-
-    user.createToken();
-
     try {
-        await connection.manager.update(
-            User,
-            { email: user.email },
-            { token: user.token }
-        );
+        await enablePasswordReset(SqlConnection, user);
+        res.sendStatus(200);
     } catch (e) {
-        Logs.Error(e);
-        response.status(500).json({ message: "Unable to complete request" });
-        return;
-    }
-
-    try {
-        await requestResetPasswordEmail(user);
-        response.sendStatus(200);
-    } catch (_e) {
-        const e = _e as Error;
-        Logs.Error(e.message);
-        response.status(500).json({ message: "Unable to send email" });
+        const { message } = e as Error;
+        res.status(e instanceof ServiceError ? e.reason : 500).json({
+            message,
+        });
     }
 });
 

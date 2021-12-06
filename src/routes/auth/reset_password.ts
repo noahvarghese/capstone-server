@@ -1,75 +1,41 @@
 import { Request, Response, Router } from "express";
-import User from "@models/user/user";
+import * as userService from "@services/data/user";
+import * as userValidator from "@services/data/user/validators";
 import Logs from "@util/logs/logs";
-import { resetPasswordEmail } from "@services/email";
-import { MoreThan } from "typeorm";
-import Membership from "@models/membership";
+import ServiceError from "@util/errors/service_error";
 
 const router = Router();
 
-router.post("/:token", async (request: Request, response: Response) => {
-    const { SqlConnection: connection } = request;
-    const { token } = request.params;
-    const { password, confirm_password } = request.body;
-
-    if (!token) {
-        response.status(400).json({ message: "No token provided" });
-        return;
-    }
-
-    if (password !== confirm_password) {
-        response.status(400).json({ message: "Passwords do not match" });
-        return;
-    }
-
-    let user: User;
+router.post("/:token", async (req: Request, res: Response) => {
+    const {
+        SqlConnection,
+        params: { token },
+        body: { password, confirm_password },
+    } = req;
 
     try {
-        user = await connection.manager.findOneOrFail(User, {
-            where: {
-                token,
-                token_expiry: MoreThan(new Date()),
-            },
-        });
-    } catch (_e) {
-        const e = _e as Error;
-        Logs.Error(e.message);
-        response.status(401).json({ message: "Invalid token." });
-        return;
-    }
-
-    if (await user.resetPassword(password, token)) {
-        const { token, token_expiry, password } = user;
-        await connection.manager.update(
-            User,
-            { id: user.id },
-            { token, token_expiry, password }
+        userValidator.resetPasswordValidator(token, password, confirm_password);
+        const userId = await userService.resetPassword(
+            SqlConnection,
+            token,
+            password
         );
-    } else {
-        response.status(403).json({ message: "Password not long enough" });
-        return;
-    }
 
-    try {
-        await resetPasswordEmail(user);
+        const memberships = await userService.getMemberships(
+            SqlConnection,
+            userId
+        );
 
-        const memberships = await connection.manager.find(Membership, {
-            where: { user_id: user.id },
-            order: { created_on: "ASC" },
-        });
+        req.session.business_ids = memberships.map((m) => m.id);
+        req.session.user_id = userId;
+        req.session.current_business_id =
+            memberships.find((m) => m.default)?.id ?? NaN;
 
-        request.session.business_ids = memberships.map((m) => m.business_id);
-        request.session.user_id = user.id;
-        request.session.current_business_id = memberships.find(
-            (m) => m.default
-        )?.business_id;
-        response.sendStatus(200);
-        return;
-    } catch (_e) {
-        const e = _e as Error;
-        Logs.Error(e.message);
-        response.sendStatus(500);
-        return;
+        res.sendStatus(200);
+    } catch (e) {
+        const { message, reason } = e as ServiceError;
+        Logs.Debug(message);
+        res.status(reason).json({ message });
     }
 });
 

@@ -4,19 +4,43 @@ import { client } from "@util/permalink";
 import authRouter from "./auth";
 import departmentRouter from "./departments";
 import roleRouter from "./roles";
-import settingsRoute from "./settings";
+import Nav from "@services/data/nav";
+import * as userService from "@services/data/user";
 import memberRoute from "./members";
-import businessRouter from "./business";
 
 const router = Router();
 
-/* Uncomment after creating the other routes */
 router.use("/auth", authRouter);
 router.use("/departments", departmentRouter);
 router.use("/members", memberRoute);
 router.use("/roles", roleRouter);
-router.use("/settings", settingsRoute);
-router.use("/businesses", businessRouter);
+
+router.use("/settings/nav", async (req: Request, res: Response) => {
+    const {
+        SqlConnection,
+        session: { user_id, current_business_id },
+    } = req;
+
+    const nav = new Nav(
+        Number(current_business_id),
+        Number(user_id),
+        SqlConnection
+    );
+
+    res.status(200).json(await nav.getLinks());
+    return;
+});
+
+router.get("/businesses", async (req: Request, res: Response) => {
+    const {
+        SqlConnection: connection,
+        session: { user_id },
+    } = req;
+
+    res.status(200).json(
+        await userService.getMemberships(connection, Number(user_id))
+    );
+});
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {

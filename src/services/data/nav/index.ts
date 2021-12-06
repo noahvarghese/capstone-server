@@ -1,13 +1,7 @@
-import Department from "@models/department";
-import Permission from "@models/permission";
-import Role from "@models/role";
-import UserRole from "@models/user/user_role";
+import * as departmentService from "@services/data/department";
+import * as permissionService from "@services/data/permission";
 import { deepClone } from "@util/obj";
-import Logs from "@util/logs/logs";
-import { Request, Response, Router } from "express";
 import { Connection } from "typeorm";
-
-const router = Router();
 
 type NavLinks = Record<string, boolean>;
 
@@ -36,7 +30,7 @@ export type AdminNavLinks = Pick<
 
 export type DefaultNavLinks = Pick<PossibleNavLinks, "scores"> & SharedNavLinks;
 
-export class Nav {
+export default class Nav {
     private userId: number;
     private businessId: number;
     private connection: Connection;
@@ -49,8 +43,9 @@ export class Nav {
     }
 
     public async isAdmin(): Promise<boolean> {
-        return await adminDepartmentHasUser(
+        return await departmentService.hasUser(
             this.connection,
+            "Admin",
             this.businessId,
             this.userId
         );
@@ -83,7 +78,7 @@ export class Nav {
     }
 
     private async setLinksByPermission(): Promise<void> {
-        const permissions = await Permission.getAllForUserAndBusiness(
+        const permissions = await permissionService.getAll(
             this.userId,
             this.businessId,
             this.connection
@@ -115,67 +110,3 @@ export class Nav {
         return this.links;
     }
 }
-
-const adminDepartmentHasUser = async (
-    connection: Connection,
-    business_id: number,
-    user_id: number
-): Promise<boolean> => {
-    let adminDepartmentId: number;
-    let roles: Role[];
-
-    try {
-        const adminDepartment = await connection.manager.findOneOrFail(
-            Department,
-            {
-                where: { business_id, name: "Admin" },
-            }
-        );
-
-        adminDepartmentId = adminDepartment.id;
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        throw new Error("Unable to get administrator department");
-    }
-
-    try {
-        roles = await connection.manager.find(Role, {
-            where: { department_id: adminDepartmentId },
-        });
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        throw new Error("Unable to get roles in administrator department");
-    }
-
-    try {
-        await connection.manager.findOneOrFail(UserRole, {
-            where: roles.map((r) => ({ user_id, role_id: r.id })),
-        });
-        return true;
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        return false;
-    }
-};
-
-router.get("/", async (req: Request, res: Response) => {
-    const {
-        SqlConnection,
-        session: { user_id, current_business_id },
-    } = req;
-
-    const nav = new Nav(
-        Number(current_business_id),
-        Number(user_id),
-        SqlConnection
-    );
-    const links = await nav.getLinks();
-
-    res.status(200).json(links);
-    return;
-});
-
-export default router;

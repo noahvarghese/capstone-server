@@ -71,14 +71,12 @@ export default class User extends BaseModel implements UserAttributes {
     }
 
     // pass reference back so we can chain it within the connection.manager.save method
-    public createToken = (): User => {
+    public createToken = (): void => {
         const tokenExpiry = new Date();
         tokenExpiry.setHours(tokenExpiry.getHours() + 4);
 
         this.token = uid(32);
         this.token_expiry = tokenExpiry;
-
-        return this;
     };
 
     public compareToken = (_token: string): boolean => {

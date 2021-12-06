@@ -1,4 +1,4 @@
-import Permission from "@models/permission";
+import * as permissionService from "@services/data/permission";
 import { NextFunction, Request, Response } from "express";
 
 export const authorized = async (
@@ -17,7 +17,7 @@ export const authorized = async (
         return;
     }
 
-    const hasPermission = await Permission.checkPermission(
+    const hasPermission = await permissionService.check(
         Number(user_id),
         Number(current_business_id),
         SqlConnection,

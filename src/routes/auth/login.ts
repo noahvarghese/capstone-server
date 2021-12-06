@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import User from "@models/user/user";
-import Membership from "@models/membership";
+import * as userService from "@services/data/user";
+import ServiceError from "@util/errors/service_error";
 
 const router = Router();
 
@@ -10,45 +10,33 @@ export interface LoginProps {
 }
 
 router.post("/", async (req: Request, res: Response) => {
-    const { SqlConnection: connection } = req;
+    const {
+        SqlConnection,
+        body: { email, password },
+    } = req;
 
-    // because form data gets sent as an object
-    // and sending a stringified json results in a string
-    const { email, password } = req.body as LoginProps;
+    try {
+        const userId = await userService.findByLogin(
+            SqlConnection,
+            email,
+            password
+        );
 
-    const users = await connection.manager.find(User, {
-        where: { email },
-    });
+        const memberships = await userService.getMemberships(
+            SqlConnection,
+            userId
+        );
 
-    if (users.length !== 1) {
-        res.status(400).json({ message: `Invalid login ${email}.` });
-        return;
+        req.session.user_id = userId;
+        req.session.business_ids = memberships.map((m) => m.id);
+        req.session.current_business_id =
+            memberships.find((m) => m.default)?.id ?? NaN;
+
+        res.sendStatus(200);
+    } catch (e) {
+        const { message, reason } = e as ServiceError;
+        res.status(reason).json({ message });
     }
-
-    const user = users[0];
-
-    if (user.password) {
-        const success = await user.comparePassword(password);
-        if (success) {
-            const memberships = await connection.manager.find(Membership, {
-                where: { user_id: user.id },
-                order: { created_on: "DESC" },
-            });
-
-            req.session.user_id = user.id;
-            req.session.business_ids = memberships.map((m) => m.business_id);
-
-            req.session.current_business_id = memberships.find(
-                (m) => m.default
-            )?.business_id;
-
-            res.sendStatus(200);
-            return;
-        }
-    }
-
-    res.sendStatus(401);
-    return;
 });
 
 export default router;

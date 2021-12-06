@@ -26,7 +26,7 @@ export default {
         "node_modules",
         "src/index.ts",
         "src/util/logs",
-        "src/services",
+        "src/routes",
     ],
     coverageReporters: ["json-summary", "text", "lcov", "clover"],
     detectOpenHandles: true,

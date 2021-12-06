@@ -35,5 +35,5 @@
     "ts-node": {
         "require": ["tsconfig-paths/register"]
     },
-    "include": ["./**/*.ts", "./**/*.test.ts", "./**/**/*.d.ts"]
+    "include": ["./**/*.ts", "./**/*.test.ts", "./**/*.d.ts"]
 }

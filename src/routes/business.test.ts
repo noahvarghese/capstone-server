@@ -29,52 +29,56 @@ afterEach(async () => {
     await helpers.Api.teardown(baseWorld, "@cleanup_user_role");
 });
 
-test("User with multiple business receives list of business with one marked as default", async () => {
-    // Given the user is a member of multiple businesses
-    const connection = baseWorld.getConnection();
-    const adminId = await getAdminUserId.call(baseWorld);
+describe("User assigned to multiple businesses", () => {
     const newBusinessName = "TEST123";
-    // create second business in database
-    const businessResult = await connection.manager.insert(Business, {
-        name: newBusinessName,
+    let businessId: number;
+
+    beforeEach(async () => {
+        const connection = baseWorld.getConnection();
+        const adminId = await getAdminUserId.call(baseWorld);
+        // create second business in database
+        const businessResult = await connection.manager.insert(Business, {
+            name: newBusinessName,
+        });
+        // add user as member via database
+        await connection.manager.insert(Membership, {
+            business_id: businessResult.identifiers[0].id,
+            user_id: adminId,
+        });
+
+        businessId = businessResult.identifiers[0].id;
+        // Given the user is a member of multiple businesses
+        await login.call(login, baseWorld);
     });
+    afterEach(async () => {
+        const connection = baseWorld.getConnection();
+        // cleanup
 
-    // add user as member via database
-    const membershipResult = await connection.manager.insert(Membership, {
-        business_id: businessResult.identifiers[0].id,
-        user_id: adminId,
+        await connection.manager.delete(Membership, {
+            business_id: businessId,
+        });
+        await connection.manager.delete(Business, { id: businessId });
     });
+    test("reads list of business with one marked as default", async () => {
+        // When the user requests the businesses they are apart of
+        await getBusinesses.call(getBusinesses, baseWorld);
 
-    await login.call(login, baseWorld);
-    // When the user requests the businesses they are apart of
-    await getBusinesses.call(getBusinesses, baseWorld);
+        // Then the user gets a list back
+        Request.succeeded.call(baseWorld, { auth: false });
 
-    // Then the user gets a list back
-    Request.succeeded.call(baseWorld, { auth: false });
+        const response = baseWorld.getCustomProp<
+            {
+                id: number;
+                default: boolean;
+                name: string;
+            }[]
+        >("responseData");
 
-    const data = baseWorld.getCustomProp<{
-        data: {
-            id: number;
-            default: boolean;
-            name: string;
-        }[];
-    }>("responseData");
+        const prevBusinessId = await getBusiness.call(baseWorld);
+        const prevBusiness = response.find((r) => r.id === prevBusinessId);
+        const newBusiness = response.find((r) => r.name === newBusinessName);
 
-    const { data: response } = data;
-
-    const prevBusinessId = await getBusiness.call(baseWorld);
-    const prevBusiness = response.find((r) => r.id === prevBusinessId);
-    const newBusiness = response.find((r) => r.name === newBusinessName);
-
-    expect(newBusiness).toBeTruthy();
-    expect(prevBusiness?.default).toBe(true);
-
-    // cleanup
-
-    await connection.manager.delete(Membership, {
-        business_id: membershipResult.identifiers[0].business_id,
-    });
-    await connection.manager.delete(Business, {
-        id: businessResult.identifiers[0].id,
+        expect(newBusiness).toBeTruthy();
+        expect(prevBusiness?.default).toBe(true);
     });
 });

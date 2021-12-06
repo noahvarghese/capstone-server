@@ -3,7 +3,7 @@ import Request from "@test/api/helpers/request";
 import { loginUser } from "@test/api/helpers/setup-actions";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import { AdminNavLinks, DefaultNavLinks, Nav } from "./nav";
+import Nav, { AdminNavLinks, DefaultNavLinks } from "@services/data/nav";
 import { getNav } from "@test/api/actions/settings";
 import { login } from "@test/api/actions/auth";
 
@@ -40,6 +40,7 @@ test("user with no permissions has less nav options", async () => {
     const expectedNavLinks = Nav.produceDefaultLinks();
     expect(data).toStrictEqual(expectedNavLinks);
 });
+
 test("user with all permissions has all nav options", async () => {
     // Given I am logged in as an admin
     await login.call(login, baseWorld);

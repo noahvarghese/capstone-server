@@ -18,13 +18,13 @@ import {
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
 import { inviteMember } from "@test/api/attributes/member";
-import { ReadMembers } from ".";
 import { deepClone } from "@util/obj";
 import Department from "@models/department";
 import Role from "@models/role";
 import { EmptyPermissionAttributes } from "@models/permission";
 import Membership from "@models/membership";
 import User from "@models/user/user";
+import { ReadMember } from ".";
 
 let baseWorld: BaseWorld;
 jest.setTimeout(500000);
@@ -56,7 +56,7 @@ describe("Global admin authorized", () => {
     test("Global admin can read a list of members", async () => {
         const user_id = await getAdminUserId.call(baseWorld);
         await readManyMembers.call(readManyMembers, baseWorld);
-        const response = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+        const response = baseWorld.getCustomProp<ReadMember[]>("responseData");
 
         Request.succeeded.call(baseWorld);
         expect(response.length).toBe(1);
@@ -81,7 +81,7 @@ describe("Global admin authorized", () => {
         const user_id = await getAdminUserId.call(baseWorld);
         await readOneMember.call(readOneMember, baseWorld, user_id);
         const { user, roles } =
-            baseWorld.getCustomProp<ReadMembers>("responseData");
+            baseWorld.getCustomProp<ReadMember>("responseData");
 
         Request.succeeded.call(baseWorld);
         expect(roles.length).toBe(1);
@@ -124,7 +124,7 @@ describe("Global admin authorized", () => {
                 query: { page: 1, limit: 1 },
             });
 
-            const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            const res1 = baseWorld.getCustomProp<ReadMember[]>("responseData");
 
             // request second page
             await readManyMembers.call(readManyMembers, baseWorld, {
@@ -132,7 +132,7 @@ describe("Global admin authorized", () => {
             });
 
             // make sure a different user was returned
-            const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            const res2 = baseWorld.getCustomProp<ReadMember[]>("responseData");
             expect(JSON.stringify(res1)).not.toBe(JSON.stringify(res2));
         });
 
@@ -141,7 +141,7 @@ describe("Global admin authorized", () => {
             await readManyMembers.call(readManyMembers, baseWorld, {
                 query: { limit: 1 },
             });
-            const res1 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            const res1 = baseWorld.getCustomProp<ReadMember[]>("responseData");
             expect(res1.length).toBe(1);
 
             // request second page
@@ -150,7 +150,7 @@ describe("Global admin authorized", () => {
             });
 
             // make sure a different user was returned
-            const res2 = baseWorld.getCustomProp<ReadMembers[]>("responseData");
+            const res2 = baseWorld.getCustomProp<ReadMember[]>("responseData");
             expect(res2.length).toBe(2);
         });
         describe("Sorting", () => {
@@ -175,7 +175,7 @@ describe("Global admin authorized", () => {
                     });
 
                     const res =
-                        baseWorld.getCustomProp<ReadMembers[]>("responseData");
+                        baseWorld.getCustomProp<ReadMember[]>("responseData");
                     expect(res.length).toBeGreaterThan(1);
                     const resCopy = deepClone(res);
                     const sortedRes = resCopy.sort((a, b): number => {
@@ -229,10 +229,10 @@ describe("Global admin authorized", () => {
                     });
 
                     const res =
-                        baseWorld.getCustomProp<ReadMembers[]>("responseData");
+                        baseWorld.getCustomProp<ReadMember[]>("responseData");
 
                     for (const member of res) {
-                        let result: ReadMembers | string | unknown = member;
+                        let result: ReadMember | string | unknown = member;
                         for (const key of keys) {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             result = (result as any)[
@@ -290,7 +290,7 @@ describe("Global admin authorized", () => {
                     Request.succeeded.call(baseWorld);
 
                     const res =
-                        baseWorld.getCustomProp<ReadMembers[]>("responseData");
+                        baseWorld.getCustomProp<ReadMember[]>("responseData");
 
                     // Because we are only creating one extra user
                     expect(res.length).toBe(1);
@@ -411,7 +411,7 @@ describe("User who lacks CRUD rights", () => {
         }>("user");
         await readOneMember.call(readOneMember, baseWorld, user.id);
         Request.succeeded.call(baseWorld);
-        const response = baseWorld.getCustomProp<ReadMembers>("responseData");
+        const response = baseWorld.getCustomProp<ReadMember>("responseData");
 
         Request.succeeded.call(baseWorld);
         // This is because the loginUser does not assign a role by default

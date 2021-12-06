@@ -3,8 +3,8 @@ import Logs from "@util/logs/logs";
 
 const router = Router();
 
-export const logout = (req: Request, res: Response): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
+export const logout = (req: Request, res: Response): Promise<void> =>
+    new Promise<void>((resolve, reject) => {
         req.session.destroy((err) => {
             err ? reject(err) : resolve();
         });
@@ -35,7 +35,6 @@ export const logout = (req: Request, res: Response): Promise<void> => {
             });
             return;
         });
-};
 
 router.post("/", (req: Request, res: Response) =>
     logout(req, res).then(() => res.sendStatus(200))

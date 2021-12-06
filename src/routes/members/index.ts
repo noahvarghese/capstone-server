@@ -1,6 +1,6 @@
 import Department from "@models/department";
 import Membership from "@models/membership";
-import Permission from "@models/permission";
+import * as permissionService from "@services/data/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -18,7 +18,7 @@ const router = Router();
 router.use("/invite", inviteRoute);
 router.use("/role_assignment", roleAssignmentRouter);
 
-export interface ReadMembers {
+export interface ReadMember {
     user: {
         first_name: string;
         last_name: string;
@@ -47,7 +47,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     if (Number(id) !== Number(user_id)) {
         //check permissions
-        const hasPermission = await Permission.checkPermission(
+        const hasPermission = await permissionService.check(
             Number(user_id),
             Number(current_business_id),
             SqlConnection,
@@ -246,7 +246,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     // get role and department information
     try {
-        const userInfo: ReadMembers[] = await Promise.all(
+        const userInfo: ReadMember[] = await Promise.all(
             users.map(async ({ u_id: id }) => {
                 const { first_name, last_name, email, phone, birthday } =
                     await connection.manager.findOneOrFail(User, id);
@@ -348,7 +348,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 
     // check for permissions
     if (Number(user_id) !== Number(current_user_id)) {
-        const hasPermission = await Permission.checkPermission(
+        const hasPermission = await permissionService.check(
             Number(current_user_id),
             Number(current_business_id),
             SqlConnection,

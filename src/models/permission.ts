@@ -1,11 +1,6 @@
-import Logs from "@util/logs/logs";
-import { Entity, Column, Connection } from "typeorm";
+import { Entity, Column } from "typeorm";
 import { AttributeFactory } from "./abstract/base_model";
 import EditableContentModel from "./abstract/editable_content_model";
-import Membership from "./membership";
-import Role from "./role";
-import User from "./user/user";
-import UserRole from "./user/user_role";
 
 export type ValidPermission = keyof Omit<
     PermissionAttributes,
@@ -105,60 +100,5 @@ export default class Permission
             this,
             AttributeFactory(options, EmptyPermissionAttributes)
         );
-    }
-
-    public static async getAllForUserAndBusiness(
-        user_id: number,
-        business_id: number,
-        connection: Connection
-    ): Promise<Permission[]> {
-        try {
-            const permissions = await connection
-                .createQueryBuilder()
-                .select("p")
-                .from(Permission, "p")
-                .leftJoin(Role, "r", "r.permission_id = p.id")
-                .leftJoin(UserRole, "ur", "ur.role_id = r.id")
-                .leftJoin(User, "u", "u.id = ur.user_id")
-                .leftJoin(Membership, "m", "m.user_id = u.id")
-                .where("m.user_id = :user_id", { user_id })
-                .andWhere("m.business_id = :business_id", {
-                    business_id,
-                })
-                .getMany();
-            return permissions;
-        } catch (e) {
-            if (e instanceof Error) Logs.Error(e.message);
-            return [];
-        }
-    }
-
-    public static async checkPermission(
-        user_id: number,
-        business_id: number,
-        connection: Connection,
-        permission: (keyof Permission)[]
-    ): Promise<boolean> {
-        try {
-            const permissions = await Permission.getAllForUserAndBusiness(
-                user_id,
-                business_id,
-                connection
-            );
-
-            const result = permissions.find((p) => {
-                for (const [key, value] of Object.entries(p)) {
-                    if (permission.includes(key as keyof Permission) && value) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-
-            return Boolean(result);
-        } catch ({ message }) {
-            Logs.Error(message);
-            return false;
-        }
     }
 }

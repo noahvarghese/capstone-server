@@ -1,5 +1,4 @@
 import User from "@models/user/user";
-import { InviteMemberProps } from "@routes/members/invite";
 import { LoginProps } from "./login";
 import Helpers from "@test/helpers";
 import { apiRequest } from "@test/api/actions";
@@ -10,6 +9,7 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import { inviteMember } from "@test/api/actions/members";
 import { login } from "@test/api/actions/auth";
+import { InviteMemberProps } from "@services/data/user";
 
 let baseWorld: BaseWorld;
 const userAttr = userAttributes();
