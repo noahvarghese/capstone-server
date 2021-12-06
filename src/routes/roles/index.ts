@@ -16,7 +16,6 @@ import memberAssignmentRouter from "./member_assignment";
 const router = Router();
 
 router.use("/member_assignment", memberAssignmentRouter);
-// router.use(async (req: Request, res: Response, next: NextFunction) => {});
 
 export interface RoleResponse {
     id: number;
@@ -30,30 +29,12 @@ export interface RoleResponse {
 
 router.get("/:id", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
         SqlConnection,
         params: { id },
     } = req;
 
     if (!validator.isNumeric(id)) {
         res.status(400).json({ message: "Invalid id" });
-        return;
-    }
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_role",
-            "global_assign_resources_to_role",
-            "global_assign_users_to_role",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
         return;
     }
 
@@ -109,26 +90,9 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.get("/", async (req: Request, res: Response) => {
     const {
         query,
-        session: { current_business_id, user_id },
+        session: { current_business_id },
         SqlConnection,
     } = req;
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_role",
-            "global_assign_resources_to_role",
-            "global_assign_users_to_role",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     // Validate query items
     const limit =
@@ -241,23 +205,10 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.post("/", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
+        session: { user_id },
         SqlConnection,
         body: { name, department: department_id, ...rest },
     } = req;
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_role"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     if (!department_id) {
         res.status(400).json({ message: "department is required" });
@@ -304,7 +255,6 @@ router.post("/", async (req: Request, res: Response) => {
 
 router.delete("/", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
         SqlConnection,
         query: { ids: queryIds },
     } = req;
@@ -317,19 +267,6 @@ router.delete("/", async (req: Request, res: Response) => {
         const { message } = _e as Error;
         Logs.Error(message);
         res.status(400).json({ message: "Invalid format" });
-    }
-
-    // check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_role"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
     }
 
     // check if users are joined to role
@@ -411,7 +348,6 @@ router.delete("/", async (req: Request, res: Response) => {
 
 router.put("/:id", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
         SqlConnection,
         params: { id: queryId },
         body: { name, department_id, permissions },
@@ -430,19 +366,6 @@ router.put("/:id", async (req: Request, res: Response) => {
         const { message } = _e as Error;
         Logs.Error(message);
         res.status(400).json({ message: "Invalid query format" });
-        return;
-    }
-
-    // check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_role"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
         return;
     }
 

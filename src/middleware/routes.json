@@ -1,0 +1,215 @@
+[
+    {
+        "method": "get",
+        "url": "/",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "put",
+        "url": "/",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "delete",
+        "url": "/",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/auth",
+        "requireAuth": true,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/auth/login",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/auth/logout",
+        "requireAuth": true,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/auth/register",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/auth/forgot_password",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "^\\/auth\\/reset_password\\/\\w+$",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "get",
+        "url": "/settings/nav",
+        "requireAuth": true,
+        "permissions": []
+    },
+    {
+        "method": "get",
+        "url": "/businesses",
+        "requireAuth": true,
+        "permissions": []
+    },
+    {
+        "method": "get",
+        "url": "^\\/departments(\\/\\d+)?$",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_department",
+            "global_assign_resources_to_department",
+            "global_assign_users_to_department"
+        ]
+    },
+    {
+        "method": "post",
+        "url": "/departments",
+        "requireAuth": true,
+        "permissions": ["global_crud_department"]
+    },
+    {
+        "method": "put",
+        "url": "^\\/departments\\/\\d+$",
+        "requireAuth": true,
+        "permissions": ["global_crud_department"]
+    },
+    {
+        "method": "delete",
+        "url": "/departments",
+        "requireAuth": true,
+        "permissions": ["global_crud_department"]
+    },
+    {
+        "method": "get",
+        "url": "^\\/roles(\\/\\d+)?$",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_role",
+            "global_assign_resources_to_role",
+            "global_assign_users_to_role"
+        ]
+    },
+    {
+        "method": "post",
+        "url": "/roles",
+        "requireAuth": true,
+        "permissions": ["global_crud_role"]
+    },
+    {
+        "method": "put",
+        "url": "^\\/roles\\/\\d+$",
+        "requireAuth": true,
+        "permissions": ["global_crud_role"]
+    },
+    {
+        "method": "delete",
+        "url": "/roles",
+        "requireAuth": true,
+        "permissions": ["global_crud_role"]
+    },
+    {
+        "method": "post",
+        "url": "/roles/member_assignment",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role"
+        ]
+    },
+    {
+        "method": "delete",
+        "url": "/roles/member_assignment",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role"
+        ]
+    },
+    {
+        "method": "get",
+        "url": "^\\/members\\/\\d+$",
+        "requireAuth": true,
+        "permissions": []
+    },
+    {
+        "method": "get",
+        "url": "/members",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role"
+        ]
+    },
+    {
+        "method": "put",
+        "url": "^\\/members\\/\\d+$",
+        "requireAuth": true,
+        "permissions": []
+    },
+    {
+        "method": "delete",
+        "url": "^\\/members\\/\\d+$",
+        "requireAuth": true,
+        "permissions": ["global_crud_users"]
+    },
+    {
+        "method": "post",
+        "url": "/members/invite",
+        "requireAuth": true,
+        "permissions": ["global_crud_users"]
+    },
+    {
+        "method": "post",
+        "url": "^\\/members\\/invite\\/\\w+$",
+        "requireAuth": false,
+        "permissions": []
+    },
+    {
+        "method": "post",
+        "url": "/members/role_assignment",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role"
+        ]
+    },
+    {
+        "method": "delete",
+        "url": "/members/role_assignment",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role"
+        ]
+    }
+]

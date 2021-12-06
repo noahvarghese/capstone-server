@@ -9,7 +9,6 @@ import Business from "@models/business";
 import Logs from "@util/logs/logs";
 import { MoreThan } from "typeorm";
 import Membership from "@models/membership";
-import Permission from "@models/permission";
 
 export interface InviteMemberProps {
     first_name: string;
@@ -31,22 +30,9 @@ router.post("/", async (req: Request, res: Response) => {
     const { first_name, last_name, email, phone } =
         req.body as InviteMemberProps;
     const {
-        session: { current_business_id, user_id },
+        session: { current_business_id },
     } = req;
     const { SqlConnection: connection } = req;
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        connection,
-        ["global_crud_users"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     // validate
     const result = emptyChecker<InviteMemberProps>(

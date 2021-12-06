@@ -32,7 +32,7 @@
         "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --ignore build/ --ignore __test__/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
         "jest": "./node_modules/.bin/jest",
-        "jest:list:changed:only": "npm run jest -- -o --listTests",
+        "jest:list:changed:recent": "npm run jest -- -o --listTests",
         "jest:list:changed:commit": "npm run jest -- --changedSince $(git rev-parse @~) --listTests",
         "jest:list:changed:branch": "npm run jest -- --listTests --changedSince",
         "test": "./bin/test.sh",

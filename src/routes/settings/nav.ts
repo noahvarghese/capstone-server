@@ -167,12 +167,11 @@ router.get("/", async (req: Request, res: Response) => {
         session: { user_id, current_business_id },
     } = req;
 
-    if (!user_id || !current_business_id) {
-        res.status(400).json({ message: "Not authenticated" });
-        throw new Error("Not authenticated");
-    }
-
-    const nav = new Nav(current_business_id, user_id, SqlConnection);
+    const nav = new Nav(
+        Number(current_business_id),
+        Number(user_id),
+        SqlConnection
+    );
     const links = await nav.getLinks();
 
     res.status(200).json(links);

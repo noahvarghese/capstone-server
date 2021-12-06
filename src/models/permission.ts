@@ -7,6 +7,28 @@ import Role from "./role";
 import User from "./user/user";
 import UserRole from "./user/user_role";
 
+export type ValidPermission = keyof Omit<
+    PermissionAttributes,
+    "updated_by_user_id"
+>;
+
+export const PermissionKeys: ValidPermission[] = [
+    "global_crud_users",
+    "global_crud_department",
+    "global_crud_role",
+    "global_crud_resources",
+    "global_assign_users_to_department",
+    "global_assign_users_to_role",
+    "global_assign_resources_to_department",
+    "global_assign_resources_to_role",
+    "global_view_reports",
+    "dept_crud_role",
+    "dept_crud_resources",
+    "dept_assign_users_to_role",
+    "dept_assign_resources_to_role",
+    "dept_view_reports",
+];
+
 export interface PermissionAttributes {
     global_crud_users: boolean;
     global_crud_department: boolean;

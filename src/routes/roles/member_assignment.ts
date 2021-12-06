@@ -1,6 +1,5 @@
 import Department from "@models/department";
 import Membership from "@models/membership";
-import Permission from "@models/permission";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
@@ -17,24 +16,6 @@ router.post("/", async (req: Request, res: Response) => {
 
     if (!Array.isArray(user_ids)) {
         res.status(400).json({ message: "Must be an array of users" });
-        return;
-    }
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(current_user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_users",
-            "global_assign_users_to_department",
-            "global_assign_users_to_role",
-            "dept_assign_users_to_role",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
         return;
     }
 
@@ -110,29 +91,10 @@ router.delete("/", async (req: Request, res: Response) => {
     const {
         SqlConnection,
         query: { user_ids, role_id },
-        session: { current_business_id, user_id: current_user_id },
     } = req;
 
     if (!Array.isArray(JSON.parse(user_ids as string))) {
         res.status(400).json({ message: "Must be an array of users" });
-        return;
-    }
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(current_user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_users",
-            "global_assign_users_to_department",
-            "global_assign_users_to_role",
-            "dept_assign_users_to_role",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
         return;
     }
 

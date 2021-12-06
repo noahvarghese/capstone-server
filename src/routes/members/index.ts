@@ -127,26 +127,8 @@ router.get("/", async (req: Request, res: Response) => {
     const {
         query,
         SqlConnection: connection,
-        session: { current_business_id, user_id },
+        session: { current_business_id },
     } = req;
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        connection,
-        [
-            "global_crud_users",
-            "global_assign_users_to_department",
-            "global_assign_users_to_role",
-            "dept_assign_users_to_role",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     // Validate query items
     const limit =
@@ -332,21 +314,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
     const {
         SqlConnection,
         params: { id: user_id },
-        session: { current_business_id, user_id: current_user_id },
+        session: { current_business_id },
     } = req;
-
-    // check for permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(current_user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_users"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     const membership = await SqlConnection.manager.findOne(Membership, {
         where: { user_id, business_id: current_business_id },

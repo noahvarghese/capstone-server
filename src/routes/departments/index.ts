@@ -21,27 +21,10 @@ export interface DepartmentResponse {
 
 router.get("/:id", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
+        session: { current_business_id },
         params: { id },
         SqlConnection,
     } = req;
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_department",
-            "global_assign_resources_to_department",
-            "global_assign_users_to_department",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     try {
         const department = await SqlConnection.manager.findOne(Department, {
@@ -87,26 +70,9 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.get("/", async (req: Request, res: Response) => {
     const {
         query,
-        session: { current_business_id, user_id },
+        session: { current_business_id },
         SqlConnection,
     } = req;
-
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        [
-            "global_crud_department",
-            "global_assign_resources_to_department",
-            "global_assign_users_to_department",
-        ]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
 
     // Validate query items
     const limit =
@@ -232,19 +198,6 @@ router.post("/", async (req: Request, res: Response) => {
         body: { name, prevent_delete, prevent_edit },
     } = req;
 
-    //check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_department"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
-    }
-
     // check department exists
     const count = await SqlConnection.manager.count(Department, {
         where: { name, business_id: current_business_id },
@@ -280,7 +233,6 @@ router.post("/", async (req: Request, res: Response) => {
 
 router.delete("/", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
         SqlConnection,
         query: { ids: queryIds },
     } = req;
@@ -293,19 +245,6 @@ router.delete("/", async (req: Request, res: Response) => {
         const { message } = _e as Error;
         Logs.Error(message);
         res.status(400).json({ message: "Invalid format" });
-    }
-
-    // check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_department"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
-        return;
     }
 
     // check if users are joined to department
@@ -410,7 +349,6 @@ router.delete("/", async (req: Request, res: Response) => {
 
 router.put("/:id", async (req: Request, res: Response) => {
     const {
-        session: { current_business_id, user_id },
         SqlConnection,
         params: { id: queryId },
         body: { name },
@@ -429,19 +367,6 @@ router.put("/:id", async (req: Request, res: Response) => {
         const { message } = _e as Error;
         Logs.Error(message);
         res.status(400).json({ message: "Invalid query format" });
-        return;
-    }
-
-    // check permissions
-    const hasPermission = await Permission.checkPermission(
-        Number(user_id),
-        Number(current_business_id),
-        SqlConnection,
-        ["global_crud_department"]
-    );
-
-    if (!hasPermission) {
-        res.status(403).json({ message: "Insufficient permissions" });
         return;
     }
 

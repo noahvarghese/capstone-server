@@ -3,30 +3,42 @@ import Logs from "@util/logs/logs";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
-    req.session.destroy((err) => {
-        if (err) {
-            Logs.Error(err.message);
-            res.sendStatus(400);
-            return;
-        }
+export const logout = (req: Request, res: Response): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+        req.session.destroy((err) => {
+            err ? reject(err) : resolve();
+        });
+    })
+        .then(() => {
+            try {
+                const { SESSION_ID } = process.env;
 
-        try {
-            const { SESSION_ID } = process.env;
+                if (!SESSION_ID) {
+                    const message = "Session ID not set";
+                    res.status(500).json({ message });
+                    Logs.Error(message);
+                    return;
+                }
 
-            if (!SESSION_ID) {
-                res.sendStatus(500);
-                throw new Error("Session ID not set");
+                res.clearCookie(SESSION_ID);
+                return;
+            } catch (_e) {
+                const e = _e as Error;
+                Logs.Error(e.message);
             }
+            return;
+        })
+        .catch((err) => {
+            Logs.Error(err.message);
+            res.status(400).json({
+                message: "Error occurred destroying session",
+            });
+            return;
+        });
+};
 
-            res.clearCookie(SESSION_ID);
-            res.sendStatus(200);
-        } catch (_e) {
-            const e = _e as Error;
-            Logs.Error(e.message);
-            res.sendStatus(500);
-        }
-    });
-});
+router.post("/", (req: Request, res: Response) =>
+    logout(req, res).then(() => res.sendStatus(200))
+);
 
 export default router;

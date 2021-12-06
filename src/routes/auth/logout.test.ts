@@ -2,6 +2,7 @@ import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Helpers from "@test/helpers";
 import { logout } from "@test/api/actions/auth";
+import Logs from "@util/logs/logs";
 
 let baseWorld: BaseWorld;
 
@@ -28,6 +29,7 @@ test("Logout authenticated user", async () => {
     await logout.call(logout, baseWorld);
 
     const cookies = baseWorld.getCustomProp<string>("cookies");
+    Logs.Test(cookies);
     const expiredCookie = /Expires=Thu, 01 Jan 1970 00:00:00 GMT$/;
     expect(expiredCookie.test(cookies)).toBe(true);
 });
