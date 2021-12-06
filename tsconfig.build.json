@@ -21,6 +21,7 @@
         "sourceMap": true,
         "outDir": "./build",
         "rootDir": "./src",
+        "resolveJsonModule": true,
         "paths": {
             "@config/*": ["config/*"],
             "@middleware/*": ["middleware/*"],
