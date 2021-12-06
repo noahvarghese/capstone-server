@@ -13,37 +13,38 @@ import UserRole from "@models/user/user_role";
 import DBLogger from "@util/logs/db_logger";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
-import Question from "@models/quiz/question/question";
-import Answer from "@models/quiz/question/answer";
-import Attempt from "@models/quiz/attempt";
-import Result from "@models/quiz/result";
-import Read from "@models/manual/policy/read";
 import Event from "@models/event";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
+import PolicyRead from "@models/manual/policy/read";
+import QuizAttempt from "@models/quiz/attempt";
+import QuizAnswer from "@models/quiz/question/answer";
+import QuizQuestion from "@models/quiz/question/question";
+import QuizResult from "@models/quiz/result";
 
-const entities = [
-    Business,
-    User,
-    MembershipRequest,
-    Membership,
-    Department,
-    Permission,
-    Role,
-    UserRole,
-    Manual,
-    ManualAssignment,
-    ManualSection,
-    Policy,
-    Content,
-    Quiz,
-    QuizSection,
-    Question,
-    Answer,
-    Attempt,
-    Result,
-    Read,
+// This is the order they should be deleted by
+export const entities = [
     Event,
+    QuizResult,
+    QuizAttempt,
+    QuizAnswer,
+    QuizQuestion,
+    QuizSection,
+    Quiz,
+    Content,
+    PolicyRead,
+    Policy,
+    ManualSection,
+    ManualAssignment,
+    Manual,
+    UserRole,
+    Role,
+    Permission,
+    Department,
+    Membership,
+    MembershipRequest,
+    User,
+    Business,
 ];
 
 export const connectionOptions = (): ConnectionOptions => {

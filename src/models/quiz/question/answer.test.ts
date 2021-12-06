@@ -1,6 +1,5 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import Model from "@test/model/helpers";
 import Quiz, { QuizAttributes } from "../quiz";
 import QuizAnswer, { QuizAnswerAttributes } from "./answer";
@@ -10,7 +9,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -22,41 +23,6 @@ afterEach(async () => {
     await Model.teardown.call(baseWorld, QuizAnswer);
     baseWorld.resetProps();
 });
-
-// Tests
-test("Create Quiz QuizAnswer", async () => {
-    await ModelTestPass.create<QuizAnswer, QuizAnswerAttributes>(
-        baseWorld,
-        QuizAnswer
-    );
-});
-
-test("Update Quiz QuizAnswer", async () => {
-    await ModelTestPass.update<QuizAnswer, QuizAnswerAttributes>(
-        baseWorld,
-        QuizAnswer,
-        {
-            answer: "TEST",
-        }
-    );
-});
-
-test("Delete Quiz QuizAnswer", async () => {
-    await ModelTestPass.delete<QuizAnswer, QuizAnswerAttributes>(
-        baseWorld,
-        QuizAnswer,
-        ["id"]
-    );
-});
-
-test("Read Quiz QuizAnswer", async () => {
-    await ModelTestPass.read<QuizAnswer, QuizAnswerAttributes>(
-        baseWorld,
-        QuizAnswer,
-        ["id"]
-    );
-});
-
 test("Delete QuizAnswer while Manual is locked doesn't work", async () => {
     await ModelTestParentPrevent.delete<
         Quiz,

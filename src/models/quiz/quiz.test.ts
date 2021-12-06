@@ -1,6 +1,5 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import Quiz, { QuizAttributes } from "./quiz";
 import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
 import Model from "@test/model/helpers";
@@ -9,7 +8,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -20,25 +21,6 @@ beforeEach(async () => {
 afterEach(async () => {
     await Model.teardown.call(baseWorld, Quiz);
     baseWorld.resetProps();
-});
-
-// Tests
-test("Create Quiz", async () => {
-    await ModelTestPass.create<Quiz, QuizAttributes>(baseWorld, Quiz);
-});
-
-test("Update Quiz", async () => {
-    await ModelTestPass.update<Quiz, QuizAttributes>(baseWorld, Quiz, {
-        title: "TEST",
-    });
-});
-
-test("Delete Quiz", async () => {
-    await ModelTestPass.delete<Quiz, QuizAttributes>(baseWorld, Quiz, ["id"]);
-});
-
-test("Read Quiz", async () => {
-    await ModelTestPass.read<Quiz, QuizAttributes>(baseWorld, Quiz, ["id"]);
 });
 
 test("Prevent Deletion of Quiz", async () => {

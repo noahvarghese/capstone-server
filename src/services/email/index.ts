@@ -1,10 +1,9 @@
-import { getConnection } from "typeorm";
+import { Connection } from "typeorm";
 import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
 import Business from "@models/business";
 import Logs from "@util/logs/logs";
-import Model from "@util/model";
 import { client } from "@util/permalink";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
@@ -37,6 +36,7 @@ export interface MailOpts {
 // '<div><sub><em>Please do not reply to this email. It will not reach the intended recipient. If there are any issues please email <a href="mailto:varghese.noah@gmail.com">Noah Varghese</a></em></sub></div>';
 
 export const sendUserInviteEmail = async (
+    connection: Connection,
     business: Business,
     token: string,
     sendingUser: User,
@@ -45,6 +45,7 @@ export const sendUserInviteEmail = async (
     const url = client(`member/invite/${token}`);
 
     return await sendMail(
+        connection,
         {
             template: "invite_user",
             message: { to: receivingUser.email },
@@ -64,10 +65,12 @@ export const sendUserInviteEmail = async (
 };
 
 export const requestResetPasswordEmail = async (
+    connection: Connection,
     user: User
 ): Promise<boolean> => {
     const url = client(`resetPassword/${user.token}`);
     return await sendMail(
+        connection,
         {
             template: "request_reset_password",
             message: { to: user.email },
@@ -80,8 +83,12 @@ export const requestResetPasswordEmail = async (
     );
 };
 
-export const resetPasswordEmail = async (user: User): Promise<boolean> => {
+export const resetPasswordEmail = async (
+    connection: Connection,
+    user: User
+): Promise<boolean> => {
     return await sendMail(
+        connection,
         {
             template: "reset_password",
             message: { to: user.email },
@@ -92,6 +99,7 @@ export const resetPasswordEmail = async (user: User): Promise<boolean> => {
 };
 
 export const sendMail = async (
+    connection: Connection,
     options: Email.EmailOptions,
     event: Event
 ): Promise<boolean> => {
@@ -104,6 +112,6 @@ export const sendMail = async (
         event.reason = JSON.stringify(e);
     }
 
-    await Model.create<Event>(getConnection(), Event, event);
+    await connection.manager.insert(Event, event);
     return event.status === "PASS";
 };

@@ -7,7 +7,7 @@ import sys
 from lib.sql import init_conn
 
 
-help_menu = ("name\t--name/-n\tSets the database name to check\n" +
+help_menu = ("name\t--name/-n\tSets the database name to delete\n" +
              "path\t--path\t\tSets the .env file path [optional]\n" +
              "help\t--help/-h\tPrints this menu\n")
 

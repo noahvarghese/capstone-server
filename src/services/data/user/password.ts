@@ -21,7 +21,7 @@ export const enablePasswordReset = async (
         { token: user.token, token_expiry: user.token_expiry }
     );
 
-    await requestResetPasswordEmail(user);
+    await requestResetPasswordEmail(connection, user);
 };
 
 /**
@@ -37,7 +37,7 @@ export const resetPassword = async (
     token: string,
     password: string
 ): Promise<number> => {
-    const user = await connection.manager.findOneOrFail(User, {
+    const user = await connection.manager.findOne(User, {
         where: {
             token,
             token_expiry: MoreThan(new Date()),
@@ -64,6 +64,6 @@ export const resetPassword = async (
         }
     );
 
-    await resetPasswordEmail(user);
+    await resetPasswordEmail(connection, user);
     return user.id;
 };

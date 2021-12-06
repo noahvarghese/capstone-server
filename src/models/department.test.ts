@@ -1,15 +1,16 @@
 import BaseWorld from "@test/support/base_world";
 import Helpers from "@test/helpers";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
 import Department, { DepartmentAttributes } from "./department";
 import DBConnection from "@test/support/db_connection";
 
-let baseWorld: BaseWorld | undefined;
+let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -18,40 +19,8 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-    if (!baseWorld) throw new Error(BaseWorld.errorMessage);
     await Helpers.Model.teardown.call(baseWorld, Department);
     baseWorld.resetProps();
-});
-
-test("Create Department", async () => {
-    await ModelTestPass.create<Department, DepartmentAttributes>(
-        baseWorld,
-        Department
-    );
-});
-
-test("Update Department", async () => {
-    await ModelTestPass.update<Department, DepartmentAttributes>(
-        baseWorld,
-        Department,
-        { name: "TEST" }
-    );
-});
-
-test("Delete Department", async () => {
-    await ModelTestPass.delete<Department, DepartmentAttributes>(
-        baseWorld,
-        Department,
-        ["id"]
-    );
-});
-
-test("Read Department", async () => {
-    await ModelTestPass.read<Department, DepartmentAttributes>(
-        baseWorld,
-        Department,
-        ["id"]
-    );
 });
 
 test("Prevent Deletion of Department", async () => {

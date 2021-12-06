@@ -1,6 +1,5 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import Role, { RoleAttributes } from "./role";
 import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
 import Model from "@test/model/helpers";
@@ -9,7 +8,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -20,25 +21,6 @@ beforeEach(async () => {
 afterEach(async () => {
     await Model.teardown.call(baseWorld, Role);
     baseWorld.resetProps();
-});
-
-// Tests
-test("Create Role", async () => {
-    await ModelTestPass.create<Role, RoleAttributes>(baseWorld, Role);
-});
-
-test("Update Role", async () => {
-    await ModelTestPass.update<Role, RoleAttributes>(baseWorld, Role, {
-        name: "TEST",
-    });
-});
-
-test("Delete Role", async () => {
-    await ModelTestPass.delete<Role, RoleAttributes>(baseWorld, Role, ["id"]);
-});
-
-test("Read Role", async () => {
-    await ModelTestPass.read<Role, RoleAttributes>(baseWorld, Role, ["id"]);
 });
 
 test("Prevent Deletion of Role", async () => {

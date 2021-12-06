@@ -1,6 +1,5 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import Content, { ContentAttributes } from "./content";
 import Manual, { ManualAttributes } from "./manual";
 import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
@@ -10,7 +9,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -21,29 +22,6 @@ beforeEach(async () => {
 afterEach(async () => {
     await Model.teardown.call(baseWorld, Content);
     baseWorld.resetProps();
-});
-
-// Tests
-test("Create Content", async () => {
-    await ModelTestPass.create<Content, ContentAttributes>(baseWorld, Content);
-});
-
-test("Update Content", async () => {
-    await ModelTestPass.update<Content, ContentAttributes>(baseWorld, Content, {
-        title: "TEST",
-    });
-});
-
-test("Delete Content", async () => {
-    await ModelTestPass.delete<Content, ContentAttributes>(baseWorld, Content, [
-        "id",
-    ]);
-});
-
-test("Read Content", async () => {
-    await ModelTestPass.read<Content, ContentAttributes>(baseWorld, Content, [
-        "id",
-    ]);
 });
 
 test("Delete Content while Manual is locked doesn't work", async () => {

@@ -51,7 +51,7 @@ export const resetPasswordValidator = (
         throw new ServiceError("No token provided", ServiceErrorReasons.AUTH);
     if (password !== confirmPassword)
         throw new ServiceError(
-            "Password do not match",
+            "Passwords do not match",
             ServiceErrorReasons.PARAMS
         );
 };

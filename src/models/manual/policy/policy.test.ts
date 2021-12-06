@@ -1,4 +1,3 @@
-import ModelTestPass from "@test/model/helpers/test/pass";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Manual, { ManualAttributes } from "../manual";
@@ -10,7 +9,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -21,37 +22,6 @@ beforeEach(async () => {
 afterEach(async () => {
     await Model.teardown.call(baseWorld, Policy);
     baseWorld.resetProps();
-});
-
-// Tests
-test("Create Policy", async () => {
-    await ModelTestPass.create<Policy, PolicyAttributes>(baseWorld, Policy);
-});
-
-test("Update Policy", async () => {
-    await ModelTestPass.update<Policy, PolicyAttributes>(
-        baseWorld,
-        Policy,
-
-        {
-            title: "TEST",
-        }
-    );
-});
-
-test("Delete Policy", async () => {
-    await ModelTestPass.delete<Policy, PolicyAttributes>(
-        baseWorld,
-        Policy,
-
-        ["id"]
-    );
-});
-
-test("Read Policy", async () => {
-    await ModelTestPass.read<Policy, PolicyAttributes>(baseWorld, Policy, [
-        "id",
-    ]);
 });
 
 test("Delete Policy while Manual is locked doesn't work", async () => {

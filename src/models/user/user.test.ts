@@ -1,6 +1,5 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import User, { UserAttributes } from "./user";
 import dotenv from "dotenv";
 import Model from "@test/model/helpers";
@@ -12,7 +11,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -23,24 +24,6 @@ beforeEach(async () => {
 afterEach(async () => {
     await Model.teardown.call(baseWorld, User);
     baseWorld.resetProps();
-});
-
-test("Create User", async () => {
-    await ModelTestPass.create<User, UserAttributes>(baseWorld, User);
-});
-
-test("Update User", async () => {
-    await ModelTestPass.update<User, UserAttributes>(baseWorld, User, {
-        first_name: "TEST",
-    });
-});
-
-test("Delete User", async () => {
-    await ModelTestPass.delete<User, UserAttributes>(baseWorld, User, ["id"]);
-});
-
-test("Read User", async () => {
-    await ModelTestPass.read<User, UserAttributes>(baseWorld, User, ["email"]);
 });
 
 test("Create Token", async () => {

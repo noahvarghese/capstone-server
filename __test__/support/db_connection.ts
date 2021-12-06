@@ -1,5 +1,5 @@
 import { Connection, createConnection, getConnectionManager } from "typeorm";
-import { connectionOptions } from "@config/database";
+import { connectionOptions, entities } from "@config/database";
 
 export default abstract class DBConnection {
     private static _connection: Connection | undefined;
@@ -13,9 +13,9 @@ export default abstract class DBConnection {
         });
     };
 
-    public static close = async (): Promise<void> => {
+    public static close = async (reset?: boolean): Promise<void> => {
+        if (reset) await DBConnection.reset();
         await DBConnection._connection?.close();
-
         DBConnection._connection = undefined;
     };
 
@@ -37,5 +37,20 @@ export default abstract class DBConnection {
         }
 
         return DBConnection._connection;
+    };
+
+    /**
+     * Currently adds 1 second to test time
+     * Better than having to fully reset the database, which adds 9 seconds
+     * Just have to manually keep track of any new models
+     */
+    public static reset = async (): Promise<void> => {
+        const connection = await DBConnection.get();
+
+        for (const entity of entities) {
+            await connection.manager.remove(
+                await connection.manager.find(entity)
+            );
+        }
     };
 }

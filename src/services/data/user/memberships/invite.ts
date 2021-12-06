@@ -113,7 +113,13 @@ export const sendInvite = async (
         );
     }
 
-    await sendUserInviteEmail(business, membershipRequest.token, sender, user);
+    await sendUserInviteEmail(
+        connection,
+        business,
+        membershipRequest.token,
+        sender,
+        user
+    );
 };
 
 /**

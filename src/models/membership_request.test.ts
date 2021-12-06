@@ -1,6 +1,5 @@
 import { uid } from "rand-token";
 import ModelActions from "@test/model/helpers/actions";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import MembershipRequest, {
@@ -12,7 +11,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -86,18 +87,4 @@ test("Update membership request token updates expiry", async () => {
     expect(difference).toBeGreaterThan(0);
 
     await ModelActions.delete<MembershipRequest>(baseWorld, MembershipRequest);
-});
-
-test("read membership request", async () => {
-    await ModelTestPass.read(baseWorld, MembershipRequest, [
-        "user_id",
-        "business_id",
-    ]);
-});
-
-test("delete membership request", async () => {
-    await ModelTestPass.delete(baseWorld, MembershipRequest, [
-        "user_id",
-        "business_id",
-    ]);
 });

@@ -1,6 +1,5 @@
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import ModelTestPass from "@test/model/helpers/test/pass";
 import Model from "@test/model/helpers";
 import Quiz, { QuizAttributes } from "../quiz";
 import QuizQuestion, { QuizQuestionAttributes } from "./question";
@@ -10,7 +9,9 @@ let baseWorld: BaseWorld;
 
 // Database setup
 beforeAll(DBConnection.init);
-afterAll(DBConnection.close);
+afterAll(async () => {
+    await DBConnection.close();
+});
 
 // State Setup
 beforeEach(async () => {
@@ -21,38 +22,6 @@ beforeEach(async () => {
 afterEach(async () => {
     await Model.teardown.call(baseWorld, QuizQuestion);
     baseWorld.resetProps();
-});
-
-// Tests
-test("Create Quiz Question", async () => {
-    await ModelTestPass.create<QuizQuestion, QuizQuestionAttributes>(
-        baseWorld,
-        QuizQuestion
-    );
-});
-
-test("Update Quiz Question", async () => {
-    await ModelTestPass.update<QuizQuestion, QuizQuestionAttributes>(
-        baseWorld,
-        QuizQuestion,
-        { question: "TEST" }
-    );
-});
-
-test("Delete Quiz Question", async () => {
-    await ModelTestPass.delete<QuizQuestion, QuizQuestionAttributes>(
-        baseWorld,
-        QuizQuestion,
-        ["id"]
-    );
-});
-
-test("Read Quiz Question", async () => {
-    await ModelTestPass.read<QuizQuestion, QuizQuestionAttributes>(
-        baseWorld,
-        QuizQuestion,
-        ["id"]
-    );
 });
 
 test("Delete Question while Quiz is locked doesn't work", async () => {
