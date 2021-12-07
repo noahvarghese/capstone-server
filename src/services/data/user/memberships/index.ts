@@ -25,7 +25,7 @@ export const getMemberships = async (
             .where("m.user_id = :user_id", { user_id })
             .leftJoin(Business, "b", "b.id = m.business_id")
             .orderBy("m.created_on", "DESC")
-            .getRawMany();
+            .getRawMany<{ id: number; name: string; default_option: 1 | 0 }>();
 
         return res.map((r) => ({
             id: r.id,
