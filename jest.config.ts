@@ -22,12 +22,7 @@ export default {
     collectCoverage: true,
     coverageDirectory: "./__test__/coverage",
     collectCoverageFrom: ["src/**/*.ts"],
-    coveragePathIgnorePatterns: [
-        "node_modules",
-        "src/index.ts",
-        "src/util/logs",
-        "src/routes",
-    ],
+    coveragePathIgnorePatterns: ["node_modules", "src/index.ts", "src/util"],
     coverageReporters: ["json-summary", "text", "lcov", "clover"],
     detectOpenHandles: true,
     errorOnDeprecated: true,
