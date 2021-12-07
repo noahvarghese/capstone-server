@@ -156,7 +156,7 @@ describe("invite user", () => {
         }
     });
 
-    test("Valid inputs", async () => {
+    test("Valid inputs, new user", async () => {
         let errorMessage = "";
         try {
             const props = inviteMember();

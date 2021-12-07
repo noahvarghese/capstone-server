@@ -95,7 +95,7 @@ describe("requires model teardown", () => {
             );
         });
 
-        test("Valid credentials", async () => {
+        test("Valid credentials, but not a member", async () => {
             const { password } = attributes.login() as LoginProps;
 
             await apiRequest(baseWorld, "login", {

@@ -27,6 +27,7 @@ export const emptyInviteUser = (): InviteMemberProps => ({
  * Checks if there is a membership first (fails if true)
  * Then checks if there is a MembershipRequest (generates new token if true, creates new MembershipRequest if false)
  * Then sends email to the given user
+ * confirmation if updated_by_user has rights is done as part of the application level middleware
  * @param {Connection} connection Database connection
  * @param {InviteMemberProps} userInfo Basis for a new User
  * @param {number} business_id
@@ -107,6 +108,7 @@ export const sendInvite = async (
     ]);
 
     if (!sender || !business) {
+        // Unrelistic that this will be hit but needs to be here for type validation
         throw new ServiceError(
             "Unable to retrive information to notify user by email",
             ServiceErrorReasons.SERVER
