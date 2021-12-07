@@ -45,6 +45,7 @@ export const findByLogin = async (
         if (!valid) {
             throw new ServiceError("Invalid login", ServiceErrorReasons.AUTH);
         }
+
         return user.id;
     } catch (e) {
         if (e instanceof ServiceError) throw e;

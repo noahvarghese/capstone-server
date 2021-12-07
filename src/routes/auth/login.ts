@@ -27,6 +27,11 @@ router.post("/", async (req: Request, res: Response) => {
             userId
         );
 
+        if (memberships.length === 0) {
+            res.status(400).json({ message: "Please contact your manager" });
+            return;
+        }
+
         req.session.user_id = userId;
         req.session.business_ids = memberships.map((m) => m.id);
         req.session.current_business_id =
