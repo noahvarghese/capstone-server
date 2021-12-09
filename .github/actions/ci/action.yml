@@ -11,6 +11,9 @@ runs:
     - name: install python dependencies
       run: pip install -r ./bin/database/requirements.txt
       shell: bash
+    - name: install node dependencies
+      run: npm ci
+      shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
