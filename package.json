@@ -28,7 +28,7 @@
         "postbuild:email-templates": "cp -R ./src/services/email/templates ./build/services/email",
         "postbuild:package": "cp ./package*.json ./build && cd build && npm install --only=production",
         "format": "prettier --write \"**/*.ts\" \"*.json\"",
-        "format:check": "prettier --check \"**/*.ts\"",
+        "format:check": "prettier  --check \"**/*.ts\"",
         "start:dev": "NODE_ENV=dev nodemon -e ts,.env,json --ignore build/ --ignore __test__/ --exec ts-node ./src/index.ts -- dev",
         "start": "NODE_ENV=prod node ./index.js",
         "jest": "./node_modules/.bin/jest",
