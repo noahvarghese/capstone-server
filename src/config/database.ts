@@ -21,9 +21,11 @@ import QuizAttempt from "@models/quiz/attempt";
 import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
 import QuizResult from "@models/quiz/result";
+import Sessions from "@models/session";
 
 // This is the order they should be deleted by
 export const entities = [
+    Sessions,
     Event,
     QuizResult,
     QuizAttempt,
