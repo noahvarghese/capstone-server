@@ -10,16 +10,6 @@ import { getBusinesses } from "@test/api/actions/business";
 
 let baseWorld: BaseWorld;
 
-beforeAll(async () => {
-    await DBConnection.init();
-    await helpers.AppServer.setup(false);
-});
-
-afterAll(async () => {
-    await helpers.AppServer.teardown();
-    await DBConnection.close();
-});
-
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
     await helpers.Api.setup(baseWorld, "@setup_invite_member");

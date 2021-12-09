@@ -18,15 +18,6 @@ let baseWorld: BaseWorld;
 const name = "TEST";
 jest.setTimeout(500000);
 
-beforeAll(async () => {
-    await DBConnection.init();
-    await Helpers.AppServer.setup(false);
-});
-afterAll(async () => {
-    await Helpers.AppServer.teardown();
-    await DBConnection.close();
-});
-
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
     await Helpers.Api.setup(baseWorld, "@setup_invite_member");
