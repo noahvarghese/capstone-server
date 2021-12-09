@@ -22,7 +22,7 @@ runs:
       shell: bash
     - name: "List changed integration tests"
       run: |
-        npm run integration:test:list -- --changedSince "${{ steps.changed.outputs.changed }}""
+        npm run integration:test:list -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash
     - name: "List changed database tests"
       run: |
