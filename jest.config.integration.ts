@@ -8,8 +8,6 @@ export default {
     detectOpenHandles: false,
     globalSetup: "./jest.integration.setup.ts",
     globalTeardown: "./jest.integration.teardown.ts",
-    setupFiles: ["dotenv/config"],
-    setupFilesAfterEnv: ["./jest.setup.ts"],
     reporters: [
         "default",
         [

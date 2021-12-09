@@ -2,8 +2,6 @@ import jestConfigBase from "jest.config.base";
 
 export default {
     ...jestConfigBase,
-    setupFiles: ["dotenv/config"],
-    setupFilesAfterEnv: ["./jest.setup.ts"],
     reporters: [
         "default",
         [
@@ -14,7 +12,7 @@ export default {
                 includeFailureMsg: true,
                 includeSuiteFailure: true,
                 outputPath: "./__test__/database-test-report.html",
-                pageTitle: "Integration Test Report",
+                pageTitle: "Database Test Report",
             },
         ],
     ],
