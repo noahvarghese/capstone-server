@@ -2,7 +2,7 @@
 /build
 coverage
 __test__/coverage
-__test__/test-report.html
+__test__/*-report.html
 .env
 .vscode
 output*

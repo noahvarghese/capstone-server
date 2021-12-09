@@ -11,23 +11,21 @@ import {
     ForgotPasswordProps,
     ResetPasswordProps,
 } from "@test/api/attributes/password";
+import Logs from "@util/logs/logs";
 
 let baseWorld: BaseWorld;
 
 const { email } = attributes.forgotPassword() as ForgotPasswordProps;
 
 beforeAll(async () => {
-    await DBConnection.init();
-    await Helpers.AppServer.setup(false);
     baseWorld = new BaseWorld(await DBConnection.get());
     await Helpers.Api.setup(baseWorld, "@setup_reset_password");
     await resetPassword.call(baseWorld);
 });
 afterAll(async () => {
+    Logs.Debug("FIRST");
     await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
     baseWorld.resetProps();
-    await Helpers.AppServer.teardown();
-    await DBConnection.close();
 });
 
 async function resetPassword(this: BaseWorld) {
