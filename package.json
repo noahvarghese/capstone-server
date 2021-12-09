@@ -35,7 +35,7 @@
         "jest:list:changed:recent": "npm run jest -- -o --listTests",
         "jest:list:changed:commit": "npm run jest -- --changedSince $(git rev-parse @~) --listTests",
         "jest:list:changed:branch": "npm run jest -- --listTests --changedSince",
-        "test": "./bin/test.sh",
+        "test": "./bin/test.sh --passWithNoTests",
         "test:debug": "npm run enable:recursive && NODE_ENV=test node --inspect-brk ./node_modules/.bin/jest --runInBand",
         "test:recent": "npm run test -- -o",
         "test:watch": "npm run test -- --watch",

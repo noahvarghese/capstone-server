@@ -28,6 +28,7 @@ export default {
     moduleDirectories: ["node_modules", "./"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
+    modulePathIgnorePatters: ["build/"],
     setupFiles: ["dotenv/config"],
     setupFilesAfterEnv: ["./jest.setup.ts"],
     reporters: ["default"],
