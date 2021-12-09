@@ -14,9 +14,21 @@ runs:
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
+    - name: "List changed unit tests"
+      run: |
+        npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}" --listTests
+      shell: bash
+    - name: "List changed integration tests"
+      run: |
+        npm run integration:test -- --changedSince "${{ steps.changed.outputs.changed }}" --listTests
+      shell: bash
+    - name: "List changed database tests"
+      run: |
+        npm run database:test -- --changedSince "${{ steps.changed.outputs.changed }}" --listTests
+      shell: bash
     - id: cache-node-modules
       uses: ./.github/actions/cache-node-modules
     - name: test
       run: |
-        npm run test -- --changedSince "${{ steps.changed.outputs.changed }}"
+        npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash

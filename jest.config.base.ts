@@ -19,11 +19,7 @@ Logs.Event("Jest config loaded");
 
 export default {
     bail: true,
-    collectCoverage: true,
-    coverageDirectory: "./__test__/coverage",
-    collectCoverageFrom: ["src/**/*.ts"],
-    coveragePathIgnorePatterns: ["node_modules", "src/index.ts", "src/util"],
-    coverageReporters: ["json-summary", "text", "lcov", "clover"],
+    collectCoverage: false,
     detectOpenHandles: true,
     errorOnDeprecated: true,
     forceExit: true,
@@ -34,23 +30,9 @@ export default {
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
     setupFiles: ["dotenv/config"],
     setupFilesAfterEnv: ["./jest.setup.ts"],
-    reporters: [
-        "default",
-        [
-            "./node_modules/jest-html-reporter",
-            {
-                dateFormat: "yyyy-mm-dd HH:MM:ss",
-                includeConsoleLog: true,
-                includeFailureMsg: true,
-                includeSuiteFailure: true,
-                outputPath: "./__test__/test-report.html",
-                pageTitle: "Test Report",
-            },
-        ],
-    ],
+    reporters: ["default"],
     roots: ["src", "__test__"],
     testEnvironment: "node",
-    testRegex: "/src/.*\\.(test|spec)?\\.(ts|tsx)$",
     transform: {
         "^.+\\.ts?$": "ts-jest",
     },

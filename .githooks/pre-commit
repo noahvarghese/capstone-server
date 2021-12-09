@@ -5,7 +5,7 @@ echo "******************* PRE COMMIT HOOK STARTED ***********************"
 printf "\n\n"
 
 npm ci
-npm run test:recent
+npm run unit:test:recent
 
 TEST_RESULT=$?
 

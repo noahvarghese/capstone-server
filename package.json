@@ -39,6 +39,18 @@
         "test:debug": "npm run enable:recursive && NODE_ENV=test node --inspect-brk ./node_modules/.bin/jest --runInBand",
         "test:recent": "npm run test -- -o",
         "test:watch": "npm run test -- --watch",
+        "unit:test": "npm run test -- --config=jest.config.unit.ts",
+        "unit:test:debug": "npm run test:debug -- --config=jest.config.unit.ts",
+        "unit:test:recent": "npm run test:recent -- --config=jest.config.unit.ts",
+        "unit:test:watch": "npm run test:watch -- --config=jest.config.unit.ts",
+        "integration:test": "npm run test -- --config=jest.config.integration.ts",
+        "integration:test:debug": "npm run test:debug -- --config=jest.config.integration.ts",
+        "integration:test:recent": "npm run test:recent -- --config=jest.config.integration.ts",
+        "integration:test:watch": "npm run test:watch -- --config=jest.config.integration.ts",
+        "database:test": "npm run test -- --config=jest.config.database.ts",
+        "database:test:debug": "npm run test:debug -- --config=jest.config.database.ts",
+        "database:test:recent": "npm run test:recent -- --config=jest.config.database.ts",
+        "database:test:watch": "npm run test:watch -- --config=jest.config.database.ts",
         "version:bump": "npm version patch -m 'version bump [skip pipeline]'"
     },
     "repository": {

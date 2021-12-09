@@ -1,0 +1,735 @@
+<html><head><meta charset="utf-8"/><title>Integration Test Report</title><style type="text/css">html,
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+body {
+  padding: 2rem 1rem;
+  font-size: 0.85rem;
+}
+#jesthtml-content {
+  margin: 0 auto;
+  max-width: 70rem;
+}
+header {
+  display: flex;
+  align-items: center;
+}
+#title {
+  margin: 0;
+  flex-grow: 1;
+}
+#logo {
+  height: 4rem;
+}
+#timestamp {
+  color: #777;
+  margin-top: 0.5rem;
+}
+
+/** SUMMARY */
+#summary {
+  color: #333;
+  margin: 2rem 0;
+  display: flex;
+  font-family: monospace;
+  font-size: 1rem;
+}
+#summary > div {
+  margin-right: 2rem;
+  background: #eee;
+  padding: 1rem;
+  min-width: 15rem;
+}
+#summary > div:last-child {
+  margin-right: 0;
+}
+@media only screen and (max-width: 720px) {
+  #summary {
+    flex-direction: column;
+  }
+  #summary > div {
+    margin-right: 0;
+    margin-top: 2rem;
+  }
+  #summary > div:first-child {
+    margin-top: 0;
+  }
+}
+
+.summary-total {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.summary-passed {
+  color: #4f8a10;
+  border-left: 0.4rem solid #4f8a10;
+  padding-left: 0.5rem;
+}
+.summary-failed,
+.summary-obsolete-snapshots {
+  color: #d8000c;
+  border-left: 0.4rem solid #d8000c;
+  padding-left: 0.5rem;
+}
+.summary-pending {
+  color: #9f6000;
+  border-left: 0.4rem solid #9f6000;
+  padding-left: 0.5rem;
+}
+.summary-empty {
+  color: #999;
+  border-left: 0.4rem solid #999;
+}
+
+.test-result {
+  padding: 1rem;
+  margin-bottom: 0.25rem;
+}
+.test-result:last-child {
+  border: 0;
+}
+.test-result.passed {
+  background-color: #dff2bf;
+  color: #4f8a10;
+}
+.test-result.failed {
+  background-color: #ffbaba;
+  color: #d8000c;
+}
+.test-result.pending {
+  background-color: #ffdf61;
+  color: #9f6000;
+}
+
+.test-info {
+  display: flex;
+  justify-content: space-between;
+}
+.test-suitename {
+  width: 20%;
+  text-align: left;
+  font-weight: bold;
+  word-break: break-word;
+}
+.test-title {
+  width: 40%;
+  text-align: left;
+  font-style: italic;
+}
+.test-status {
+  width: 20%;
+  text-align: right;
+}
+.test-duration {
+  width: 10%;
+  text-align: right;
+  font-size: 0.75rem;
+}
+
+.failureMessages {
+  padding: 0 1rem;
+  margin-top: 1rem;
+  border-top: 1px dashed #d8000c;
+}
+.failureMessages.suiteFailure {
+  border-top: none;
+}
+.failureMsg {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.suite-container {
+  margin-bottom: 2rem;
+}
+.suite-info {
+  padding: 1rem;
+  background-color: #eee;
+  color: #777;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.suite-info .suite-path {
+  word-break: break-all;
+  flex-grow: 1;
+  font-family: monospace;
+  font-size: 1rem;
+}
+.suite-info .suite-time {
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.75rem;
+}
+.suite-info .suite-time.warn {
+  background-color: #d8000c;
+  color: #fff;
+}
+
+/* CONSOLE LOGS */
+.suite-consolelog {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: #efefef;
+}
+.suite-consolelog-header {
+  font-weight: bold;
+}
+.suite-consolelog-item {
+  padding: 0.5rem;
+}
+.suite-consolelog-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-consolelog-item-origin {
+  color: #777;
+  font-weight: bold;
+}
+.suite-consolelog-item-message {
+  color: #000;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+
+/* OBSOLETE SNAPSHOTS */
+.suite-obsolete-snapshots {
+  margin-bottom: 0.25rem;
+  padding: 1rem;
+  background-color: #ffbaba;
+  color: #d8000c;
+}
+.suite-obsolete-snapshots-header {
+  font-weight: bold;
+}
+.suite-obsolete-snapshots-item {
+  padding: 0.5rem;
+}
+.suite-obsolete-snapshots-item pre {
+  margin: 0.5rem 0;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.suite-obsolete-snapshots-item-message {
+  color: #000;
+  font-size: 1rem;
+  padding: 0 0.5rem;
+}
+</style></head><body><div id="jesthtml-content"><header><h1 id="title">Integration Test Report</h1></header><div id="metadata-container"><div id="timestamp">Started: 2021-12-09 18:41:56</div><div id="summary"><div id="suite-summary"><div class="summary-total">Suites (19)</div><div class="summary-passed">19 passed</div><div class="summary-failed summary-empty">0 failed</div><div class="summary-pending summary-empty">0 pending</div></div><div id="test-summary"><div class="summary-total">Tests (46)</div><div class="summary-passed">46 passed</div><div class="summary-failed summary-empty">0 failed</div><div class="summary-pending summary-empty">0 pending</div></div></div></div><div id="suite-1" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/user/user.db.test.ts</div><div class="suite-time warn">8.161s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Token</div><div class="test-status">passed</div><div class="test-duration">0.182s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Updated user should have 1hr to update password</div><div class="test-status">passed</div><div class="test-duration">0.662s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Token Should Be Valid</div><div class="test-status">passed</div><div class="test-duration">1.352s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Invalid token expiry</div><div class="test-status">passed</div><div class="test-duration">0.725s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Wrong token should not match</div><div class="test-status">passed</div><div class="test-duration">0.679s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Reset Password</div><div class="test-status">passed</div><div class="test-duration">1.364s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Reset password empty</div><div class="test-status">passed</div><div class="test-duration">0.399s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div></div></div><div id="suite-2" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/membership_request.db.test.ts</div><div class="suite-time">1.873s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Membership request creates token and expiry</div><div class="test-status">passed</div><div class="test-duration">0.725s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update membership request token updates expiry</div><div class="test-status">passed</div><div class="test-duration">0.896s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div></div></div><div id="suite-3" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/question/question.db.test.ts</div><div class="suite-time warn">6.806s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Question while Quiz is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.209s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Question while Quiz is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.389s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating question when quiz.prevent_edit is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.926s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `quiz_question` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizQuestionDeleteError: Cannot delete a question while the quiz is locked from editing. 1
+Params: 1
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `quiz_question` SET `question` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizQuestionUpdateError: Cannot update a question while the quiz is locked from editing. 2
+Params: Hello,2
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `quiz_question`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `question`, `type`, `quiz_section_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizQuestionInsertError: Cannot insert a question while the quiz is locked from editing. 0
+Params: 12,Question,radio,3
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-4" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/section.db.test.ts</div><div class="suite-time warn">6.168s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Section while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.003s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Section while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.147s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating section when manual cannot be edited is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.775s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `manual_section` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualSectionDeleteError: Cannot delete a section while the manual is locked from editing. 1
+Params: 1
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `manual_section` SET `title` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualSectionUpdateError: Cannot update a section while the manual is locked from editing. 2
+Params: YOLO,2
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `manual_section`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `title`, `manual_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualSectionInsertError: Cannot insert a section while the manual is locked. 0
+Params: 15,Section,6
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-5" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/section.db.test.ts</div><div class="suite-time warn">6.386s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Question while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.021s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Question while Quiz is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.158s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating section when quiz.prevent_edit is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.764s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `quiz_section` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizSectionDeleteError: Cannot delete a section while the quiz is locked from editing. 4
+Params: 4
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `quiz_section` SET `title` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizSectionUpdateError: Cannot update a section while the quiz is locked from editing. 5
+Params: YOLO,5
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `quiz_section`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `title`, `quiz_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizSectionInsertError: Cannot insert a section while the quiz is locked from editing. 0
+Params: 18,Section,6
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-6" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/content.db.test.ts</div><div class="suite-time warn">7.178s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Content while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.433s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Content while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.341s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating content when manual cannot be edited is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.975s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `content` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ContentDeleteError: Cannot delete content while the manual is locked from editing. 1
+Params: 1
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `content` SET `title` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ContentUpdateError: Cannot update content while the manual is locked from editing. 2
+Params: YOLO,2
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `content`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `title`, `content`, `policy_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ContentInsertError: Cannot insert content while the manual is locked from editing. 0
+Params: 21,Content,Here are some words,3
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-7" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/policy/policy.db.test.ts</div><div class="suite-time warn">6.554s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete Policy while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.053s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Policy while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.223s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating a policy when manual cannot be edited is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.849s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `policy` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: PolicyDeleteError: Cannot delete a policy while the manual is locked from editing. 4
+Params: 4
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `policy` SET `title` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: PolicyUpdateError: Cannot update a policy while the manual is locked from editing. 5
+Params: YOLO,5
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `policy`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `title`, `manual_section_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: PolicyInsertError: Cannot insert a policy while the manual is locked from editing. 0
+Params: 24,Policy,8
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-8" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/question/answer.db.test.ts</div><div class="suite-time warn">7.002s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Delete QuizAnswer while Manual is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.189s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update QuizAnswer while Quiz is locked doesn't work</div><div class="test-status">passed</div><div class="test-duration">2.368s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Creating answer when quiz.prevent_edit is true should fail</div><div class="test-status">passed</div><div class="test-duration">1.954s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `quiz_answer` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizAnswerDeleteError: Cannot delete an answer while the quiz is locked from editing. 1
+Params: 1
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `quiz_answer` SET `answer` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizAnswerUpdateError: Cannot update an answer while the quiz is locked from editing. 2
+Params: YOLO,2
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `quiz_answer`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `answer`, `correct`, `quiz_question_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizAnswerInsertError: Cannot insert an answer while the quiz is locked from editing. 0
+Params: 27,Answer,0,5
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-9" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/membership.db.test.ts</div><div class="suite-time">2.633s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create membership requires business_id</div><div class="test-status">passed</div><div class="test-duration">0.675s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update membership should fail when business is null or empty</div><div class="test-status">passed</div><div class="test-duration">0.723s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update membership should fail when user is null or empty</div><div class="test-status">passed</div><div class="test-duration">0.707s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `membership`(`created_on`, `updated_on`, `deleted_on`, `user_id`, `business_id`, `updated_by_user_id`, `default_option`) VALUES (DEFAULT, DEFAULT, DEFAULT, ?, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: MembershipInsertError: Business id cannot be null or empty
+Params: 28,,28,0
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `membership` SET `business_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `user_id` = ? AND `business_id` = ? AND `updated_by_user_id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: MembershipUpdateError: Business id cannot be null or empty
+Params: ,29,29,29
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `membership` SET `user_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `user_id` = ? AND `business_id` = ? AND `updated_by_user_id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: MembershipUpdateError: User id cannot be null or empty
+Params: ,30,30,30
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-10" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/assignment.db.test.ts</div><div class="suite-time">3.441s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create Manual Assignment Without Department Or Role</div><div class="test-status">passed</div><div class="test-duration">1.59s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update manual assignment without role or department</div><div class="test-status">passed</div><div class="test-duration">1.609s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `manual_assignment`(`created_on`, `updated_on`, `deleted_on`, `id`, `updated_by_user_id`, `manual_id`, `role_id`, `department_id`) VALUES (DEFAULT, DEFAULT, DEFAULT, DEFAULT, ?, ?, ?, ?)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualAssignmentInsertError: Cannot add a manual_assignment without a role or department 0
+Params: 31,19,,
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `manual_assignment` SET `department_id` = ?, `role_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualAssignmentUpdateError: Cannot update a manual_assignment without a role or department 10
+Params: ,,10
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-11" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/manual.db.test.ts</div><div class="suite-time">3.93s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent Deletion of Manual</div><div class="test-status">passed</div><div class="test-duration">1.742s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent edit of manual</div><div class="test-status">passed</div><div class="test-duration">1.697s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `manual` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualDeleteError: Cannot delete manual while delete lock is set 21
+Params: 21
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `manual` SET `title` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: ManualUpdateError: Manual is locked from editing. 22
+Params: YOLO,22
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-12" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/department.db.test.ts</div><div class="suite-time warn">6.313s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent Deletion of Department</div><div class="test-status">passed</div><div class="test-duration">1.465s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent edit of department</div><div class="test-status">passed</div><div class="test-duration">1.067s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `department` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: DepartmentDeleteError: Cannot delete department while delete lock is set. 23
+Params: 23
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `department` SET `name` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: DepartmentUpdateError: Cannot edit department while edit lock is set. 24
+Params: YOLO,24
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-13" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/quiz.db.test.ts</div><div class="suite-time">3.827s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent Deletion of Quiz</div><div class="test-status">passed</div><div class="test-duration">1.852s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">prevent editing of quiz</div><div class="test-status">passed</div><div class="test-duration">1.728s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `quiz` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizDeleteError: Cannot delete quiz while delete lock is set. 10
+Params: 10
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `quiz` SET `title` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizUpdateError: Quiz is locked from editing. 11
+Params: YOLO,11
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-14" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/event.db.test.ts</div><div class="suite-time">2.273s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Create event without user_id or business_id</div><div class="test-status">passed</div><div class="test-duration">0.81s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Event should fail</div><div class="test-status">passed</div><div class="test-duration">0.856s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: INSERT INTO `event`(`id`, `name`, `reason`, `status`, `user_id`, `business_id`, `created_on`) VALUES (DEFAULT, ?, ?, ?, ?, ?, DEFAULT)
+Failed with error: Error: ER_SIGNAL_EXCEPTION: EventInsertError: Must have either business_id or user_id
+Params: Event,YOLO,FAIL,,
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `event` SET `status` = ? WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: EventUpdateError: Cannot update events
+Params: PASS,1
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-15" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/role.db.test.ts</div><div class="suite-time">2.93s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent Deletion of Role</div><div class="test-status">passed</div><div class="test-duration">1.368s</div></div></div><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Prevent Update of Role</div><div class="test-status">passed</div><div class="test-duration">1.32s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: DELETE FROM `role` WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: RoleDeleteError: Cannot delete role while delete lock is set. 25
+Params: 25
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `role` SET `name` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: RoleUpdateError: Cannot edit role while edit lock is set. 26
+Params: YOLO,26
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-16" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/result.db.test.ts</div><div class="suite-time">2.598s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update Quiz Result should fail</div><div class="test-status">passed</div><div class="test-duration">2.33s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `quiz_result` SET `quiz_attempt_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizResultUpdateError: Cannot update quiz_result
+Params: -1,1
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-17" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/user/user_role.db.test.ts</div><div class="suite-time">1.839s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update user role should fail</div><div class="test-status">passed</div><div class="test-duration">1.423s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `user_role` SET `role_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `user_id` = ? AND `role_id` = ? AND `updated_by_user_id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: UserRoleUpdateError: Cannot update user role. user_id: 44 role_id: 28
+Params: -1,44,28,44
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-18" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/quiz/attempt.db.test.ts</div><div class="suite-time">2.124s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update quiz attempt should fail</div><div class="test-status">passed</div><div class="test-duration">1.885s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `quiz_attempt` SET `user_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: QuizAttemptUpdateError: Cannot update quiz_attempt
+Params: -1,2
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div><div id="suite-19" class="suite-container"><div class="suite-info"><div class="suite-path">/home/user/build/capstone-server/src/models/manual/policy/read.db.test.ts</div><div class="suite-time">2.671s</div></div><div class="suite-tests"><div class="test-result passed"><div class="test-info"><div class="test-suitename"> </div><div class="test-title">Update model should fail</div><div class="test-status">passed</div><div class="test-duration">2.423s</div></div></div></div><div class="suite-consolelog"><div class="suite-consolelog-header">Console Log</div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Event (/home/user/build/capstone-server/src/util/logs/logs.ts:112:14)
+    at Object.&lt;anonymous&gt; (/home/user/build/capstone-server/jest.setup.ts:3:6)
+    at Runtime._execModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1646:24)
+    at Runtime._loadModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1185:12)
+    at Runtime.requireModule (/home/user/build/capstone-server/node_modules/jest-runtime/build/index.js:1009:12)
+    at jestAdapter (/home/user/build/capstone-server/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:70:15)
+    at runTestInternal (/home/user/build/capstone-server/node_modules/jest-runner/build/runTest.js:389:16)</pre><pre class="suite-consolelog-item-message">[ EVENT ]:  Jest setup loaded</pre></div><div class="suite-consolelog-item"><pre class="suite-consolelog-item-origin">    at Function.Object.&lt;anonymous&gt;.Logs.add (/home/user/build/capstone-server/src/util/logs/logs.ts:99:17)
+    at Function.Error (/home/user/build/capstone-server/src/util/logs/logs.ts:116:44)
+    at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/src/driver/mysql/MysqlQueryRunner.ts:194:55)
+    at Query.&lt;anonymous&gt; (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:526:10)
+    at Query._callback (/home/user/build/capstone-server/node_modules/mysql/lib/Connection.js:488:16)
+    at Query.Object.&lt;anonymous&gt;.Sequence.end (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Sequence.js:83:24)
+    at Query.Object.&lt;anonymous&gt;.Query.ErrorPacket (/home/user/build/capstone-server/node_modules/mysql/lib/protocol/sequences/Query.js:92:8)</pre><pre class="suite-consolelog-item-message">[ ERROR ]:  Query: UPDATE `policy_read` SET `policy_id` = ?, `updated_on` = CURRENT_TIMESTAMP WHERE `user_id` = ? AND `policy_id` = ?
+Failed with error: Error: ER_SIGNAL_EXCEPTION: PolicyReadUpdateError: Cannot update policy_read
+Params: -1,46,6
+Query Runner: [object Object] at DBLogger.logQueryError (/home/user/build/capstone-server/src/util/logs/db_logger.ts:22:14)</pre></div></div></div></div></body></html>
