@@ -245,27 +245,27 @@ describe("Unauthorized user", () => {
     });
 
     // Reduce routes as if no permissions are required then any unauthenticated user can get in
-    // test.each(cases.filter((r) => r.permissions.length > 0))(
-    //     "cannot access $method $url",
-    //     async (route) => {
-    //         const req = getMockReq({
-    //             SqlConnection: await DBConnection.get(),
-    //             routeSettings: route,
-    //             session: {
-    //                 user_id: userId,
-    //                 current_business_id: businessId,
-    //                 business_ids: [businessId],
-    //             },
-    //         });
+    test.each(cases.filter((r) => r.permissions.length > 0))(
+        "cannot access $method $url",
+        async (route) => {
+            const req = getMockReq({
+                SqlConnection: await DBConnection.get(),
+                routeSettings: route,
+                session: {
+                    user_id: userId,
+                    current_business_id: businessId,
+                    business_ids: [businessId],
+                },
+            });
 
-    //         await authorized(req, res, next);
+            await authorized(req, res, next);
 
-    //         expect(res.status).toHaveBeenCalledWith(403);
-    //         expect(res.json).toHaveBeenCalledWith(
-    //             expect.objectContaining({
-    //                 message: "Insufficient permissions",
-    //             })
-    //         );
-    //     }
-    // );
+            expect(res.status).toHaveBeenCalledWith(403);
+            expect(res.json).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    message: "Insufficient permissions",
+                })
+            );
+        }
+    );
 });
