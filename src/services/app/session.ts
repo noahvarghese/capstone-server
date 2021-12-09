@@ -17,11 +17,12 @@ const options = {
     createDatabaseTable: true,
 };
 
-export const mySQLSessionStore = new (MySQLStore(session))(options);
+export const mySQLSessionStore = (): MySQLStore.MySQLStore =>
+    new (MySQLStore(session))(options);
 
 export const createSessionTable = async (): Promise<void> => {
     return await new Promise((res, rej) => {
-        mySQLSessionStore.createDatabaseTable((err) => {
+        mySQLSessionStore().createDatabaseTable((err) => {
             if (err) {
                 Logs.Error(err);
                 rej(err);
@@ -55,6 +56,6 @@ export const createSession = async (): Promise<
             sameSite: "lax",
         },
         unset: "destroy",
-        store: mySQLSessionStore,
+        store: mySQLSessionStore(),
     });
 };

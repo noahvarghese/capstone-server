@@ -8,6 +8,7 @@ export default {
         "node_modules",
         "src/index.ts",
         "src/util",
+        "src/services/app",
         ".test.ts",
     ],
     coverageReporters: ["json-summary", "text", "lcov", "clover"],

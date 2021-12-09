@@ -18,5 +18,5 @@ export default {
             },
         ],
     ],
-    testRegex: "/src/.*\\.int\\.(test|spec)?\\.(ts|tsx)$",
+    testRegex: "/src/.*\\.integration\\.(test|spec)?\\.(ts|tsx)$",
 };
