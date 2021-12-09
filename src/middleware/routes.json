@@ -56,6 +56,7 @@
     {
         "method": "post",
         "url": "^\\/auth\\/reset_password\\/\\w+$",
+        "testURL": "/auth/reset_password/token",
         "requireAuth": false,
         "permissions": []
     },
@@ -73,7 +74,18 @@
     },
     {
         "method": "get",
-        "url": "^\\/departments(\\/\\d+)?$",
+        "url": "/departments",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_department",
+            "global_assign_resources_to_department",
+            "global_assign_users_to_department"
+        ]
+    },
+    {
+        "method": "get",
+        "url": "^\\/departments\\/\\d+$",
+        "testURL": "/departments/1",
         "requireAuth": true,
         "permissions": [
             "global_crud_department",
@@ -90,6 +102,7 @@
     {
         "method": "put",
         "url": "^\\/departments\\/\\d+$",
+        "testURL": "/departments/1",
         "requireAuth": true,
         "permissions": ["global_crud_department"]
     },
@@ -101,7 +114,18 @@
     },
     {
         "method": "get",
-        "url": "^\\/roles(\\/\\d+)?$",
+        "url": "/roles",
+        "requireAuth": true,
+        "permissions": [
+            "global_crud_role",
+            "global_assign_resources_to_role",
+            "global_assign_users_to_role"
+        ]
+    },
+    {
+        "method": "get",
+        "url": "^\\/roles\\/\\d+$",
+        "testURL": "/roles/1",
         "requireAuth": true,
         "permissions": [
             "global_crud_role",
@@ -118,6 +142,7 @@
     {
         "method": "put",
         "url": "^\\/roles\\/\\d+$",
+        "testURL": "/roles/1",
         "requireAuth": true,
         "permissions": ["global_crud_role"]
     },
@@ -152,8 +177,15 @@
     {
         "method": "get",
         "url": "^\\/members\\/\\d+$",
+        "testURL": "/members/1",
+        "selfOverride": true,
         "requireAuth": true,
-        "permissions": []
+        "permissions": [
+            "global_crud_users",
+            "global_assign_users_to_department",
+            "global_assign_users_to_role",
+            "dept_assign_users_to_role"
+        ]
     },
     {
         "method": "get",
@@ -169,12 +201,15 @@
     {
         "method": "put",
         "url": "^\\/members\\/\\d+$",
+        "testURL": "/members/1",
+        "selfOverride": true,
         "requireAuth": true,
-        "permissions": []
+        "permissions": ["global_crud_users"]
     },
     {
         "method": "delete",
         "url": "^\\/members\\/\\d+$",
+        "testURL": "/members/1",
         "requireAuth": true,
         "permissions": ["global_crud_users"]
     },
@@ -187,6 +222,7 @@
     {
         "method": "post",
         "url": "^\\/members\\/invite\\/\\w+$",
+        "testURL": "/members/invite/token",
         "requireAuth": false,
         "permissions": []
     },

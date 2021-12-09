@@ -54,6 +54,7 @@
     "homepage": "https://github.com/noahvarghese/capstone-server#readme",
     "devDependencies": {
         "@babel/preset-typescript": "^7.13.0",
+        "@jest-mock/express": "^1.4.5",
         "@types/axios": "^0.14.0",
         "@types/bcryptjs": "^2.4.2",
         "@types/chai": "^4.2.17",

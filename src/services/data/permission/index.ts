@@ -13,6 +13,8 @@ export const check = async (
     required: (keyof Permission)[]
 ): Promise<boolean> => {
     try {
+        if (required.length === 0) return true;
+
         const permissions = await getAll(user_id, business_id, connection);
 
         return (

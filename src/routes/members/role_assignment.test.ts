@@ -8,7 +8,6 @@ import {
     createRegularUser,
     createRole,
     getAdminUserId,
-    loginUser,
 } from "@test/api/helpers/setup-actions";
 import { EmptyPermissionAttributes } from "@models/permission";
 import { roleAssignment, roleRemoval } from "@test/api/actions/members";
@@ -93,63 +92,5 @@ describe("Global admin authorized", () => {
 
         // user role should be deleted
         expect(userRole).toBe(undefined);
-    });
-});
-
-describe("User who lacks CRUD rights", () => {
-    beforeEach(async () => {
-        const adminId = await getAdminUserId.call(baseWorld);
-        baseWorld.setCustomProp("adminId", adminId);
-
-        await createDepartment.call(baseWorld, name);
-        const roleId = await createRole.call(baseWorld, name, name, {
-            ...EmptyPermissionAttributes(),
-            updated_by_user_id: adminId,
-        });
-
-        // Given I am logged in as a user
-        const user = await createRegularUser.call(baseWorld);
-        baseWorld.setCustomProp("user", user);
-        baseWorld.setCustomProp("roleId", roleId);
-        // given user is assigned to a role
-        await assignUserToRole.call(baseWorld, user.id, roleId, adminId, true);
-        // login as unauth user
-        await loginUser.call(baseWorld);
-    });
-
-    test("Cannot add user to role(s)", async () => {
-        const adminId = baseWorld.getCustomProp<number>("adminId");
-        const roleId = baseWorld.getCustomProp<number>("roleId");
-
-        await roleAssignment.call(roleAssignment, baseWorld, adminId, [roleId]);
-
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: /^insufficient permissions$/i,
-        });
-    });
-
-    test("Cannot remove user role", async () => {
-        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-        const role_id = baseWorld.getCustomProp<number>("roleId");
-        const connection = baseWorld.getConnection();
-
-        // when the role is removed
-        await roleRemoval.call(roleRemoval, baseWorld, id, [role_id]);
-
-        // The request is not successful
-        Request.failed.call(baseWorld, {
-            status: /^403$/,
-            message: /^Insufficient permissions$/i,
-            include404: false,
-        });
-
-        const userRole = await connection.manager.findOne(UserRole, {
-            where: { user_id: id, role_id },
-        });
-
-        // user role should not be deleted
-        expect(userRole).not.toBe(undefined);
     });
 });

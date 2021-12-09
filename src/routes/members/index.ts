@@ -1,6 +1,5 @@
 import Department from "@models/department";
 import Membership from "@models/membership";
-import * as permissionService from "@services/data/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -41,29 +40,9 @@ export interface ReadMember {
 router.get("/:id", async (req: Request, res: Response) => {
     const {
         params: { id },
-        session: { current_business_id, user_id },
+        session: { current_business_id },
         SqlConnection,
     } = req;
-
-    if (Number(id) !== Number(user_id)) {
-        //check permissions
-        const hasPermission = await permissionService.check(
-            Number(user_id),
-            Number(current_business_id),
-            SqlConnection,
-            [
-                "global_crud_users",
-                "global_assign_users_to_department",
-                "global_assign_users_to_role",
-                "dept_assign_users_to_role",
-            ]
-        );
-
-        if (!hasPermission) {
-            res.status(403).json({ message: "Insufficient permissions" });
-            return;
-        }
-    }
 
     try {
         const { email, first_name, last_name, phone, birthday } =
@@ -342,24 +321,8 @@ router.put("/:id", async (req: Request, res: Response) => {
     const {
         SqlConnection,
         params: { id: user_id },
-        session: { current_business_id, user_id: current_user_id },
         body: { first_name, last_name, email, phone, birthday },
     } = req;
-
-    // check for permissions
-    if (Number(user_id) !== Number(current_user_id)) {
-        const hasPermission = await permissionService.check(
-            Number(current_user_id),
-            Number(current_business_id),
-            SqlConnection,
-            ["global_crud_users"]
-        );
-
-        if (!hasPermission) {
-            res.status(403).json({ message: "Insufficient permissions" });
-            return;
-        }
-    }
 
     if (validator.isEmpty(first_name)) {
         res.status(400).json({

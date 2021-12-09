@@ -17,7 +17,6 @@ import {
 } from "@test/api/actions/members";
 import { registerBusiness } from "@test/api/attributes/business";
 import Request from "@test/api/helpers/request";
-import { inviteMember } from "@test/api/attributes/member";
 import { deepClone } from "@util/obj";
 import Department from "@models/department";
 import Role from "@models/role";
@@ -385,106 +384,6 @@ describe("Global admin authorized", () => {
                     );
                 }
             );
-        });
-    });
-});
-
-describe("User who lacks CRUD rights", () => {
-    beforeEach(async () => {
-        // Given I am logged in as a user
-        baseWorld.setCustomProp("user", await loginUser.call(baseWorld));
-    });
-    test("User who lacks CRUD rights cannot read a list of members", async () => {
-        await readManyMembers.call(readManyMembers, baseWorld);
-
-        Request.failed.call(baseWorld, {
-            include404: false,
-            message: "Insufficient permissions",
-            status: /^403$/,
-        });
-    });
-    test("User who lacks CRUD rights can read their user", async () => {
-        const user = baseWorld.getCustomProp<{
-            id: number;
-            email: string;
-            password: string;
-        }>("user");
-        await readOneMember.call(readOneMember, baseWorld, user.id);
-        Request.succeeded.call(baseWorld);
-        const response = baseWorld.getCustomProp<ReadMember>("responseData");
-
-        Request.succeeded.call(baseWorld);
-        // This is because the loginUser does not assign a role by default
-        expect(response.roles.length).toBe(0);
-
-        expect(response.user.birthday).toBe(null);
-        expect(response.user.first_name).toBe(inviteMember().first_name);
-        expect(response.user.last_name).toBe(inviteMember().last_name);
-        expect(response.user.email).toBe(user.email);
-        expect(response.user.phone).toBe(inviteMember().phone);
-        expect(response.user.id).toBe(user.id);
-    });
-    test("User who lacks CRUD rights cannot read individual users", async () => {
-        const adminId = await getAdminUserId.call(baseWorld);
-        await readOneMember.call(readOneMember, baseWorld, adminId);
-
-        Request.failed.call(baseWorld, {
-            include404: false,
-            message: "Insufficient permissions",
-            status: /^403$/,
-        });
-    });
-
-    // Scenario: User who lacks CRUD membership rights cannot delete memberships
-    test("User who lacks CRUD rights cannot delete membership", async () => {
-        //     Given I am logged in as a user
-        const admin = await getAdminUserId.call(baseWorld);
-
-        //     When I delete a membership
-        await deleteMember.call(deleteMember, baseWorld, admin);
-
-        //     Then I get an error
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: /^insufficient permissions$/i,
-        });
-    });
-
-    test("Update self", async () => {
-        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-        const connection = baseWorld.getConnection();
-
-        const user = await connection.manager.findOne(User, { where: { id } });
-        if (!user) throw new Error("Cannot find user");
-        user.first_name = "NON_ADMIN";
-
-        await updateMember.call(updateMember, baseWorld, user);
-        Request.succeeded.call(baseWorld);
-
-        const updatedUser = await connection.manager.findOne(User, {
-            where: { id },
-        });
-
-        if (!updatedUser) throw new Error("Cannot find user");
-
-        expect(updatedUser.updated_on).not.toBe(user.updated_on);
-        expect(updatedUser.first_name).toBe(user.first_name);
-    });
-
-    test("Update another should fail", async () => {
-        const id = await getAdminUserId.call(baseWorld);
-        const connection = baseWorld.getConnection();
-
-        const user = await connection.manager.findOne(User, { where: { id } });
-        if (!user) throw new Error("Cannot find admin");
-        user.first_name = "ADMIN";
-
-        await updateMember.call(updateMember, baseWorld, user);
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: /^insufficient permissions$/i,
         });
     });
 });

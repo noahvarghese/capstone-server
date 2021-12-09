@@ -4,14 +4,12 @@ import Helpers from "@test/helpers";
 import Request from "@test/api/helpers/request";
 import Role from "@models/role";
 import {
-    assignUserToRole,
     createDepartment,
     createRole,
     getAdminUserId,
     getBusiness,
     getDepartmentInBusiness,
     getRoleInDepartment,
-    loginUser,
 } from "@test/api/helpers/setup-actions";
 import Permission, {
     EmptyPermissionAttributes,
@@ -423,184 +421,6 @@ describe("Global admin authorized", () => {
             for (const [key, value] of Object.entries(permissions)) {
                 expect(updatedPermissions[key as keyof Permission]).toBe(value);
             }
-        });
-    });
-});
-
-describe("User who lacks CRUD rights", () => {
-    test("User who lacks CRUD role rights cannot create roles", async () => {
-        // Given I am logged in as a user
-        await loginUser.call(baseWorld);
-        // When I create a role
-        await createRoleAction.call(createRoleAction, baseWorld);
-        // Then I get an error
-        Request.failed.call(baseWorld);
-    });
-
-    // Scenario: User who lacks CRUD role rights cannot delete roles
-    test("User who lacks CRUD rights cannot delete role", async () => {
-        await login.call(login, baseWorld);
-        const assignedRoleId = await createRole.call(
-            baseWorld,
-            "assigned",
-            "Admin"
-        );
-
-        //     Given I am logged in as a user
-        const user = await loginUser.call(baseWorld);
-        const admin = await getAdminUserId.call(baseWorld);
-        await assignUserToRole.call(
-            baseWorld,
-            user.id,
-            assignedRoleId,
-            admin,
-            true
-        );
-
-        // And there is a role without any members
-        const roleId = await createRole.call(baseWorld, ROLE_NAME, "Admin");
-        //     When I delete a role
-        await deleteRole.call(deleteRole, baseWorld, [roleId]);
-
-        //     Then I get an error
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: /^Insufficient permissions$/i,
-        });
-    });
-
-    test("User who lacks CRUD rights cannot edit role", async () => {
-        // Given there is a user setup without crud permissions
-        await login.call(login, baseWorld);
-        const assignedRoleId = await createRole.call(
-            baseWorld,
-            "assigned",
-            "Admin"
-        );
-
-        //     Given I am logged in as a user
-        const user = await loginUser.call(baseWorld);
-        const admin = await getAdminUserId.call(baseWorld);
-        await assignUserToRole.call(
-            baseWorld,
-            user.id,
-            assignedRoleId,
-            admin,
-            true
-        );
-
-        // And there is a role
-        const roleId = await createRole.call(baseWorld, ROLE_NAME, "Admin");
-        const permissions: Omit<PermissionAttributes, "updated_by_user_id"> = {
-            dept_crud_role: true,
-            global_view_reports: true,
-            global_crud_users: true,
-            global_crud_role: true,
-            global_crud_resources: true,
-            global_crud_department: true,
-            global_assign_users_to_role: true,
-            global_assign_users_to_department: true,
-            global_assign_resources_to_role: true,
-            dept_assign_resources_to_role: true,
-            dept_assign_users_to_role: true,
-            dept_crud_resources: true,
-            dept_view_reports: true,
-            global_assign_resources_to_department: true,
-        };
-
-        // When a user tries to edit that role
-        const newName = "Noah's test role";
-        await editRole.call(editRole, baseWorld, {
-            name: newName,
-            permissions,
-            id: roleId,
-        });
-
-        // Then the department is not updated
-        Request.failed.call(baseWorld, {
-            include404: false,
-            message: /^insufficient permissions$/i,
-            status: /^403$/,
-        });
-
-        const updatedRole = await baseWorld
-            .getConnection()
-            .manager.findOneOrFail(Role, {
-                where: { id: roleId },
-            });
-
-        const updatedPermissions = await baseWorld
-            .getConnection()
-            .manager.findOneOrFail(Permission, {
-                where: { id: updatedRole.permission_id },
-            });
-
-        expect(updatedRole.name).not.toBe(newName);
-
-        for (const [key, value] of Object.entries(permissions)) {
-            expect(updatedPermissions[key as keyof Permission]).not.toBe(value);
-        }
-    });
-
-    test("User who lacks CRUD rights cannot read multiple roles", async () => {
-        // Given there is a user setup without crud permissions
-        await login.call(login, baseWorld);
-        const assignedRoleId = await createRole.call(
-            baseWorld,
-            "assigned",
-            "Admin"
-        );
-
-        //     Given I am logged in as a user
-        const user = await loginUser.call(baseWorld);
-        const admin = await getAdminUserId.call(baseWorld);
-        await assignUserToRole.call(
-            baseWorld,
-            user.id,
-            assignedRoleId,
-            admin,
-            true
-        );
-
-        // When I try to read multiple roles
-        await readManyRoles.call(readManyRoles, baseWorld);
-
-        // I cannot
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: "Insufficient permissions",
-        });
-    });
-    test("User who lacks CRUD rights cannot read a singular role", async () => {
-        // Given there is a user setup without crud permissions
-        await login.call(login, baseWorld);
-        const assignedRoleId = await createRole.call(
-            baseWorld,
-            "assigned",
-            "Admin"
-        );
-
-        //     Given I am logged in as a user
-        const user = await loginUser.call(baseWorld);
-        const admin = await getAdminUserId.call(baseWorld);
-        await assignUserToRole.call(
-            baseWorld,
-            user.id,
-            assignedRoleId,
-            admin,
-            true
-        );
-
-        // When I try to read multiple roles
-        await readOneRole.call(readOneRole, baseWorld, assignedRoleId);
-
-        // I cannot
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: "Insufficient permissions",
         });
     });
 });

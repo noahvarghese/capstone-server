@@ -6,7 +6,6 @@ import {
     createRegularUser,
     createRole,
     getAdminUserId,
-    loginUser,
 } from "@test/api/helpers/setup-actions";
 import { EmptyPermissionAttributes } from "@models/permission";
 import Request from "@test/api/helpers/request";
@@ -99,54 +98,5 @@ describe("Global admin authorized", () => {
                 where: { role_id, user_id: id },
             })
         ).toBe(undefined);
-    });
-});
-
-describe("User who lacks CRUD rights", () => {
-    beforeEach(async () => {
-        const role_id = baseWorld.getCustomProp("role");
-        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-        // this sets up permissions otherwise there would be none
-        await memberAssignment.call(memberAssignment, baseWorld, {
-            user_ids: [id],
-            role_id,
-        });
-        // login regular user
-        await loginUser.call(baseWorld);
-    });
-    test("Cannot assign role to user(s)", async () => {
-        const connection = baseWorld.getConnection();
-        const adminId = await getAdminUserId.call(baseWorld);
-        const role_id = baseWorld.getCustomProp("role");
-
-        await memberAssignment.call(memberAssignment, baseWorld, {
-            user_ids: [adminId],
-            role_id,
-        });
-
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: /^insufficient permissions$/i,
-        });
-        expect(
-            await connection.manager.findOne(UserRole, {
-                where: { role_id, user_id: adminId },
-            })
-        ).toBe(undefined);
-    });
-
-    test("Cannot remove role from user(s)", async () => {
-        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-        const role_id = baseWorld.getCustomProp("role");
-        await memberRemoval.call(memberRemoval, baseWorld, {
-            user_ids: [id],
-            role_id,
-        });
-        Request.failed.call(baseWorld, {
-            include404: false,
-            status: /^403$/,
-            message: /^insufficient permissions$/i,
-        });
     });
 });

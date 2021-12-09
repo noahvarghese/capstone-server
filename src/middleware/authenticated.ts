@@ -21,24 +21,15 @@ export const authenticated = (
     const loggedIn =
         Boolean(req.session.user_id) &&
         Boolean(req.session.current_business_id) &&
-        Boolean(req.session.business_ids);
+        (Boolean(req.session.business_ids) ||
+            (Array.isArray(req.session.business_ids) &&
+                req.session.business_ids.length > 0));
 
-    if (loggedIn ? route.requireAuth : !route.requireAuth) {
-        next();
-    } else {
-        Logs.Error(
-            "Invalid request to",
-            req.originalUrl,
-            "logged in =",
-            loggedIn
-        );
+    if (loggedIn ? route.requireAuth : !route.requireAuth) return next();
 
-        // Because the client thinks it is logged out if the request is declined at this stage
-        if (loggedIn) {
-            logout(req, res).then(() => res.redirect(client("")));
-        } else {
-            res.sendStatus(400);
-            return;
-        }
-    }
+    Logs.Error("Invalid request to", req.originalUrl, "logged in =", loggedIn);
+
+    // Because the client thinks it is logged out if the request is declined at this stage
+    if (loggedIn) logout(req, res).then(() => res.redirect(client("")));
+    else res.sendStatus(400);
 };
