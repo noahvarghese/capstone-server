@@ -14,8 +14,8 @@ if (process.env.DB_ENV.startsWith("_")) {
     database += `_${process.env.DB_ENV}`;
 }
 
-Logs.Event(`Starting tests using database: ${database}`);
 Logs.Event("Jest config loaded");
+Logs.Event(`Using database: ${database}`);
 
 export default {
     bail: true,
@@ -28,7 +28,6 @@ export default {
     moduleDirectories: ["node_modules", "./"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
-    modulePathIgnorePatterns: ["build/"],
     setupFiles: ["dotenv/config"],
     setupFilesAfterEnv: ["./jest.setup.ts"],
     reporters: ["default"],
