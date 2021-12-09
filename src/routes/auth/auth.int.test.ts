@@ -31,7 +31,7 @@ afterEach(async () => {
     await DBConnection.close();
 });
 
-test("Forgot Password Token Created", async () => {
+test("Forgot Password invalid email", async () => {
     await forgotPassword.call(forgotPassword, baseWorld);
     Request.failed.call(baseWorld, {
         include404: false,

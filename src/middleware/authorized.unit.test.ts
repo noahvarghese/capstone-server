@@ -198,7 +198,7 @@ describe("Unauthorized user", () => {
         );
     });
 
-    describe("can access $method $url with their own id", () => {
+    describe("can access routes with their own id", () => {
         test.each(
             cases.filter((r) => r.permissions.length > 0 && r.selfOverride)
         )("$method $url", async (route) => {

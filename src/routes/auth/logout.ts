@@ -15,7 +15,6 @@ export const logout = (req: Request, res: Response): Promise<void> =>
 
                 if (!SESSION_ID) {
                     const message = "Session ID not set";
-                    res.status(500).json({ message });
                     Logs.Error(message);
                     return;
                 }
@@ -30,9 +29,6 @@ export const logout = (req: Request, res: Response): Promise<void> =>
         })
         .catch((err) => {
             Logs.Error(err.message);
-            res.status(400).json({
-                message: "Error occurred destroying session",
-            });
             return;
         });
 

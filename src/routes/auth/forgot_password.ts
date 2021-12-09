@@ -5,7 +5,7 @@ import ServiceError from "@util/errors/service_error";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+export const forgotPasswordRoute = async (req: Request, res: Response): Promise<void> => {
     const {
         SqlConnection,
         body: { email },
@@ -29,6 +29,8 @@ router.post("/", async (req: Request, res: Response) => {
             message,
         });
     }
-});
+}
+
+router.post("/",forgotPasswordRoute);
 
 export default router;

@@ -3,26 +3,31 @@ import Event from "@models/event";
 import { userAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { enablePasswordReset, findByLogin, resetPassword } from ".";
+import { Connection } from "typeorm";
 
-beforeEach(DBConnection.init);
-afterEach(async () => {
-    await DBConnection.close(true);
+beforeAll(async () => await DBConnection.init());
+afterAll(async () => {
+    await DBConnection.close();
 });
 
 describe("Forgot password route", () => {
-    test("enables user reset", async () => {
-        const connection = await DBConnection.get();
+    let user: User;
+    let connection: Connection;
 
-        let user = await connection.manager.save(
-            new User({ ...userAttributes() })
-        );
+    beforeAll(async () => {
+        connection = await DBConnection.get();
+        user = await connection.manager.save(new User(userAttributes()));
 
         await enablePasswordReset(connection, user);
 
         user = await connection.manager.findOneOrFail(User, {
             where: { id: user.id },
         });
+    });
 
+    afterAll(async () => await DBConnection.reset());
+
+    test("enables user reset", async () => {
         expect(user.token).not.toBe(null);
 
         // And the expiry date is correct
@@ -36,18 +41,6 @@ describe("Forgot password route", () => {
     });
 
     test("sends an email", async () => {
-        const connection = await DBConnection.get();
-
-        let user = await connection.manager.save(
-            new User({ ...userAttributes() })
-        );
-
-        await enablePasswordReset(connection, user);
-
-        user = await connection.manager.findOneOrFail(User, {
-            where: { id: user.id },
-        });
-
         const event = (
             await connection.manager.find(Event, {
                 where: { user_id: user.id, name: "Request Reset Password" },
@@ -77,53 +70,46 @@ describe("Reset Password", () => {
         }
     });
 
-    test("Password too short", async () => {
-        const connection = await DBConnection.get();
+    describe("Create user to share", () => {
+        let connection: Connection;
+        let user: User;
 
-        let user = await connection.manager.save(
-            new User({ ...userAttributes() })
-        );
+        beforeAll(async () => {
+            connection = await DBConnection.get();
 
-        await enablePasswordReset(connection, user);
+            user = await connection.manager.save(new User(userAttributes()));
 
-        user = await connection.manager.findOneOrFail(User, {
-            where: { id: user.id },
+            await enablePasswordReset(connection, user);
+
+            user = await connection.manager.findOneOrFail(User, {
+                where: { id: user.id },
+            });
+
+            if (!user.token) throw new Error("Token missing");
         });
 
-        if (!user.token) throw new Error("Token missing");
+        afterAll(async () => await DBConnection.reset());
 
-        let errorMessage = "";
+        test("Password too short", async () => {
+            let errorMessage = "";
 
-        try {
-            await resetPassword(connection, user.token, "test");
-        } catch (e) {
-            const { message } = e as Error;
-            errorMessage = message;
-        }
+            try {
+                await resetPassword(connection, user.token as string, "test");
+            } catch (e) {
+                const { message } = e as Error;
+                errorMessage = message;
+            }
 
-        expect(errorMessage).toMatch(/^password not long enough$/i);
-    });
-
-    test("Valid password and token ", async () => {
-        const NEW_PASSWORD = "TEST1234";
-        const connection = await DBConnection.get();
-
-        let user = await connection.manager.save(
-            new User({ ...userAttributes() })
-        );
-
-        await enablePasswordReset(connection, user);
-
-        user = await connection.manager.findOneOrFail(User, {
-            where: { id: user.id },
+            expect(errorMessage).toMatch(/^password not long enough$/i);
         });
 
-        if (!user.token) throw new Error("Token missing");
+        test("Valid password and token ", async () => {
+            const NEW_PASSWORD = "TEST1234";
+            await resetPassword(connection, user.token as string, NEW_PASSWORD);
 
-        await resetPassword(connection, user.token, NEW_PASSWORD);
-
-        expect(
-            await findByLogin(connection, user.email, NEW_PASSWORD)
-        ).toBeGreaterThan(0);
+            expect(
+                await findByLogin(connection, user.email, NEW_PASSWORD)
+            ).toBeGreaterThan(0);
+        });
     });
 });
