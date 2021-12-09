@@ -11,12 +11,11 @@ runs:
     - name: install python dependencies
       run: pip install -r ./bin/database/requirements.txt
       shell: bash
-    - name: install node dependencies
-      run: npm ci
-      shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
+    - id: cache-node-modules
+      uses: ./.github/actions/cache-node-modules
     - name: "List changed unit tests"
       run: |
         npm run unit:test:list -- --changedSince "${{ steps.changed.outputs.changed }}"
@@ -29,8 +28,6 @@ runs:
       run: |
         npm run database:test:list -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash
-    - id: cache-node-modules
-      uses: ./.github/actions/cache-node-modules
     - name: test
       run: |
         npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}"
