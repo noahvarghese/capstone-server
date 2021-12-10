@@ -18,4 +18,5 @@ runs:
           # Gets previous commit hash
           VAL=$(git rev-parse @~)
         fi
+        echo "::set-output name=CHANGED::${VAL}"
       shell: bash
