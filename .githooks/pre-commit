@@ -5,7 +5,22 @@ echo "******************* PRE COMMIT HOOK STARTED ***********************"
 printf "\n\n"
 
 npm ci
-npm run unit:test:recent
+
+CHANGED_UNIT_TEST_FILES=($(npm run --silent unit:test:list:recent))
+
+if [[ ${#CHANGED_UNIT_TEST_FILES[@]} -gt 1 ]]; then
+    echo "Unit Tests:"
+    printf '%s\n' "${my_array[@]}" 
+    npm run unit:test:recent
+fi
+
+CHANGED_DATABASE_TEST_FILES=($(npm run --silent database:test:list:recent))
+
+if [[ ${#CHANGED_DATABASE_TEST_FILES[@]} -gt 1 ]]; then
+    echo "Database Tests:"
+    printf '%s\n' "${my_array[@]}" 
+    npm run database:test:recent
+fi
 
 TEST_RESULT=$?
 

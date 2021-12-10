@@ -14,8 +14,10 @@ if (process.env.DB_ENV.startsWith("_")) {
     database += `_${process.env.DB_ENV}`;
 }
 
-Logs.Event("Jest config loaded");
-Logs.Event(`Using database: ${database}`);
+if (process.argv.includes("--listTests") === false) {
+    Logs.Event("Jest config loaded");
+    Logs.Event(`Using database: ${database}`);
+}
 
 export default {
     bail: true,
