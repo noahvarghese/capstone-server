@@ -31,7 +31,7 @@ export const authCheck = async function authCheck(
 ): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
-            saveCookie: true,
+            saveCookie: false,
             withCookie: true,
         },
     });
