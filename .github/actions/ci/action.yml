@@ -6,11 +6,7 @@ runs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v2
     - uses: actions/setup-node@v2
-    - name: install python dependencies
-      run: pip install -r ./bin/database/requirements.txt
-      shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
@@ -18,17 +14,30 @@ runs:
       uses: ./.github/actions/cache-node-modules
     - name: "List changed unit tests"
       run: |
-        npm run unit:test:list -- --changedSince "${{ steps.changed.outputs.changed }}"
+        npm run unit:test:list:branch -- "${{ steps.changed.outputs.changed }}"
       shell: bash
     - name: "List changed integration tests"
       run: |
-        npm run integration:test:list -- --changedSince "${{ steps.changed.outputs.changed }}"
+        npm run integration:test:list:branch -- "${{ steps.changed.outputs.changed }}"
       shell: bash
     - name: "List changed database tests"
       run: |
-        npm run database:test:list -- --changedSince "${{ steps.changed.outputs.changed }}"
+        npm run database:test:list:branch -- "${{ steps.changed.outputs.changed }}"
+      shell: bash
+    - id: num_changed 
+      name: Get number of changed files
+      run: |
+        CHANGED=$(npm run --silent unit:test:list:changed -- "${{ steps.changed.outputs.changed }}")
+        echo "::set-output name=IS_CHANGED::\"${CHANGED[@]}\""
+      shell: bash
+    - uses: actions/setup-python@v2
+      if: ${{ steps.num_changed.outputs.CHANGED }} > 0
+    - name: install python dependencies
+      if: ${{ steps.num_changed.outputs.CHANGED }} > 0
+      run: pip install -r ./bin/database/requirements.txt
       shell: bash
     - name: test
+      if: ${{ steps.num_changed.outputs.CHANGED }} > 0
       run: |
         npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash
