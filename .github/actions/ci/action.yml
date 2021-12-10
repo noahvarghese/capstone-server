@@ -7,6 +7,10 @@ runs:
       with:
         fetch-depth: 0
     - uses: actions/setup-node@v2
+    - uses: actions/setup-python@v2
+    - name: install python dependencies
+      run: pip install -r ./bin/database/requirements.txt
+      shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
@@ -24,13 +28,7 @@ runs:
       run: |
         npm run database:test:list:branch -- "${{ steps.changed.outputs.changed }}"
       shell: bash
-      if: ${{ steps.changed.outputs.num_changed }} > 0
-    - name: install python dependencies
-      if: ${{ steps.changed.outputs.num_changed }} > 0
-      run: pip install -r ./bin/database/requirements.txt
-      shell: bash
     - name: test
-      if: ${{ steps.changed.outputs.num_changed }} > 0
       run: |
         npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash

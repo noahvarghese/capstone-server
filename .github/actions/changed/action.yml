@@ -4,9 +4,6 @@ outputs:
   changed:
     description: the commit hash that represents the last change
     value: ${{ steps.changed.outputs.CHANGED }}
-  num_changed:
-    description: the number of files changed
-    value: ${{ steps.changed.outputs.NUM_CHANGED}}
 runs:
   using: composite
   steps:
@@ -21,7 +18,4 @@ runs:
           # Gets previous commit hash
           VAL=$(git rev-parse @~)
         fi
-        echo "::set-output name=CHANGED::${VAL}"
-        CHANGED_FILES=$(npm run --silent unit:test:list:changed -- "$VAL")
-        echo "::set-output name=NUM_CHANGED::${CHANGED_FILES[@]}"
       shell: bash
