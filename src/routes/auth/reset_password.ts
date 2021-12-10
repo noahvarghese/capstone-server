@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
 import * as userValidator from "@services/data/user/validators";
-import Logs from "@util/logs/logs";
 import ServiceError from "@util/errors/service_error";
 
 const router = Router();
@@ -34,7 +33,6 @@ router.post("/:token", async (req: Request, res: Response) => {
         res.sendStatus(200);
     } catch (e) {
         const { message, reason } = e as ServiceError;
-        Logs.Debug(message);
         res.status(reason).json({ message });
     }
 });
