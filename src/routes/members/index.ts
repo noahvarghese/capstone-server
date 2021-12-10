@@ -306,7 +306,9 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        SqlConnection.manager.delete(Membership, membership);
+        // need to cascade and remove user from any roles in business
+        await SqlConnection.manager.delete(UserRole, { user_id });
+        await SqlConnection.manager.delete(Membership, membership);
         res.sendStatus(200);
         return;
     } catch (e) {
