@@ -30,13 +30,13 @@ export default class Request {
      */
     public static succeeded(
         this: BaseWorld,
-        opts: { auth: boolean; status?: RegExp } = { auth: true }
+        opts?: { auth: boolean; status?: RegExp }
     ): void {
         const cookies = this.getCustomProp<string | null>("cookies");
         const status = this.getCustomProp<number>("status");
 
-        expect(status.toString()).toMatch(opts.status ?? /^20/);
-        if (opts.auth) {
+        expect(status.toString()).toMatch(opts?.status ?? /^20/);
+        if (opts?.auth) {
             expect(cookies).not.toBe(null);
             expect(cookies?.length).toBeGreaterThan(0);
         }

@@ -11,83 +11,75 @@ import { EmptyPermissionAttributes } from "@models/permission";
 import Request from "@test/api/helpers/request";
 import UserRole from "@models/user/user_role";
 import { memberAssignment, memberRemoval } from "@test/api/actions/roles";
+import { Connection } from "typeorm";
 
 let baseWorld: BaseWorld;
+let userLogin: { id: number; email: string; password: string };
+let roleId: number;
+let connection: Connection;
 const name = "TEST";
-jest.setTimeout(500000);
 
-beforeEach(async () => {
+beforeAll(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
+    connection = baseWorld.getConnection();
     await Helpers.Api.setup(baseWorld, "@setup_invite_member");
-});
-
-afterEach(async () => {
-    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
-});
-
-beforeEach(async () => {
     // Given I am logged in as an admin
     await login.call(login, baseWorld);
     // create user to assign to role
-    baseWorld.setCustomProp("user", await createRegularUser.call(baseWorld));
+    userLogin = await createRegularUser.call(baseWorld);
     // create role to assign user to
-    baseWorld.setCustomProp(
-        "role",
-        await createRole.call(baseWorld, name, "Admin", {
-            ...EmptyPermissionAttributes(),
-            updated_by_user_id: await getAdminUserId.call(baseWorld),
-        })
-    );
+    roleId = await createRole.call(baseWorld, name, "Admin", {
+        ...EmptyPermissionAttributes(),
+        updated_by_user_id: await getAdminUserId.call(baseWorld),
+    });
 });
 
-describe("Global admin authorized", () => {
-    test("Can assign role to user(s)", async () => {
-        const connection = baseWorld.getConnection();
-        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-        const role_id = baseWorld.getCustomProp("role");
+afterAll(async () => {
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
+});
 
+describe("assign role to user(s)", () => {
+    afterEach(async () => {
+        await connection.manager.delete(UserRole, {
+            user_id: userLogin.id,
+            role_id: roleId,
+        });
+    });
+
+    it("Should succeed", async () => {
         await memberAssignment.call(memberAssignment, baseWorld, {
-            user_ids: [id],
-            role_id,
+            user_ids: [userLogin.id],
+            role_id: roleId,
         });
 
         Request.succeeded.call(baseWorld, { status: /^20/, auth: false });
-        expect(
-            await connection.manager.findOne(UserRole, {
-                where: { role_id, user_id: id },
-            })
-        ).not.toBe(undefined);
-    });
-    test("Can remove role from user(s)", async () => {
-        const connection = baseWorld.getConnection();
-        // assign role to user
-        const { id } = baseWorld.getCustomProp<{ id: number }>("user");
-        const role_id = baseWorld.getCustomProp("role");
 
-        await memberAssignment.call(memberAssignment, baseWorld, {
-            user_ids: [id],
-            role_id,
+        await connection.manager.findOneOrFail(UserRole, {
+            where: { role_id: roleId, user_id: userLogin.id },
         });
+    });
+});
 
-        // pre action check
-        expect(
-            await connection.manager.findOne(UserRole, {
-                where: { role_id, user_id: id },
-            })
-        ).not.toBe(undefined);
-
-        // test action
+describe("Can remove role from user(s)", () => {
+    beforeEach(async () => {
+        await memberAssignment.call(memberAssignment, baseWorld, {
+            user_ids: [userLogin.id],
+            role_id: roleId,
+        });
+    });
+    it("Should succeed", async () => {
         await memberRemoval.call(memberRemoval, baseWorld, {
-            user_ids: [id],
-            role_id,
+            user_ids: [userLogin.id],
+            role_id: roleId,
         });
 
         // check result
         Request.succeeded.call(baseWorld, { status: /^20/, auth: false });
+
         expect(
-            await connection.manager.findOne(UserRole, {
-                where: { role_id, user_id: id },
+            await connection.manager.count(UserRole, {
+                where: { role_id: roleId, user_id: userLogin.id },
             })
-        ).toBe(undefined);
+        ).toBe(0);
     });
 });
