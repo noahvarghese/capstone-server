@@ -8,7 +8,7 @@ npm ci
 
 CHANGED_UNIT_TEST_FILES=($(npm run --silent unit:test:list:recent))
 
-if [[ ${#CHANGED_UNIT_TEST_FILES[@]} -gt 1 ]]; then
+if [[ ${#CHANGED_UNIT_TEST_FILES[@]} -gt 0 ]]; then
     echo "Unit Tests:"
     printf '%s\n' "${CHANGED_UNIT_TEST_FILES[@]}" 
     npm run unit:test:recent
@@ -16,7 +16,7 @@ fi
 
 CHANGED_DATABASE_TEST_FILES=($(npm run --silent database:test:list:recent))
 
-if [[ ${#CHANGED_DATABASE_TEST_FILES[@]} -gt 1 ]]; then
+if [[ ${#CHANGED_DATABASE_TEST_FILES[@]} -gt 0 ]]; then
     echo "Database Tests:"
     printf '%s\n' "${CHANGED_DATABASE_TEST_FILES[@]}" 
     npm run database:test:recent
