@@ -5,12 +5,14 @@ import Request from "@test/api/helpers/request";
 import Role from "@models/role";
 import {
     createDepartment,
+    createRegularUser,
     createRole,
+    getAdminUserId,
     getBusiness,
     getDepartmentInBusiness,
     getRoleInDepartment,
 } from "@test/api/helpers/setup-actions";
-import Permission from "@models/permission";
+import Permission, { EmptyPermissionAttributes } from "@models/permission";
 import { RoleResponse } from "./roles";
 import Department from "@models/department";
 import { login } from "@test/api/actions/auth";
@@ -18,11 +20,14 @@ import {
     createRole as createRoleAction,
     deleteRole,
     editRole,
+    memberAssignment,
+    memberRemoval,
     readManyRoles,
     readOneRole,
 } from "@test/api/actions/roles";
 import { deepClone } from "@util/obj";
 import { Connection } from "typeorm";
+import UserRole from "@models/user/user_role";
 
 let baseWorld: BaseWorld;
 const roleName = "TEST";
@@ -37,11 +42,76 @@ beforeAll(async () => {
     await login.call(login, baseWorld);
 });
 
-describe("Basic role actions", () => {
-    afterAll(async () => {
-        await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
+afterAll(async () => {
+    await Helpers.Api.teardown(baseWorld, "@cleanup_user_role");
+});
+
+describe("Assign user(s) to role", () => {
+    let userLogin: { id: number; email: string; password: string };
+    let roleId: number;
+
+    beforeAll(async () => {
+        // create user to assign to role
+        userLogin = await createRegularUser.call(baseWorld);
+        // create role to assign user to
+        roleId = await createRole.call(baseWorld, roleName, "Admin", {
+            ...EmptyPermissionAttributes(),
+            updated_by_user_id: await getAdminUserId.call(baseWorld),
+        });
     });
 
+    afterAll(async () => {
+        await connection.manager.delete(Role, roleId);
+    });
+
+    describe("assign role to user(s)", () => {
+        afterEach(async () => {
+            await connection.manager.delete(UserRole, {
+                user_id: userLogin.id,
+                role_id: roleId,
+            });
+        });
+
+        it("Should succeed", async () => {
+            await memberAssignment.call(memberAssignment, baseWorld, {
+                user_ids: [userLogin.id],
+                role_id: roleId,
+            });
+
+            Request.succeeded.call(baseWorld, { status: /^20/, auth: false });
+
+            await connection.manager.findOneOrFail(UserRole, {
+                where: { role_id: roleId, user_id: userLogin.id },
+            });
+        });
+    });
+
+    describe("Can remove role from user(s)", () => {
+        beforeEach(async () => {
+            await memberAssignment.call(memberAssignment, baseWorld, {
+                user_ids: [userLogin.id],
+                role_id: roleId,
+            });
+        });
+        it("Should succeed", async () => {
+            await memberRemoval.call(memberRemoval, baseWorld, {
+                user_ids: [userLogin.id],
+                role_id: roleId,
+            });
+
+            // check result
+            Request.succeeded.call(baseWorld, { status: /^20/, auth: false });
+
+            expect(
+                await connection.manager.count(UserRole, {
+                    where: { role_id: roleId, user_id: userLogin.id },
+                })
+            ).toBe(0);
+        });
+    });
+});
+
+describe("Basic role actions", () => {
     describe("Create role", () => {
         afterEach(async () => {
             await connection.manager.delete(Role, { name: roleName });
