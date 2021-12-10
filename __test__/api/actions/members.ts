@@ -1,10 +1,6 @@
-import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import BaseWorld from "@test/support/base_world";
 import { apiRequest, ApiTestFn } from "@test/api/actions";
-import { inviteMember as inviteMemberAttributes } from "@test/api/attributes/member";
-import { userAttributes } from "@test/model/attributes";
-import Membership from "@models/membership";
 
 /**
  * Finds the token for the membership request
@@ -13,30 +9,15 @@ import Membership from "@models/membership";
  */
 export const acceptInvite = async function acceptInvite(
     this: ApiTestFn,
-    baseWorld: BaseWorld
+    baseWorld: BaseWorld,
+    token: string
 ): Promise<void> {
-    const connection = baseWorld.getConnection();
-
-    // retrieve token
-    const { email } = inviteMemberAttributes();
-
-    const invitedUser = await connection.manager.findOneOrFail(User, {
-        where: { email },
-    });
-
-    const { token } = await connection.manager.findOneOrFail(
-        MembershipRequest,
-        {
-            where: { user_id: invitedUser.id },
-        }
-    );
-
     await apiRequest(baseWorld, this.name, {
         cookie: {
             withCookie: false,
             saveCookie: true,
         },
-        token,
+        param: token,
     });
 } as ApiTestFn;
 
@@ -120,33 +101,19 @@ export const readManyMembers = async function readManyMembers(
 export const inviteMember = async function inviteMember(
     this: ApiTestFn,
     baseWorld: BaseWorld,
-    userType: "create" | "default"
-): Promise<void> {
-    // create user before api call if required
-    if (userType === "create") {
-        const connection = baseWorld.getConnection();
-        const adminUser = await connection.manager.findOneOrFail(User, {
-            where: { email: userAttributes().email },
-        });
-
-        await connection.manager.findOneOrFail(Membership, {
-            where: { user_id: adminUser.id },
-        });
-
-        await connection.manager.insert(
-            User,
-            new User({
-                ...inviteMemberAttributes(),
-                password: userAttributes().password,
-            })
-        );
+    userInfo: {
+        email: string;
+        phone?: string;
+        first_name: string;
+        last_name: string;
     }
-
+): Promise<void> {
     await apiRequest(baseWorld, this.name, {
         cookie: {
             withCookie: true,
             saveCookie: false,
         },
+        body: userInfo,
     });
 } as ApiTestFn;
 

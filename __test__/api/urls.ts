@@ -7,7 +7,7 @@ const urls: { [i in ApiTest]: string | ((token: string) => string) } = {
     authCheck: "auth",
     login: "auth/login",
     logout: "auth/logout",
-    acceptInvite: (token: string) => `members/invite/${token}`,
+    acceptInvite: "members/invite",
     inviteMember: "members/invite",
     forgotPassword: "auth/forgot_password",
     resetPassword: "auth/reset_password",
