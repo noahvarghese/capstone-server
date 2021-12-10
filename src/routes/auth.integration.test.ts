@@ -7,7 +7,7 @@ import { authCheck, login, logout } from "@test/api/actions/auth";
 import { inviteMember } from "@test/api/actions/members";
 import attributes from "@test/api/attributes";
 import { apiRequest } from "@test/api/actions";
-import { LoginProps } from "./login";
+import { LoginProps } from "@routes/auth/login";
 import { InviteMemberProps } from "@services/data/user";
 import { forgotPassword, resetPassword } from "@test/api/actions/password";
 import Event from "@models/event";
