@@ -60,6 +60,7 @@ const setupServer = async (
         server.on("error", Logs.Error);
 
         server.on("listening", () => {
+            console.log("\n");
             Logs.Event(`Server started on port: ${port} using ${pid}`);
             res(server);
         });
