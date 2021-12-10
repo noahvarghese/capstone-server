@@ -6,19 +6,6 @@ runs:
     - name: Publish test results
       uses: actions/upload-artifact@v2
       with:
-        name: "test-report"
+        name: "test-reports"
         path: |
-          __test__/test-report.html
-    - name: Publish code coverage 
-      uses: actions/upload-artifact@v2
-      with:
-        name: "coverage"
-        path: |
-          __test__/coverage
-          - uses: actions/upload-artifact@v2
-    - name: Publish extra test output
-      uses: actions/upload-artifact@v2
-      with:
-        name: output
-        path: ./output*
-        if-no-files-found: ignore 
+          __test__/*-test-report.html

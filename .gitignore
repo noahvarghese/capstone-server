@@ -1,15 +1,14 @@
 /node_modules
 /build
-coverage
-__test__/coverage
+*coverage
 __test__/*-report.html
 .env
 .vscode
 output*
 *.txt
 !requirements.txt
+.nyc_output/
 *__pycache__/
-# Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
