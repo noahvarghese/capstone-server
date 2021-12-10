@@ -24,20 +24,13 @@ runs:
       run: |
         npm run database:test:list:branch -- "${{ steps.changed.outputs.changed }}"
       shell: bash
-    - id: num_changed 
-      name: Get number of changed files
-      run: |
-        CHANGED=$(npm run --silent unit:test:list:changed -- "${{ steps.changed.outputs.changed }}")
-        echo "::set-output name=IS_CHANGED::\"${CHANGED[@]}\""
-      shell: bash
-    - uses: actions/setup-python@v2
-      if: ${{ steps.num_changed.outputs.CHANGED }} > 0
+      if: ${{ steps.changed.outputs.num_changed }} > 0
     - name: install python dependencies
-      if: ${{ steps.num_changed.outputs.CHANGED }} > 0
+      if: ${{ steps.changed.outputs.num_changed }} > 0
       run: pip install -r ./bin/database/requirements.txt
       shell: bash
     - name: test
-      if: ${{ steps.num_changed.outputs.CHANGED }} > 0
+      if: ${{ steps.changed.outputs.num_changed }} > 0
       run: |
         npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash
