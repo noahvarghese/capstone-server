@@ -48,7 +48,7 @@ def main():
     connection = init_conn(set_database=True)
     cursor = connection.cursor()
     cursor.execute(f'DROP DATABASE {database};')
-    print(f'[ Event ]: Database {database} deleted')
+    print(f'[ EVENT ]: Database {database} deleted')
 
 
 main()
