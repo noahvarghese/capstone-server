@@ -43,7 +43,7 @@ describe("Forgot password route", () => {
     test("sends an email", async () => {
         const event = (
             await connection.manager.find(Event, {
-                where: { user_id: user.id, name: "Request Reset Password" },
+                where: { user_id: user.id, name: "Forgot Password" },
                 order: { created_on: "DESC" },
             })
         )[0];

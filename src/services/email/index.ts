@@ -64,7 +64,7 @@ export const sendUserInviteEmail = async (
     );
 };
 
-export const requestResetPasswordEmail = async (
+export const forgotPasswordEmail = async (
     connection: Connection,
     user: User
 ): Promise<boolean> => {
@@ -72,12 +72,12 @@ export const requestResetPasswordEmail = async (
     return await sendMail(
         connection,
         {
-            template: "request_reset_password",
+            template: "forgot_password",
             message: { to: user.email },
             locals: { url, first_name: user.first_name },
         },
         new Event({
-            name: "Request Reset Password",
+            name: "Forgot Password",
             user_id: user.id,
         })
     );

@@ -1,5 +1,5 @@
 import User from "@models/user/user";
-import { requestResetPasswordEmail, resetPasswordEmail } from "@services/email";
+import { forgotPasswordEmail, resetPasswordEmail } from "@services/email";
 import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
 import { Connection, MoreThan } from "typeorm";
 
@@ -21,7 +21,7 @@ export const enablePasswordReset = async (
         { token: user.token, token_expiry: user.token_expiry }
     );
 
-    await requestResetPasswordEmail(connection, user);
+    await forgotPasswordEmail(connection, user);
 };
 
 /**
