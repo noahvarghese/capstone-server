@@ -3,8 +3,6 @@ import Membership from "@models/membership";
 import Logs from "@util/logs/logs";
 import { Connection } from "typeorm";
 
-export * from "./invite";
-
 export type MemberResponse = { id: number; name: string; default: boolean };
 
 /**
@@ -13,7 +11,7 @@ export type MemberResponse = { id: number; name: string; default: boolean };
  * @param user_id
  * @returns {MemberResponse[]}
  */
-export const getMemberships = async (
+export const getAll = async (
     connection: Connection,
     user_id: number
 ): Promise<MemberResponse[]> => {

@@ -7,7 +7,7 @@ import { inviteMember } from "@test/api/attributes/member";
 import { businessAttributes, userAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { InsertResult } from "typeorm";
-import { acceptInvite, sendInvite } from ".";
+import { acceptInvite, sendInvite } from "./invite";
 
 beforeAll(async () => {
     await DBConnection.init();

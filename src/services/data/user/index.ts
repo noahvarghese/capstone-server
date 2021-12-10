@@ -9,8 +9,8 @@ import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
 import Logs from "@util/logs/logs";
 import { Connection } from "typeorm";
 
-export * from "./memberships";
 export * from "./password";
+export * from "./members/invite";
 
 /**
  * Checks the user is who they say they are

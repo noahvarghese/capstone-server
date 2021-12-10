@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
+import * as membershipService from "@services/data/memberships";
 import * as userValidator from "@services/data/user/validators";
 import ServiceError from "@util/errors/service_error";
 
@@ -20,7 +21,7 @@ router.post("/:token", async (req: Request, res: Response) => {
             password
         );
 
-        const memberships = await userService.getMemberships(
+        const memberships = await membershipService.getAll(
             SqlConnection,
             userId
         );

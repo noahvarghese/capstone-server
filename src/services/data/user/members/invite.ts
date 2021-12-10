@@ -5,7 +5,7 @@ import User from "@models/user/user";
 import { sendUserInviteEmail } from "@services/email";
 import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
 import { Connection, MoreThan } from "typeorm";
-import { getMemberships } from ".";
+import * as membershipService from "@services/data/memberships";
 import { enablePasswordReset } from "../password";
 
 export interface InviteMemberProps {
@@ -148,7 +148,7 @@ export const acceptInvite = async (
 
     // check if there is an existing membership
     // only the first membership gets set to default automatically
-    const memberships = await getMemberships(
+    const memberships = await membershipService.getAll(
         connection,
         membershipRequest.user_id
     );

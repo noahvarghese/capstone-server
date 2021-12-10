@@ -5,7 +5,7 @@ import authRouter from "./auth";
 import departmentRouter from "./departments";
 import roleRouter from "./roles";
 import Nav from "@services/data/nav";
-import * as userService from "@services/data/user";
+import * as membershipService from "@services/data/memberships";
 import memberRoute from "./members";
 
 const router = Router();
@@ -38,7 +38,7 @@ router.get("/businesses", async (req: Request, res: Response) => {
     } = req;
 
     res.status(200).json(
-        await userService.getMemberships(connection, Number(user_id))
+        await membershipService.getAll(connection, Number(user_id))
     );
 });
 

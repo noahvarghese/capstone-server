@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
+import * as membershipService from "@services/data/memberships";
 import ServiceError from "@util/errors/service_error";
 
 const router = Router();
@@ -22,7 +23,7 @@ router.post("/", async (req: Request, res: Response) => {
             password
         );
 
-        const memberships = await userService.getMemberships(
+        const memberships = await membershipService.getAll(
             SqlConnection,
             userId
         );

@@ -4,12 +4,8 @@ import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
 import { emptyChecker, isPhone, isPostalCode } from "@util/validators";
 import { Connection } from "typeorm";
 import validator from "validator";
-import {
-    emptyInviteUser,
-    emptyRegisterBusinessProps,
-    InviteMemberProps,
-    RegisterBusinessProps,
-} from ".";
+import { emptyRegisterBusinessProps, RegisterBusinessProps } from ".";
+import { emptyInviteUser, InviteMemberProps } from "./members/invite";
 
 export const sendInviteValidator = (props: InviteMemberProps): void => {
     const userInfo = Object.assign(emptyInviteUser(), props);
