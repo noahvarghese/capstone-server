@@ -10,7 +10,7 @@ export interface LoginProps {
     password: string;
 }
 
-router.post("/", async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response): Promise<void> => {
     const {
         body: { email, password },
     } = req;
@@ -35,6 +35,8 @@ router.post("/", async (req: Request, res: Response) => {
         const { message, reason, field } = e as ServiceError;
         res.status(dataServiceResponse(reason)).json({ message, field });
     }
-});
+};
+
+router.post("/", login);
 
 export default router;

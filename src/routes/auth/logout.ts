@@ -33,7 +33,9 @@ export const logout = (req: Request, res: Response): Promise<void> =>
         });
 
 router.post("/", (req: Request, res: Response) =>
-    logout(req, res).then(() => res.sendStatus(200))
+    logout(req, res)
+        .then(() => res.sendStatus(200))
+        .catch(() => res.sendStatus(500))
 );
 
 export default router;

@@ -8,10 +8,13 @@ import {
     RegisterBusinessProps,
 } from ".";
 import {
+    forgotPasswordValidator,
     registerAdminValidator,
     resetPasswordValidator,
     sendInviteValidator,
 } from "./validators";
+import { getConnection } from "typeorm";
+import User from "@models/user/user";
 
 beforeAll(async () => {
     await DBConnection.init();
@@ -161,5 +164,37 @@ describe("invite user", () => {
             errorMessage = message;
         }
         expect(errorMessage).toBe("");
+    });
+});
+
+describe("Forgot password", () => {
+    test("Invalid email", async () => {
+        let errorMessage = "";
+        try {
+            await forgotPasswordValidator("invalid@email.com");
+        } catch (e) {
+            const { message } = e as Error;
+            errorMessage = message;
+        }
+        expect(errorMessage).toBe("Invalid email");
+    });
+    describe("Valid email", () => {
+        let userId: number;
+
+        beforeAll(async () => {
+            const res = await getConnection().manager.insert(
+                User,
+                inviteMember()
+            );
+            userId = res.identifiers[0].id;
+        });
+
+        afterAll(async () => {
+            await getConnection().manager.delete(User, userId);
+        });
+
+        it("Should work", async () => {
+            await forgotPasswordValidator(inviteMember().email);
+        });
     });
 });

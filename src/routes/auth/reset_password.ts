@@ -6,7 +6,10 @@ import ServiceError, { dataServiceResponse } from "@util/errors/service";
 
 const router = Router();
 
-router.post("/:token", async (req: Request, res: Response) => {
+export const resetPassword = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const {
         params: { token },
         body: { password, confirm_password },
@@ -28,6 +31,8 @@ router.post("/:token", async (req: Request, res: Response) => {
         const { message, field, reason } = e as ServiceError;
         res.status(dataServiceResponse(reason)).json({ field, message });
     }
-});
+};
+
+router.post("/:token", resetPassword);
 
 export default router;

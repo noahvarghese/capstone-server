@@ -5,7 +5,7 @@ import ServiceError, { dataServiceResponse } from "@util/errors/service";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<void> => {
     const { body } = req;
 
     try {
@@ -23,6 +23,8 @@ router.post("/", async (req: Request, res: Response) => {
         res.status(dataServiceResponse(reason)).json({ message, field });
         return;
     }
-});
+};
+
+router.post("/", register);
 
 export default router;
