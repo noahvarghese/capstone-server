@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
 import * as userValidator from "@services/data/user/validators";
 import Logs from "@util/logs/logs";
-import ServiceError from "@util/errors/service";
+import ServiceError, { dataServiceResponse } from "@util/errors/service";
 
 const router = Router();
 
@@ -38,9 +38,10 @@ router.post("/:token", async (req: Request, res: Response) => {
         res.sendStatus(200);
         return;
     } catch (e) {
-        const { message } = e as Error;
+        const { message, field, reason } = e as ServiceError;
         Logs.Error(message);
-        res.status(e instanceof ServiceError ? e.reason : 500).json({
+        res.status(dataServiceResponse(reason)).json({
+            field,
             message,
         });
         return;

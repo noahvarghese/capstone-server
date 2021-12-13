@@ -1,8 +1,8 @@
 export enum ServiceErrorReasons {
-    UTILITY_ERROR,
-    DATABASE_ERROR,
-    PARAMETERS_MISSING,
-    NOT_AUTHENTICATED,
+    UTILITY_ERROR = "UTILITY_ERROR",
+    DATABASE_ERROR = "DATABASE_ERROR",
+    PARAMETERS_MISSING = "PARAMETERS_MISSING",
+    NOT_AUTHENTICATED = "NOT_AUTHENTICATED",
 }
 
 export default class DataServiceError extends Error {
@@ -29,10 +29,10 @@ type ServiceErrorResponse = {
 };
 
 const serviceResponse: ServiceErrorResponse = {
-    "0": 500,
-    "1": 500,
-    "2": 400,
-    "3": 401,
+    [ServiceErrorReasons.DATABASE_ERROR]: 500,
+    [ServiceErrorReasons.UTILITY_ERROR]: 500,
+    [ServiceErrorReasons.PARAMETERS_MISSING]: 400,
+    [ServiceErrorReasons.NOT_AUTHENTICATED]: 401,
 };
 
 export const dataServiceResponse = (s: ServiceErrorReasons): number =>

@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
 import * as membershipService from "@services/data/memberships";
 import * as userValidator from "@services/data/user/validators";
-import ServiceError from "@util/errors/service";
+import ServiceError, { dataServiceResponse } from "@util/errors/service";
 
 const router = Router();
 
@@ -33,8 +33,8 @@ router.post("/:token", async (req: Request, res: Response) => {
 
         res.sendStatus(200);
     } catch (e) {
-        const { message, reason } = e as ServiceError;
-        res.status(reason).json({ message });
+        const { message, field, reason } = e as ServiceError;
+        res.status(dataServiceResponse(reason)).json({ field, message });
     }
 });
 
