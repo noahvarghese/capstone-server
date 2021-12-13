@@ -8,7 +8,6 @@ export const authorized = async (
 ): Promise<void> => {
     const {
         path,
-        SqlConnection,
         routeSettings: route,
         session: { user_id, current_business_id },
     } = req;
@@ -33,7 +32,6 @@ export const authorized = async (
     const hasPermission = await permissionService.check(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
         route.permissions
     );
 

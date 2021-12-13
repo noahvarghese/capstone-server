@@ -7,23 +7,22 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import Logs from "@util/logs/logs";
-import { Connection } from "typeorm";
+import { getConnection } from "typeorm";
 
 export * from "./password";
 export * from "./members/invite";
 
 /**
  * Checks the user is who they say they are
- * @param connection
  * @param email
  * @param password
  * @returns {number | undefined} user id if successful
  */
 export const findByLogin = async (
-    connection: Connection,
     email: string,
     password: string
 ): Promise<number> => {
+    const connection = getConnection();
     const user = await connection.manager.findOne(User, { where: { email } });
 
     if (!user) {
@@ -92,7 +91,6 @@ export const emptyRegisterBusinessProps = (): RegisterBusinessProps => ({
 });
 
 export const registerAdmin = async (
-    connection: Connection,
     props: RegisterBusinessProps
 ): Promise<{ business_id: number; user_id: number }> => {
     const {
@@ -116,6 +114,8 @@ export const registerAdmin = async (
     });
 
     await user.hashPassword(password);
+
+    const connection = getConnection();
 
     const [businessResult, userResult] = await Promise.all([
         connection.manager.insert(

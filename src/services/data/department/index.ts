@@ -2,14 +2,15 @@ import Department from "@models/department";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
-import { Connection } from "typeorm";
+import { getConnection } from "typeorm";
 
 export const hasUser = async (
-    connection: Connection,
     departmentName: string,
     business_id: number,
     user_id: number
 ): Promise<boolean> => {
+    const connection = getConnection();
+
     try {
         const foundDepartments = await connection
             .createQueryBuilder()

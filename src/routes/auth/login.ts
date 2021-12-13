@@ -12,21 +12,13 @@ export interface LoginProps {
 
 router.post("/", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
         body: { email, password },
     } = req;
 
     try {
-        const userId = await userService.findByLogin(
-            SqlConnection,
-            email,
-            password
-        );
+        const userId = await userService.findByLogin(email, password);
 
-        const memberships = await membershipService.getAll(
-            SqlConnection,
-            userId
-        );
+        const memberships = await membershipService.getAll(userId);
 
         if (memberships.length === 0) {
             res.status(400).json({ message: "Please contact your manager" });

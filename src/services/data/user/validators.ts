@@ -2,7 +2,7 @@ import Business from "@models/business";
 import User from "@models/user/user";
 import ServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import { emptyChecker, isPhone, isPostalCode } from "@util/validators";
-import { Connection } from "typeorm";
+import { getConnection } from "typeorm";
 import validator from "validator";
 import { emptyRegisterBusinessProps, RegisterBusinessProps } from ".";
 import { emptyInviteUser, InviteMemberProps } from "./members/invite";
@@ -38,6 +38,22 @@ export const sendInviteValidator = (props: InviteMemberProps): void => {
     }
 };
 
+export const forgotPasswordValidator = async (email: string): Promise<void> => {
+    const connection = getConnection();
+
+    const userCount = await connection.manager.count(User, {
+        where: { email },
+    });
+
+    if (userCount !== 1) {
+        throw new ServiceError(
+            "Invalid email",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "email"
+        );
+    }
+};
+
 export const resetPasswordValidator = (
     token: string,
     password: string,
@@ -56,7 +72,6 @@ export const resetPasswordValidator = (
 };
 
 export const registerAdminValidator = async (
-    connection: Connection,
     props: RegisterBusinessProps
 ): Promise<void> => {
     // validation
@@ -108,6 +123,8 @@ export const registerAdminValidator = async (
             "password"
         );
     }
+
+    const connection = getConnection();
 
     // more validation
     await Promise.race([

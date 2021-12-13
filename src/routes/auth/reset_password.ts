@@ -8,23 +8,15 @@ const router = Router();
 
 router.post("/:token", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
         params: { token },
         body: { password, confirm_password },
     } = req;
 
     try {
         userValidator.resetPasswordValidator(token, password, confirm_password);
-        const userId = await userService.resetPassword(
-            SqlConnection,
-            token,
-            password
-        );
+        const userId = await userService.resetPassword(token, password);
 
-        const memberships = await membershipService.getAll(
-            SqlConnection,
-            userId
-        );
+        const memberships = await membershipService.getAll(userId);
 
         req.session.business_ids = memberships.map((m) => m.id);
         req.session.user_id = userId;

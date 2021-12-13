@@ -5,22 +5,17 @@ import { businessAttributes, userAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { findByLogin } from ".";
 
-beforeEach(DBConnection.init);
+beforeEach(async () => await DBConnection.init());
 afterEach(async () => {
     await DBConnection.close(true);
 });
 
 describe("Login", () => {
     test("Invalid email", async () => {
-        const connection = await DBConnection.get();
         let errorMessage = "";
 
         try {
-            await findByLogin(
-                connection,
-                "notmyemail@gmail.com",
-                "doesntmatteranyway"
-            );
+            await findByLogin("notmyemail@gmail.com", "doesntmatteranyway");
         } catch (e) {
             const { message } = e as Error;
             errorMessage = message;
@@ -64,17 +59,12 @@ describe("Login", () => {
             });
 
             test("Invalid password", async () => {
-                const connection = await DBConnection.get();
                 const user = new User(userAttributes());
 
                 let errorMessage = "";
 
                 try {
-                    await findByLogin(
-                        connection,
-                        user.email,
-                        "doesntmatteranyway"
-                    );
+                    await findByLogin(user.email, "doesntmatteranyway");
                 } catch (e) {
                     const { message } = e as Error;
                     errorMessage = message;
@@ -84,13 +74,8 @@ describe("Login", () => {
             });
 
             test("Valid login", async () => {
-                const connection = await DBConnection.get();
                 const userAttr = userAttributes();
-                const id = await findByLogin(
-                    connection,
-                    userAttr.email,
-                    userAttr.password
-                );
+                const id = await findByLogin(userAttr.email, userAttr.password);
                 expect(id).toBeGreaterThan(0);
             });
         });

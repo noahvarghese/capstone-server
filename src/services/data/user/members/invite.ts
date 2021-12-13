@@ -4,7 +4,7 @@ import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import { sendUserInviteEmail } from "@services/email";
 import ServiceError, { ServiceErrorReasons } from "@util/errors/service";
-import { Connection, MoreThan } from "typeorm";
+import { getConnection, MoreThan } from "typeorm";
 import * as membershipService from "@services/data/memberships";
 import { enablePasswordReset } from "../password";
 
@@ -28,17 +28,17 @@ export const emptyInviteUser = (): InviteMemberProps => ({
  * Then checks if there is a MembershipRequest (generates new token if true, creates new MembershipRequest if false)
  * Then sends email to the given user
  * confirmation if updated_by_user has rights is done as part of the application level middleware
- * @param {Connection} connection Database connection
  * @param {InviteMemberProps} userInfo Basis for a new User
  * @param {number} business_id
  * @param {number} updated_by_user_id
  */
 export const sendInvite = async (
-    connection: Connection,
     userInfo: InviteMemberProps,
     business_id: number,
     updated_by_user_id: number
 ): Promise<void> => {
+    const connection = getConnection();
+
     // this should do an upsert as the email is marked as UNIQUE in the database
     let user = await connection.manager.findOne(User, {
         where: { email: userInfo.email },
@@ -127,13 +127,11 @@ export const sendInvite = async (
 /**
  * Confirms the association between user and business
  * Allows user to set password afterwards
- * @param connection
  * @param token
  */
-export const acceptInvite = async (
-    connection: Connection,
-    token: string
-): Promise<void> => {
+export const acceptInvite = async (token: string): Promise<void> => {
+    const connection = getConnection();
+
     const membershipRequest = await connection.manager.findOne(
         MembershipRequest,
         { where: { token, token_expiry: MoreThan(new Date()) } }
@@ -149,7 +147,6 @@ export const acceptInvite = async (
     // check if there is an existing membership
     // only the first membership gets set to default automatically
     const memberships = await membershipService.getAll(
-        connection,
         membershipRequest.user_id
     );
 
@@ -183,6 +180,6 @@ export const acceptInvite = async (
 
     if (!user.password) {
         // Allow user to finish registration
-        await enablePasswordReset(connection, user);
+        await enablePasswordReset(user);
     }
 };

@@ -57,13 +57,11 @@ describe("register new user and business", () => {
     ];
 
     test.each(cases)("Invalid %p, value %p", async (field, value, error) => {
-        const connection = await DBConnection.get();
-
         let errorMessage = "";
         try {
             const props = registerBusiness();
             props[field] = value;
-            await registerAdminValidator(connection, props);
+            await registerAdminValidator(props);
         } catch (e) {
             const { message } = e as Error;
             errorMessage = message;
@@ -72,7 +70,6 @@ describe("register new user and business", () => {
     });
 
     test("Empty values", async () => {
-        const connection = await DBConnection.get();
         const keys = Object.keys(emptyRegisterBusinessProps());
 
         for (const key of keys) {
@@ -80,7 +77,7 @@ describe("register new user and business", () => {
             try {
                 const props = registerBusiness();
                 props[key as unknown as keyof RegisterBusinessProps] = "";
-                await registerAdminValidator(connection, props);
+                await registerAdminValidator(props);
             } catch (e) {
                 const { message } = e as Error;
                 errorMessage = message;
@@ -96,12 +93,10 @@ describe("register new user and business", () => {
     });
 
     test("Valid inputs", async () => {
-        const connection = await DBConnection.get();
-
         let errorMessage = "";
         try {
             const props = registerBusiness();
-            await registerAdminValidator(connection, props);
+            await registerAdminValidator(props);
         } catch (e) {
             const { message } = e as Error;
             errorMessage = message;

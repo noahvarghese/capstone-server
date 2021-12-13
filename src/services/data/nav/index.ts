@@ -1,7 +1,6 @@
 import * as departmentService from "@services/data/department";
 import * as permissionService from "@services/data/permission";
 import { deepClone } from "@util/obj";
-import { Connection } from "typeorm";
 
 type NavLinks = Record<string, boolean>;
 
@@ -33,18 +32,15 @@ export type DefaultNavLinks = Pick<PossibleNavLinks, "scores"> & SharedNavLinks;
 export default class Nav {
     private userId: number;
     private businessId: number;
-    private connection: Connection;
     private links: Partial<PossibleNavLinks> = Nav.produceSharedLinks();
 
-    constructor(_businessId: number, _userId: number, _connection: Connection) {
+    constructor(_businessId: number, _userId: number) {
         this.userId = _userId;
         this.businessId = _businessId;
-        this.connection = _connection;
     }
 
     public async isAdmin(): Promise<boolean> {
         return await departmentService.hasUser(
-            this.connection,
             "Admin",
             this.businessId,
             this.userId
@@ -80,8 +76,7 @@ export default class Nav {
     private async setLinksByPermission(): Promise<void> {
         const permissions = await permissionService.getAll(
             this.userId,
-            this.businessId,
-            this.connection
+            this.businessId
         );
 
         for (const permission of permissions) {

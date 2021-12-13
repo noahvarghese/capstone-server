@@ -85,8 +85,7 @@ test("Admin checks links", async () => {
 
     const nav = new Nav(
         Number(businessRes.identifiers[0].id),
-        Number(userRes.identifiers[0].id),
-        connection
+        Number(userRes.identifiers[0].id)
     );
 
     const links = await nav.getLinks();
@@ -147,8 +146,7 @@ test("regular user checks links", async () => {
 
     const nav = new Nav(
         Number(businessRes.identifiers[0].id),
-        Number(userRes.identifiers[0].id),
-        connection
+        Number(userRes.identifiers[0].id)
     );
 
     const links = await nav.getLinks();

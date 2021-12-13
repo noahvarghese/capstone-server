@@ -1,7 +1,9 @@
 import { Request, Response, Router } from "express";
-import User from "@models/user/user";
 import { enablePasswordReset } from "@services/data/user";
 import ServiceError, { dataServiceResponse } from "@util/errors/service";
+import { forgotPasswordValidator } from "@services/data/user/validators";
+import { getConnection } from "typeorm";
+import User from "@models/user/user";
 
 const router = Router();
 
@@ -10,21 +12,20 @@ export const forgotPasswordRoute = async (
     res: Response
 ): Promise<void> => {
     const {
-        SqlConnection,
         body: { email },
     } = req;
 
-    const user = await SqlConnection.manager.findOne(User, {
-        where: { email },
-    });
-
-    if (!user) {
-        res.status(400).json({ message: "Invalid email" });
-        return;
-    }
+    const connection = getConnection();
 
     try {
-        await enablePasswordReset(SqlConnection, user);
+        await forgotPasswordValidator(email);
+
+        const user = await connection.manager.findOneOrFail(User, {
+            where: { email },
+        });
+
+        await enablePasswordReset(user);
+
         res.sendStatus(200);
     } catch (e) {
         const { message, reason, field } = e as ServiceError;

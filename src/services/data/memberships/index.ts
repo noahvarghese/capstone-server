@@ -1,20 +1,18 @@
 import Business from "@models/business";
 import Membership from "@models/membership";
 import Logs from "@util/logs/logs";
-import { Connection } from "typeorm";
+import { getConnection } from "typeorm";
 
 export type MemberResponse = { id: number; name: string; default: boolean };
 
 /**
  * Gets list of businesses that the user is a part of
- * @param connection
  * @param user_id
  * @returns {MemberResponse[]}
  */
-export const getAll = async (
-    connection: Connection,
-    user_id: number
-): Promise<MemberResponse[]> => {
+export const getAll = async (user_id: number): Promise<MemberResponse[]> => {
+    const connection = getConnection();
+
     try {
         const res = await connection
             .createQueryBuilder()

@@ -6,14 +6,11 @@ import ServiceError, { dataServiceResponse } from "@util/errors/service";
 const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
-    const { SqlConnection, body } = req;
+    const { body } = req;
 
     try {
-        await userValidator.registerAdminValidator(SqlConnection, body);
-        const { business_id, user_id } = await userService.registerAdmin(
-            SqlConnection,
-            body
-        );
+        await userValidator.registerAdminValidator(body);
+        const { business_id, user_id } = await userService.registerAdmin(body);
 
         req.session.business_ids = [business_id];
         req.session.user_id = user_id;

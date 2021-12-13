@@ -1,7 +1,7 @@
 import User from "@models/user/user";
 import { forgotPasswordEmail, resetPasswordEmail } from "@services/email";
 import ServiceError, { ServiceErrorReasons } from "@util/errors/service";
-import { Connection, MoreThan } from "typeorm";
+import { getConnection, MoreThan } from "typeorm";
 
 /**
  * Creates token and expiry
@@ -9,10 +9,9 @@ import { Connection, MoreThan } from "typeorm";
  * @param connection
  * @param user
  */
-export const enablePasswordReset = async (
-    connection: Connection,
-    user: User
-): Promise<void> => {
+export const enablePasswordReset = async (user: User): Promise<void> => {
+    const connection = getConnection();
+
     user.createToken();
 
     await connection.manager.update(
@@ -26,17 +25,17 @@ export const enablePasswordReset = async (
 
 /**
  * resets the user's password
- * @param connection
  * @param token
  * @param password
  * @param confirmPassword
  * @returns {number} user id
  */
 export const resetPassword = async (
-    connection: Connection,
     token: string,
     password: string
 ): Promise<number> => {
+    const connection = getConnection();
+
     const user = await connection.manager.findOne(User, {
         where: {
             token,

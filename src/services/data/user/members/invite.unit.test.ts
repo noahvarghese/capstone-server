@@ -31,7 +31,6 @@ describe("Create user before sending invite", () => {
 
         // send invite
         await sendInvite(
-            connection,
             inviteMember(),
             startingRes[0].identifiers[0].id,
             startingRes[1].identifiers[0].id
@@ -85,7 +84,6 @@ describe("Create user before sending invite", () => {
 
         // resend invite
         await sendInvite(
-            connection,
             inviteMember(),
             startingRes[0].identifiers[0].id,
             startingRes[1].identifiers[0].id
@@ -150,7 +148,7 @@ describe("Valid membership acceptance", () => {
         );
 
         // accept invite
-        await acceptInvite(connection, membershipRequest.token);
+        await acceptInvite(membershipRequest.token);
     });
     afterAll(async () => await DBConnection.reset());
     test("No previous membership, creates default", async () => {
@@ -198,7 +196,6 @@ describe("Reset database after each", () => {
 
             // send invite
             await sendInvite(
-                connection,
                 inviteMember(),
                 startingRes[0].identifiers[0].id,
                 startingRes[1].identifiers[0].id
@@ -249,7 +246,6 @@ describe("Reset database after each", () => {
             try {
                 // send invite
                 await sendInvite(
-                    connection,
                     inviteMember(),
                     startingRes[0].identifiers[0].id,
                     startingRes[1].identifiers[0].id
@@ -313,7 +309,7 @@ describe("Reset database after each", () => {
                 }
             );
 
-            await acceptInvite(connection, membershipRequest.token);
+            await acceptInvite(membershipRequest.token);
 
             // get all memberships for second user
             const memberships = await Promise.all([
@@ -339,11 +335,9 @@ describe("Reset database after each", () => {
 });
 
 test("Accepting an invite without a valid token doesn't work", async () => {
-    const connection = await DBConnection.get();
-
     let errorMessage = "";
     try {
-        await acceptInvite(connection, "InvalidToken");
+        await acceptInvite("InvalidToken");
     } catch (e) {
         const { message } = e as Error;
         errorMessage = message;

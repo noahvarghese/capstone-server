@@ -3,11 +3,9 @@ import { connectionOptions, entities } from "@config/database";
 
 export default abstract class DBConnection {
     private static _connection: Connection | undefined;
-    private static readonly _connectionName: string = "Test";
 
     public static init = async (): Promise<void> => {
         DBConnection._connection = await createConnection({
-            name: DBConnection._connectionName,
             ...connectionOptions(),
             logging: false,
         });
@@ -23,9 +21,7 @@ export default abstract class DBConnection {
         // Set connection
         if (!DBConnection._connection) {
             try {
-                DBConnection._connection = getConnectionManager().get(
-                    DBConnection._connectionName
-                );
+                DBConnection._connection = getConnectionManager().get();
             } catch (e) {
                 await DBConnection.init();
             }

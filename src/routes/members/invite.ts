@@ -14,7 +14,6 @@ router.post("/", async (req: Request, res: Response) => {
     try {
         userValidator.sendInviteValidator(req.body);
         await userService.sendInvite(
-            req.SqlConnection,
             req.body,
             Number(current_business_id),
             Number(user_id)
@@ -29,12 +28,11 @@ router.post("/", async (req: Request, res: Response) => {
 
 router.post("/:token", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
         params: { token },
     } = req;
 
     try {
-        await userService.acceptInvite(SqlConnection, token);
+        await userService.acceptInvite(token);
         res.sendStatus(200);
         return;
     } catch (e) {

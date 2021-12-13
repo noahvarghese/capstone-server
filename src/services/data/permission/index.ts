@@ -4,18 +4,17 @@ import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
-import { Connection } from "typeorm";
+import { getConnection } from "typeorm";
 
 export const check = async (
     user_id: number,
     business_id: number,
-    connection: Connection,
     required: (keyof Permission)[]
 ): Promise<boolean> => {
     try {
         if (required.length === 0) return true;
 
-        const permissions = await getAll(user_id, business_id, connection);
+        const permissions = await getAll(user_id, business_id);
 
         return (
             permissions.filter(
@@ -33,9 +32,10 @@ export const check = async (
 
 export const getAll = async (
     user_id: number,
-    business_id: number,
-    connection: Connection
+    business_id: number
 ): Promise<Permission[]> => {
+    const connection = getConnection();
+
     try {
         const permissions = await connection
             .createQueryBuilder()

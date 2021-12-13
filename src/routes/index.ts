@@ -17,15 +17,10 @@ router.use("/roles", roleRouter);
 
 router.use("/settings/nav", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
         session: { user_id, current_business_id },
     } = req;
 
-    const nav = new Nav(
-        Number(current_business_id),
-        Number(user_id),
-        SqlConnection
-    );
+    const nav = new Nav(Number(current_business_id), Number(user_id));
 
     res.status(200).json(await nav.getLinks());
     return;
@@ -33,13 +28,10 @@ router.use("/settings/nav", async (req: Request, res: Response) => {
 
 router.get("/businesses", async (req: Request, res: Response) => {
     const {
-        SqlConnection: connection,
         session: { user_id },
     } = req;
 
-    res.status(200).json(
-        await membershipService.getAll(connection, Number(user_id))
-    );
+    res.status(200).json(await membershipService.getAll(Number(user_id)));
 });
 
 // Default route handler to serve the website if requests are made

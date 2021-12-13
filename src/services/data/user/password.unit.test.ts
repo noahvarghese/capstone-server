@@ -18,7 +18,7 @@ describe("Forgot password route", () => {
         connection = await DBConnection.get();
         user = await connection.manager.save(new User(userAttributes()));
 
-        await enablePasswordReset(connection, user);
+        await enablePasswordReset(user);
 
         user = await connection.manager.findOneOrFail(User, {
             where: { id: user.id },
@@ -60,10 +60,8 @@ describe("Forgot password route", () => {
 
 describe("Reset Password", () => {
     test("Invalid token", async () => {
-        const connection = await DBConnection.get();
-
         try {
-            await resetPassword(connection, "1233456", "testtest");
+            await resetPassword("1233456", "testtest");
         } catch (e) {
             const { message } = e as Error;
             expect(message).toMatch(/^invalid token$/i);
@@ -79,7 +77,7 @@ describe("Reset Password", () => {
 
             user = await connection.manager.save(new User(userAttributes()));
 
-            await enablePasswordReset(connection, user);
+            await enablePasswordReset(user);
 
             user = await connection.manager.findOneOrFail(User, {
                 where: { id: user.id },
@@ -94,7 +92,7 @@ describe("Reset Password", () => {
             let errorMessage = "";
 
             try {
-                await resetPassword(connection, user.token as string, "test");
+                await resetPassword(user.token as string, "test");
             } catch (e) {
                 const { message } = e as Error;
                 errorMessage = message;
@@ -105,11 +103,11 @@ describe("Reset Password", () => {
 
         test("Valid password and token ", async () => {
             const NEW_PASSWORD = "TEST1234";
-            await resetPassword(connection, user.token as string, NEW_PASSWORD);
+            await resetPassword(user.token as string, NEW_PASSWORD);
 
-            expect(
-                await findByLogin(connection, user.email, NEW_PASSWORD)
-            ).toBeGreaterThan(0);
+            expect(await findByLogin(user.email, NEW_PASSWORD)).toBeGreaterThan(
+                0
+            );
         });
     });
 });
