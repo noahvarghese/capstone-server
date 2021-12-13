@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
 import * as userValidator from "@services/data/user/validators";
-import ServiceError from "@util/errors/service_error";
+import ServiceError from "@util/errors/service";
 
 const router = Router();
 

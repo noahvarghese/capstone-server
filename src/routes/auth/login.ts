@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import * as userService from "@services/data/user";
 import * as membershipService from "@services/data/memberships";
-import ServiceError from "@util/errors/service_error";
+import ServiceError, { dataServiceResponse } from "@util/errors/service";
 
 const router = Router();
 
@@ -40,8 +40,8 @@ router.post("/", async (req: Request, res: Response) => {
 
         res.sendStatus(200);
     } catch (e) {
-        const { message, reason } = e as ServiceError;
-        res.status(reason).json({ message });
+        const { message, reason, field } = e as ServiceError;
+        res.status(dataServiceResponse(reason)).json({ message, field });
     }
 });
 

@@ -5,7 +5,7 @@ import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
+import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import Logs from "@util/logs/logs";
 import { Connection } from "typeorm";
 
@@ -27,34 +27,38 @@ export const findByLogin = async (
     const user = await connection.manager.findOne(User, { where: { email } });
 
     if (!user) {
-        throw new ServiceError(
+        throw new DataServiceError(
             `Invalid login ${email}`,
-            ServiceErrorReasons.AUTH
+            ServiceErrorReasons.NOT_AUTHENTICATED
         );
     }
 
     if (!user.password) {
-        throw new ServiceError(
+        throw new DataServiceError(
             "User not finished registration",
-            ServiceErrorReasons.AUTH
+            ServiceErrorReasons.NOT_AUTHENTICATED
         );
     }
 
     try {
         const valid = await user.comparePassword(password);
+
         if (!valid) {
-            throw new ServiceError("Invalid login", ServiceErrorReasons.AUTH);
+            throw new DataServiceError(
+                "Invalid login",
+                ServiceErrorReasons.NOT_AUTHENTICATED
+            );
         }
 
         return user.id;
     } catch (e) {
-        if (e instanceof ServiceError) throw e;
+        if (e instanceof DataServiceError) throw e;
 
         const { message } = e as Error;
         Logs.Error(message);
-        throw new ServiceError(
+        throw new DataServiceError(
             "Unable to compare passwords",
-            ServiceErrorReasons.SERVER
+            ServiceErrorReasons.UTILITY_ERROR
         );
     }
 };

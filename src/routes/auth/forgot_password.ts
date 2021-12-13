@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import User from "@models/user/user";
 import { enablePasswordReset } from "@services/data/user";
-import ServiceError from "@util/errors/service_error";
+import ServiceError from "@util/errors/service";
 
 const router = Router();
 

@@ -3,7 +3,7 @@ import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
 import User from "@models/user/user";
 import { sendUserInviteEmail } from "@services/email";
-import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
+import ServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import { Connection, MoreThan } from "typeorm";
 import * as membershipService from "@services/data/memberships";
 import { enablePasswordReset } from "../password";
@@ -65,7 +65,7 @@ export const sendInvite = async (
     if (existingMembership)
         throw new ServiceError(
             "User is a member of the business already",
-            ServiceErrorReasons.PARAMS
+            ServiceErrorReasons.PARAMETERS_MISSING
         );
 
     // Update token if an association request exists
@@ -111,7 +111,7 @@ export const sendInvite = async (
         // Unrelistic that this will be hit but needs to be here for type validation
         throw new ServiceError(
             "Unable to retrive information to notify user by email",
-            ServiceErrorReasons.SERVER
+            ServiceErrorReasons.DATABASE_ERROR
         );
     }
 
@@ -142,7 +142,7 @@ export const acceptInvite = async (
     if (!membershipRequest) {
         throw new ServiceError(
             "No invitation found, please ask your manager for a new invitation",
-            ServiceErrorReasons.PARAMS
+            ServiceErrorReasons.PARAMETERS_MISSING
         );
     }
 
@@ -177,7 +177,7 @@ export const acceptInvite = async (
     if (!user) {
         throw new ServiceError(
             "Couldn't retrieve user",
-            ServiceErrorReasons.SERVER
+            ServiceErrorReasons.DATABASE_ERROR
         );
     }
 

@@ -1,6 +1,6 @@
 import Business from "@models/business";
 import User from "@models/user/user";
-import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
+import ServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import { emptyChecker, isPhone, isPostalCode } from "@util/validators";
 import { Connection } from "typeorm";
 import validator from "validator";
@@ -14,7 +14,7 @@ export const sendInviteValidator = (props: InviteMemberProps): void => {
     if (result) {
         throw new ServiceError(
             result.message,
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             result.field
         );
     }
@@ -24,7 +24,7 @@ export const sendInviteValidator = (props: InviteMemberProps): void => {
     if (validator.isEmail(email) === false) {
         throw new ServiceError(
             "Invalid email.",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "email"
         );
     }
@@ -32,7 +32,7 @@ export const sendInviteValidator = (props: InviteMemberProps): void => {
     if (!isPhone(phone)) {
         throw new ServiceError(
             "Invalid phone number",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "phone"
         );
     }
@@ -44,11 +44,14 @@ export const resetPasswordValidator = (
     confirmPassword: string
 ): void => {
     if (!token)
-        throw new ServiceError("No token provided", ServiceErrorReasons.AUTH);
+        throw new ServiceError(
+            "No token provided",
+            ServiceErrorReasons.NOT_AUTHENTICATED
+        );
     if (password !== confirmPassword)
         throw new ServiceError(
             "Passwords do not match",
-            ServiceErrorReasons.PARAMS
+            ServiceErrorReasons.PARAMETERS_MISSING
         );
 };
 
@@ -64,7 +67,7 @@ export const registerAdminValidator = async (
     if (result) {
         throw new ServiceError(
             result.message,
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             result.field
         );
     }
@@ -73,35 +76,35 @@ export const registerAdminValidator = async (
     if (validator.isEmail(props.email) === false) {
         throw new ServiceError(
             "Invalid email",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "email"
         );
     }
     if (!isPhone(props.phone)) {
         throw new ServiceError(
             "Invalid phone number",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "phone"
         );
     }
     if (!isPostalCode(props.postal_code)) {
         throw new ServiceError(
             "Invalid postal code",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "postal_code"
         );
     }
     if (props.password.length < 8) {
         throw new ServiceError(
             "Password must be at least 8 characters",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "password"
         );
     }
     if (props.password !== props.confirm_password) {
         throw new ServiceError(
             "Passwords do not match",
-            ServiceErrorReasons.PARAMS,
+            ServiceErrorReasons.PARAMETERS_MISSING,
             "password"
         );
     }
@@ -118,7 +121,7 @@ export const registerAdminValidator = async (
                 `${
                     res[0] instanceof Business ? "Business" : "User"
                 } already exists`,
-                ServiceErrorReasons.PARAMS
+                ServiceErrorReasons.PARAMETERS_MISSING
             );
         }
         return;

@@ -1,6 +1,6 @@
 import User from "@models/user/user";
 import { forgotPasswordEmail, resetPasswordEmail } from "@services/email";
-import ServiceError, { ServiceErrorReasons } from "@util/errors/service_error";
+import ServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import { Connection, MoreThan } from "typeorm";
 
 /**
@@ -45,12 +45,15 @@ export const resetPassword = async (
     });
 
     if (!user)
-        throw new ServiceError("Invalid token", ServiceErrorReasons.AUTH);
+        throw new ServiceError(
+            "Invalid token",
+            ServiceErrorReasons.NOT_AUTHENTICATED
+        );
 
     if (!(await user.resetPassword(password, token))) {
         throw new ServiceError(
             "Password not long enough",
-            ServiceErrorReasons.PARAMS
+            ServiceErrorReasons.PARAMETERS_MISSING
         );
     }
 
