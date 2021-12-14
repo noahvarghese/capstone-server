@@ -252,4 +252,68 @@ export const deleteMemberValidator = (id: number): void => {
     }
 };
 
-// export const updateMemberValidator = () => {};
+export const updateMemberValidator = (
+    id: number,
+    {
+        first_name,
+        last_name,
+        email,
+        phone,
+        birthday,
+    }: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        phone: string;
+        birthday: string | undefined;
+    }
+): void => {
+    if (isNaN(id)) {
+        throw new DataServiceError(
+            "First name cannot be empty",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "first_name"
+        );
+    }
+
+    if (validator.isEmpty(first_name)) {
+        throw new DataServiceError(
+            "First name cannot be empty",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "first_name"
+        );
+    }
+
+    if (validator.isEmpty(last_name)) {
+        throw new DataServiceError(
+            "Last name cannot be empty",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "last_name"
+        );
+    }
+
+    if (validator.isEmail(email) === false) {
+        throw new DataServiceError(
+            "Invalid email",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "email"
+        );
+    }
+
+    if (!isPhone(phone)) {
+        throw new DataServiceError(
+            "Invalid phone number",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "phone"
+        );
+    }
+
+    // Allowed to be blank
+    if (birthday && isNaN(Date.parse(birthday))) {
+        throw new DataServiceError(
+            "Invalid birthday",
+            ServiceErrorReasons.PARAMETERS_MISSING,
+            "birthday"
+        );
+    }
+};

@@ -1,15 +1,12 @@
-import User from "@models/user/user";
 import * as userMembershipService from "@services/data/user/members";
 import { GetMembersOptions } from "@services/data/user/members";
 import {
     deleteMemberValidator,
     getMembersValidator,
+    updateMemberValidator,
 } from "@services/data/user/validators";
 import DataServiceError, { dataServiceResponse } from "@util/errors/service";
-import Logs from "@util/logs/logs";
-import { isPhone } from "@util/validators";
 import { Router, Request, Response } from "express";
-import validator from "validator";
 import inviteRoute from "./invite";
 import roleAssignmentRouter from "./role_assignment";
 
@@ -108,57 +105,23 @@ export const deleteMembership = async (
     }
 };
 
-router.get("/:id", getOne);
-router.get("/", getAll);
-router.delete("/:id", deleteMembership);
-
-router.put("/:id", async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response): Promise<void> => {
     const {
-        SqlConnection,
-        params: { id: user_id },
+        params: { id },
         body: { first_name, last_name, email, phone, birthday },
     } = req;
 
-    if (validator.isEmpty(first_name)) {
-        res.status(400).json({
-            message: "First name cannot be empty",
-            field: "first_name",
-        });
-        return;
-    }
-
-    if (validator.isEmpty(last_name)) {
-        res.status(400).json({
-            message: "Last name cannot be empty",
-            field: "last_name",
-        });
-        return;
-    }
-
-    if (validator.isEmail(email) === false) {
-        res.status(400).json({ message: "Invalid email.", field: "email" });
-        return;
-    }
-
-    if (!isPhone(phone)) {
-        res.status(400).json({
-            message: "Invalid phone number",
-            field: "phone",
-        });
-        return;
-    }
-
-    // Allowed to be blank
-    if (birthday && isNaN(Date.parse(birthday))) {
-        res.status(400).json({
-            message: "Invalid birthday " + birthday,
-            field: "birthday",
-        });
-        return;
-    }
+    const user_id = Number(id);
 
     try {
-        await SqlConnection.manager.update(User, user_id, {
+        updateMemberValidator(user_id, {
+            first_name,
+            last_name,
+            email,
+            phone,
+            birthday,
+        });
+        await userMembershipService.update(user_id, {
             first_name,
             last_name,
             email,
@@ -168,11 +131,14 @@ router.put("/:id", async (req: Request, res: Response) => {
         res.sendStatus(200);
         return;
     } catch (e) {
-        const { message } = e as Error;
-        Logs.Error(message);
-        res.sendStatus(500);
-        return;
+        const { message, field, reason } = e as DataServiceError;
+        res.status(dataServiceResponse(reason)).json({ message, field });
     }
-});
+};
+
+router.get("/:id", getOne);
+router.get("/", getAll);
+router.delete("/:id", deleteMembership);
+router.put("/:id", update);
 
 export default router;

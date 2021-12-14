@@ -435,6 +435,8 @@ describe("Can manage user -> role assignments", () => {
             await removeFromRole();
         });
         afterEach(async () => {
+            // This is to fix the database state after a test
+            // in case the test fails then the assignment doesnt exist
             try {
                 await assignToRole();
             } catch (_) {
