@@ -16,7 +16,7 @@ if (process.env.DB_ENV.startsWith("_")) {
 
 if (process.argv.includes("--listTests") === false) {
     Logs.Event("Jest config loaded");
-    Logs.Event(`Using database: ${database}`);
+    Logs.Log(`Using database: ${database}`);
 }
 
 export default {
