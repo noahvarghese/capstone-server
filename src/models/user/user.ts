@@ -103,13 +103,18 @@ export default class User extends BaseModel implements UserAttributes {
     // pass reference back so we can chain it within the connection.manager.save method
     public hashPassword = async (_password: string): Promise<this> => {
         const hash = await new Promise<string>((res, rej) => {
-            bcrypt.hash(_password, 12, (err, hash) => {
-                if (err) {
-                    rej(err);
-                }
+            bcrypt
+                .genSalt(12)
+                .then((salt) => {
+                    bcrypt.hash(_password, salt, (err, hash) => {
+                        if (err) {
+                            rej(err);
+                        }
 
-                res(hash);
-            });
+                        res(hash);
+                    });
+                })
+                .catch(rej);
         });
 
         this.password = hash;
