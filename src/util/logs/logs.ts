@@ -3,14 +3,15 @@ import dotenv from "dotenv";
 dotenv.config();
 
 enum LogLevels {
-    TEST = 0,
-    EVENT = 1,
-    ERROR = 2,
-    WARN = 3,
-    DEBUG = 4,
-    LOG = 5,
-    METRICS = 6,
-    SQL = 7,
+    TEST,
+    EVENT,
+    ERROR,
+    WARN,
+    DEBUG,
+    LOG,
+    SQL,
+    METRICS,
+    DB_LOGGER,
 }
 
 interface LogData {
@@ -54,11 +55,15 @@ const LogDataTypes = {
     }),
     [LogLevels.LOG]: createLogData({
         prefix: "[ LOG ]: ",
-        consoleFunction: console.error,
+        consoleFunction: console.log,
     }),
     [LogLevels.SQL]: createLogData({
         prefix: "[ SQL ]: ",
-        consoleFunction: console.warn,
+        consoleFunction: console.log,
+    }),
+    [LogLevels.DB_LOGGER]: createLogData({
+        prefix: "[ DB_LOGGER ]: ",
+        consoleFunction: console.log,
     }),
     [LogLevels.METRICS]: createLogData({
         prefix: "[ METRICS ]: ",
@@ -134,5 +139,9 @@ export default class Logs {
 
     static Metric(...args: unknown[]): void {
         Logs.add(LogLevels.METRICS, ...args);
+    }
+
+    static DbLogger(...args: unknown[]): void {
+        Logs.add(LogLevels.DB_LOGGER, ...args);
     }
 }
