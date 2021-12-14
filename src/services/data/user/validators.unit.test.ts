@@ -9,6 +9,7 @@ import {
 } from ".";
 import {
     forgotPasswordValidator,
+    getMembersValidator,
     registerAdminValidator,
     resetPasswordValidator,
     sendInviteValidator,
@@ -195,6 +196,86 @@ describe("Forgot password", () => {
 
         it("Should work", async () => {
             await forgotPasswordValidator(inviteMember().email);
+        });
+    });
+});
+
+describe("Get list of members", () => {
+    describe("Invalid properties", () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const invalidCases: [string, any, string][] = [
+            [
+                "invalid sort field",
+                { sort: { field: "test" } },
+                "Invalid field to sort by: test",
+            ],
+            [
+                "invalid sort order",
+                { sort: { field: "birthday", order: "YOLO" } },
+                "Invalid option for sort order: YOLO",
+            ],
+            [
+                "invalid filter field",
+                { filter: { field: "test" } },
+                "Invalid field to filter by: test",
+            ],
+            [
+                "filter ids are not an array",
+                { filter: { field: "role", ids: "1" } },
+                "Invalid filter ids",
+            ],
+            [
+                "filter ids are array of non numbers",
+                {
+                    filter: {
+                        field: "role",
+                        ids: ["1", "one", undefined, null],
+                    },
+                },
+                "Invalid filter ids",
+            ],
+        ];
+        test.each(invalidCases)("%p", (_, opts, expectedErrorMessage): void => {
+            let errorMessage = "";
+            try {
+                getMembersValidator(opts);
+            } catch (e) {
+                const { message } = e as Error;
+                errorMessage = message;
+            }
+            expect(errorMessage).toBe(expectedErrorMessage);
+        });
+    });
+
+    describe("Valid request", () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const opts: any = {};
+        let errorMessage = "";
+        beforeAll(() => {
+            try {
+                getMembersValidator(opts);
+            } catch (e) {
+                const { message } = e as Error;
+                errorMessage = message;
+            }
+        });
+
+        test("No errors", () => {
+            expect(errorMessage).toBe("");
+        });
+
+        describe("Empty request auto sets properties", () => {
+            test("Limit gets set", () => {
+                expect(opts.limit).toBe(50);
+            });
+
+            test("page gets set", () => {
+                expect(opts.page).toBe(1);
+            });
+
+            test("ids get set", () => {
+                expect(opts.ids).toStrictEqual([]);
+            });
         });
     });
 });

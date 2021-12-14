@@ -22,13 +22,13 @@ import Request from "@test/api/helpers/request";
 import { EmptyPermissionAttributes } from "@models/permission";
 import Membership from "@models/membership";
 import User from "@models/user/user";
-import { ReadMember } from "./members";
 import { Connection } from "typeorm";
 import { deepClone } from "@util/obj";
 import Department from "@models/department";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
+import { ReadMember } from "@services/data/user/members";
 
 let baseWorld: BaseWorld;
 const name = "TEST";
@@ -93,7 +93,7 @@ describe("Basic user management", () => {
 
             Request.failed.call(baseWorld, {
                 status: /^400$/,
-                message: /^invalid field to sort by \w*$/i,
+                message: /^invalid field to sort by: \w*$/i,
                 include404: false,
             });
         });

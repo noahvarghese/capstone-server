@@ -1,13 +1,14 @@
-import Department from "@models/department";
-import Membership from "@models/membership";
-import Role from "@models/role";
 import User from "@models/user/user";
-import UserRole from "@models/user/user_role";
+import * as userMembershipService from "@services/data/user/members";
+import { GetMembersOptions } from "@services/data/user/members";
+import {
+    deleteMemberValidator,
+    getMembersValidator,
+} from "@services/data/user/validators";
+import DataServiceError, { dataServiceResponse } from "@util/errors/service";
 import Logs from "@util/logs/logs";
-import isSortFieldFactory from "@util/sortFieldFactory";
 import { isPhone } from "@util/validators";
 import { Router, Request, Response } from "express";
-import { Brackets, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
 import inviteRoute from "./invite";
 import roleAssignmentRouter from "./role_assignment";
@@ -17,307 +18,99 @@ const router = Router();
 router.use("/invite", inviteRoute);
 router.use("/role_assignment", roleAssignmentRouter);
 
-export interface ReadMember {
-    user: {
-        first_name: string;
-        last_name: string;
-        email: string;
-        birthday?: Date | string | null;
-        phone: string;
-        id: number;
-    };
-    roles: {
-        default: boolean;
-        id: number;
-        name: string;
-        department: {
-            id: number;
-            name: string;
-        };
-    }[];
-}
-
-router.get("/:id", async (req: Request, res: Response) => {
+export const getOne = async (req: Request, res: Response): Promise<void> => {
     const {
         params: { id },
         session: { current_business_id },
-        SqlConnection,
     } = req;
 
     try {
-        const { email, first_name, last_name, phone, birthday } =
-            await SqlConnection.manager.findOneOrFail(User, {
-                where: { id },
-            });
+        const options: { ids: number[]; limit: number; page: number } = {
+            ids: [Number(id)],
+            limit: 1,
+            page: 1,
+        };
 
-        const roles = await SqlConnection.createQueryBuilder()
-            .select([
-                "r.id",
-                "ur.primary_role_for_user",
-                "r.name",
-                "d.id",
-                "d.name",
-            ])
-            .from(UserRole, "ur")
-            .where("ur.user_id = :user_id", { user_id: id })
-            .andWhere("d.business_id = :business_id", {
-                business_id: current_business_id,
-            })
-            .innerJoin(Role, "r", "r.id = ur.role_id")
-            .innerJoin(Department, "d", "d.id = r.department_id")
-            .getRawMany();
+        getMembersValidator(options);
+        const members = await userMembershipService.get(
+            options,
+            current_business_id ?? NaN
+        );
 
-        res.status(200).json({
-            user: {
-                first_name,
-                last_name,
-                email,
-                phone,
-                birthday,
-                id: Number(id),
-            },
-            roles: roles.map(
-                (r: {
-                    ur_primary_role_for_user: number;
-                    r_id: number;
-                    r_name: string;
-                    d_id: number;
-                    d_name: string;
-                }) => ({
-                    default: r.ur_primary_role_for_user === 1,
-                    id: r.r_id,
-                    name: r.r_name,
-                    department: {
-                        id: r.d_id,
-                        name: r.d_name,
-                    },
-                })
-            ),
-        });
-    } catch (_e) {
-        const e = _e as Error;
-        Logs.Error(e.message);
-        res.status(400).json({ message: "Bad id" });
+        res.status(200).json(members[0]);
+    } catch (e) {
+        const { message, reason, field } = e as DataServiceError;
+        res.status(dataServiceResponse(reason)).json({ message, field });
     }
-});
+};
 
-// get all users that are associated with business
-router.get("/", async (req: Request, res: Response) => {
+export const getAll = async (req: Request, res: Response): Promise<void> => {
     const {
         query,
-        SqlConnection: connection,
         session: { current_business_id },
     } = req;
 
-    // Validate query items
-    const limit =
-        isNaN(Number(query.limit)) || Number(query.limit) < 1
-            ? 50
-            : Number(query.limit);
-    const page =
-        isNaN(Number(query.page)) || Number(query.page) < 1
-            ? 1
-            : Number(query.page);
-
-    const { sortField, sortOrder, search, filterField, filterIds } = req.query;
-
-    if (
-        !["ASC", "DESC", "", undefined].includes(
-            sortOrder as string | undefined
-        )
-    ) {
-        res.status(400).json({ message: "Unknown option for sort order" });
-        return;
-    }
-
-    const isSortField = isSortFieldFactory([
-        "birthday",
-        "first_name",
-        "last_name",
-        "email",
-        "phone",
-    ]);
-
-    if (sortField !== undefined && !isSortField(sortField as string)) {
-        res.status(400).json({
-            message: "Invalid field to sort by " + sortField,
-        });
-        return;
-    }
-
-    const sqlizedSearchItem = `%${search}%`;
-
-    const filterArray = JSON.parse(filterIds ? (filterIds as string) : "{}");
-    const filter = Array.isArray(filterArray) && filterField !== undefined;
-
-    if (filter) {
-        if (["department", "role"].includes(filterField as string) === false) {
-            res.status(400).json({ message: "Invalid field" });
-            return;
-        }
-    }
-
-    // common start of query
-    let userQuery = connection
-        .createQueryBuilder()
-        .select("u.id")
-        .from(User, "u")
-        .where("m.business_id = :business_id", {
-            business_id: current_business_id,
-        });
-
-    // only search portion
-    if (search) {
-        userQuery = userQuery.andWhere(
-            new Brackets((qb: WhereExpressionBuilder) => {
-                qb.where("u.birthday like :birthday", {
-                    birthday: sqlizedSearchItem,
-                })
-                    .orWhere("u.first_name like :first_name", {
-                        first_name: sqlizedSearchItem,
-                    })
-                    .orWhere("u.last_name like :last_name", {
-                        last_name: sqlizedSearchItem,
-                    })
-                    .orWhere("u.email like :email", {
-                        email: sqlizedSearchItem,
-                    })
-                    .orWhere("u.phone like :phone", {
-                        phone: sqlizedSearchItem,
-                    })
-                    .orWhere("r.name like :role", { role: sqlizedSearchItem })
-                    .orWhere("d.name like :department", {
-                        department: sqlizedSearchItem,
-                    });
-            })
-        );
-    }
-
-    // only filter portion
-    if (filter) {
-        userQuery = userQuery.andWhere(
-            `${filterField === "department" ? "d.id" : "r.id"} IN (:...ids)`,
-            { ids: filterArray }
-        );
-    }
-
-    // always join
-    userQuery = userQuery.leftJoin(Membership, "m", "m.user_id = u.id");
-
-    // only join others if searching or filtering
-    if (search || filter) {
-        userQuery = userQuery
-            .innerJoin(UserRole, "ur", "ur.user_id = u.id")
-            .innerJoin(Role, "r", "r.id = ur.role_id")
-            .innerJoin(Department, "d", "d.id = r.department_id");
-    }
-
-    // apply sorting and pagination
-    userQuery = userQuery
-        .orderBy(
-            sortField ? `u.${sortField}` : "u.created_on",
-            (sortOrder as "ASC" | "DESC") ?? "DESC"
-        )
-        .limit(limit)
-        .offset(page * limit - limit);
-
-    const users: { u_id: number }[] = await userQuery.getRawMany();
-
-    // get role and department information
-    try {
-        const userInfo: ReadMember[] = await Promise.all(
-            users.map(async ({ u_id: id }) => {
-                const { first_name, last_name, email, phone, birthday } =
-                    await connection.manager.findOneOrFail(User, id);
-
-                const roles = await connection
-                    .createQueryBuilder()
-                    .select([
-                        "r.id",
-                        "ur.primary_role_for_user",
-                        "r.name",
-                        "d.id",
-                        "d.name",
-                    ])
-                    .from(UserRole, "ur")
-                    .where("ur.user_id = :user_id", { user_id: id })
-                    .andWhere("d.business_id = :business_id", {
-                        business_id: current_business_id,
-                    })
-                    .innerJoin(Role, "r", "r.id = ur.role_id")
-                    .innerJoin(Department, "d", "d.id = r.department_id")
-                    .getRawMany();
-
-                return {
-                    user: {
-                        id,
-                        first_name,
-                        last_name,
-                        email,
-                        birthday,
-                        phone,
-                    },
-                    roles: roles.map(
-                        (r: {
-                            ur_primary_role_for_user: number;
-                            r_id: number;
-                            r_name: string;
-                            d_id: number;
-                            d_name: string;
-                        }) => ({
-                            default: r.ur_primary_role_for_user === 1,
-                            id: r.r_id,
-                            name: r.r_name,
-                            department: {
-                                id: r.d_id,
-                                name: r.d_name,
-                            },
-                        })
-                    ),
-                };
-            })
-        );
-
-        res.status(200).json(userInfo);
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        res.status(500).json({
-            message: "Error retrieving members",
-        });
-        return;
-    }
-});
-
-router.delete("/:id", async (req: Request, res: Response) => {
-    const {
-        SqlConnection,
-        params: { id: user_id },
-        session: { current_business_id },
-    } = req;
-
-    const membership = await SqlConnection.manager.findOne(Membership, {
-        where: { user_id, business_id: current_business_id },
-    });
-
-    if (!membership) {
-        res.sendStatus(200);
-        return;
-    }
+    const options: unknown = {
+        limit: query.limit ?? undefined,
+        page: query.page ?? undefined,
+        search: query.search ?? undefined,
+        sort:
+            query.sortField || query.sortOrder
+                ? {
+                      field: query.sortField,
+                      order: query.sortOrder,
+                  }
+                : undefined,
+        filter:
+            query.filterField || query.filterIds
+                ? {
+                      field: query.filterField,
+                      ids: JSON.parse(
+                          query.filterIds ? (query.filterIds as string) : "[]"
+                      ),
+                  }
+                : undefined,
+    };
 
     try {
-        // need to cascade and remove user from any roles in business
-        await SqlConnection.manager.delete(UserRole, { user_id });
-        await SqlConnection.manager.delete(Membership, membership);
-        res.sendStatus(200);
-        return;
+        getMembersValidator(options as GetMembersOptions);
+        const members = await userMembershipService.get(
+            options as GetMembersOptions,
+            current_business_id ?? NaN
+        );
+        res.status(200).json(members);
     } catch (e) {
-        const { message } = e as Error;
-        Logs.Error(message);
-        res.status(500);
-        return;
+        const { message, reason, field } = e as DataServiceError;
+        res.status(dataServiceResponse(reason)).json({ message, field });
     }
-});
+    return;
+};
+
+export const deleteMembership = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const {
+        params: { id },
+        session: { current_business_id: business_id },
+    } = req;
+    const user_id = Number(id);
+    try {
+        deleteMemberValidator(user_id);
+        await userMembershipService.deleteMembership(
+            user_id,
+            business_id ?? NaN
+        );
+        res.sendStatus(200);
+    } catch (e) {
+        const { message, field, reason } = e as DataServiceError;
+        res.status(dataServiceResponse(reason)).json({ message, field });
+    }
+};
+
+router.get("/:id", getOne);
+router.get("/", getAll);
+router.delete("/:id", deleteMembership);
 
 router.put("/:id", async (req: Request, res: Response) => {
     const {
