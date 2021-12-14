@@ -1,14 +1,15 @@
-import { Connection, createConnection, getConnectionManager } from "typeorm";
+import { Connection, createConnection, getConnection } from "typeorm";
 import { connectionOptions, entities } from "@config/database";
 
 export default abstract class DBConnection {
     private static _connection: Connection | undefined;
 
     public static init = async (): Promise<void> => {
-        DBConnection._connection = await createConnection({
-            ...connectionOptions(),
-            logging: false,
-        });
+        if (!DBConnection._connection)
+            DBConnection._connection = await createConnection({
+                ...connectionOptions(),
+                logging: false,
+            });
     };
 
     public static close = async (reset?: boolean): Promise<void> => {
@@ -21,7 +22,7 @@ export default abstract class DBConnection {
         // Set connection
         if (!DBConnection._connection) {
             try {
-                DBConnection._connection = getConnectionManager().get();
+                DBConnection._connection = getConnection();
             } catch (e) {
                 await DBConnection.init();
             }
