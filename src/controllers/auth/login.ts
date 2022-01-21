@@ -1,24 +1,20 @@
-import { Request, Response, Router } from "express";
+import { Request, Response } from "express";
 import * as userService from "@services/data/user";
-import * as membershipService from "@services/data/memberships";
+import * as membershipService from "@services/data/member";
 import ServiceError, { dataServiceResponse } from "@util/errors/service";
-
-const router = Router();
 
 export interface LoginProps {
     email: string;
     password: string;
 }
 
-export const login = async (req: Request, res: Response): Promise<void> => {
-    const {
-        body: { email, password },
-    } = req;
+const login = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body as LoginProps;
 
     try {
-        const userId = await userService.findByLogin(email, password);
+        const userId = await userService.find(email, password);
 
-        const memberships = await membershipService.getAll(userId);
+        const memberships = await membershipService.get(userId);
 
         if (memberships.length === 0) {
             res.status(400).json({ message: "Please contact your manager" });
@@ -37,6 +33,4 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-router.post("/", login);
-
-export default router;
+export default login;

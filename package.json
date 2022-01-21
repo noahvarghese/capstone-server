@@ -147,6 +147,8 @@
         "@models": "models",
         "@routes": "routes",
         "@services": "services",
-        "@util": "util"
+        "@controllers": "controllers",
+        "@util": "util",
+        "@validators": "validators"
     }
 }

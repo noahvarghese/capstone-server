@@ -2,9 +2,9 @@ import { uid } from "rand-token";
 import ModelActions from "@test/model/helpers/actions";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import MembershipRequest, {
-    MembershipRequestAttributes,
-} from "./membership_request";
+import MembershipInvitation, {
+    MembershipInvitationAttributes,
+} from "./membership_invitation";
 import Model from "@test/model/helpers";
 
 let baseWorld: BaseWorld;
@@ -18,11 +18,11 @@ afterAll(async () => {
 // State Setup
 beforeEach(async () => {
     baseWorld = new BaseWorld(await DBConnection.get());
-    await Model.setup.call(baseWorld, MembershipRequest);
+    await Model.setup.call(baseWorld, MembershipInvitation);
 });
 
 afterEach(async () => {
-    await Model.teardown.call(baseWorld, MembershipRequest);
+    await Model.teardown.call(baseWorld, MembershipInvitation);
     baseWorld.resetProps();
 });
 
@@ -31,9 +31,9 @@ test("Create Membership request creates token and expiry", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
     const model = await ModelActions.create<
-        MembershipRequest,
-        MembershipRequestAttributes
-    >(baseWorld, MembershipRequest);
+        MembershipInvitation,
+        MembershipInvitationAttributes
+    >(baseWorld, MembershipInvitation);
 
     expect(model.token.length).toBe(32);
 
@@ -50,7 +50,10 @@ test("Create Membership request creates token and expiry", async () => {
     expect(difference).toBeLessThanOrEqual(allowedError);
     expect(difference).toBeGreaterThan(0);
 
-    await ModelActions.delete<MembershipRequest>(baseWorld, MembershipRequest);
+    await ModelActions.delete<MembershipInvitation>(
+        baseWorld,
+        MembershipInvitation
+    );
 });
 
 test("Update membership request token updates expiry", async () => {
@@ -58,20 +61,20 @@ test("Update membership request token updates expiry", async () => {
         throw new Error(BaseWorld.errorMessage);
     }
     let model = await ModelActions.create<
-        MembershipRequest,
-        MembershipRequestAttributes
-    >(baseWorld, MembershipRequest);
+        MembershipInvitation,
+        MembershipInvitationAttributes
+    >(baseWorld, MembershipInvitation);
 
     // set expiry to now
     model = await ModelActions.update<
-        MembershipRequest,
-        MembershipRequestAttributes
-    >(baseWorld, MembershipRequest, { token_expiry: new Date() });
+        MembershipInvitation,
+        MembershipInvitationAttributes
+    >(baseWorld, MembershipInvitation, { token_expiry: new Date() });
 
     model = await ModelActions.update<
-        MembershipRequest,
-        MembershipRequestAttributes
-    >(baseWorld, MembershipRequest, { token: uid(32) });
+        MembershipInvitation,
+        MembershipInvitationAttributes
+    >(baseWorld, MembershipInvitation, { token: uid(32) });
 
     const allowedError = 5000;
     // 1 day
@@ -86,5 +89,8 @@ test("Update membership request token updates expiry", async () => {
     expect(difference).toBeLessThanOrEqual(allowedError);
     expect(difference).toBeGreaterThan(0);
 
-    await ModelActions.delete<MembershipRequest>(baseWorld, MembershipRequest);
+    await ModelActions.delete<MembershipInvitation>(
+        baseWorld,
+        MembershipInvitation
+    );
 });

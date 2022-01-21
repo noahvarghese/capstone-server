@@ -18,12 +18,14 @@
         "resolveJsonModule": true,
         "paths": {
             "@config/*": ["src/config/*"],
+            "@controllers/*": ["src/controllers/*"],
             "@middleware/*": ["src/middleware/*"],
             "@models/*": ["src/models/*"],
             "@routes/*": ["src/routes/*"],
             "@services/*": ["src/services/*"],
+            "@test/*": ["__test__/*"],
             "@util/*": ["src/util/*"],
-            "@test/*": ["__test__/*"]
+            "@validators/*": ["src/validators/*"]
         },
         "rootDir": "./",
         "skipLibCheck": true,

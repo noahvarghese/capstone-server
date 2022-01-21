@@ -1,16 +1,33 @@
-import Business from "@models/business";
-import Department from "@models/department";
-import Membership from "@models/membership";
-import Permission from "@models/permission";
-import Role from "@models/role";
 import User from "@models/user/user";
-import UserRole from "@models/user/user_role";
 import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import Logs from "@util/logs/logs";
 import { EntityManager, getConnection } from "typeorm";
+import { RegisterBusinessProps } from "@controllers/auth";
 
-export * from "./password";
-export * from "./members/invite";
+export * as password from "./password";
+export * as member from "./members";
+
+export const exists = async (
+    email: string,
+    entityManager?: EntityManager
+): Promise<boolean> => {
+    const manager = entityManager ?? getConnection().manager;
+
+    try {
+        const count = await manager.count(User, {
+            where: { email },
+        });
+
+        return count > 0;
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        throw new DataServiceError(
+            "Unable to find user",
+            ServiceErrorReasons.DATABASE_ERROR
+        );
+    }
+};
 
 /**
  * Checks the user is who they say they are
@@ -18,7 +35,7 @@ export * from "./members/invite";
  * @param password
  * @returns {number | undefined} user id if successful
  */
-export const findByLogin = async (
+export const find = async (
     email: string,
     password: string
 ): Promise<number> => {
@@ -62,49 +79,19 @@ export const findByLogin = async (
     }
 };
 
-export interface RegisterBusinessProps {
-    name: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-    postal_code: string;
-    province: string;
-    password: string;
-    confirm_password: string;
-}
-
-export const emptyRegisterBusinessProps = (): RegisterBusinessProps => ({
-    name: "",
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    postal_code: "",
-    province: "",
-    password: "",
-    confirm_password: "",
-});
-
-export const registerAdmin = async (
-    props: RegisterBusinessProps
-): Promise<{ business_id: number; user_id: number }> => {
-    const {
-        name,
-        first_name,
-        last_name,
-        email,
-        phone,
-        address,
-        city,
-        postal_code,
-        province,
-        password,
-    } = props;
+/**
+ *
+ * @param props
+ * @param entityManager optional - Allows usage in transaction
+ */
+export const create = async (
+    props: Pick<
+        RegisterBusinessProps,
+        "first_name" | "last_name" | "email" | "phone" | "password"
+    >,
+    entityManager?: EntityManager
+): Promise<number> => {
+    const { first_name, last_name, email, phone, password } = props;
 
     const user = new User({
         first_name,
@@ -113,119 +100,57 @@ export const registerAdmin = async (
         phone,
     });
 
+    // Doesn't replace validation
+    // just checks whether it should be set
+    // As we can use this function when creating the user invites
+    if (password && password.length > 0) {
+        try {
+            await user.hashPassword(password);
+        } catch (e) {
+            const { message } = e as Error;
+            Logs.Error(message);
+            throw new DataServiceError(
+                "Unable to set password",
+                ServiceErrorReasons.UTILITY_ERROR
+            );
+        }
+    }
+
+    // Allows transactional capabalities
     try {
-        await user.hashPassword(password);
+        const result = await (entityManager ?? getConnection().manager).insert(
+            User,
+            user
+        );
+        return result.identifiers[0].id;
     } catch (e) {
         const { message } = e as Error;
         Logs.Error(message);
         throw new DataServiceError(
-            "Unable to set password",
-            ServiceErrorReasons.UTILITY_ERROR
+            "Unable to create user",
+            ServiceErrorReasons.DATABASE_ERROR
         );
     }
+};
 
-    const { business_id, user_id } = await new Promise<{
-        business_id: number;
-        user_id: number;
-    }>((res, rej) => {
-        getConnection()
-            .transaction(async (entityManager: EntityManager) => {
-                const [businessResult, userResult] = await Promise.all([
-                    entityManager.insert(
-                        Business,
-                        new Business({
-                            name,
-                            address,
-                            city,
-                            postal_code,
-                            province,
-                        })
-                    ),
-                    entityManager.insert(User, user),
-                ]);
-
-                const user_id = userResult.identifiers[0].id;
-                const business_id = businessResult.identifiers[0].id;
-
-                const results = await Promise.all([
-                    entityManager.insert(
-                        Membership,
-                        new Membership({
-                            user_id,
-                            business_id,
-                            default: true,
-                        })
-                    ),
-                    entityManager.insert(
-                        Department,
-                        new Department({
-                            business_id,
-                            updated_by_user_id: user_id,
-                            prevent_delete: true,
-                            prevent_edit: true,
-                            name: "Admin",
-                        })
-                    ),
-                    entityManager.insert(
-                        Permission,
-                        new Permission({
-                            global_crud_users: true,
-                            global_crud_department: true,
-                            global_crud_role: true,
-                            global_crud_resources: true,
-                            global_assign_users_to_department: true,
-                            global_assign_users_to_role: true,
-                            global_assign_resources_to_department: true,
-                            global_assign_resources_to_role: true,
-                            global_view_reports: true,
-                            dept_crud_role: true,
-                            dept_crud_resources: true,
-                            dept_assign_users_to_role: true,
-                            dept_assign_resources_to_role: true,
-                            dept_view_reports: true,
-                            updated_by_user_id: user_id,
-                        })
-                    ),
-                ]);
-
-                const department_id = results[1].identifiers[0].id,
-                    permission_id = results[2].identifiers[0].id;
-
-                const roleResult = await entityManager.insert(
-                    Role,
-                    new Role({
-                        updated_by_user_id: user_id,
-                        prevent_delete: true,
-                        name: "General",
-                        department_id,
-                        permission_id,
-                        prevent_edit: true,
-                    })
-                );
-
-                const role_id = roleResult.identifiers[0].id;
-
-                await entityManager.insert(
-                    UserRole,
-                    new UserRole({
-                        user_id,
-                        updated_by_user_id: user_id,
-                        role_id,
-                        primary_role_for_user: true,
-                    })
-                );
-
-                res({ business_id, user_id });
-            })
-            .catch(rej);
-    }).catch((e) => {
+export const update = async (
+    id: number,
+    details: {
+        first_name: string;
+        last_name: string;
+        email: string;
+        phone: string;
+        birthday: string | undefined;
+    }
+): Promise<void> => {
+    try {
+        await getConnection().manager.update(User, id, details);
+    } catch (e) {
         const { message } = e as Error;
         Logs.Error(message);
         throw new DataServiceError(
-            "Unable to create business",
+            "Unable to update user",
             ServiceErrorReasons.DATABASE_ERROR
         );
-    });
-
-    return { business_id, user_id };
+    }
 };

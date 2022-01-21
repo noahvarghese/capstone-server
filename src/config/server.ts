@@ -1,15 +1,15 @@
-import cors from "./origin";
 import cookieParser from "cookie-parser";
 import cluster from "cluster";
-import createConnection from "@config/database";
 import express from "express";
-import Logs from "@util/logs/logs";
+import fileUpload from "express-fileupload";
+import { Server } from "http";
+import { Connection } from "typeorm";
+import createConnection from "@config/database";
+import cors from "@config/origin";
+import { createSession } from "@config/session";
 import middlewares from "@middleware/index";
 import router from "@routes/index";
-import { createSession } from "./session";
-import { Server } from "http";
-import fileUpload from "express-fileupload";
-import { Connection } from "typeorm";
+import Logs from "@util/logs/logs";
 
 const port = process.env.PORT || 8081;
 

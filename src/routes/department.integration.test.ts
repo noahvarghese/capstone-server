@@ -15,7 +15,7 @@ import {
 } from "@test/api/actions/departments";
 import Request from "@test/api/helpers/request";
 import Department from "@models/department";
-import { DepartmentResponse } from "./departments";
+import { DepartmentResponse } from "./department";
 import { deepClone } from "@util/obj";
 
 jest.setTimeout(500000);

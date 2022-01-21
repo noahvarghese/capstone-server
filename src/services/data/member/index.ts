@@ -1,5 +1,6 @@
 import Business from "@models/business";
 import Membership from "@models/membership";
+import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import Logs from "@util/logs/logs";
 import { getConnection } from "typeorm";
 
@@ -10,7 +11,7 @@ export type MemberResponse = { id: number; name: string; default: boolean };
  * @param user_id
  * @returns {MemberResponse[]}
  */
-export const getAll = async (user_id: number): Promise<MemberResponse[]> => {
+export const get = async (user_id: number): Promise<MemberResponse[]> => {
     const connection = getConnection();
 
     try {
@@ -31,6 +32,9 @@ export const getAll = async (user_id: number): Promise<MemberResponse[]> => {
     } catch (e) {
         const { message } = e as Error;
         Logs.Error(message);
-        return [];
+        throw new DataServiceError(
+            "Unable to read from database",
+            ServiceErrorReasons.DATABASE_ERROR
+        );
     }
 };

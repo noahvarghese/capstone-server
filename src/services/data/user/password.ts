@@ -9,7 +9,7 @@ import { getConnection, MoreThan } from "typeorm";
  * @param connection
  * @param user
  */
-export const enablePasswordReset = async (user: User): Promise<void> => {
+export const enableReset = async (user: User): Promise<void> => {
     const connection = getConnection();
 
     user.createToken();
@@ -30,7 +30,7 @@ export const enablePasswordReset = async (user: User): Promise<void> => {
  * @param confirmPassword
  * @returns {number} user id
  */
-export const resetPassword = async (
+export const reset = async (
     token: string,
     password: string
 ): Promise<number> => {

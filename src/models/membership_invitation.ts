@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 import { AttributeFactory } from "./abstract/base_model";
 import EventDates from "./abstract/event_dates";
 
-export interface MembershipRequestAttributes {
+export interface MembershipInvitationAttributes {
     user_id: number | null;
     business_id: number | null;
     token: string;
@@ -12,7 +12,7 @@ export interface MembershipRequestAttributes {
 }
 
 export const EmptyMembershipRequestAttributes =
-    (): MembershipRequestAttributes => ({
+    (): MembershipInvitationAttributes => ({
         user_id: -1,
         business_id: -1,
         token: "",
@@ -22,9 +22,9 @@ export const EmptyMembershipRequestAttributes =
     });
 
 @Entity()
-export default class MembershipRequest
+export default class MembershipInvitation
     extends EventDates
-    implements MembershipRequestAttributes
+    implements MembershipInvitationAttributes
 {
     @PrimaryColumn()
     public user_id!: number;
@@ -37,7 +37,7 @@ export default class MembershipRequest
     @Column()
     public updated_by_user_id!: number;
 
-    public constructor(options?: Partial<MembershipRequestAttributes>) {
+    public constructor(options?: Partial<MembershipInvitationAttributes>) {
         super();
 
         Object.assign(

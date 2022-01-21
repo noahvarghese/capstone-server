@@ -15,7 +15,7 @@ import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
 import Event from "@models/event";
 import Membership from "@models/membership";
-import MembershipRequest from "@models/membership_request";
+import MembershipInvitation from "@models/membership_invitation";
 import PolicyRead from "@models/manual/policy/read";
 import QuizAttempt from "@models/quiz/attempt";
 import QuizAnswer from "@models/quiz/question/answer";
@@ -44,7 +44,7 @@ export const entities = [
     Permission,
     Department,
     Membership,
-    MembershipRequest,
+    MembershipInvitation,
     User,
     Business,
 ];

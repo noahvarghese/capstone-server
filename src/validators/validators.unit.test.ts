@@ -2,18 +2,20 @@ import { registerBusiness } from "@test/api/attributes/business";
 import { inviteMember } from "@test/api/attributes/member";
 import DBConnection from "@test/support/db_connection";
 import {
-    emptyInviteUser,
     emptyRegisterBusinessProps,
-    InviteMemberProps,
     RegisterBusinessProps,
-} from ".";
+} from "@services/data/business";
+import {
+    emptyInviteUser,
+    InviteMemberProps,
+} from "@services/data/user/members/invite";
 import {
     forgotPasswordValidator,
-    getMembersValidator,
-    registerAdminValidator,
     resetPasswordValidator,
     sendInviteValidator,
-} from "./validators";
+    registerValidator,
+} from "@validators/auth";
+import { getMembersValidator } from "@validators/member";
 import { getConnection } from "typeorm";
 import User from "@models/user/user";
 
@@ -65,7 +67,7 @@ describe("register new user and business", () => {
         try {
             const props = registerBusiness();
             props[field] = value;
-            await registerAdminValidator(props);
+            await registerValidator(props);
         } catch (e) {
             const { message } = e as Error;
             errorMessage = message;
@@ -81,7 +83,7 @@ describe("register new user and business", () => {
             try {
                 const props = registerBusiness();
                 props[key as unknown as keyof RegisterBusinessProps] = "";
-                await registerAdminValidator(props);
+                await registerValidator(props);
             } catch (e) {
                 const { message } = e as Error;
                 errorMessage = message;
@@ -100,7 +102,7 @@ describe("register new user and business", () => {
         let errorMessage = "";
         try {
             const props = registerBusiness();
-            await registerAdminValidator(props);
+            await registerValidator(props);
         } catch (e) {
             const { message } = e as Error;
             errorMessage = message;

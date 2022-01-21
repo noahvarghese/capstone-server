@@ -1,19 +1,12 @@
-import * as userMembershipService from "@services/data/user/members";
+import * as userService from "@services/data/user";
 import { GetMembersOptions } from "@services/data/user/members";
 import {
-    deleteMemberValidator,
     getMembersValidator,
+    deleteMemberValidator,
     updateMemberValidator,
-} from "@services/data/user/validators";
+} from "@validators/member";
 import DataServiceError, { dataServiceResponse } from "@util/errors/service";
-import { Router, Request, Response } from "express";
-import inviteRoute from "./invite";
-import roleAssignmentRouter from "./role_assignment";
-
-const router = Router();
-
-router.use("/invite", inviteRoute);
-router.use("/role_assignment", roleAssignmentRouter);
+import { Request, Response } from "express";
 
 export const getOne = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -29,7 +22,7 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
         };
 
         getMembersValidator(options);
-        const members = await userMembershipService.get(
+        const members = await userService.member.get(
             options,
             current_business_id ?? NaN
         );
@@ -71,7 +64,7 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 
     try {
         getMembersValidator(options as GetMembersOptions);
-        const members = await userMembershipService.get(
+        const members = await userService.member.get(
             options as GetMembersOptions,
             current_business_id ?? NaN
         );
@@ -94,10 +87,7 @@ export const deleteMembership = async (
     const user_id = Number(id);
     try {
         deleteMemberValidator(user_id);
-        await userMembershipService.deleteMembership(
-            user_id,
-            business_id ?? NaN
-        );
+        await userService.member.deleteMembership(user_id, business_id ?? NaN);
         res.sendStatus(200);
     } catch (e) {
         const { message, field, reason } = e as DataServiceError;
@@ -121,7 +111,7 @@ export const update = async (req: Request, res: Response): Promise<void> => {
             phone,
             birthday,
         });
-        await userMembershipService.update(user_id, {
+        await userService.update(user_id, {
             first_name,
             last_name,
             email,
@@ -129,16 +119,8 @@ export const update = async (req: Request, res: Response): Promise<void> => {
             birthday,
         });
         res.sendStatus(200);
-        return;
     } catch (e) {
         const { message, field, reason } = e as DataServiceError;
         res.status(dataServiceResponse(reason)).json({ message, field });
     }
 };
-
-router.get("/:id", getOne);
-router.get("/", getAll);
-router.delete("/:id", deleteMembership);
-router.put("/:id", update);
-
-export default router;

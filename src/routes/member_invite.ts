@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
+import * as businessService from "@services/data/business";
+import * as userValidator from "@validators/member";
 import * as userService from "@services/data/user";
-import * as userValidator from "@services/data/user/validators";
 import Logs from "@util/logs/logs";
 import ServiceError, { dataServiceResponse } from "@util/errors/service";
 
@@ -13,7 +14,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     try {
         userValidator.sendInviteValidator(req.body);
-        await userService.sendInvite(
+        await businessService.membershipInvite.create(
             req.body,
             Number(current_business_id),
             Number(user_id)
@@ -32,7 +33,7 @@ router.post("/:token", async (req: Request, res: Response) => {
     } = req;
 
     try {
-        await userService.acceptInvite(token);
+        await userService.member.invite.accept(token);
         res.sendStatus(200);
         return;
     } catch (e) {

@@ -46,7 +46,7 @@ CREATE TABLE user (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE membership_request (
+CREATE TABLE membership_invitation (
     user_id INT NOT NULL,
     business_id INT NOT NULL,
     token VARCHAR(32) NOT NULL,

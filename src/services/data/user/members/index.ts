@@ -13,6 +13,8 @@ import {
     EntityManager,
 } from "typeorm";
 
+export * as invite from "./invite";
+
 export interface ReadMember {
     user: {
         first_name: string;
@@ -216,26 +218,4 @@ export const deleteMembership = async (
                 ServiceErrorReasons.DATABASE_ERROR
             );
         });
-};
-
-export const update = async (
-    id: number,
-    details: {
-        first_name: string;
-        last_name: string;
-        email: string;
-        phone: string;
-        birthday: string | undefined;
-    }
-): Promise<void> => {
-    try {
-        await getConnection().manager.update(User, id, details);
-    } catch (e) {
-        const { message } = e as Error;
-        Logs.Error(message);
-        throw new DataServiceError(
-            "Unable to update user",
-            ServiceErrorReasons.DATABASE_ERROR
-        );
-    }
 };

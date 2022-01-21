@@ -17,6 +17,7 @@ shopt -s globstar
 
 NODE_ENV=test
 
+# Custom test reporting
 ./node_modules/.bin/nyc --silent --no-clean ./node_modules/.bin/jest --runInBand "$@" ;
 
 TEST_RESULT=$?
