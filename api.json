@@ -607,7 +607,18 @@
                             "type": "integer"
                         }
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    "403": {
+                        "description": "Either underprivileged user trying to access another user than itself, or user has priveleges to view only department users and id is not member of same department."
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
             }
         }
     }
