@@ -1019,6 +1019,11 @@
                 }
             }
         },
+        "/roles": {
+            "get": {},
+            "post": {}
+        },
+        "/roles/{id}": { "get": {}, "put": {}, "delete": {} },
         "/users/{id}": {
             "put": {
                 "summary": "update user (Not password)",
