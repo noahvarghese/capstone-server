@@ -177,7 +177,7 @@
             "description": "Membership operations. Model joins one User to one Business, allows many to many relationship."
         },
         {
-            "name": "membership_invitation",
+            "name": "membership invitation",
             "description": "Invite operations. Model joins one User to one Business, allows many to many relationship. Intermediary table before Member table."
         },
         {
@@ -349,7 +349,7 @@
                 "tags": ["auth"],
                 "operationId": "Login",
                 "summary": "Logs in a registered user.",
-                "description": "Authenticates user against database. Sends back a cookie containing the user_id and business_id.",
+                "description": "Authenticates user against database. Checks if database password is empty. Sends back a cookie containing the user_id and business_id.",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -622,8 +622,86 @@
             }
         },
         "/members/invite": {
-            "post": {},
-            "patch": {}
+            "post": {
+                "summary": "Send invite to user to join.",
+                "description": "Creates a user object using the provided details. Creates entry in membership invitation and generates token.",
+                "tags": ["membership invitation", "membership"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "description": "the name of the user to be invited",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "the last name of the user to be invited",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "the email of the user to be invited",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "the phone of the user to be invited",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["email", "first_name"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "token created and email sent to user with link to /members/invite/{token} using token."
+                    },
+                    "400": {
+                        "description": " Request body missing or invalid"
+                    },
+                    "403": {
+                        "description": "User does not have permissions necessary to invite a user to join the business."
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
+        },
+        "/members/invite/{token}": {
+            "patch": {
+                "summary": "Makes invited user a member of the business.",
+                "description": "Deletes record of membership invitation and creates new membership record. If user has not registered, this should generate a token for the user to set their password.",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "description": "the token generated from the post request to the same url",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": ["membership invitation", "membership"],
+                "responses": {
+                    "200": {
+                        "description": "User has an account already and has succesfully joined the new business."
+                    },
+                    "303": {
+                        "description": "User has not registered previously and must set a password first, this should redirect to reset password page."
+                    },
+                    "400": {
+                        "description": "the token is invalid"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
         }
     }
 }
