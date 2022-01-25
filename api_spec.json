@@ -106,6 +106,10 @@
                 "description": "Role within Department",
                 "type": "object",
                 "properties": {
+                    "default": {
+                        "description": "default role",
+                        "type": "boolean"
+                    },
                     "name": {
                         "description": "role name",
                         "type": "string"
@@ -141,8 +145,17 @@
                         "type": "string"
                     },
                     "member": {
-                        "description": "Whether the user has accepted their membership yet",
-                        "type": "boolean"
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "description": "Whether the user has accepted their membership yet",
+                                "type": "boolean"
+                            },
+                            "id": {
+                                "description": "unique identifier",
+                                "type": "integer"
+                            }
+                        }
                     },
                     "roles": {
                         "type": "array",
@@ -495,77 +508,22 @@
                 }
             }
         },
-        "/users/{id}": {
-            "put": {
-                "summary": "update user (Not password)",
-                "description": "Updates basic user details",
-                "tags": ["user"],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "description": "The id of the current user.",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "first_name": {
-                                        "description": "the new first name of the user",
-                                        "type": "string"
-                                    },
-                                    "last_name": {
-                                        "description": "the new last name of the user",
-                                        "type": "string"
-                                    },
-                                    "email": {
-                                        "description": "the new email of the user",
-                                        "type": "string",
-                                        "format": "email"
-                                    },
-                                    "phone": {
-                                        "description": "the new phone number of the user",
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "User object succesfully updated.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
-                                }
-                            }
-                        }
-                    },
-                    "400": { "description": "Invalid request body property." },
-                    "403": {
-                        "description": "Id does not match logged in user."
-                    },
-                    "500": {
-                        "$ref": "#/components/responses/DatabaseError"
-                    }
-                }
-            }
-        },
+
         "/members": {
             "get": {
                 "tags": ["membership"],
                 "summary": "Retrieves all users in business or department depending on permissions.",
                 "description": "Filters by department, role, member status, has pagination and sorting as well. Depending on calling user's permissions this may restrict the user's shown to be either company or department wide.",
                 "parameters": [
+                    {
+                        "name": "search",
+                        "description": "text to search for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
                     {
                         "name": "sort_field",
                         "description": "The field to sort on",
@@ -646,7 +604,7 @@
                         }
                     },
                     "400": {
-                        "description": "Wrong combination of query parameters. The following pairs of query parameters must be sent together: (limit, page), (filter_ids, filter_field), (sort_order, sort_field)."
+                        "description": "Wrong combination of query parameters. The following pairs of query parameters must be sent together: (limit, page), (filter_ids, filter_field), (sort_order, sort_field), (search)."
                     },
                     "403": {
                         "description": "Underprivilged user trying to access users they are not allowed to see."
@@ -687,24 +645,39 @@
             },
             "delete": {
                 "tags": ["membership"],
+                "summary": "Delete membership",
                 "parameters": [
                     {
                         "name": "id",
-                        "description": "The id of the user whose details are to be retrieved.",
+                        "description": "The id of the user whose membership will be deleted.",
                         "in": "path",
                         "required": true,
                         "schema": {
                             "type": "integer"
                         }
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Membership successfully deleted."
+                    },
+                    "400": {
+                        "description": "invalid id"
+                    },
+                    "403": {
+                        "description": "User id either does not match logged in user, or logged in user does not have the permissions."
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
             }
         },
         "/members/invite": {
             "post": {
                 "summary": "Send invite to user to join.",
                 "description": "Creates a user object using the provided details. Creates entry in membership invitation and generates token.",
-                "tags": ["membership invitation", "membership", "user"],
+                "tags": ["membership invitation", "user"],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -748,8 +721,39 @@
                         "$ref": "#/components/responses/DatabaseError"
                     }
                 }
-            },
-            "delete": {}
+            }
+        },
+        "/members/invite/{id}": {
+            "delete": {
+                "tags": ["membership invitation"],
+                "summary": "deletes sent invitation",
+                "description": "deletes row in table",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "The id of the invitation.",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Membership Invitation successfully deleted."
+                    },
+                    "400": {
+                        "description": "invalid id"
+                    },
+                    "403": {
+                        "description": "Logged in user does not have the permissions."
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
         },
         "/members/invite/{token}": {
             "patch": {
@@ -776,6 +780,71 @@
                     },
                     "400": {
                         "description": "the token is invalid"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "put": {
+                "summary": "update user (Not password)",
+                "description": "Updates basic user details",
+                "tags": ["user"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "The id of the current user.",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "description": "the new first name of the user",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "the new last name of the user",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "the new email of the user",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "the new phone number of the user",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User object succesfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "description": "Invalid request body property." },
+                    "403": {
+                        "description": "Id does not match logged in user."
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
