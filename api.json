@@ -20,6 +20,145 @@
             "description": "development server"
         }
     ],
+    "components": {
+        "schemas": {
+            "Department": {
+                "description": "Department within Business",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "department name",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    }
+                }
+            },
+            "Permission": {
+                "description": "Permissions applied to members of a Role.",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "global_crud_users": {
+                        "description": "Allows user to invite users to, or remove users from business.",
+                        "type": "boolean"
+                    },
+                    "global_crud_department": {
+                        "description": "Allows user to create/remove/change name of department(s).",
+                        "type": "boolean"
+                    },
+                    "global_crud_role": {
+                        "description": "Allows user to create/remove/change name of role(s), as well as modify the permissions of this role.",
+                        "type": "boolean"
+                    },
+                    "global_crud_resources": {
+                        "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_department": {
+                        "description": "Allowed to assign members of the business to departments within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_role": {
+                        "description": "Allowed to assign members of the business to roles within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_department": {
+                        "description": "Allows to assign manuals/quizzes to department(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_role": {
+                        "description": "Allows to assign manuals/quizzes to role(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_view_reports": {
+                        "description": "Allows user to view reports for all areas of business.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_role": {
+                        "description": "Allows user to create/delete/update roles within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_resources": {
+                        "description": "Allows user to create/delete/update resources within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_users_to_role": {
+                        "description": "Allows user to update other users assignment to roles within the department that both users reside in.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_resources_to_role": {
+                        "description": "Allows user to update resource assignment within the department that they are already apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_view_reports": {
+                        "description": "Allows user to view reports for all objects residing in current department.",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "Role": {
+                "description": "Role within Department",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "role name",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "permissions": {
+                        "$ref": "#/components/schemas/Permission"
+                    },
+                    "department": { "$ref": "#/components/schemas/Department" }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "first_name": {
+                        "description": "The user's first name",
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "description": "The user's last name",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "The user's email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "description": "The user's phone number",
+                        "type": "string"
+                    },
+                    "member": {
+                        "description": "Whether the user has accepted their membership yet",
+                        "type": "boolean"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Role"
+                        }
+                    }
+                }
+            }
+        },
+        "responses": {
+            "DatabaseError": {
+                "description": "Database connection failed"
+            }
+        }
+    },
     "tags": [
         {
             "name": "auth",
@@ -360,7 +499,7 @@
             "get": {
                 "tags": ["user"],
                 "summary": "Retrieves all users in business",
-                "description": "Filters by department, role, member status, has pagination and sorting as well",
+                "description": "Filters by department, role, member status, has pagination and sorting as well. Depending on calling user's permissions this may restrict the user's shown to be either company or department wide.",
                 "parameters": [
                     {
                         "name": "sortField",
@@ -427,7 +566,48 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong combination of query parameters. The following pairs of query parameters must be sent together: (limit, page), (filterIds, filterField), (sortOrder, sortField)."
+                    },
+                    "403": {
+                        "description": "Underprivilged user trying to access users they are not allowed to see."
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "tags": ["user"],
+                "summary": "get individual user",
+                "description": "Get user by id. Underpriveleged users can get their own user but no one else's.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "The id of the user whose details are to be retrieved.",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ]
             }
         }
     }
