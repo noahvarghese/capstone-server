@@ -22,6 +22,24 @@
     ],
     "components": {
         "schemas": {
+            "Business": {
+                "description": "Businesses that a user would be a member of",
+                "type": "object",
+                "properties": {
+                    "default": {
+                        "description": "Whether this is the user's default business.",
+                        "type": "boolean"
+                    },
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Name of the business",
+                        "type": "string"
+                    }
+                }
+            },
             "Department": {
                 "description": "Department within Business",
                 "type": "object",
@@ -508,7 +526,27 @@
                 }
             }
         },
-
+        "/businesses": {
+            "get": {
+                "tags": ["business"],
+                "summary": "get businesses the logged in user is a member of",
+                "description": "uses the cookie the see which user is logged in",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Business"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "description": "invalid cookie" },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "tags": ["membership"],
