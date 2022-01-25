@@ -572,6 +572,53 @@
                 "tags": ["department"],
                 "summary": "Get all departments in business",
                 "description": "Only Users who have global permissions can access this.",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "description": "text to search for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["name", "num_members", "num_roles"]
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "description": "The direction to sort in",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["ASC", "DESC"]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "description": "Maximum number of records to return.",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "description": "The nth group to return when the results are divided by the limit.",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -585,6 +632,9 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
@@ -1020,7 +1070,12 @@
             }
         },
         "/roles": {
-            "get": {},
+            "get": {
+                "tags": ["roles"],
+                "summary": "Get all roles",
+                "description": "get all roles in department or business depending on user permissions",
+                "parameters": {}
+            },
             "post": {}
         },
         "/roles/{id}": { "get": {}, "put": {}, "delete": {} },
