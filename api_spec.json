@@ -495,6 +495,71 @@
                 }
             }
         },
+        "/users/{id}": {
+            "put": {
+                "summary": "update user (Not password)",
+                "description": "Updates basic user details",
+                "tags": ["user"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "The id of the current user.",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "description": "the new first name of the user",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "the new last name of the user",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "the new email of the user",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "the new phone number of the user",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User object succesfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "description": "Invalid request body property." },
+                    "403": {
+                        "description": "Id does not match logged in user."
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "tags": ["membership"],
@@ -619,13 +684,27 @@
                         "$ref": "#/components/responses/DatabaseError"
                     }
                 }
+            },
+            "delete": {
+                "tags": ["membership"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "The id of the user whose details are to be retrieved.",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ]
             }
         },
         "/members/invite": {
             "post": {
                 "summary": "Send invite to user to join.",
                 "description": "Creates a user object using the provided details. Creates entry in membership invitation and generates token.",
-                "tags": ["membership invitation", "membership"],
+                "tags": ["membership invitation", "membership", "user"],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -669,7 +748,8 @@
                         "$ref": "#/components/responses/DatabaseError"
                     }
                 }
-            }
+            },
+            "delete": {}
         },
         "/members/invite/{token}": {
             "patch": {
