@@ -51,6 +51,14 @@
                     "id": {
                         "description": "unique identifier",
                         "type": "integer"
+                    },
+                    "num_members": {
+                        "description": "number of members assigned to roles within department",
+                        "type": "integer"
+                    },
+                    "num_roles": {
+                        "description": "the number of roles within the department",
+                        "type": "integer"
                     }
                 }
             },
@@ -590,12 +598,27 @@
                 "tags": ["department"],
                 "summary": "create new department",
                 "description": "only users who have crud permissions for departments can use this",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "description": "name of new department",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "success"
+                        "$ref": "#/components/responses/Success"
                     },
                     "403": {
-                        "description": "invalid permissions"
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -604,6 +627,43 @@
             }
         },
         "/departments/{id}": {
+            "get": {
+                "tags": ["department"],
+                "summary": "gets details about department",
+                "description": "gets extra statistics about department",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "unique identifier for the department",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Department"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            },
             "put": {
                 "tags": ["department"],
                 "summary": "updates department",
