@@ -252,7 +252,7 @@
                     "auth",
                     "business",
                     "user",
-                    "member",
+                    "membership",
                     "department",
                     "role",
                     "permission",
@@ -495,14 +495,14 @@
                 }
             }
         },
-        "/users": {
+        "/members": {
             "get": {
-                "tags": ["user"],
-                "summary": "Retrieves all users in business",
+                "tags": ["membership"],
+                "summary": "Retrieves all users in business or department depending on permissions.",
                 "description": "Filters by department, role, member status, has pagination and sorting as well. Depending on calling user's permissions this may restrict the user's shown to be either company or department wide.",
                 "parameters": [
                     {
-                        "name": "sortField",
+                        "name": "sort_field",
                         "description": "The field to sort on",
                         "in": "query",
                         "required": false,
@@ -518,7 +518,7 @@
                         }
                     },
                     {
-                        "name": "sortOrder",
+                        "name": "sort_order",
                         "description": "The direction to sort in",
                         "in": "query",
                         "required": false,
@@ -545,7 +545,7 @@
                         }
                     },
                     {
-                        "name": "filterField",
+                        "name": "filter_field",
                         "description": "the field to filter by",
                         "in": "query",
                         "required": false,
@@ -554,7 +554,7 @@
                         }
                     },
                     {
-                        "name": "filterIds",
+                        "name": "filter_ids",
                         "description": "the ids of the applicable model to filter for",
                         "in": "query",
                         "required": false,
@@ -581,7 +581,7 @@
                         }
                     },
                     "400": {
-                        "description": "Wrong combination of query parameters. The following pairs of query parameters must be sent together: (limit, page), (filterIds, filterField), (sortOrder, sortField)."
+                        "description": "Wrong combination of query parameters. The following pairs of query parameters must be sent together: (limit, page), (filter_ids, filter_field), (sort_order, sort_field)."
                     },
                     "403": {
                         "description": "Underprivilged user trying to access users they are not allowed to see."
@@ -592,9 +592,9 @@
                 }
             }
         },
-        "/users/{id}": {
+        "/members/{id}": {
             "get": {
-                "tags": ["user"],
+                "tags": ["membership"],
                 "summary": "get individual user",
                 "description": "Get user by id. Underpriveleged users can get their own user but no one else's.",
                 "parameters": [
@@ -620,6 +620,10 @@
                     }
                 }
             }
+        },
+        "/members/invite": {
+            "post": {},
+            "patch": {}
         }
     }
 }
