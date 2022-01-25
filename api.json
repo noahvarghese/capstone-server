@@ -1,0 +1,434 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "OnBoard API",
+        "version": "1.0.0",
+        "description": "This is the backend for a text based learning management system. Built to digitize traditional onboarding documents and training, as well as keep track of user's progress.",
+        "contact": {
+            "name": "Noah Varghese",
+            "url": "https://noahvarghese.me",
+            "email": "noah.varghese@mohawkcollege.ca"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.capstone.noahvarghese.me",
+            "description": "production server"
+        },
+        {
+            "url": "http://localhost:8080",
+            "description": "development server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Allows user to (de)authenticate with server to send requests."
+        },
+        {
+            "name": "business",
+            "description": "Business operations"
+        },
+        {
+            "name": "user",
+            "description": "User operations"
+        },
+        {
+            "name": "membership",
+            "description": "Membership operations. Model joins one User to one Business, allows many to many relationship."
+        },
+        {
+            "name": "membership_invitation",
+            "description": "Invite operations. Model joins one User to one Business, allows many to many relationship. Intermediary table before Member table."
+        },
+        {
+            "name": "department",
+            "description": "Department operations. One Business has many Departments"
+        },
+        {
+            "name": "role",
+            "description": "Role operations. One Department has many Businesses"
+        },
+        {
+            "name": "permission",
+            "description": "Permission operations. One Role has one set of Permissions."
+        },
+        {
+            "name": "user role",
+            "description": "User Role operations. Model joins one User to one Role, allows many to many relationship. Requires that the User be a Member of the Business."
+        },
+        {
+            "name": "manual",
+            "description": "Manual operations. One business has many Manuals."
+        },
+        {
+            "name": "manual assignment",
+            "description": "Manual Assignemnt operations. Model joins one Manual to either one of Department or Role, allows many to many relationship. Requires that all invlovled objects be linked to the same business."
+        },
+        {
+            "name": "manual section",
+            "description": "Manual Section operations. One Manual has many Sections."
+        },
+        {
+            "name": "policy",
+            "description": "Policy operations. One Manual has many Policies."
+        },
+        {
+            "name": "content",
+            "description": "Content operations. One Policy has many pieces of Content."
+        },
+        {
+            "name": "policy read",
+            "description": "Policy Read operations. Model joins User and Policy, allows many to many relationship."
+        },
+        {
+            "name": "quiz",
+            "description": "Quiz operations. One Manual has many Quizzes."
+        },
+        {
+            "name": "quiz sections",
+            "description": "Quiz Section operations. One Quiz has many Sections."
+        },
+        {
+            "name": "quiz question",
+            "description": "Quiz Question operations. One Section has many Questions."
+        },
+        {
+            "name": "quiz answer",
+            "description": "Quiz Answer operations. One Question has many Answers (only one of them correct)."
+        },
+        {
+            "name": "quiz attempt",
+            "description": "Quiz Attempt operations. Model joins Quiz as a whole to User, allows many to many relationship."
+        },
+        {
+            "name": "quiz result",
+            "description": "Quiz Result operations. Model joins Quiz Attempt to Quiz Question, and Member's selected Quiz Answer, allows many to many to many relationship."
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "auth",
+                    "business",
+                    "user",
+                    "member",
+                    "department",
+                    "role",
+                    "permission",
+                    "user role"
+                ],
+                "operationId": "CreateBusinessWithAdminAccount",
+                "summary": "Creates a new business account with an administrator account for the business with appropriate permissions.",
+                "description": "Responsible for instantiating all records to support an Admin account.\nCreates Business.\nCreates User.\nCreates Member.\nCreates Admin Department.\nCreates Admin Role with full Permissions.\nAssigns new Member to Role.\nSends back a cookie containing the user_id and business_id.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "description": "User's first name",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "User's last name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "User's phone number, currently only accepts Canadian numbers",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "User's password",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "confirm_password": {
+                                        "description": "Copy of the user's password to confirm they typed it correctly",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "name": {
+                                        "description": "Name of the business",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Business street address",
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "description": "City of business",
+                                        "type": "string"
+                                    },
+                                    "postal_code": {
+                                        "description": "Postal code of business",
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "description": "Province of business",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "first_name",
+                                    "email",
+                                    "phone",
+                                    "password",
+                                    "confirm_password",
+                                    "name",
+                                    "address",
+                                    "city",
+                                    "province",
+                                    "postal_code"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created business, user, admin department, admin role, and assigned user to business and role."
+                    },
+                    "400": {
+                        "description": "Missing or invalid request body."
+                    },
+                    "500": {
+                        "description": "Database connection failed"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": ["auth"],
+                "operationId": "Login",
+                "summary": "Logs in a registered user.",
+                "description": "Authenticates user against database. Sends back a cookie containing the user_id and business_id.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "User's password",
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "required": ["email", "password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Found user, and user is a member of a business."
+                    },
+                    "400": {
+                        "description": "Missing or invalid request body."
+                    },
+                    "401": {
+                        "description": "User does not exist."
+                    },
+                    "403": {
+                        "description": "User is not a member of a business."
+                    },
+                    "500": {
+                        "description": "Database connection failed"
+                    }
+                }
+            }
+        },
+        "/auth/forgot_password": {
+            "post": {
+                "tags": ["auth", "user"],
+                "summary": "Sends email to user to reset password",
+                "description": "Creates a token with an expiry and emails the link with the token to the user.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "description": "Email of the user who forgot the password",
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "required": ["email"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully set the token and expiry"
+                    },
+                    "400": {
+                        "description": " Request body missing or invalid"
+                    },
+                    "500": {
+                        "description": "Database connection failed"
+                    }
+                }
+            }
+        },
+        "/auth/reset_password/{token}": {
+            "post": {
+                "tags": ["auth", "user"],
+                "summary": "Allows user to set a new password",
+                "description": "Provided the token is correct, the user can set a new password.",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "Token generated in /auth/forgot_password",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "password": {
+                                        "description": "The new password",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "confirm_password": {
+                                        "description": "Copy of the new password to ensure its typed properly.",
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "required": ["password", "confirm_password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully"
+                    },
+                    "400": {
+                        "description": "Invalid or missing request body"
+                    },
+                    "401": {
+                        "description": "Invalid token provided"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Logout user",
+                "description": "Invalidate cookie",
+                "responses": {
+                    "200": {
+                        "description": "User logged out"
+                    },
+                    "400": {
+                        "description": "Invalid cookie sent"
+                    },
+                    "500": {
+                        "description": "Database connection failed"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": ["user"],
+                "summary": "Retrieves all users in business",
+                "description": "Filters by department, role, member status, has pagination and sorting as well",
+                "parameters": [
+                    {
+                        "name": "sortField",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "department",
+                                "role",
+                                "first_name",
+                                "last_name",
+                                "email",
+                                "phone"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "sortOrder",
+                        "description": "The direction to sort in",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["ASC", "DESC"]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "description": "Maximum number of records to return.",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "description": "The nth group to return when the results are divided by the limit.",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "filterField",
+                        "description": "the field to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["role", "department"]
+                        }
+                    },
+                    {
+                        "name": "filterIds",
+                        "description": "the ids of the applicable model to filter for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    }
+}
