@@ -278,6 +278,7 @@ CREATE TABLE quiz_attempt (
     id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     quiz_id INT NOT NULL,
+    finished TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -317,12 +318,18 @@ CREATE TABLE policy_read (
 
 CREATE TABLE event (
     id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(50),
-    reason MEDIUMTEXT DEFAULT NULL,
-    status ENUM("PASS", "FAIL"),
+    /* Identifiers */
+    ip_address VARCHAR(50) NOT NULL,
+    /* From session cookie */
     user_id INT DEFAULT NULL,
     business_id INT DEFAULT NULL,
+    /* Details */
+    name VARCHAR(50),
+    reason MEDIUMTEXT DEFAULT NULL,
+    status ENUM("STARTED", "ENDED", "SUCCESS", "FAIL"),
     created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (business_id) REFERENCES business(id),
     PRIMARY KEY (id)
