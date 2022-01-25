@@ -13,3 +13,5 @@ output*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+.nyc_output
+__test__/*-test-report.html
