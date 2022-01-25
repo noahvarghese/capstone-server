@@ -32,7 +32,23 @@ Documentation - mockups, ERD, class diagrams are currently in my private DropBox
 
 They may be moved into their own repo at the end of this to showcase all parts of this project.
 
+## Notes
+
+For breaking down the routes
+Routes are the structure of the resources.
+Controllers have a function signature to fit in as the route callback, it should take all arguments out of the request to pass directly to the handler, may have multiple handlers to complete the request.
+Handlers accept strictly the arguments to get the job done and may throw an error or return the value expected
+
+-   server
+    -   middleware: need a route config file to map which middleware should be called when
+    -   routes: call controllers
+    -   controllers: call handlers
+    -   handlers: use database/typeorm to interface with the models
+    -   models: provides ways to modify/adjust certain fields
+
 ## API Documentation
+
+See ./api_spec.json using [!https://editor.swagger.io](Swagger Editor)
 
 <table>
     <thead>
@@ -48,177 +64,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
         <th>description</th>
     </thead>
     <tbody>
-        <tr>
-            <td>POST</td>
-            <td>/auth/login</td>
-            <td>
-            <pre>{email: string; password: string;}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td>{}</td>
-            <td>400, 401</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>logs user in, sets session variable so that a cookie is returned for use</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/register</td>
-            <td><pre>
-            {
-                first_name: string;
-                last_name: string;
-                email: string;
-                phone: string;
-                address: string;
-                city: string;
-                postal_code: string;
-                province: string;
-                password: string;
-                confirm_password: string;
-                name: string;
-            }</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>201</td>
-            <td><pre>{}</pre></td>
-            <td>400, 500</td>
-            <td><pre>{message?: string; field?: string; }</pre></td>
-            <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/logout</td>
-            <td><pre></pre></td>
-            <td></td>
-            <td>true</td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td>Not Implemented</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/forgot_password </td>
-            <td><pre>{email: string;}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>401, 500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>submit email to receive a link to reset password via email</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/reset_password/:token</td>
-            <td><pre>{password: string; confirm_password:string;}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>401, 403, 500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>this is the link sent via email to reset the password</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/members/:id</td>
-            <td><pre></pre></td>
-            <td><pre></pre></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    first_name: string;
-                    last_name: string;
-                    email: string;
-                    phone: string;
-                    birthday: string;
-                    roles: {
-                        default: boolean;
-                        id: number;
-                        name: string;
-                        department: {
-                            id: number;
-                            name: string;
-                        }
-                    }[]
-                }
-                </pre>
-            </td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Get one member</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/members</td>
-            <td><pre></pre></td>
-            <td>
-                <pre>
-                {
-                    search?: string; 
-                    limit: number; 
-                    page: number; 
-                    sortField?: "birthday" | "first_name" | "last_name" | "email" | "phone"; 
-                    sortOrder?: "ASC" | "DESC"; 
-                    filterField?: "department" | "role"; 
-                    filterIds?: number[];
-                }
-                </pre>
-            </td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    first_name: string;
-                    last_name: string;
-                    email: string;
-                    phone: string;
-                    birthday: string;
-                    roles: {
-                        default: boolean;
-                        id: number;
-                        name: string;
-                        department: {
-                            id: number;
-                            name: string;
-                        }
-                    }[]
-                }[]
-                </pre>
-            </td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Allows searching, sorting, filtering, and pagination of members</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/members/invite</td>
-            <td>
-                <pre>
-                {
-                    first_name: string;
-                    last_name: string;
-                    email: string;
-                    phone: string;
-                }
-                </pre>
-            </td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Requires user sending request to have explicit permissions to create user. Checks if user exists before creating. Otherwise will just send the invite.</td>
-        </tr>
         <tr>
             <td>POST</td>
             <td>/members/role_assignment</td>
@@ -258,17 +103,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>Removes multiple roles from user</td>
         </tr>
         <tr>
-            <td>POST</td>
-            <td>/members/invite/:token</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Checks that token is valid then converts user's link to business from membership_request to membership</td>
-        </tr>
         <tr>
             <td>GET</td>
             <td>/settings/nav</td>
@@ -294,61 +128,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>500</td>
             <td><pre>{message?: string;}</pre></td>
             <td>returns the pages the cleint has access to</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/departments/:id</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    name: string;
-                    numMembers: number;
-                    numRoles: number;
-                    ...more
-                }
-                </pre>
-            </td>
-            <td>403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Gets department, not implemented</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/departments</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    name: string;
-                    numMembers: number;
-                    numRoles: number;
-                }[]
-                </pre>
-            </td>
-            <td>403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Gets list of departments</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/departments</td>
-            <td><pre>{name: string;}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>201</td>
-            <td><pre>{}</pre></td>
-            <td>403,405,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Creates department</td>
         </tr>
         <tr>
             <td>GET</td>
@@ -436,30 +215,6 @@ They may be moved into their own repo at the end of this to showcase all parts o
             <td>400,403,500</td>
             <td><pre>{message?: string;}</pre></td>
             <td>Removes multiple users from role</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/businesses</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{id: number; name: string; default: boolean;}[]</pre></td>
-            <td>500</td>
-            <td><pre>{message?: string}</pre></td>
-            <td>Retrieves list of businesses that the user is a member of</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
         </tr>
     </tbody>
 
