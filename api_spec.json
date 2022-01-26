@@ -66,10 +66,6 @@
                 "description": "Permissions applied to members of a Role.",
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "description": "unique identifier",
-                        "type": "integer"
-                    },
                     "global_crud_users": {
                         "description": "Allows user to invite users to, or remove users from business.",
                         "type": "boolean"
@@ -148,6 +144,37 @@
                         "$ref": "#/components/schemas/Permission"
                     },
                     "department": { "$ref": "#/components/schemas/Department" }
+                }
+            },
+            "RoleResponse": {
+                "description": "return value of role routes",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "unique identifier"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "role name"
+                    },
+                    "department": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "description": "unique identifier"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "department name"
+                            }
+                        }
+                    },
+                    "num_members": {
+                        "type": "integer",
+                        "description": "number of members assigned to this role"
+                    }
                 }
             },
             "User": {
@@ -1071,14 +1098,254 @@
         },
         "/roles": {
             "get": {
-                "tags": ["roles"],
+                "tags": ["role"],
                 "summary": "Get all roles",
                 "description": "get all roles in department or business depending on user permissions",
-                "parameters": {}
+                "parameters": [
+                    {
+                        "name": "search",
+                        "description": "text to search for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["num_members", "department", "name"]
+                        }
+                    },
+                    {
+                        "name": "sort_order",
+                        "description": "The direction to sort in",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["ASC", "DESC"]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "description": "Maximum number of records to return.",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "description": "The nth group to return when the results are divided by the limit.",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "the field to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["department"]
+                        }
+                    },
+                    {
+                        "name": "filter_ids",
+                        "description": "the ids of the applicable model to filter for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
             },
-            "post": {}
+            "post": {
+                "tags": ["role"],
+                "summary": "create new role",
+                "description": "creates new role if logged in user has department or global permissions",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "description": "role name",
+                                        "type": "string"
+                                    },
+                                    "department_id": {
+                                        "description": "the unique identifier of the department the role will be apart of",
+                                        "type": "integer"
+                                    },
+                                    "permissions": {
+                                        "$ref": "#/components/schemas/Permission"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/responses/RoleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
         },
-        "/roles/{id}": { "get": {}, "put": {}, "delete": {} },
+        "/roles/{id}": {
+            "get": {
+                "tags": ["role"],
+                "summary": "get individual role details",
+                "description": "Any authenticated user can retrieve details about the role(s) they are apart of. Or if they have the necessary permissions, the can retrieve any of them.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "unique identifier for the role",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RoleResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["role"],
+                "summary": "update individual role",
+                "description": "Can update the name of the role",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "unique identifier for the role, requires the user has appropriate permissions",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "the new name of the role"
+                                    }
+                                },
+                                "required": ["name"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["role"],
+                "summary": "delete role by id",
+                "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "unique identifier for the role",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ForeignKeyError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "put": {
                 "summary": "update user (Not password)",
