@@ -1368,7 +1368,7 @@
         },
         "/roles/{id}": {
             "get": {
-                "tags": ["role"],
+                "tags": ["role", "permission"],
                 "summary": "get individual role details",
                 "description": "Any authenticated user can retrieve details about the role(s) they are apart of. Or if they have the necessary permissions, the can retrieve any of them.",
                 "parameters": [
@@ -1427,7 +1427,7 @@
                 }
             },
             "put": {
-                "tags": ["role"],
+                "tags": ["role", "permission"],
                 "summary": "update individual role",
                 "description": "Can update the name of the role",
                 "parameters": [
@@ -1469,7 +1469,7 @@
                 }
             },
             "delete": {
-                "tags": ["role"],
+                "tags": ["role", "permission"],
                 "summary": "delete role by id",
                 "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist",
                 "parameters": [
