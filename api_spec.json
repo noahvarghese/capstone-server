@@ -62,6 +62,96 @@
                     }
                 }
             },
+            "ManualAssignment": {
+                "description": "Allows multiple assignments of a manual to different roles or departments",
+                "type": "object",
+                "properties": {
+                    "role_id": {
+                        "description": "id of role that is assigned to",
+                        "type": "integer"
+                    },
+                    "department_id": {
+                        "description": "id of department that is assigned to",
+                        "type": "integer"
+                    }
+                }
+            },
+            "ManualContent": {
+                "description": "Each policy can have multiple pieces of content",
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "Title of the piece of content",
+                        "type": "string"
+                    },
+                    "content": {
+                        "description": "Long text in markdown",
+                        "type": "string"
+                    }
+                }
+            },
+            "ManualPolicy": {
+                "description": "Each Section can have multiple policies",
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "title of policy",
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ManualContent"
+                        }
+                    }
+                }
+            },
+            "ManualSection": {
+                "description": "Each manual can have multiple sections",
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "title of section",
+                        "type": "string"
+                    },
+                    "policies": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ManualPolicy"
+                        }
+                    }
+                }
+            },
+            "Manual": {
+                "description": "Full manual object",
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "title of document",
+                        "type": "string"
+                    },
+                    "delete_lock": {
+                        "description": "prevents users from deleting by accident",
+                        "type": "boolean"
+                    },
+                    "edit_lock": {
+                        "description": "prevents users from editing",
+                        "type": "boolean"
+                    },
+                    "assignments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ManualAssignment"
+                        }
+                    },
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ManualSection"
+                        }
+                    }
+                }
+            },
             "Permission": {
                 "description": "Permissions applied to members of a Role.",
                 "type": "object",
@@ -821,6 +911,9 @@
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             }
+        },
+        "/manuals": {
+            "get": {}
         },
         "/members": {
             "get": {
