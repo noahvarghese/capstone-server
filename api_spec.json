@@ -1384,7 +1384,38 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/RoleResponse"
+                                    "description": "return value of role routes",
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "unique identifier"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "description": "role name"
+                                        },
+                                        "department": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "description": "unique identifier"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "department name"
+                                                }
+                                            }
+                                        },
+                                        "permissions": {
+                                            "$ref": "#/components/schemas/Permission"
+                                        },
+                                        "num_members": {
+                                            "type": "integer",
+                                            "description": "number of members assigned to this role"
+                                        }
+                                    }
                                 }
                             }
                         }
