@@ -66,6 +66,10 @@
                 "description": "Allows multiple assignments of a manual to different roles or departments",
                 "type": "object",
                 "properties": {
+                    "editable_by_user": {
+                        "description": "Flag to tell UI whether current user is allowed to edit the manual.",
+                        "type": "boolean"
+                    },
                     "role_id": {
                         "description": "id of role that is assigned to",
                         "type": "integer"
@@ -318,6 +322,9 @@
             },
             "ArgumentsError": {
                 "description": "invalid request body or parameters"
+            },
+            "AuthenticationError": {
+                "description": "Not logged in"
             },
             "PermissionsError": {
                 "description": "invalid permissions"
@@ -785,7 +792,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "$ref": "#/components/responses/Success"
                     },
                     "403": {
@@ -913,7 +920,32 @@
             }
         },
         "/manuals": {
-            "get": {}
+            "get": {
+                "tags": ["manual"],
+                "summary": "gets available manuals",
+                "description": "Retrieves combination of manuals that can be edited by user, or that are assigned to user's role/department.",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Manual"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
         },
         "/members": {
             "get": {
@@ -1114,7 +1146,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "token created and email sent to user with link to /members/invite/{token} using token."
                     },
                     "400": {
@@ -1267,7 +1299,7 @@
                     }
                 ],
                 "responses": {
-                    "200": { "$ref": "#/components/responses/Success" },
+                    "201": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
@@ -1434,7 +1466,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "success",
                         "content": {
                             "application/json": {
