@@ -48,7 +48,7 @@ Handlers accept strictly the arguments to get the job done and may throw an erro
 
 ## API Documentation
 
-See ./api_spec.json using [!https://editor.swagger.io](Swagger Editor)
+See ./api_spec.json using <a href="https://editor.swagger.io">Swagger Editor</a>
 
 ## Environment Variables
 
