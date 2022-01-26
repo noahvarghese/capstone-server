@@ -1,3 +1,5 @@
+USE capstone;
+
 DELIMITER //
 
 CREATE TRIGGER manual_delete

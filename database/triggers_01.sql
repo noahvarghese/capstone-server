@@ -1,3 +1,5 @@
+USE capstone;
+
 CREATE TRIGGER business_update
 BEFORE UPDATE
 ON business FOR EACH ROW
