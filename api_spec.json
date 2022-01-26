@@ -1096,6 +1096,122 @@
                 }
             }
         },
+        "/members/{user_id}/roles": {
+            "get": {
+                "tags": ["user role"],
+                "summary": "Get all roles the user is associated with",
+                "description": "Must have permissions to view user details, or be logged in as the same user",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "description": "the id of the user that is being queried",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "unique identifier"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "description": "role name"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/{user_id}/roles/{role_id}": {
+            "post": {
+                "tags": ["user role"],
+                "summary": "assign user to role",
+                "description": "Must have permissions to assign user to role.",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "description": "the id of the user that is being assigned to a role",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "the id of the role that the user is being assigned to",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["user role"],
+                "summary": "removes user from role",
+                "description": "Must have permissions to remove user from role.",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "description": "the id of the user that is being removed from the role",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "the id of the role that the user is being removed from",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/roles": {
             "get": {
                 "tags": ["role"],
@@ -1228,7 +1344,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/responses/RoleResponse"
+                                        "$ref": "#/components/schemas/RoleResponse"
                                     }
                                 }
                             }
@@ -1346,6 +1462,69 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                }
+            }
+        },
+        "/roles/{role_id}/members": {
+            "get": {
+                "tags": ["user role"],
+                "summary": "get all members associated with role",
+                "description": "requires permissions",
+                "parameters": [
+                    {
+                        "name": "role_id",
+                        "description": "the id of the role that is being queried",
+                        "required": true,
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "description": "user id",
+                                                "type": "integer"
+                                            },
+                                            "first_name": {
+                                                "description": "User's first name",
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "description": "User's last name",
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "description": "User's email",
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "phone": {
+                                                "description": "User's phone number",
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             }
         },
