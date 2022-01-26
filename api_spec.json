@@ -1303,7 +1303,7 @@
                                         "$ref": "#/components/schemas/Permission"
                                     }
                                 },
-                                "required": ["name"]
+                                "required": ["name", "permissions"]
                             }
                         }
                     }
