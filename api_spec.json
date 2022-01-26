@@ -1267,21 +1267,133 @@
         "/manuals/{manual_id}/roles/{role_id}": {
             "post": {
                 "tags": ["manual assignment"],
-                "summary": "associate role and manual"
+                "summary": "associate role and manual",
+                "description": "assign manual to role, requries permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "ID of role",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
             },
             "delete": {
                 "tags": ["manual assignment"],
-                "summary": "disassociate role from manual"
+                "summary": "disassociate role from manual",
+                "description": "remove assignment of manual to role, requries permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "ID of role",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
             }
         },
         "/manuals/{manual_id}/departments/{department_id}": {
             "post": {
                 "tags": ["manual assignment"],
-                "summary": "associate department and manual"
+                "summary": "associate department and manual",
+                "description": "assign manual to department, requires permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "department_id",
+                        "description": "ID of department",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
             },
             "delete": {
                 "tags": ["manual assignment"],
-                "summary": "disassociate department from manual"
+                "summary": "disassociate department from manual",
+                "description": "remove assignment of manual to department, requires permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "department_id",
+                        "description": "ID of department",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
             }
         },
         "/members": {
