@@ -1298,6 +1298,9 @@
                                     "name": {
                                         "type": "string",
                                         "description": "the new name of the role"
+                                    },
+                                    "permissions": {
+                                        "$ref": "#/components/schemas/Permission"
                                     }
                                 },
                                 "required": ["name"]
