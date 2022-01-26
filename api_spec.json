@@ -21,6 +21,51 @@
         }
     ],
     "components": {
+        "parameters": {
+            "ID": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "unique identifier for the department",
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "Limit": {
+                "name": "limit",
+                "description": "Maximum number of records to return.",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "Page": {
+                "name": "page",
+                "description": "The nth group to return when the results are divided by the limit.",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "Search": {
+                "name": "search",
+                "description": "text to search for",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SortOrder": {
+                "name": "sort_order",
+                "description": "The direction to sort in",
+                "in": "query",
+                "required": false,
+                "schema": { "enum": ["ASC", "DESC"] }
+            }
+        },
         "schemas": {
             "Business": {
                 "description": "Businesses that a user would be a member of",
@@ -66,9 +111,9 @@
                 "description": "Allows multiple assignments of a manual to different roles or departments",
                 "type": "object",
                 "properties": {
-                    "editable_by_user": {
-                        "description": "Flag to tell UI whether current user is allowed to edit the manual.",
-                        "type": "boolean"
+                    "manual_id": {
+                        "description": "id of the manual",
+                        "type": "integer"
                     },
                     "role_id": {
                         "description": "id of role that is assigned to",
@@ -130,6 +175,14 @@
                 "description": "Full manual object",
                 "type": "object",
                 "properties": {
+                    "published": {
+                        "description": "Flag to tell whether this manual is available for the user's it is assigned to to read.",
+                        "type": "boolean"
+                    },
+                    "editable_by_user": {
+                        "description": "Flag to tell UI whether current user is allowed to edit the manual.",
+                        "type": "boolean"
+                    },
                     "title": {
                         "description": "title of document",
                         "type": "string"
@@ -141,12 +194,6 @@
                     "edit_lock": {
                         "description": "prevents users from editing",
                         "type": "boolean"
-                    },
-                    "assignments": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ManualAssignment"
-                        }
                     },
                     "sections": {
                         "type": "array",
@@ -690,7 +737,9 @@
                             }
                         }
                     },
-                    "400": { "description": "invalid cookie" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             }
@@ -702,13 +751,7 @@
                 "description": "Only Users who have global permissions can access this.",
                 "parameters": [
                     {
-                        "name": "search",
-                        "description": "text to search for",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/Search"
                     },
                     {
                         "name": "sort_field",
@@ -720,31 +763,13 @@
                         }
                     },
                     {
-                        "name": "sort_order",
-                        "description": "The direction to sort in",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "enum": ["ASC", "DESC"]
-                        }
+                        "$ref": "#/components/parameters/SortOrder"
                     },
                     {
-                        "name": "limit",
-                        "description": "Maximum number of records to return.",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/Limit"
                     },
                     {
-                        "name": "page",
-                        "description": "The nth group to return when the results are divided by the limit.",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/Page"
                     }
                 ],
                 "responses": {
@@ -763,6 +788,9 @@
                     },
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
@@ -795,6 +823,9 @@
                     "201": {
                         "$ref": "#/components/responses/Success"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -809,17 +840,7 @@
                 "tags": ["department"],
                 "summary": "gets details about department",
                 "description": "gets extra statistics about department",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier for the department",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -834,6 +855,9 @@
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -846,17 +870,7 @@
                 "tags": ["department"],
                 "summary": "updates department",
                 "description": "Pretty much only changes the name of the department",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier for the department",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -879,6 +893,9 @@
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -891,23 +908,16 @@
                 "tags": ["department"],
                 "summary": "deletes department",
                 "description": "Checks if any users or manuals are assigned to this department before deleting",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier for the department",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "$ref": "#/components/responses/Success"
                     },
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
@@ -923,7 +933,50 @@
             "get": {
                 "tags": ["manual"],
                 "summary": "gets available manuals",
-                "description": "Retrieves combination of manuals that can be edited by user, or that are assigned to user's role/department.",
+                "description": "Retrieves combination of manuals that are assigned to user's role/department. Check user's permissions to determine if the user is allowed to edit the manual. If manual is assigned to same role as the user they are not allowed to edit.",
+                "parameters": [
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["editable", "role", "department"]
+                        }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "description": "if using the 'editable' field, the array should be of length consisting of a 0 or 1 representing false or true respectively"
+                            }
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/Search"
+                    },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "enum": ["title", "role", "department"] }
+                    },
+                    {
+                        "$ref": "#/components/parameters/SortOrder"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Limit"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Page"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -932,7 +985,29 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/Manual"
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "description": "unique identifier",
+                                                "type": "integer"
+                                            },
+                                            "title": {
+                                                "description": "title of document",
+                                                "type": "string"
+                                            },
+                                            "published": {
+                                                "description": "Flag for whether to make it visible to the user's it is assigned to",
+                                                "type": "boolean"
+                                            },
+                                            "delete_lock": {
+                                                "description": "Flag to prevent users from deleting by accident",
+                                                "type": "boolean"
+                                            },
+                                            "edit_lock": {
+                                                "description": "Flag to prevent users from editing",
+                                                "type": "boolean"
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -945,6 +1020,156 @@
                         "$ref": "#/components/responses/DatabaseError"
                     }
                 }
+            },
+            "post": {
+                "tags": ["manual"],
+                "summary": "Create new manual",
+                "description": "Create manual for role/department",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "name of manual",
+                                        "type": "string"
+                                    },
+                                    "published": {
+                                        "description": "Flag for whether to make it visible to the user's it is assigned to",
+                                        "type": "boolean"
+                                    },
+                                    "delete_lock": {
+                                        "description": "Flag to prevent users from deleting by accident",
+                                        "type": "boolean"
+                                    },
+                                    "edit_lock": {
+                                        "description": "Flag to prevent users from editing",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "published",
+                                    "delete_lock",
+                                    "edit_lock"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "$ref": "#/components/responses/Success"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                }
+            }
+        },
+        "/manuals/{id}": {
+            "get": {
+                "tags": ["manual"],
+                "summary": "get individual manual",
+                "description": "Get details for individual manuals",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "title": {
+                                            "description": "title of document",
+                                            "type": "string"
+                                        },
+                                        "published": {
+                                            "description": "Flag for whether to make it visible to the user's it is assigned to",
+                                            "type": "boolean"
+                                        },
+                                        "delete_lock": {
+                                            "description": "Flag to prevent users from deleting by accident",
+                                            "type": "boolean"
+                                        },
+                                        "edit_lock": {
+                                            "description": "Flag to prevent users from editing",
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["manual"],
+                "summary": "update manual",
+                "description": "update details for individual manual",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": { "type": "string" },
+                                    "edit_lock": { "type": "boolean" },
+                                    "delete_lock": { "type": "boolean" },
+                                    "published": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["manual"],
+                "summary": "delete manual",
+                "description": "delete individual manual",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
             }
         },
         "/members": {
@@ -953,15 +1178,7 @@
                 "summary": "Retrieves all users in business or department depending on permissions.",
                 "description": "Filters by department, role, member status, has pagination and sorting as well. Depending on calling user's permissions this may restrict the user's shown to be either company or department wide.",
                 "parameters": [
-                    {
-                        "name": "search",
-                        "description": "text to search for",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
+                    { "$ref": "#/components/parameters/Search" },
                     {
                         "name": "sort_field",
                         "description": "The field to sort on",
@@ -979,31 +1196,13 @@
                         }
                     },
                     {
-                        "name": "sort_order",
-                        "description": "The direction to sort in",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "enum": ["ASC", "DESC"]
-                        }
+                        "$ref": "#/components/parameters/SortOrder"
                     },
                     {
-                        "name": "limit",
-                        "description": "Maximum number of records to return.",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/Limit"
                     },
                     {
-                        "name": "page",
-                        "description": "The nth group to return when the results are divided by the limit.",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/Page"
                     },
                     {
                         "name": "filter_field",
@@ -1042,10 +1241,13 @@
                         }
                     },
                     "400": {
-                        "description": "Wrong combination of query parameters. The following pairs of query parameters must be sent together: (limit, page), (filter_ids, filter_field), (sort_order, sort_field), (search)."
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
-                        "description": "Underprivilged user trying to access users they are not allowed to see."
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -1058,23 +1260,16 @@
                 "tags": ["membership"],
                 "summary": "get individual user",
                 "description": "Get user by id. Underpriveleged users can get their own user but no one else's.",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "description": "The id of the user whose details are to be retrieved.",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "$ref": "#/components/schemas/User"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
-                        "description": "Either underprivileged user trying to access another user than itself, or user has priveleges to view only department users and id is not member of same department."
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -1084,26 +1279,19 @@
             "delete": {
                 "tags": ["membership"],
                 "summary": "Delete membership",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "description": "The id of the user whose membership will be deleted.",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
-                        "description": "Membership successfully deleted."
+                        "$ref": "#/components/responses/Success"
                     },
                     "400": {
-                        "description": "invalid id"
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
-                        "description": "User id either does not match logged in user, or logged in user does not have the permissions."
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -1150,10 +1338,13 @@
                         "description": "token created and email sent to user with link to /members/invite/{token} using token."
                     },
                     "400": {
-                        "description": " Request body missing or invalid"
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
-                        "description": "User does not have permissions necessary to invite a user to join the business."
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -1166,26 +1357,19 @@
                 "tags": ["membership invitation"],
                 "summary": "deletes sent invitation",
                 "description": "deletes row in table",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "description": "The id of the invitation.",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
-                        "description": "Membership Invitation successfully deleted."
+                        "$ref": "#/components/responses/Success"
                     },
                     "400": {
-                        "description": "invalid id"
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
-                        "description": "Logged in user does not have the permissions."
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -1211,13 +1395,13 @@
                 "tags": ["membership invitation", "membership"],
                 "responses": {
                     "200": {
-                        "description": "User has an account already and has succesfully joined the new business."
+                        "$ref": "#/components/responses/Success"
                     },
                     "303": {
                         "description": "User has not registered previously and must set a password first, this should redirect to reset password page."
                     },
-                    "400": {
-                        "description": "the token is invalid"
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -1266,6 +1450,9 @@
                         }
                     },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -1301,6 +1488,9 @@
                 "responses": {
                     "201": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -1334,6 +1524,9 @@
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -1347,15 +1540,10 @@
                 "summary": "Get all roles",
                 "description": "get all roles in department or business depending on user permissions",
                 "parameters": [
-                    {
-                        "name": "search",
-                        "description": "text to search for",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
+                    { "$ref": "#/components/parameters/Limit" },
+                    { "$ref": "#/components/parameters/Page" },
+                    { "$ref": "#/components/parameters/Search" },
+                    { "$ref": "#/components/parameters/SortOrder" },
                     {
                         "name": "sort_field",
                         "description": "The field to sort on",
@@ -1363,33 +1551,6 @@
                         "required": false,
                         "schema": {
                             "enum": ["num_members", "department", "name"]
-                        }
-                    },
-                    {
-                        "name": "sort_order",
-                        "description": "The direction to sort in",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "enum": ["ASC", "DESC"]
-                        }
-                    },
-                    {
-                        "name": "limit",
-                        "description": "Maximum number of records to return.",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "page",
-                        "description": "The nth group to return when the results are divided by the limit.",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
                         }
                     },
                     {
@@ -1430,6 +1591,9 @@
                     },
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
@@ -1482,6 +1646,9 @@
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -1496,17 +1663,7 @@
                 "tags": ["role", "permission"],
                 "summary": "get individual role details",
                 "description": "Any authenticated user can retrieve details about the role(s) they are apart of. Or if they have the necessary permissions, the can retrieve any of them.",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier for the role",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1548,24 +1705,19 @@
                                 }
                             }
                         }
-                    }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             },
             "put": {
                 "tags": ["role", "permission"],
                 "summary": "update individual role",
                 "description": "Can update the name of the role",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier for the role, requires the user has appropriate permissions",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1587,6 +1739,9 @@
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -1597,21 +1752,14 @@
                 "tags": ["role", "permission"],
                 "summary": "delete role by id",
                 "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier for the role",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
@@ -1681,6 +1829,9 @@
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
@@ -1714,6 +1865,12 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
                     }
                 }
             }
@@ -1723,17 +1880,7 @@
                 "summary": "update user (Not password)",
                 "description": "Updates basic user details",
                 "tags": ["user"],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "description": "The id of the current user.",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1773,9 +1920,12 @@
                             }
                         }
                     },
-                    "400": { "description": "Invalid request body property." },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "403": {
-                        "description": "Id does not match logged in user."
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
