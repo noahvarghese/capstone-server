@@ -129,6 +129,9 @@
                 "description": "Each policy can have multiple pieces of content",
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "title": {
                         "description": "Title of the piece of content",
                         "type": "string"
@@ -143,6 +146,9 @@
                 "description": "Each Section can have multiple policies",
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "title": {
                         "description": "title of policy",
                         "type": "string"
@@ -159,6 +165,9 @@
                 "description": "Each manual can have multiple sections",
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "title": {
                         "description": "title of section",
                         "type": "string"
@@ -175,6 +184,9 @@
                 "description": "Full manual object",
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "published": {
                         "description": "Flag to tell whether this manual is available for the user's it is assigned to to read.",
                         "type": "boolean"
@@ -203,10 +215,38 @@
                     }
                 }
             },
+            "ManualResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "title": {
+                        "description": "title of document",
+                        "type": "string"
+                    },
+                    "published": {
+                        "description": "Flag for whether to make it visible to the user's it is assigned to",
+                        "type": "boolean"
+                    },
+                    "delete_lock": {
+                        "description": "Flag to prevent users from deleting by accident",
+                        "type": "boolean"
+                    },
+                    "edit_lock": {
+                        "description": "Flag to prevent users from editing",
+                        "type": "boolean"
+                    }
+                }
+            },
             "Permission": {
                 "description": "Permissions applied to members of a Role.",
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "global_crud_users": {
                         "description": "Allows user to invite users to, or remove users from business.",
                         "type": "boolean"
@@ -321,6 +361,9 @@
             "User": {
                 "type": "object",
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
                     "first_name": {
                         "description": "The user's first name",
                         "type": "string"
@@ -338,18 +381,9 @@
                         "description": "The user's phone number",
                         "type": "string"
                     },
-                    "member": {
-                        "type": "object",
-                        "properties": {
-                            "status": {
-                                "description": "Whether the user has accepted their membership yet",
-                                "type": "boolean"
-                            },
-                            "id": {
-                                "description": "unique identifier",
-                                "type": "integer"
-                            }
-                        }
+                    "status": {
+                        "description": "Whether the user has accepted their membership yet",
+                        "type": "boolean"
                     },
                     "roles": {
                         "type": "array",
@@ -367,6 +401,9 @@
             "ForeignKeyError": {
                 "description": "Foreign key references still exist for entity"
             },
+            "ResourceLockedError": {
+                "description": "Lock preventing resource from being used this way"
+            },
             "ArgumentsError": {
                 "description": "invalid request body or parameters"
             },
@@ -378,31 +415,6 @@
             },
             "DatabaseError": {
                 "description": "Database connection failed"
-            },
-            "Manual": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "description": "unique identifier",
-                        "type": "integer"
-                    },
-                    "title": {
-                        "description": "title of document",
-                        "type": "string"
-                    },
-                    "published": {
-                        "description": "Flag for whether to make it visible to the user's it is assigned to",
-                        "type": "boolean"
-                    },
-                    "delete_lock": {
-                        "description": "Flag to prevent users from deleting by accident",
-                        "type": "boolean"
-                    },
-                    "edit_lock": {
-                        "description": "Flag to prevent users from editing",
-                        "type": "boolean"
-                    }
-                }
             }
         }
     },
@@ -968,7 +980,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/responses/Manual"
+                                        "$ref": "#/components/schemas/ManualResponse"
                                     }
                                 }
                             }
@@ -1041,7 +1053,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/responses/Manual"
+                                        "$ref": "#/components/schemas/ManualResponse"
                                     }
                                 }
                             }
@@ -1123,7 +1135,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/responses/Manual"
+                                    "$ref": "#/components/schemas/ManualResponse"
                                 }
                             }
                         }
@@ -1167,6 +1179,9 @@
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             },
@@ -1183,6 +1198,9 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
@@ -1217,6 +1235,137 @@
                     "400": {
                         "$ref": "#/components/responses/ArgumentsError"
                     },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/{manual_id}/departments/{department_id}": {
+            "post": {
+                "tags": ["manual assignment"],
+                "summary": "associate department and manual",
+                "description": "assign manual to department, requires permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "department_id",
+                        "description": "ID of department",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["manual assignment"],
+                "summary": "disassociate department from manual",
+                "description": "remove assignment of manual to department, requires permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "department_id",
+                        "description": "ID of department",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/{id}/sections": {
+            "get": {
+                "tags": ["manual section"],
+                "summary": "get all sections of manual",
+                "description": "requires permissions if manual is not published yet. Otherwise requires user to be assigned to manual.",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualSection"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["manual section"],
+                "summary": "create a new section",
+                "description": "requires permissions.",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "the title of the section",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "$ref": "#/components/responses/Success"
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
                     },
@@ -1330,29 +1479,54 @@
                 }
             }
         },
-        "/manuals/{manual_id}/departments/{department_id}": {
-            "post": {
-                "tags": ["manual assignment"],
-                "summary": "associate department and manual",
-                "description": "assign manual to department, requires permission",
-                "parameters": [
-                    {
-                        "name": "manual_id",
-                        "description": "ID of manual",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    },
-                    {
-                        "name": "department_id",
-                        "description": "ID of department",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    }
-                ],
+        "/manuals/sections/{id}": {
+            "get": {
+                "tags": ["manual section"],
+                "summary": "get one section of manual",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
-                    "201": { "$ref": "#/components/responses/Success" },
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualSection"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["manual section"],
+                "summary": "update section",
+                "description": "requires permissions and that edit lock not be on",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
@@ -1364,27 +1538,12 @@
                 }
             },
             "delete": {
-                "tags": ["manual assignment"],
-                "summary": "disassociate department from manual",
-                "description": "remove assignment of manual to department, requires permission",
-                "parameters": [
-                    {
-                        "name": "manual_id",
-                        "description": "ID of manual",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    },
-                    {
-                        "name": "department_id",
-                        "description": "ID of department",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    }
-                ],
+                "tags": ["manual section"],
+                "summary": "delete manual section",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
-                    "201": { "$ref": "#/components/responses/Success" },
+                    "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
@@ -2067,7 +2226,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/responses/Manual"
+                                        "$ref": "#/components/schemas/ManualResponse"
                                     }
                                 }
                             }
