@@ -3110,8 +3110,122 @@
                 }
             }
         },
-        "/quizzes/{id}/attempt": {
+        "/quizzes/attempts/{attempt_id}/sections/questions/answers/{answer_id}/results": {
+            "parameters": [
+                {
+                    "name": "attempt_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "answer_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                }
+            ],
+            "get": {
+                "tags": ["quiz result"],
+                "summary": "get all results for one attempt",
+                "description": "must logged in as the same user"
+            },
+            "post": { "tags": ["quiz result"] }
+        },
+        "/quizzes/attempts/{attempt_id}/sections/questions/answers/results/{result_id}": {
+            "parameters": [
+                {
+                    "name": "attempt_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "result_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                }
+            ],
+            "get": { "tags": ["quiz result"] },
+            "put": { "tags": ["quiz result"] }
+        },
+        "/quizzes/{id}/attempts": {
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz attempt"],
+                "summary": "get all attempts for quiz",
+                "description": "requires permissions",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "quiz": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "$ref": "#/components/schemas/RoleResponse"
+                                                    }
+                                                }
+                                            },
+                                            "attempt": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "score": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
             "post": {
                 "tags": ["quiz attempt"],
                 "summary": "creates quiz attempt entry",
@@ -3129,7 +3243,7 @@
                 }
             }
         },
-        "/quizzes/attempt/{id}": {
+        "/quizzes/attempts/{id}": {
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "put": {
                 "tags": ["quiz attempt"],
@@ -3154,6 +3268,83 @@
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/attemps/user/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz attempt"],
+                "summary": "get user's attempts for quiz",
+                "description": "requires permissions, or that the user be looking at their onw",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "quiz": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "$ref": "#/components/schemas/RoleResponse"
+                                                    }
+                                                }
+                                            },
+                                            "attempt": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "score": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
                     },
