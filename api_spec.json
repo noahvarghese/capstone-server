@@ -137,7 +137,7 @@
                         "type": "string"
                     },
                     "content": {
-                        "description": "Long text in markdown",
+                        "description": "Stored as long text in markdown, retrieved as HTML",
                         "type": "string"
                     }
                 }
@@ -1525,27 +1525,8 @@
                 }
             }
         },
-        "/manuals/sections/{section_id}/policies/{policy_id}": {
-            "parameters": [
-                {
-                    "name": "section_id",
-                    "in": "path",
-                    "required": true,
-                    "description": "unique identifier",
-                    "schema": {
-                        "type": "integer"
-                    }
-                },
-                {
-                    "name": "policy_id",
-                    "in": "path",
-                    "required": true,
-                    "description": "unique identifier",
-                    "schema": {
-                        "type": "integer"
-                    }
-                }
-            ],
+        "/manuals/sections/policies/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["policy"],
                 "summary": "get individual policy",
@@ -1607,6 +1588,156 @@
             "delete": {
                 "tags": ["policy"],
                 "summary": "delete policy",
+                "description": "requires permissions and that delete lock not be on",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/policies/{id}/contents": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["content"],
+                "summary": "get all contents of policy",
+                "description": "requires permissions, or assignment",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualContent"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["content"],
+                "summary": "create new content in the given policy",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of policy"
+                                    },
+                                    "content": {
+                                        "description": "the markdown of the content"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/policies/contents/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["content"],
+                "summary": "get individual content",
+                "description": "requires permissions, or assignment",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["content"],
+                "summary": "update content",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of content"
+                                    },
+                                    "content": {
+                                        "description": "the markdown of the content"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["content"],
+                "summary": "delete content",
                 "description": "requires permissions and that delete lock not be on",
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
