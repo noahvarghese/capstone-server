@@ -2043,7 +2043,7 @@
         "/members/invite": {
             "post": {
                 "summary": "Send invite to user to join.",
-                "description": "Creates a user object using the provided details. Creates entry in membership invitation and generates token.",
+                "description": "Creates a user object using the provided details. Creates entry in membership invitation and generates token, then sends notification to use useing email/sms. Can be used multiple times if user deletes email/sms message. The link generated is to the frontend so that it can send a test patch call to /members/invite/{token}, if it fails with 405 then show form to add name and password.",
                 "tags": ["membership invitation", "user"],
                 "requestBody": {
                     "content": {
@@ -2051,14 +2051,6 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "first_name": {
-                                        "description": "the name of the user to be invited",
-                                        "type": "string"
-                                    },
-                                    "last_name": {
-                                        "description": "the last name of the user to be invited",
-                                        "type": "string"
-                                    },
                                     "email": {
                                         "description": "the email of the user to be invited",
                                         "type": "string",
@@ -2069,7 +2061,7 @@
                                         "type": "string"
                                     }
                                 },
-                                "required": ["email", "first_name"]
+                                "required": ["email"]
                             }
                         }
                     }
@@ -2121,7 +2113,7 @@
         "/members/invite/{token}": {
             "patch": {
                 "summary": "Makes invited user a member of the business.",
-                "description": "Deletes record of membership invitation and creates new membership record. If user has not registered, this should generate a token for the user to set their password.",
+                "description": "Checks that token is valid. Checks if the user that is associated has a password set yet. If not it fails with method not allowed. Otherwise it deletes record of membership invitation and creates new membership record.",
                 "parameters": [
                     {
                         "name": "token",
@@ -2134,15 +2126,40 @@
                     }
                 ],
                 "tags": ["membership invitation", "membership"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "All fields are required if 405 is returned when none are sent",
+                                "properties": {
+                                    "first_name": {
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "confirm_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "$ref": "#/components/responses/Success"
                     },
-                    "303": {
-                        "description": "User has not registered previously and must set a password first, this should redirect to reset password page."
-                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "description": "user has not registered yet, indicates for the frontend to display a form for the user to fill out and resubmit to this url."
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -2697,6 +2714,21 @@
                     }
                 }
             }
+        },
+        "/users/{token}": {
+            "tags": ["user"],
+            "parameters": [
+                {
+                    "name": "token",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "post": {}
         }
     }
 }
