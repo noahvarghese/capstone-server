@@ -507,7 +507,8 @@
         {
             "name": "settings",
             "description": "Settings related to user permissions"
-        }
+        },
+        { "name": "reports", "description": "admin reports" }
     ],
     "paths": {
         "/auth/register": {
