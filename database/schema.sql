@@ -156,6 +156,7 @@ CREATE TABLE manual (
     deleted_on DATETIME DEFAULT NULL,
     prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
     prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
+    published TINYINT(1) DEFAULT 0 NOT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
@@ -226,6 +227,7 @@ CREATE TABLE quiz (
     deleted_on DATETIME DEFAULT NULL,
     prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     prevent_edit TINYINT(1) NOT NULL DEFAULT 0,
+    published TINYINT(1) NOT NULL DEFAULT 0,
     manual_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (manual_id) REFERENCES manual(id),
