@@ -1358,6 +1358,74 @@
                 }
             }
         },
+        "/manuals/{id}/quiz": {
+            "get": {
+                "tags": ["quiz"],
+                "summary": "get the quiz associated with the manual",
+                "description": "only works if the logged in user is assigned the manual and the manual and quiz are published, or the user has permissions to edit the quiz",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "integer" },
+                                        "title": { "type": "string" },
+                                        "attempt_number": { "type": "integer" },
+                                        "published": { "type": "boolean" },
+                                        "delete_lock": { "type": "boolean" },
+                                        "edit_lock": { "type": "boolean" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz"],
+                "summary": "create quiz for manual",
+                "description": "will not work if a quiz already exists, or if user doesn;t have permissions",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": { "type": "string" },
+                                    "published": { "type": "boolean" },
+                                    "max_attempts": { "type": "integer" },
+                                    "prevent_delete": { "type": "boolean" },
+                                    "prevent_edit": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/manuals/{id}/sections": {
             "get": {
                 "tags": ["manual section"],
@@ -2333,6 +2401,174 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quiz": {
+            "get": {
+                "tags": ["quiz"],
+                "summary": "get all quizzes",
+                "parameters": [
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "enum": ["role", "department"]
+                        }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "description": "ids"
+                            }
+                        }
+                    },
+                    {
+                        "name": "published",
+                        "description": "whether to get manuals that are published or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "editable",
+                        "description": "whether to get manuals that are editable by the user or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "title": { "type": "string" },
+                                            "attempt_number": {
+                                                "type": "integer"
+                                            },
+                                            "published": { "type": "boolean" },
+                                            "delete_lock": {
+                                                "type": "boolean"
+                                            },
+                                            "edit_lock": { "type": "boolean" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quiz/{id}": {
+            "get": {
+                "tags": ["quiz"],
+                "summary": "get individual quiz",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "integer" },
+                                        "title": { "type": "string" },
+                                        "attempt_number": { "type": "integer" },
+                                        "published": { "type": "boolean" },
+                                        "delete_lock": { "type": "boolean" },
+                                        "edit_lock": { "type": "boolean" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz"],
+                "summary": "update quiz",
+                "description": "requires permissions.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": { "type": "string" },
+                                    "published": { "type": "boolean" },
+                                    "max_attempts": { "type": "integer" },
+                                    "prevent_delete": { "type": "boolean" },
+                                    "prevent_edit": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz"],
+                "summary": "delete quiz",
+                "description": "requires permissions.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
