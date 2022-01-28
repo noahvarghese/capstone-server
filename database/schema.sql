@@ -251,12 +251,13 @@ CREATE TABLE quiz_section (
 CREATE TABLE quiz_question (
     id INT NOT NULL AUTO_INCREMENT,
     question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
-    type ENUM("textarea", "small_text", "multiple_choice", "single_choice") COLLATE UTF8_GENERAL_CI NOT NULL, 
+    question_type_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     quiz_section_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
+    FOREIGN KEY (question_type_id) REFERENCES quiz_question_types(id),
     FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
