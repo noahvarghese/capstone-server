@@ -3354,7 +3354,7 @@
         },
         "/reports/quizzes": {
             "get": {
-                "tags": ["reports", "quiz attempt"],
+                "tags": ["reports"],
                 "summary": "retrieve a table of user and quiz combinations and whether they have been completed or not.",
                 "description": "requires permissions",
                 "parameters": [
