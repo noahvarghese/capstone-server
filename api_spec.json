@@ -1372,6 +1372,254 @@
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/{id}": {
+            "get": {
+                "tags": ["manual section"],
+                "summary": "get one section of manual",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualSection"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["manual section"],
+                "summary": "update section",
+                "description": "requires permissions and that edit lock not be on",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["manual section"],
+                "summary": "delete manual section",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/{id}/policies": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["policy"],
+                "summary": "get all policies in section",
+                "description": "requires permissions, or assignment",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualPolicy"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["policy"],
+                "summary": "create a new polciy in the given manual section",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of policy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/{section_id}/policies/{policy_id}": {
+            "parameters": [
+                {
+                    "name": "section_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": {
+                        "type": "integer"
+                    }
+                },
+                {
+                    "name": "policy_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "get": {
+                "tags": ["policy"],
+                "summary": "get individual policy",
+                "description": "requires permissions, or assignment",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualPolicy"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["policy"],
+                "summary": "update policy",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of policy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["policy"],
+                "summary": "delete policy",
+                "description": "requires permissions and that delete lock not be on",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             }
@@ -1466,82 +1714,6 @@
                         "schema": { "type": "integer" }
                     }
                 ],
-                "responses": {
-                    "200": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/manuals/sections/{id}": {
-            "get": {
-                "tags": ["manual section"],
-                "summary": "get one section of manual",
-                "description": "requires permissions",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ManualSection"
-                                }
-                            }
-                        }
-                    },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "put": {
-                "tags": ["manual section"],
-                "summary": "update section",
-                "description": "requires permissions and that edit lock not be on",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "title": {
-                                        "type": "string"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "delete": {
-                "tags": ["manual section"],
-                "summary": "delete manual section",
-                "description": "requires permissions",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
@@ -2092,6 +2264,9 @@
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
