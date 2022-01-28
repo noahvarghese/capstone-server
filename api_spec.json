@@ -477,8 +477,8 @@
             "description": "Content operations. One Policy has many pieces of Content."
         },
         {
-            "name": "policy read",
-            "description": "Policy Read operations. Model joins User and Policy, allows many to many relationship."
+            "name": "content read",
+            "description": "Content Read operations. Model joins User and Content, allows many to many relationship."
         },
         {
             "name": "quiz",
@@ -1756,12 +1756,12 @@
                 }
             }
         },
-        "/manuals/sections/policies/{id}/read": {
+        "/manuals/sections/policies/contents/{id}/read": {
             "description": "requires manual be published and assigned",
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
-                "tags": ["policy read"],
-                "summary": "retrieves whether the logged in user has read the policy yet",
+                "tags": ["content read"],
+                "summary": "retrieves whether the logged in user has read the content yet",
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1793,8 +1793,8 @@
                 }
             },
             "post": {
-                "tags": ["policy read"],
-                "summary": "states that user has read policy",
+                "tags": ["content read"],
+                "summary": "states that user has read the content",
                 "responses": {
                     "201": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
@@ -2714,21 +2714,6 @@
                     }
                 }
             }
-        },
-        "/users/{token}": {
-            "tags": ["user"],
-            "parameters": [
-                {
-                    "name": "token",
-                    "in": "path",
-                    "required": true,
-                    "description": "unique identifier",
-                    "schema": {
-                        "type": "integer"
-                    }
-                }
-            ],
-            "post": {}
         }
     }
 }

@@ -304,15 +304,15 @@ CREATE TABLE quiz_result (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE policy_read (
-    policy_id INT NOT NULL,
+CREATE TABLE content_read (
+    content_id INT NOT NULL,
     user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (policy_id) REFERENCES policy(id),
+    FOREIGN KEY (content_id) REFERENCES content(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
-    PRIMARY KEY (user_id, policy_id)
+    PRIMARY KEY (user_id, content_id)
 );
 
 CREATE TABLE event (
