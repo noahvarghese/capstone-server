@@ -482,7 +482,7 @@
         },
         {
             "name": "quiz",
-            "description": "Quiz operations. One Manual has many Quizzes."
+            "description": "Quiz operations. One Manual has one Quiz."
         },
         {
             "name": "quiz sections",
