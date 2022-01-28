@@ -2956,6 +2956,214 @@
                 }
             }
         },
+        "/quizzes/sections/questions/{id}/answers": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz answer"],
+                "summary": "get all answers for question",
+                "description": "requires either: permissions if it is not assigned to the user, or that it is published and assigned",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/QuizAnswerResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz answer"],
+                "summary": "create quiz answer",
+                "description": "requires crud permissions, and editable",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "answer": {
+                                        "type": "string"
+                                    },
+                                    "correct": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/sections/questions/answers/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz answer"],
+                "summary": "get answer in question",
+                "description": "admin only as it contains whether the answer is correct",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuizAnswer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz answer"],
+                "summary": "update answer",
+                "description": "requires crud permissions, and editable",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "answer": {
+                                        "type": "string"
+                                    },
+                                    "correct": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz answer"],
+                "summary": "delete answer",
+                "description": "requires crud permissions, and editable",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/{id}/attempt": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "post": {
+                "tags": ["quiz attempt"],
+                "summary": "creates quiz attempt entry",
+                "description": "this should get called right before the user starts a quiz, can only be called if quiz and manual are published",
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/NotPublishedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/attempt/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "put": {
+                "tags": ["quiz attempt"],
+                "summary": "updates quiz attempt entry",
+                "description": "Signals the end of an attempt. Sends update with new 'updated_on' and causes trigger to fire on table, only if the created_on and updated_on match.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz attempt"],
+                "summary": "deletes quiz attempt entry",
+                "description": "Only those with crud permissions on the resource can remove attempts.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/question_types": {
             "get": {
                 "tags": ["quiz question"],
@@ -2988,7 +3196,7 @@
                         "description": "whether the user(s) has read the manual or not",
                         "in": "query",
                         "required": false,
-                        "schema": { "type": "string" }
+                        "schema": { "type": "boolean" }
                     },
                     {
                         "name": "filter_field",
@@ -3060,6 +3268,7 @@
                                                         "type": "string"
                                                     },
                                                     "department": {
+                                                        "description": "since assignment can happen on the department level, auto populate all roles for department in here",
                                                         "type": "object",
                                                         "properties": {
                                                             "id": {
@@ -3133,6 +3342,193 @@
                         }
                     },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/quizzes": {
+            "get": {
+                "tags": ["reports", "quiz attempt"],
+                "summary": "retrieve a table of user and quiz combinations and whether they have been completed or not.",
+                "description": "requires permissions",
+                "parameters": [
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Search" },
+                    { "$ref": "#/components/parameters/Page" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    {
+                        "name": "completed",
+                        "description": "whether the user(s) has completed the quiz or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "boolean" }
+                    },
+                    {
+                        "name": "passed",
+                        "description": "whether the user(s) has passed the quiz or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "boolean" }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["role", "department", "user"]
+                        }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "description": "ids"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "first_name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": { "type": "string" },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "quiz": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "high_score": {
+                                                        "description": "computed from counting the # of questions in the quiz, and then checking which results the yser got correct for each attempt",
+                                                        "type": "integer"
+                                                    },
+                                                    "attempts": {
+                                                        "type": "integer",
+                                                        "description": "number of attempts the user took"
+                                                    }
+                                                }
+                                            },
+                                            "role": {
+                                                "description": "retrieve by following how the manual is assigned to the user",
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "department": {
+                                                        "description": "since assignment can happen on the department level, auto populate all roles for department in here",
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/quizzes/attempts": {
+            "get": {
+                "tags": ["reports", "quiz attempt"],
+                "summary": "get average attempts per person, per role and per department, requires permissions",
+                "description": "just to keep the computation out of the frontend",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "role_details": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "role": {
+                                                        "$ref": "#/components/schemas/RoleResponse"
+                                                    },
+                                                    "total_attempts": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "department_details": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "department": {
+                                                        "$ref": "#/components/schemas/Department"
+                                                    },
+                                                    "total_attempts": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/ArgumentsError"
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
                     },
