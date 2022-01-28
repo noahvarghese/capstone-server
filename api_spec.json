@@ -1037,12 +1037,26 @@
                 "description": "Retrieves combination of manuals that are assigned to user's role/department. Check user's permissions to determine if the user is allowed to edit the manual. If manual is assigned to same role as the user they are not allowed to edit. requires permissions, or assignment and published",
                 "parameters": [
                     {
+                        "name": "published",
+                        "description": "whether to get manuals that are published or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "editable",
+                        "description": "whether to get manuals that are editable by the user or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
                         "name": "filter_field",
                         "description": "fields to filter by",
                         "in": "query",
                         "required": false,
                         "schema": {
-                            "enum": ["editable", "role", "department"]
+                            "enum": ["role", "department"]
                         }
                     },
                     {
@@ -1054,7 +1068,7 @@
                             "type": "array",
                             "items": {
                                 "type": "integer",
-                                "description": "if using the 'editable' field, the array should be of length consisting of a 0 or 1 representing false or true respectively"
+                                "description": "ids"
                             }
                         }
                     },
@@ -2313,6 +2327,176 @@
                 ],
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/manuals": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "retrieve table of user and manual combinations and whether they have been read yet or not",
+                "description": "requires permissions and is filterable, has pagination and sorting, will filter based off user permissions if they are only allowed to view department reports",
+                "parameters": [
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Search" },
+                    { "$ref": "#/components/parameters/Page" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    {
+                        "name": "read",
+                        "description": "whether the user(s) has read the manual or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["role", "department", "manual", "user"]
+                        }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "description": "ids"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "first_name": {
+                                                "type": "string"
+                                            },
+                                            "last_name": { "type": "string" },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "manual": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "read": {
+                                                        "description": "computed from joining section -> policy -> content -> content_read",
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            },
+                                            "role": {
+                                                "description": "retrieve by following how the manual is assigned to the user",
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "department": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/manuals/unread": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "get users that have unread manuals",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "first_name": {
+                                            "type": "string"
+                                        },
+                                        "last_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "manuals": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
