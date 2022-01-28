@@ -998,6 +998,29 @@
                 }
             }
         },
+        "/departments/{id}/roles": {
+            "get": {
+                "tags": ["roles"],
+                "summary": "get all roles in department",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manuals": {
             "get": {
                 "tags": ["manual"],
@@ -2296,7 +2319,7 @@
             "get": {
                 "tags": ["role"],
                 "summary": "Get all roles",
-                "description": "get all roles in department or business depending on user permissions",
+                "description": "get all roles in business, requires permissions",
                 "parameters": [
                     { "$ref": "#/components/parameters/Limit" },
                     { "$ref": "#/components/parameters/Page" },
