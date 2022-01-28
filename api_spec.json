@@ -1000,7 +1000,7 @@
         },
         "/departments/{id}/roles": {
             "get": {
-                "tags": ["roles"],
+                "tags": ["role"],
                 "summary": "get all roles in department",
                 "description": "requires permissions",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
@@ -1017,7 +1017,15 @@
                                 }
                             }
                         }
-                    }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             }
         },
