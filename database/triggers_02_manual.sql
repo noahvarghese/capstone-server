@@ -1,4 +1,4 @@
-USE capstone;
+-- USE capstone;
 
 DELIMITER //
 

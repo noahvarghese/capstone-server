@@ -1,4 +1,4 @@
-USE capstone;
+-- USE capstone;
 
 DROP TRIGGER IF EXISTS business_update;
 CREATE TRIGGER business_update
