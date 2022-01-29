@@ -13,6 +13,9 @@ BEGIN
     IF OLD.prevent_edit = 1 AND NEW.prevent_edit = 1 THEN
         SET msg = CONCAT('QuizUpdateError: Quiz is locked from editing. ', CAST(NEW.id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    ELSEIF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('QuizDeleteError: Cannot delete quiz while delete lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
     
     SET NEW.updated_on = NOW();
@@ -136,7 +139,12 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('QuizQuestionUpdateError: Cannot update a question while the quiz is locked from editing. ', CAST(NEW.id AS CHAR));
+        IF NEW.deleted_on IS NOT NULL THEN
+            SET msg = CONCAT('QuizQuestionDeleteError: Cannot delete a question while the quiz is locked from editing. ', CAST(OLD.id AS CHAR));
+        ELSE
+            SET msg = CONCAT('QuizQuestionUpdateError: Cannot update a question while the quiz is locked from editing. ', CAST(NEW.id AS CHAR));
+        END IF;
+
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
@@ -212,7 +220,12 @@ BEGIN
     );
 
     IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('QuizAnswerUpdateError: Cannot update an answer while the quiz is locked from editing. ', CAST(NEW.id AS CHAR));
+        IF NEW.deleted_on IS NOT NULL THEN
+            SET msg = CONCAT('QuizAnswerDeleteError: Cannot delete an answer while the quiz is locked from editing. ', CAST(OLD.id AS CHAR));
+        ELSE
+            SET msg = CONCAT('QuizAnswerUpdateError: Cannot update an answer while the quiz is locked from editing. ', CAST(NEW.id AS CHAR));
+        END IF;
+
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
