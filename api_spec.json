@@ -996,6 +996,43 @@
                 }
             }
         },
+        "/businesses/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "post": {
+                "tags": ["business"],
+                "summary": "change business user is logged into",
+                "description": "user must be a member of the business",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["business"],
+                "summary": "change default business",
+                "description": "changes which business you are looking at after logging in",
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/Success"
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/departments": {
             "get": {
                 "tags": ["department"],
@@ -1121,7 +1158,7 @@
             "put": {
                 "tags": ["department"],
                 "summary": "updates department",
-                "description": "Pretty much only changes the name of the department",
+                "description": "changes the name of the department, admin department cannot be edited",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
@@ -1151,6 +1188,9 @@
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
@@ -1159,7 +1199,7 @@
             "delete": {
                 "tags": ["department"],
                 "summary": "deletes department",
-                "description": "Checks if any users or manuals are assigned to this department before deleting",
+                "description": "Checks if any users or manuals are assigned to this department before deleting. Also checks for delete lock, as the admin departments cannot be deleted.",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
@@ -4233,7 +4273,7 @@
             "post": {
                 "tags": ["role"],
                 "summary": "create new role",
-                "description": "creates new role if logged in user has department or global permissions",
+                "description": "creates new role if logged in user has department or global permissions, cannot create multiple roles for the admin department.",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -4278,6 +4318,9 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
@@ -4346,7 +4389,7 @@
             "put": {
                 "tags": ["role", "permission"],
                 "summary": "update individual role",
-                "description": "Can update the name of the role",
+                "description": "Can update the name of the role, the first role that is created for the admin department cannot be edited",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
@@ -4375,13 +4418,16 @@
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             },
             "delete": {
                 "tags": ["role", "permission"],
                 "summary": "delete role by id",
-                "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist",
+                "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist, cannot delete the first role for the admin department",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
