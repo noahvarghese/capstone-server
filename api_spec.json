@@ -3110,7 +3110,7 @@
                 }
             }
         },
-        "/quizzes/attempts/{attempt_id}/sections/questions/answers/{answer_id}/results": {
+        "/quizzes/attempts/{attempt_id}/{user_id}/results": {
             "parameters": [
                 {
                     "name": "attempt_id",
@@ -3119,7 +3119,7 @@
                     "schema": { "type": "integer" }
                 },
                 {
-                    "name": "answer_id",
+                    "name": "user_id",
                     "in": "path",
                     "required": true,
                     "schema": { "type": "integer" }
@@ -3128,14 +3128,83 @@
             "get": {
                 "tags": ["quiz result"],
                 "summary": "get all results for one attempt",
-                "description": "must logged in as the same user"
+                "description": "must logged in as the same user, or have permissions to view reports",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "question": {
+                                                "$ref": "#/components/schemas/QuizQuestion"
+                                            },
+                                            "answer": {
+                                                "$ref": "#/components/schemas/QuizAnswer"
+                                            },
+                                            "attempt": {
+                                                "$ref": "#/components/schemas/QuizAttempt"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
             },
-            "post": { "tags": ["quiz result"] }
+            "post": {
+                "tags": ["quiz result"],
+                "summary": "create user's quiz answer",
+                "description": "can only be done by the same user that is being referenced",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
         },
-        "/quizzes/attempts/{attempt_id}/sections/questions/answers/results/{result_id}": {
+        "/quizzes/attempts/{attempt_id}/{user_id}/results/{result_id}": {
             "parameters": [
                 {
                     "name": "attempt_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "user_id",
                     "in": "path",
                     "required": true,
                     "schema": { "type": "integer" }
@@ -3147,8 +3216,52 @@
                     "schema": { "type": "integer" }
                 }
             ],
-            "get": { "tags": ["quiz result"] },
-            "put": { "tags": ["quiz result"] }
+            "get": {
+                "tags": ["quiz result"],
+                "summary": "get specific result for one attempt",
+                "description": "must logged in as the same user, or have permissions to view reports",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/QuizQuestion"
+                                        },
+                                        "answer": {
+                                            "$ref": "#/components/schemas/QuizAnswer"
+                                        },
+                                        "attempt": {
+                                            "$ref": "#/components/schemas/QuizAttempt"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
         },
         "/quizzes/{id}/attempts": {
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
@@ -3362,6 +3475,73 @@
                 "description": "for creating quiz questions. requires permissions for resources",
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/departments/admin": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "get all members with elevated priviliges for each department",
+                "description": "requires permissions",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "first_name": {
+                                                        "description": "The user's first name",
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "description": "The user's last name",
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "description": "The user's email",
+                                                        "type": "string",
+                                                        "format": "email"
+                                                    },
+                                                    "phone": {
+                                                        "description": "The user's phone number",
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "department": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
                     },
