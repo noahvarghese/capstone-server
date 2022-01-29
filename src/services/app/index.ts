@@ -76,7 +76,6 @@ export const shutdown = async (app: {
         app.server.close((err) => {
             Logs.Event("Server terminated");
             if (err) {
-                Logs.Test(err);
                 rej(err);
             }
             res();

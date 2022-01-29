@@ -17,12 +17,11 @@ import { Connection } from "typeorm";
     });
 
     let shutting_down = false;
+
     const shutdown = async () => {
         if (!shutting_down) {
             shutting_down = true;
-            console.log("");
-            await shutdownApp(app);
-            exit();
+            shutdownApp(app).finally(() => exit());
         }
     };
 
