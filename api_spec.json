@@ -153,7 +153,7 @@
                         "description": "title of policy",
                         "type": "string"
                     },
-                    "content": {
+                    "contents": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/ManualContent"
@@ -2089,7 +2089,7 @@
                                             "id": { "type": "integer" },
                                             "name": { "type": "string" },
                                             "permissions": {
-                                                "$ref": "#/components/schemas/Permission"
+                                                "$ref": "#/components/schemas/PermissionResponse"
                                             },
                                             "department": {
                                                 "type": "object",
