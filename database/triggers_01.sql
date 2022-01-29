@@ -12,43 +12,28 @@ SET NEW.updated_on = NOW();
 
 DELIMITER //
 
-CREATE TRIGGER membership_insert
-BEFORE INSERT
+CREATE TRIGGER membership_update
+BEFORE UPDATE 
 ON membership FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
-
-    IF (NEW.business_id IS NULL OR NEW.business_id = '') THEN
-        SET msg = "MembershipInsertError: Business id cannot be null or empty";
-    ELSEIF (NEW.user_id IS NULL OR NEW.user_id = '') THEN
-        SET msg = "MembershipInsertError: User id cannot be null or empty";
-    END IF;
-
-    IF (msg != '') THEN
+    IF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('MembershipDeleteError: Cannot delete membership while delete lock is set. business: ', CAST(OLD.business_id AS CHAR), ' user: ', CAST(OLD.user_id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
 
 //
 
-CREATE TRIGGER membership_update
-BEFORE UPDATE
+CREATE TRIGGER membership_delete
+BEFORE DELETE
 ON membership FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
-    SET msg = '';
-
-    IF (NEW.business_id IS NULL OR NEW.business_id = '') THEN
-        SET msg = "MembershipUpdateError: Business id cannot be null or empty";
-    ELSEIF (NEW.user_id IS NULL OR NEW.user_id = '') THEN
-        SET msg = "MembershipUpdateError: User id cannot be null or empty";
-    END IF;
-
-    IF (msg != '') THEN
+    IF OLD.prevent_delete = 1 THEN
+        SET msg = CONCAT('MembershipDeleteError: Cannot delete membership while delete lock is set. business: ', CAST(OLD.business_id AS CHAR), ' user: ', CAST(OLD.user_id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
-
-    SET NEW.updated_on = NOW();
 END;
 
 //
@@ -111,19 +96,35 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
+    IF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('DepartmentDeleteError: Cannot delete department while delete lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
     SET NEW.updated_on = NOW();
 END;
 
 //
 
-DELIMITER ;
-
+/* Prevent changing for admin role/department */
 CREATE TRIGGER permission_update
 BEFORE UPDATE
 ON permission FOR EACH ROW
-SET NEW.updated_on = NOW();
+BEGIN
+    DECLARE msg VARCHAR(128);
+    DECLARE prevent_role_edit INT;
 
-DELIMITER //
+    SET prevent_role_edit = (SELECT prevent_edit FROM role WHERE role.permission_id = OLD.id);
+
+    IF prevent_role_edit = 1 THEN
+        SET msg = CONCAT('PermissionUpdateError: Cannot edit permissions while edit lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
+END;
+
+//
 
 CREATE TRIGGER role_delete
 BEFORE DELETE
@@ -150,6 +151,11 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
+    IF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('RoleDeleteError: Cannot delete role while delete lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
     SET NEW.updated_on = NOW();
 END;
 
@@ -172,8 +178,13 @@ BEFORE UPDATE
 ON quiz_attempt FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
-    SET msg = 'QuizAttemptUpdateError: Cannot update quiz_attempt';
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+
+    IF OLD.created_on < OLD.updated_on THEN
+        SET msg = CONCAT('QuizAttemptUpdateError: quiz_attempt_id ', CAST(OLD.id AS CHAR), ' has been completed.');
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
+    SET NEW.updated_on = NOW();
 END;
 
 //
@@ -189,12 +200,12 @@ END;
 
 //
 
-CREATE TRIGGER policy_read_update
+CREATE TRIGGER content_read_update
 BEFORE UPDATE
-ON policy_read FOR EACH ROW
+ON content_read FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
-    SET msg = 'PolicyReadUpdateError: Cannot update policy_read';
+    SET msg = 'ContentReadUpdateError: Cannot update content_read';
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
 END;
 
