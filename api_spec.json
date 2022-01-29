@@ -408,6 +408,20 @@
                     }
                 }
             },
+            "QuizAttemptResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "quiz": {
+                        "type": "object",
+                        "properties": {
+                            "id": { "type": "integer" },
+                            "title": { "type": "string" }
+                        }
+                    },
+                    "user": { "$ref": "#/components/schemas/UserResponse" }
+                }
+            },
             "QuizAttempt": {
                 "type": "object",
                 "properties": {
@@ -427,7 +441,7 @@
             "QuizSection": {
                 "type": "object",
                 "properties": {
-                    "id": { "type": "string" },
+                    "id": { "type": "integer" },
                     "title": { "type": "string" },
                     "questions": {
                         "type": "array",
@@ -444,7 +458,7 @@
                     "prevent_delete": { "type": "boolean" },
                     "prevent_edit": { "type": "boolean" },
                     "published": { "type": "boolean" },
-                    "manual": { "$ref": "#/components/schemas/Manual" },
+                    "manual": { "$ref": "#/components/schemas/ManualResponse" },
                     "sections": {
                         "type": "array",
                         "items": { "$ref": "#/components/schemas/QuizSection" }
@@ -533,7 +547,61 @@
                     "roles": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/Role"
+                            "$ref": "#/components/schemas/RoleResponse"
+                        }
+                    }
+                }
+            },
+            "UserResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "first_name": {
+                        "description": "The user's first name",
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "description": "The user's last name",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "The user's email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "description": "The user's phone number",
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "unique identifier"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "role name"
+                                },
+                                "department": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "unique identifier"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "description": "department name"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -3208,7 +3276,7 @@
                                                 "$ref": "#/components/schemas/QuizAnswer"
                                             },
                                             "attempt": {
-                                                "$ref": "#/components/schemas/QuizAttempt"
+                                                "$ref": "#/components/schemas/QuizAttemptResponse"
                                             }
                                         }
                                     }
@@ -3307,7 +3375,7 @@
                                             "$ref": "#/components/schemas/QuizAnswer"
                                         },
                                         "attempt": {
-                                            "$ref": "#/components/schemas/QuizAttempt"
+                                            "$ref": "#/components/schemas/QuizAttemptResponse"
                                         }
                                     }
                                 }
@@ -3368,7 +3436,30 @@
                                                         "type": "string"
                                                     },
                                                     "role": {
-                                                        "$ref": "#/components/schemas/RoleResponse"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "role name"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "description": "unique identifier"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "department name"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             },
@@ -3496,7 +3587,30 @@
                                                         "type": "string"
                                                     },
                                                     "role": {
-                                                        "$ref": "#/components/schemas/RoleResponse"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "role name"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "description": "unique identifier"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "department name"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             },
@@ -3547,7 +3661,7 @@
                 }
             }
         },
-        "/reports/departments/admin": {
+        "/reports/admin": {
             "get": {
                 "tags": ["reports"],
                 "summary": "get all members with elevated priviliges for each department",
@@ -3584,17 +3698,28 @@
                                                     "phone": {
                                                         "description": "The user's phone number",
                                                         "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "department": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer"
                                                     },
-                                                    "name": {
-                                                        "type": "string"
+                                                    "role": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -3932,7 +4057,30 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "role": {
-                                                        "$ref": "#/components/schemas/RoleResponse"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "role name"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "description": "unique identifier"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "department name"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     },
                                                     "total_attempts": {
                                                         "type": "integer"
@@ -3946,7 +4094,17 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "department": {
-                                                        "$ref": "#/components/schemas/Department"
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "department name"
+                                                            }
+                                                        }
                                                     },
                                                     "total_attempts": {
                                                         "type": "integer"
@@ -3969,6 +4127,37 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/quizzes/incomplete": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "get all users who have incomplete quizzes",
+                "description": "requires permissions, and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResponse"
+                                        },
+                                        "quiz": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": { "type": "integer" },
+                                                "title": { "type": "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
