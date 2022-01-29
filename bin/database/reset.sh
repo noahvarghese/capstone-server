@@ -9,6 +9,8 @@ reset_db() {
 
     DB="${DB_NAME}${EXTENSION}"
 
+    echo "[ EVENT ]: Creating database $DB"
+
     gen_reset_script $DB
     exec_sql $SQL_INIT_FILE
     rm $SQL_INIT_FILE
@@ -31,7 +33,7 @@ if [[ $NODE_ENV == 'dev' ]]; then
 fi
 
 if [[ -z $1 ]]; then
-    echo "Must provide a database name" 1>&2
+    echo "[ ERROR ]: Must provide a database name" 1>&2
     exit 1
 fi
 

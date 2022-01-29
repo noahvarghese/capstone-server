@@ -8,6 +8,8 @@ drop_db() {
     EXTENSION=$1
     DB="${DB_NAME}${EXTENSION}"
 
+    echo "[ EVENT ]: Dropping database $DB"
+
     gen_drop_script $DB
     exec_sql $SQL_DROP_FILE
     rm $SQL_DROP_FILE
@@ -21,7 +23,7 @@ if [[ $NODE_ENV == 'dev' ]]; then
 fi
 
 if [[ -z $1 ]]; then
-    echo "Must provide a database extension" 1>&2
+    echo "[ ERROR ]: Must provide a database extension" 1>&2
     exit 1
 fi
 

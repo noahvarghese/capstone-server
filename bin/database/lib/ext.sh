@@ -1,7 +1,7 @@
 #!/bin/bash
 
 read -r -d '' EXT_HELP<<EOF
-    \nRequires one ofthe following three (3) options\n
+    \n[ ERROR ]: Requires one ofthe following three (3) options\n
     \t-t\t\tSelects the 'test' environment, if there is a string after, it will be added to the database name\n
     \t-d\t\tSelects the'dev' environment\n
     \t-p\t\tSelects the 'prod' environment, leaves the db name without an extension e.g. dbname instead of dbname_extension\n
