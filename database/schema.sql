@@ -69,6 +69,7 @@ CREATE TABLE membership (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     default_option TINYINT(1) NOT NULL,
     updated_by_user_id INT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),

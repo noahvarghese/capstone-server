@@ -2388,6 +2388,7 @@
             "delete": {
                 "tags": ["membership"],
                 "summary": "Delete membership",
+                "description": "cannot delete first admin membership made on creation",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
