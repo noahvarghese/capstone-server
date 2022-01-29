@@ -32,7 +32,7 @@ get_db_ext() {
                 if [[ -z $test_ext ]]; then
                     EXTENSION="_test"
                 else
-                    EXTENSION="_test_${!i}"  
+                    EXTENSION="_test_$test_ext"  
                 fi
                 ;;
             "-h")
