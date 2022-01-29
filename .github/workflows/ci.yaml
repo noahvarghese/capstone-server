@@ -21,16 +21,6 @@ jobs:
         uses: ./.github/actions/cache-node-modules
       - name: check formatting
         run: npm run format:check
-  check-api-documentation:
-    if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: "Check API Documentation"
-        uses: ./.github/actions/check-documentation
-        with:
-          doc: ./README.md
-          routes: ./src/routes/ 
   continuous-integration:
     if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
     env:
