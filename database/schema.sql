@@ -30,11 +30,12 @@ CREATE TABLE user (
     last_name VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     email VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     phone VARCHAR(50) NOT NULL,
-    address VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
-    postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
-    province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
-    country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
+    /* Simplify register form as we need the business address more */
+    -- address VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    -- city VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
+    -- postal_code VARCHAR(6) COLLATE UTF8_GENERAL_CI NOT NULL,
+    -- province VARCHAR(2) COLLATE UTF8_GENERAL_CI NOT NULL,
+    -- country VARCHAR(50) COLLATE UTF8_GENERAL_CI DEFAULT("CA"),
     birthday DATETIME NOT NULL,
     password VARCHAR(255) NOT NULL,
     token VARCHAR(32) DEFAULT NULL,
@@ -137,7 +138,8 @@ CREATE TABLE role (
 CREATE TABLE user_role (
     user_id INT NOT NULL,
     role_id INT NOT NULL,
-    primary_role_for_user TINYINT(1) NOT NULL,
+    /* Unnecessary */
+    -- primary_role_for_user TINYINT(1) NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -248,26 +250,26 @@ CREATE TABLE quiz_section (
     PRIMARY KEY(id)
 );
 
-CREATE TABLE quiz_question (
-    id INT NOT NULL AUTO_INCREMENT,
-    question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
-    question_type_id INT NOT NULL,
-    created_on DATETIME NOT NULL DEFAULT NOW(),
-    updated_on DATETIME NOT NULL DEFAULT NOW(),
-    deleted_on DATETIME DEFAULT NULL,
-    quiz_section_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
-    FOREIGN KEY (question_type_id) REFERENCES quiz_question_types(id),
-    FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
-    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    PRIMARY KEY (id)
-);
-
 CREATE TABLE quiz_question_types (
     id INT NOT NULL AUTO_INCREMENT,
     question_type ENUM("multiple choice", "single choice") COLLATE UTF8_GENERAL_CI NOT NULL,
     html_tag VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
     html_attributes LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE quiz_question (
+    id INT NOT NULL AUTO_INCREMENT,
+    question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
+    quiz_section_id INT NOT NULL,
+    question_type_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
+    FOREIGN KEY (question_type_id) REFERENCES quiz_question_types(id),
+    FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
 
