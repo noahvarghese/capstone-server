@@ -2,6 +2,8 @@ USE capstone;
 
 DELIMITER //
 
+DROP TRIGGER IF EXISTS manual_delete //
+
 CREATE TRIGGER manual_delete
 BEFORE DELETE
 ON manual FOR EACH ROW
@@ -15,6 +17,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS manual_update //
 
 CREATE TRIGGER manual_update
 BEFORE UPDATE
@@ -35,6 +39,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS manual_assignment_insert //
+
 CREATE TRIGGER manual_assignment_insert
 BEFORE INSERT
 ON manual_assignment FOR EACH ROW
@@ -47,6 +53,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS manual_assignment_update //
 
 CREATE TRIGGER manual_assignment_update
 BEFORE UPDATE
@@ -61,6 +69,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS manual_section_insert //
 
 CREATE TRIGGER manual_section_insert
 BEFORE INSERT
@@ -77,6 +87,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS manual_section_update //
 
 CREATE TRIGGER manual_section_update
 BEFORE UPDATE
@@ -101,6 +113,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS manual_section_delete //
+
 CREATE TRIGGER manual_section_delete
 BEFORE DELETE
 ON manual_section FOR EACH ROW
@@ -116,6 +130,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS policy_insert //
 
 CREATE TRIGGER policy_insert
 BEFORE INSERT 
@@ -141,6 +157,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS policy_update //
 
 CREATE TRIGGER policy_update
 BEFORE UPDATE
@@ -172,6 +190,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS policy_delete //
+
 CREATE TRIGGER policy_delete
 BEFORE DELETE 
 ON policy FOR EACH ROW
@@ -193,6 +213,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS content_insert //
 
 CREATE TRIGGER content_insert
 BEFORE INSERT 
@@ -217,6 +239,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS content_update //
 
 CREATE TRIGGER content_update
 BEFORE UPDATE
@@ -246,6 +270,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS content_delete //
 
 CREATE TRIGGER content_delete
 BEFORE DELETE 

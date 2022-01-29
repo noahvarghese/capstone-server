@@ -1,16 +1,20 @@
 USE capstone;
 
+DROP TRIGGER IF EXISTS business_update;
 CREATE TRIGGER business_update
 BEFORE UPDATE
 ON business FOR EACH ROW
 SET NEW.updated_on = NOW();
 
+DROP TRIGGER IF EXISTS user_update;
 CREATE TRIGGER user_update
 BEFORE UPDATE
 ON user FOR EACH ROW
 SET NEW.updated_on = NOW();
 
 DELIMITER //
+
+DROP TRIGGER IF EXISTS membership_update //
 
 CREATE TRIGGER membership_update
 BEFORE UPDATE 
@@ -25,6 +29,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS membership_delete //
+
 CREATE TRIGGER membership_delete
 BEFORE DELETE
 ON membership FOR EACH ROW
@@ -38,6 +44,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS membership_request_insert //
+
 CREATE TRIGGER membership_request_insert
 BEFORE INSERT
 ON membership_request FOR EACH ROW
@@ -48,6 +56,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS membership_request_update //
 
 CREATE TRIGGER membership_request_update
 BEFORE UPDATE 
@@ -60,6 +70,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS users_forgot_password_token_created //
+
 CREATE TRIGGER users_forgot_password_token_created
 BEFORE UPDATE
 ON user FOR EACH ROW
@@ -70,6 +82,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS department_delete //
 
 CREATE TRIGGER department_delete
 BEFORE DELETE
@@ -84,6 +98,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS department_update //
 
 CREATE TRIGGER department_update
 BEFORE UPDATE 
@@ -106,6 +122,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS permission_update //
+
 /* Prevent changing for admin role/department */
 CREATE TRIGGER permission_update
 BEFORE UPDATE
@@ -126,6 +144,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS role_delete //
+
 CREATE TRIGGER role_delete
 BEFORE DELETE
 ON role FOR EACH ROW
@@ -139,6 +159,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS role_update //
 
 CREATE TRIGGER role_update
 BEFORE UPDATE 
@@ -161,6 +183,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS user_role_update //
+
 CREATE TRIGGER user_role_update
 BEFORE UPDATE
 ON user_role FOR EACH ROW
@@ -172,6 +196,7 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS quiz_attempt_update //
 
 CREATE TRIGGER quiz_attempt_update
 BEFORE UPDATE
@@ -189,6 +214,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS quiz_result_update //
+
 CREATE TRIGGER quiz_result_update
 BEFORE UPDATE
 ON quiz_result FOR EACH ROW
@@ -200,6 +227,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS content_read_update //
+
 CREATE TRIGGER content_read_update
 BEFORE UPDATE
 ON content_read FOR EACH ROW
@@ -210,6 +239,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS event_insert //
 
 CREATE TRIGGER event_insert
 BEFORE INSERT
@@ -223,6 +254,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS event_update //
     
 CREATE TRIGGER event_update
 BEFORE UPDATE
