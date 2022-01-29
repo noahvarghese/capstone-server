@@ -2,9 +2,10 @@
 
 BRANCH_NAME=$(git branch --show-current)
 BRANCH_NAME=$(echo $BRANCH_NAME | sed -r 's/[-.:]/_/g')
-# Get name
+
+# DYNAMIC NAME
 export DB_ENV=test_"$BRANCH_NAME"_$(date +%s)
-DB_NAME="${DB}${DB_ENV}"
+DB_NAME="${DB_NAME}${DB_ENV}"
 
 echo "[ Event ]: Initting ${DB_NAME}"
 
