@@ -21,13 +21,16 @@
         "sourceMap": true,
         "outDir": "./build",
         "rootDir": "./src",
+        "resolveJsonModule": true,
         "paths": {
-            "@config/*": ["config/*"],
-            "@middleware/*": ["middleware/*"],
-            "@models/*": ["models/*"],
-            "@routes/*": ["routes/*"],
-            "@services/*": ["services/*"],
-            "@util/*": ["util/*"]
+            "@config/*": ["src/config/*"],
+            "@controllers/*":["src/controllers/*"],
+            "@handlers/*":["src/handlers/*"],
+            "@middleware/*": ["src/middleware/*"],
+            "@models/*": ["src/models/*"],
+            "@routes/*": ["src/routes/*"],
+            "@services/*": ["src/services/*"],
+            "@util/*": ["src/util/*"],
         }
     },
     "ts-node": {

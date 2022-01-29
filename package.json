@@ -148,6 +148,8 @@
     },
     "_moduleAliases": {
         "@config": "config",
+        "@controllers": "controllers",
+        "@handlers": "handlers",
         "@middleware": "middleware",
         "@models": "models",
         "@routes": "routes",
