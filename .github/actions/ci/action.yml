@@ -6,17 +6,28 @@ runs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v2
     - uses: actions/setup-node@v2
-    - name: install python dependencies
-      run: pip install -r ./bin/database/requirements.txt
+    - name: install script dependencies
+      run: sudo apt-get install -y mysql-client
       shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
     - id: cache-node-modules
       uses: ./.github/actions/cache-node-modules
+    - name: "List changed unit tests"
+      run: |
+        npm run unit:test:list:branch -- "${{ steps.changed.outputs.changed }}"
+      shell: bash
+    - name: "List changed integration tests"
+      run: |
+        npm run integration:test:list:branch -- "${{ steps.changed.outputs.changed }}"
+      shell: bash
+    - name: "List changed database tests"
+      run: |
+        npm run database:test:list:branch -- "${{ steps.changed.outputs.changed }}"
+      shell: bash
     - name: test
       run: |
-        npm run test -- --changedSince "${{ steps.changed.outputs.changed }}"
+        npm run unit:test -- --changedSince "${{ steps.changed.outputs.changed }}"
       shell: bash
