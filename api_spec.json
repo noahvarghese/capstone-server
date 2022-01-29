@@ -240,6 +240,68 @@
                     }
                 }
             },
+            "PermissionResponse": {
+                "description": "Permissions applied to members of a Role.",
+                "type": "object",
+                "properties": {
+                    "global_crud_users": {
+                        "description": "Allows user to invite users to, or remove users from business.",
+                        "type": "boolean"
+                    },
+                    "global_crud_department": {
+                        "description": "Allows user to create/remove/change name of department(s).",
+                        "type": "boolean"
+                    },
+                    "global_crud_role": {
+                        "description": "Allows user to create/remove/change name of role(s), as well as modify the permissions of this role.",
+                        "type": "boolean"
+                    },
+                    "global_crud_resources": {
+                        "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_department": {
+                        "description": "Allowed to assign members of the business to departments within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_role": {
+                        "description": "Allowed to assign members of the business to roles within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_department": {
+                        "description": "Allows to assign manuals/quizzes to department(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_role": {
+                        "description": "Allows to assign manuals/quizzes to role(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_view_reports": {
+                        "description": "Allows user to view reports for all areas of business.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_role": {
+                        "description": "Allows user to create/delete/update roles within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_resources": {
+                        "description": "Allows user to create/delete/update resources within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_users_to_role": {
+                        "description": "Allows user to update other users assignment to roles within the department that both users reside in.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_resources_to_role": {
+                        "description": "Allows user to update resource assignment within the department that they are already apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_view_reports": {
+                        "description": "Allows user to view reports for all objects residing in current department.",
+                        "type": "boolean"
+                    }
+                }
+            },
             "Permission": {
                 "description": "Permissions applied to members of a Role.",
                 "type": "object",
@@ -3998,7 +4060,7 @@
                                         "type": "integer"
                                     },
                                     "permissions": {
-                                        "$ref": "#/components/schemas/Permission"
+                                        "$ref": "#/components/schemas/PermissionResponse"
                                     }
                                 }
                             }
@@ -4071,7 +4133,7 @@
                                             }
                                         },
                                         "permissions": {
-                                            "$ref": "#/components/schemas/Permission"
+                                            "$ref": "#/components/schemas/PermissionResponse"
                                         },
                                         "num_members": {
                                             "type": "integer",
@@ -4107,7 +4169,7 @@
                                         "description": "the new name of the role"
                                     },
                                     "permissions": {
-                                        "$ref": "#/components/schemas/Permission"
+                                        "$ref": "#/components/schemas/PermissionResponse"
                                     }
                                 },
                                 "required": ["name", "permissions"]
