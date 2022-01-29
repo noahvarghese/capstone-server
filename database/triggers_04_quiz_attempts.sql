@@ -57,9 +57,11 @@ BEGIN
     SET max_attempts = (SELECT q.max_attempts FROM quiz q WHERE q.id = NEW.quiz_id);
     SET user_attempts = (SELECT COUNT(*) FROM quiz_attempt q WHERE q.quiz_id = NEW.quiz_id AND q.user_id = NEW.user_id);
 
-    IF user_attempts = max_attempts THEN
-        SET msg = CONCAT('QuizAttemptInsertError: Max quiz attempts reached for user ', CAST(NEW.user_id AS CHAR), ' number of attempts ', CAST(user_attempts AS CHAR), ' max attempts ', CAST(max_attempts AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    IF max_attempts IS NOT NULL THEN
+        IF user_attempts = max_attempts THEN
+            SET msg = CONCAT('QuizAttemptInsertError: Max quiz attempts reached for user ', CAST(NEW.user_id AS CHAR), ' number of attempts ', CAST(user_attempts AS CHAR), ' max attempts ', CAST(max_attempts AS CHAR));
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+        END IF;
     END IF;
 END;
 
