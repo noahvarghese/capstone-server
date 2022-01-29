@@ -154,12 +154,12 @@ CREATE TABLE user_role (
 CREATE TABLE manual (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    created_on DATETIME NOT NULL DEFAULT NOW(),
-    updated_on DATETIME NOT NULL DEFAULT NOW(),
-    deleted_on DATETIME DEFAULT NULL,
     prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
     prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
     published TINYINT(1) DEFAULT 0 NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
