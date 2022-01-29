@@ -196,37 +196,6 @@ END;
 
 //
 
-DROP TRIGGER IF EXISTS quiz_attempt_update //
-
-CREATE TRIGGER quiz_attempt_update
-BEFORE UPDATE
-ON quiz_attempt FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-
-    IF OLD.created_on < OLD.updated_on THEN
-        SET msg = CONCAT('QuizAttemptUpdateError: quiz_attempt_id ', CAST(OLD.id AS CHAR), ' has been completed.');
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-
-    SET NEW.updated_on = NOW();
-END;
-
-//
-
-DROP TRIGGER IF EXISTS quiz_result_update //
-
-CREATE TRIGGER quiz_result_update
-BEFORE UPDATE
-ON quiz_result FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    SET msg = 'QuizResultUpdateError: Cannot update quiz_result';
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-END;
-
-//
-
 DROP TRIGGER IF EXISTS content_read_update //
 
 CREATE TRIGGER content_read_update
