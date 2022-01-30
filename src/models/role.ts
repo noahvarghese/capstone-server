@@ -13,10 +13,10 @@ export interface RoleAttributes {
 
 export const EmptyRoleAttributes = (): RoleAttributes => ({
     name: "",
-    department_id: -1,
-    permission_id: -1,
+    department_id: NaN,
+    permission_id: NaN,
     prevent_delete: false,
-    updated_by_user_id: -1,
+    updated_by_user_id: NaN,
     prevent_edit: false,
 });
 

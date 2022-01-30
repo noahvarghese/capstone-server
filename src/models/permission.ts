@@ -40,7 +40,7 @@ export const EmptyPermissionAttributes = (): PermissionAttributes => ({
     dept_assign_users_to_role: false,
     dept_assign_resources_to_role: false,
     dept_view_reports: false,
-    updated_by_user_id: -1,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "permission" })

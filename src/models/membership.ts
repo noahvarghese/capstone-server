@@ -6,14 +6,16 @@ export interface MembershipAttributes {
     user_id: number | null;
     business_id: number | null;
     updated_by_user_id: number | null;
-    default: boolean;
+    default_option: boolean;
+    prevent_delete: boolean;
 }
 
 export const EmptyMembershipAttributes = (): MembershipAttributes => ({
-    user_id: -1,
-    business_id: -1,
-    updated_by_user_id: null,
-    default: false,
+    user_id: NaN,
+    business_id: NaN,
+    updated_by_user_id: NaN,
+    default_option: false,
+    prevent_delete: false
 });
 
 @Entity()
@@ -25,10 +27,12 @@ export default class Membership
     public user_id!: number;
     @PrimaryColumn()
     public business_id!: number;
-    @Column({ nullable: true, type: "int" })
+    @Column()
     public updated_by_user_id!: number | null;
-    @Column({ name: "default_option" })
-    public default!: boolean;
+    @Column()
+    public default_option!: boolean;
+    @Column()
+    public prevent_delete!: boolean;
 
     public constructor(options?: Partial<MembershipAttributes>) {
         super();
