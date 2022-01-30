@@ -13,12 +13,12 @@ export interface MembershipRequestAttributes {
 
 export const EmptyMembershipRequestAttributes =
     (): MembershipRequestAttributes => ({
-        user_id: -1,
-        business_id: -1,
+        user_id: NaN,
+        business_id: NaN,
         token: "",
         // sets date to 24 hours from now
         token_expiry: new Date(new Date().setHours(new Date().getHours() + 24)),
-        updated_by_user_id: -1,
+        updated_by_user_id: NaN,
     });
 
 @Entity()
