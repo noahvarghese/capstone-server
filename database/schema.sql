@@ -62,7 +62,7 @@ CREATE TABLE membership (
     user_id INT NOT NULL,
     prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     default_option TINYINT(1) NOT NULL,
-    updated_by_user_id INT DEFAULT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE quiz_question (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (question_type_id) REFERENCES quiz_question_types(id),
+    FOREIGN KEY (question_type_id) REFERENCES quiz_question_type(id),
     FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
