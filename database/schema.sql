@@ -149,10 +149,10 @@ CREATE TABLE manual (
     prevent_delete TINYINT(1)  DEFAULT 0 NOT NULL,
     prevent_edit TINYINT(1) DEFAULT 0 NOT NULL,
     published TINYINT(1) DEFAULT 0 NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -176,11 +176,11 @@ CREATE TABLE manual_assignment (
 CREATE TABLE manual_section (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    manual_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    manual_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
@@ -189,11 +189,11 @@ CREATE TABLE manual_section (
 CREATE TABLE policy (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    manual_section_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    manual_section_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (manual_section_id) REFERENCES manual_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
@@ -203,11 +203,11 @@ CREATE TABLE content (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     content LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
+    policy_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    policy_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (policy_id) REFERENCES policy(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
