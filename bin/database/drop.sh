@@ -32,6 +32,8 @@ drop_db() {
     gen_drop_script $DB
     exec_sql $SQL_DROP_FILE
     rm $SQL_DROP_FILE
+
+    exit 0
 }
 
 DB_ENV=""

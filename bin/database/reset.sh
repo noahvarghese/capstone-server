@@ -23,6 +23,8 @@ reset_db() {
             break
         fi
     done
+
+    exit 0
 }
 
 read -r -d '' HELP<<EOF
