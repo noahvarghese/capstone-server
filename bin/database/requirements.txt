@@ -1,4 +1,0 @@
-python-dotenv
-mysql-connector-python
-GitPython
-regex
