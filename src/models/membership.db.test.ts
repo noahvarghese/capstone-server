@@ -4,6 +4,7 @@ import Model from "@test/model/helpers";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
 import Membership, { MembershipAttributes } from "./membership";
+import ModelActions from "@test/model/helpers/actions";
 
 let baseWorld: BaseWorld | undefined;
 
@@ -42,7 +43,7 @@ test("Create membership requires business_id", async () => {
     await ModelTestFail.create<Membership, MembershipAttributes>(
         baseWorld,
         Membership,
-        /MembershipInsertError: Business id cannot be null or empty/
+        /ER_BAD_NULL_ERROR: Column 'business_id' cannot be null/
     );
 });
 
@@ -51,7 +52,7 @@ test("Update membership should fail when business is null or empty", async () =>
         baseWorld,
         Membership,
         { business_id: null },
-        /MembershipUpdateError: Business id cannot be null or empty/
+        /ER_BAD_NULL_ERROR: Column 'business_id' cannot be null/
     );
 });
 
@@ -60,8 +61,33 @@ test("Update membership should fail when user is null or empty", async () => {
         baseWorld,
         Membership,
         { user_id: null },
-        /MembershipUpdateError: User id cannot be null or empty/
+        /ER_BAD_NULL_ERROR: Column 'user_id' cannot be null/
     );
+});
+
+test("Membership with prevent_delete cannot be deleted", async () => {
+    if (!baseWorld) throw new Error(BaseWorld.errorMessage);
+
+    baseWorld.setCustomProp<MembershipAttributes>("membershipAttributes", {
+        ...baseWorld.getCustomProp<MembershipAttributes>(
+            "membershipAttributes"
+        ),
+        prevent_delete: true,
+    });
+
+    await ModelTestFail.delete<Membership, MembershipAttributes>(
+        baseWorld,
+        Membership,
+        /MembershipDeleteError: Cannot delete membership while delete lock is set/
+    );
+
+    await ModelActions.update<Membership, MembershipAttributes>(
+        baseWorld,
+        Membership,
+        { prevent_delete: false }
+    );
+
+    await ModelActions.delete<Membership>(baseWorld, Membership);
 });
 
 test("read membership", async () => {
