@@ -47,7 +47,7 @@ const entities = [
 ];
 
 export const connectionOptions = (): ConnectionOptions => {
-    let database = process.env.DB ?? "";
+    let database = process.env.DB_NAME ?? "";
 
     if (typeof process.env.DB_ENV === "string") {
         if (process.env.DB_ENV.startsWith("_")) {

@@ -93,7 +93,7 @@ if [[ $NODE_ENV == 'dev' ]]; then
         exit 1
     fi
 else
-    echo "[ INFO ]: Operating within Prod or CI environment, variables will not be loaded, run `export NODE_ENV=dev` to enable --env-path"
+    echo "[ INFO ]: Operating within Prod or CI environment, variables will not be loaded, run 'export NODE_ENV=dev' to enable --env-path"
 fi
 
 drop_db "$DB_ENV"
