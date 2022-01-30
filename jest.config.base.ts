@@ -2,7 +2,7 @@ import Logs from "@util/logs/logs";
 import { pathsToModuleNameMapper } from "ts-jest/utils";
 import { compilerOptions } from "./tsconfig.json";
 
-let database = process.env.DB ?? "";
+let database = process.env.DB_NAME ?? "";
 
 if (typeof process.env.DB_ENV !== "string") {
     process.env.DB_ENV = "_test";
