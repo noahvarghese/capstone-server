@@ -61,7 +61,7 @@ router.post("/:token", async (request: Request, response: Response) => {
         request.session.business_ids = memberships.map((m) => m.business_id);
         request.session.user_id = user.id;
         request.session.current_business_id = memberships.find(
-            (m) => m.default
+            (m) => m.default_option
         )?.business_id;
         response.sendStatus(200);
         return;

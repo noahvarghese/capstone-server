@@ -39,7 +39,7 @@ router.post("/", async (req: Request, res: Response) => {
             req.session.business_ids = memberships.map((m) => m.business_id);
 
             req.session.current_business_id = memberships.find(
-                (m) => m.default
+                (m) => m.default_option
             )?.business_id;
 
             res.sendStatus(200);

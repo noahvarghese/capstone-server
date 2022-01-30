@@ -252,7 +252,7 @@ router.post("/:token", async (req: Request, res: Response) => {
                 business_id: membershipRequest.business_id,
                 updated_by_user_id: membershipRequest.user_id,
                 user_id: membershipRequest.user_id,
-                default: setDefault,
+                default_option: setDefault,
             })
         );
     } catch (_e) {

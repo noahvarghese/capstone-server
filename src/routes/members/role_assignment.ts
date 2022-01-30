@@ -71,26 +71,9 @@ router.post("/", async (req: Request, res: Response) => {
                 return;
             }
 
-            const primaryUserRole = await SqlConnection.createQueryBuilder()
-                .select("ur")
-                .from(UserRole, "ur")
-                .where("ur.user_id = :user_id", { user_id })
-                .andWhere("ur.primary_role_for_user = :defaultRole", {
-                    defaultRole: true,
-                })
-                .andWhere("d.business_id = :business_id", {
-                    business_id: current_business_id,
-                })
-                .leftJoin(Role, "r", "r.id = ur.role_id")
-                .leftJoin(Department, "d", "d.id = r.department_id")
-                .getOne();
-
-            const isDefault = primaryUserRole === undefined;
-
             await SqlConnection.manager.insert(
                 UserRole,
                 new UserRole({
-                    primary_role_for_user: isDefault,
                     role_id: id,
                     user_id: user_id,
                     updated_by_user_id: current_user_id,

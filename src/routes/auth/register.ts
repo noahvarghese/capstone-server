@@ -171,7 +171,7 @@ router.post("/", async (req: Request, res: Response) => {
             new Membership({
                 user_id: userId,
                 business_id: businessId,
-                default: true,
+                default_option: true,
             })
         );
     } catch (_e) {
@@ -257,7 +257,6 @@ router.post("/", async (req: Request, res: Response) => {
                 user_id: userId,
                 updated_by_user_id: userId,
                 role_id: roleId,
-                primary_role_for_user: true,
             })
         );
     } catch ({ message }) {

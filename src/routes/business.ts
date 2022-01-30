@@ -18,7 +18,9 @@ router.get("/", async (req: Request, res: Response) => {
     const businesses = await connection.manager.find(Business, {
         where: memberships.map((m) => ({
             id: m.business_id,
-        })),
+        })) as {
+            id: number;
+        }[],
     });
 
     try {
@@ -32,7 +34,7 @@ router.get("/", async (req: Request, res: Response) => {
             return {
                 id: b.id,
                 name: b.name,
-                default: m.default,
+                default_option: m.default_option,
             };
         });
 
