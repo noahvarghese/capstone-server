@@ -5,7 +5,7 @@ import EventDates from "./abstract/event_dates";
 export interface MembershipAttributes {
     user_id: number | null;
     business_id: number | null;
-    updated_by_user_id: number | null;
+    updated_by_user_id: number;
     default_option: boolean;
     prevent_delete: boolean;
 }
@@ -28,7 +28,7 @@ export default class Membership
     @PrimaryColumn()
     public business_id!: number;
     @Column()
-    public updated_by_user_id!: number | null;
+    public updated_by_user_id!: number;
     @Column()
     public default_option!: boolean;
     @Column()

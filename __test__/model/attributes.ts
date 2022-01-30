@@ -82,7 +82,7 @@ export const membershipAttributes = (): MembershipAttributes =>
         {
             user_id: NaN,
             business_id: NaN,
-            updated_by_user_id: null,
+            updated_by_user_id: NaN,
         },
         EmptyMembershipAttributes
     );
