@@ -16,7 +16,7 @@ NODE_ENV=test
 npm run database:reset -- "-t$extension"
 
 # Set database environment to use for test
-export DB_ENV="_test_$branch_name"
+export DB_ENV="_test_$extension"
 
 # Custom test reporting
 ./node_modules/.bin/nyc --silent --no-clean ./node_modules/.bin/jest --runInBand "$@" ;
