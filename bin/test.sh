@@ -31,5 +31,15 @@ if [ $test_result -gt 0 ]; then
     exit 1
 else
     # If the tests passed then the database should be empty
-    npm run database:drop -- "-t$extension"
+    # We still check to make sure we cleaned up
+    # If the database is empty then drop the database
+    npm run database:is_empty -- "-t$extension"
+
+    if [ $? -eq 0 ]; then
+        npm run database:drop -- "-t$extension"
+        exit 0
+    else
+        echo "[ ERROR ]: Database not empty, perhaps you forgot to cleanup after?" 1>&2
+        exit 1
+    fi
 fi
