@@ -257,7 +257,7 @@ export const quizQuestionAttributes = (): QuizQuestionAttributes =>
     AttributeFactory(
         {
             question: "Question",
-            type: "radio",
+            question_type_id: NaN,
             quiz_section_id: NaN,
             updated_by_user_id: NaN,
         },
