@@ -8,7 +8,7 @@ runs:
         fetch-depth: 0
     - uses: actions/setup-node@v2
     - name: install script dependencies
-      run: sudo apt-get install -y mysql-client
+      run: sudo apt-get install -y mysql-client-8.0
       shell: bash
     - id: changed
       name: "Get changed"
