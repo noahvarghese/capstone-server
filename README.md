@@ -14,25 +14,9 @@
 
 ## Development
 
-After cloning the repository it is important to run `npm run init` in order to setup the hooks directory
+After cloning the repository it is important to run `npm run init` in order to setup the hooks directory.
 
-## About
-
-This is my capstone project for college.
-I have seperated it out into 3 repositories so as to prevent a clutter of files.
-
-[capstone-client, capstone-server, capstone-test]
-
-The client and server are the frontend and backend respectively,
-and each may hold some unit tests and integration tests specific to either the frontend or the backend.
-
-Any end to end tests will be located in the tests repo.
-
-Documentation - mockups, ERD, class diagrams are currently in my private DropBox.
-
-They may be moved into their own repo at the end of this to showcase all parts of this project.
-
-## Notes
+## Notes - For Me
 
 For breaking down the routes
 Routes are the structure of the resources.
@@ -46,9 +30,63 @@ Handlers accept strictly the arguments to get the job done and may throw an erro
     -   handlers: use database/typeorm to interface with the models
     -   models: provides ways to modify/adjust certain fields
 
-## API Documentation
+## About
 
-See ./api_spec.json using <a href="https://editor.swagger.io">Swagger Editor</a>
+This is my capstone project for college.
+I have seperated it out into 3 repositories so as to prevent a clutter of files.
+
+[capstone-client, capstone-server, capstone-test]
+
+The client and server are the frontend and backend respectively,
+and each may hold some unit tests and integration tests specific to either the frontend or the backend.
+
+Any end to end tests will be located in the tests repo.
+
+## Documentation
+
+See ./api_spec.json using <a href="https://editor.swagger.io">Swagger Editor</a>.
+Mockups, ERD, class diagrams are currently in my private DropBox.
+They may be moved into their own repo at the end of this to showcase all parts of this project.
+
+## Database
+
+Can change the database being used by the server and the tests.
+
+Can either pass in argv[2] the extension to be added to the database name, this is just a wrapper that sets the DB_ENV environment variable.
+Or set the DB_ENV environement variable to pass the extension.
+
+## Tests 
+
+Tests are broken up into
+
+- database
+- unit
+- integration
+- e2e
+
+Each of these can be targeted as their own test suite.
+
+Uses different jest configurations and a test script to run each set of tests against their own database.
+
+### Automated Testing
+
+- Pre commit hook runs unit tests.
+- CI job should run any tests that have source files changed specifically (currently just outputs if any tests were affected for all sebsections, but only tests unit tests)
+
+### NPM Test Scripts
+
+Passes preset jest command line arguments that I have arranged into useful snippets
+
+### Bash Test Script
+
+1. Creates temporary database for testing
+2. Passes JEST command line args to test runner
+3. Tears down database if clean run
+
+### Jest Testing
+
+Seperate configuration files for the breakdowns of the test types.
+Also contains seperate setup and teardown instructions.
 
 ## Environment Variables
 

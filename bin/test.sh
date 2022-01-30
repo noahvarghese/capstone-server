@@ -15,6 +15,8 @@ NODE_ENV=test
 # Setup database
 npm run database:reset -- "-t$extension"
 
+echo "ARGS $@"
+
 # Custom test reporting
 ./node_modules/.bin/nyc --silent --no-clean ./node_modules/.bin/jest --runInBand "$@" ;
 
