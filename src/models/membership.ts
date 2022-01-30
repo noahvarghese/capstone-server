@@ -15,7 +15,7 @@ export const EmptyMembershipAttributes = (): MembershipAttributes => ({
     business_id: NaN,
     updated_by_user_id: NaN,
     default_option: false,
-    prevent_delete: false
+    prevent_delete: false,
 });
 
 @Entity()

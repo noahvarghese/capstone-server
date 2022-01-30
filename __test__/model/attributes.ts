@@ -16,10 +16,7 @@ import {
     EmptyManualAssignmentAttributes,
     ManualAssignmentAttributes,
 } from "@models/manual/assignment";
-import {
-    EmptyPolicyAttributes,
-    PolicyAttributes,
-} from "@models/manual/policy";
+import { EmptyPolicyAttributes, PolicyAttributes } from "@models/manual/policy";
 import {
     EmptyContentReadAttributes,
     ContentReadAttributes,

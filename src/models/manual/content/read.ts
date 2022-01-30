@@ -13,7 +13,7 @@ export const EmptyContentReadAttributes = (): ContentReadAttributes => ({
 });
 
 @Entity({ name: "content_read" })
-export default class ContentRead 
+export default class ContentRead
     extends EventDates
     implements ContentReadAttributes
 {

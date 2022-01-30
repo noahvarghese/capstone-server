@@ -9,16 +9,17 @@ export interface QuizQuestionTypeAttributes {
     html_attributes: string;
 }
 
-export const EmptyQuizQuestionTypeAttributes = (): QuizQuestionTypeAttributes => ({
-    question_type: "multiple choice",
-    html_tag: "",
-    html_attributes: ""
-});
+export const EmptyQuizQuestionTypeAttributes =
+    (): QuizQuestionTypeAttributes => ({
+        question_type: "multiple choice",
+        html_tag: "",
+        html_attributes: "",
+    });
 
 @Entity({ name: "quiz_question_type" })
-export default class QuizQuestionType 
+export default class QuizQuestionType
     extends EditableContentModel
-    implements QuizQuestionTypeAttributes 
+    implements QuizQuestionTypeAttributes
 {
     @Column()
     public question_type!: "multiple choice";
@@ -29,7 +30,9 @@ export default class QuizQuestionType
 
     public constructor(options?: Partial<QuizQuestionTypeAttributes>) {
         super();
-        Object.assign(this, AttributeFactory(options, EmptyQuizQuestionTypeAttributes));
+        Object.assign(
+            this,
+            AttributeFactory(options, EmptyQuizQuestionTypeAttributes)
+        );
     }
 }
-
