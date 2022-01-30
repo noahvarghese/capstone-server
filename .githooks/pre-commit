@@ -12,6 +12,8 @@ if [[ ${#CHANGED_UNIT_TEST_FILES[@]} -gt 0 ]]; then
     echo "[ LOG ]: Unit Tests:"
     printf '%s\n' "${CHANGED_UNIT_TEST_FILES[@]}" 
     npm run unit:test:recent
+else
+    echo "[ INFO ]: No new tests found"
 fi
 
 TEST_RESULT=$?

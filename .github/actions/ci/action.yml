@@ -7,9 +7,6 @@ runs:
       with:
         fetch-depth: 0
     - uses: actions/setup-node@v2
-    - name: install script dependencies
-      run: sudo apt-get install -y -f mysql-client
-      shell: bash
     - id: changed
       name: "Get changed"
       uses: "./.github/actions/changed"
