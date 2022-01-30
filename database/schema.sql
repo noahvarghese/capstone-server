@@ -220,11 +220,11 @@ CREATE TABLE quiz (
     prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     prevent_edit TINYINT(1) NOT NULL DEFAULT 0,
     published TINYINT(1) NOT NULL DEFAULT 0,
+    manual_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    manual_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY(id)
@@ -233,17 +233,17 @@ CREATE TABLE quiz (
 CREATE TABLE quiz_section (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    quiz_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    quiz_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (quiz_id) REFERENCES quiz(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY(id)
 );
 
-CREATE TABLE quiz_question_types (
+CREATE TABLE quiz_question_type (
     id INT NOT NULL AUTO_INCREMENT,
     question_type ENUM("multiple choice", "single choice") COLLATE UTF8_GENERAL_CI NOT NULL,
     html_tag VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
@@ -254,12 +254,12 @@ CREATE TABLE quiz_question_types (
 CREATE TABLE quiz_question (
     id INT NOT NULL AUTO_INCREMENT,
     question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
-    created_on DATETIME NOT NULL DEFAULT NOW(),
-    updated_on DATETIME NOT NULL DEFAULT NOW(),
-    deleted_on DATETIME DEFAULT NULL,
     quiz_section_id INT NOT NULL,
     question_type_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
+    created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (question_type_id) REFERENCES quiz_question_types(id),
     FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
@@ -270,11 +270,11 @@ CREATE TABLE quiz_answer (
     id INT NOT NULL AUTO_INCREMENT,
     answer VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
     correct TINYINT(1) NOT NULL,
+    quiz_question_id INT NOT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    quiz_question_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
@@ -299,10 +299,10 @@ CREATE TABLE quiz_result (
     /* If value is null, then incorrect */
     /* Else check corresponding quiz_answer.correct */
     quiz_answer_id INT DEFAULT NULL,
+    updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
     FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
@@ -329,6 +329,8 @@ CREATE TABLE event (
     user_id INT DEFAULT NULL,
     business_id INT DEFAULT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
+    updated_on DATETIME NOT NULL DEFAULT NOW(),
+    deleted_on DATETIME NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (business_id) REFERENCES business(id),
     PRIMARY KEY (id)
