@@ -17,8 +17,9 @@ reset_db() {
 
     for entry in "${entries[@]}"; do
         exec_sql $DB "${entry}"
-        if [ $? -gt 0 ]; then
-            break
+        res=$?
+        if [ $res -gt 0 ]; then
+            exit $res
         fi
     done
 

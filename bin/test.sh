@@ -15,6 +15,10 @@ NODE_ENV=test
 # Setup database
 npm run database:reset -- "-t$extension"
 
+if [[ $? -gt 0 ]]; then
+    exit $?
+fi
+
 # Set database environment to use for test
 export DB_ENV="_test_$extension"
 

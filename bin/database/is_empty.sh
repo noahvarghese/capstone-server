@@ -34,21 +34,17 @@ is_empty() {
     prev_ifs=$IFS
     IFS=','
 
-    num_rows=0
-
     for table in $tables; do
         exec_is_empty $db $table
         res=$?
 
         if [[ $res -gt 0 ]]; then
             echo "[ ERROR ]: $db.$table has $res record(s)" 1>&2
-            num_rows=$(( num_rows + $res ))
+            exit $res
         fi
     done
 
     IFS=$prev_ifs
-
-    exit $num_rows
 }
 
 tables=
