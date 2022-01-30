@@ -9,7 +9,7 @@ npm ci
 CHANGED_UNIT_TEST_FILES=($(npm run --silent unit:test:list:recent))
 
 if [[ ${#CHANGED_UNIT_TEST_FILES[@]} -gt 0 ]]; then
-    echo "Unit Tests:"
+    echo "[ LOG ]: Unit Tests:"
     printf '%s\n' "${CHANGED_UNIT_TEST_FILES[@]}" 
     npm run unit:test:recent
 fi
