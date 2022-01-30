@@ -8,11 +8,6 @@ export interface UserAttributes {
     last_name: string;
     email: string;
     phone: string;
-    address: string;
-    city: string;
-    postal_code: string;
-    province: string;
-    country: string;
     birthday: Date | undefined;
     password: string;
     token?: string | undefined | null;
@@ -24,11 +19,6 @@ export const EmptyUserAttributes = (): UserAttributes => ({
     last_name: "",
     email: "",
     phone: "",
-    address: "",
-    city: "",
-    postal_code: "",
-    province: "",
-    country: "",
     birthday: undefined,
     password: "",
     token: undefined,
@@ -46,16 +36,6 @@ export default class User extends BaseModel implements UserAttributes {
     public email!: string;
     @Column()
     public phone!: string;
-    @Column()
-    public address!: string;
-    @Column()
-    public city!: string;
-    @Column()
-    public postal_code!: string;
-    @Column()
-    public province!: string;
-    @Column()
-    public country!: string;
     @Column()
     public birthday!: Date;
     @Column()
