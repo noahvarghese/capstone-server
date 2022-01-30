@@ -4,7 +4,7 @@ branch_name=$(git branch --show-current)
 branch_name=$(echo $branch_name | sed -r 's/[-.:]/_/g')
 
 # Database name extension
-extension="$branch_name"_$(date +%s)
+extension="${branch_name}_$(date +%s)"
 
 # Enable ** glob for coverage report
 command -v shopt &>/dev/null
@@ -15,7 +15,8 @@ NODE_ENV=test
 # Setup database
 npm run database:reset -- "-t$extension"
 
-echo "ARGS $@"
+# Set database environment to use for test
+export DB_ENV="_test_$branch_name"
 
 # Custom test reporting
 ./node_modules/.bin/nyc --silent --no-clean ./node_modules/.bin/jest --runInBand "$@" ;
