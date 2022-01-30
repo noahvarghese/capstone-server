@@ -11,9 +11,7 @@ reset_db() {
 
     echo "[ EVENT ]: Creating database $DB"
 
-    gen_reset_script $DB
-    exec_sql $SQL_INIT_FILE
-    rm $SQL_INIT_FILE
+    exex_reset $DB
 
     readarray -d '' entries < <(printf '%s\0' "$DIR"/*.sql | sort -zV)
 

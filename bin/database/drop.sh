@@ -29,11 +29,7 @@ drop_db() {
 
     echo "[ EVENT ]: Dropping database $DB"
 
-    gen_drop_script $DB
-    exec_sql $SQL_DROP_FILE
-    rm $SQL_DROP_FILE
-
-    exit 0
+    exec_drop $DB
 }
 
 DB_ENV=""
@@ -96,6 +92,8 @@ if [[ $NODE_ENV == 'dev' ]]; then
     if ! envup $ENV; then
         exit 1
     fi
+else
+    echo "[ INFO ]: Operating within Prod or CI environment, variables will not be loaded, run `export NODE_ENV=dev` to enable --env-path"
 fi
 
 drop_db "$DB_ENV"
