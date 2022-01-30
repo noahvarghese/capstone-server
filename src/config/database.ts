@@ -16,7 +16,7 @@ import QuizSection from "@models/quiz/section";
 import Question from "@models/quiz/question/question";
 import Answer from "@models/quiz/question/answer";
 import Attempt from "@models/quiz/attempt";
-import Result from "@models/quiz/result";
+import Result from "@models/quiz/question/result";
 import Read from "@models/manual/content/read";
 import Event from "@models/event";
 import Membership from "@models/membership";

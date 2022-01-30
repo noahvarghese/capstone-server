@@ -12,8 +12,8 @@ export interface QuizQuestionAttributes {
 export const EmptyQuestionAttributes = (): QuizQuestionAttributes => ({
     question: "",
     type: "",
-    quiz_section_id: -1,
-    updated_by_user_id: -1,
+    quiz_section_id: NaN,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "quiz_question" })

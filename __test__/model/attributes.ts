@@ -21,8 +21,8 @@ import {
     PolicyAttributes,
 } from "@models/manual/policy";
 import {
-    EmptyPolicyReadAttributes,
-    PolicyReadAttributes,
+    EmptyContentReadAttributes,
+    ContentReadAttributes,
 } from "@models/manual/content/read";
 import {
     EmptyManualSectionAttributes,
@@ -58,7 +58,7 @@ import {
 import {
     EmptyResultAttributes,
     QuizResultAttributes,
-} from "@models/quiz/result";
+} from "@models/quiz/question/result";
 import { EmptyEventAttributes, EventAttributes } from "@models/event";
 import { AttributeFactory } from "@models/abstract/base_model";
 import {
@@ -224,13 +224,13 @@ export const contentAttributes = (): ContentAttributes =>
         EmptyContentAttributes
     );
 
-export const policyReadAttributes = (): PolicyReadAttributes =>
+export const contentReadAttributes = (): ContentReadAttributes =>
     AttributeFactory(
         {
-            policy_id: NaN,
+            content_id: NaN,
             user_id: NaN,
         },
-        EmptyPolicyReadAttributes
+        EmptyContentReadAttributes
     );
 
 export const quizAttributes = (): QuizAttributes =>
@@ -324,7 +324,7 @@ export default {
     manualSection: manualSectionAttributes,
     policy: policyAttributes,
     content: contentAttributes,
-    policyRead: policyReadAttributes,
+    contentRead: contentReadAttributes,
     quiz: quizAttributes,
     quizSection: quizSectionAttributes,
     quizQuestion: quizQuestionAttributes,

@@ -13,7 +13,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import QuizQuestion from "@models/quiz/question/question";
 import QuizAnswer from "@models/quiz/question/answer";
-import QuizResult from "@models/quiz/result";
+import QuizResult from "@models/quiz/question/result";
 import QuizAttempt from "@models/quiz/attempt";
 import Event from "@models/event";
 import ManualAssignment from "@models/manual/assignment";

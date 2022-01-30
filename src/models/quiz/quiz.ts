@@ -13,11 +13,11 @@ export interface QuizAttributes {
 
 export const EmptyQuizAttributes = (): QuizAttributes => ({
     title: "",
-    max_attempts: -1,
-    manual_id: -1,
+    max_attempts: NaN,
+    manual_id: NaN,
     prevent_delete: false,
     prevent_edit: false,
-    updated_by_user_id: -1,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "quiz" })

@@ -1,6 +1,6 @@
 import { Entity, Column } from "typeorm";
-import { AttributeFactory } from "../abstract/base_model";
-import EditableContentModel from "../abstract/editable_content_model";
+import { AttributeFactory } from "@models/abstract/base_model";
+import EditableContentModel from "@models/abstract/editable_content_model";
 
 export interface QuizResultAttributes {
     quiz_attempt_id: number;
@@ -10,10 +10,10 @@ export interface QuizResultAttributes {
 }
 
 export const EmptyResultAttributes = (): QuizResultAttributes => ({
-    quiz_attempt_id: -1,
-    quiz_question_id: -1,
-    quiz_answer_id: -1,
-    updated_by_user_id: -1,
+    quiz_attempt_id: NaN,
+    quiz_question_id: NaN,
+    quiz_answer_id: NaN,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "quiz_result" })

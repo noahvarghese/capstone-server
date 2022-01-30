@@ -7,8 +7,8 @@ export interface QuizAttemptAttributes {
 }
 
 export const EmptyAttemptAttributes = (): QuizAttemptAttributes => ({
-    user_id: -1,
-    quiz_id: -1,
+    user_id: NaN,
+    quiz_id: NaN,
 });
 
 @Entity({ name: "quiz_attempt" })
