@@ -1,7 +1,7 @@
 import ModelTestPass from "@test/model/helpers/test/pass";
 import BaseWorld from "@test/support/base_world";
 import DBConnection from "@test/support/db_connection";
-import Manual, { ManualAttributes } from "../manual";
+import Manual, { ManualAttributes } from "./manual";
 import Policy, { PolicyAttributes } from "./policy";
 import ModelTestParentPrevent from "@test/model/helpers/test/parent_prevent";
 import Model from "@test/model/helpers";

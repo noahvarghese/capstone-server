@@ -6,6 +6,7 @@ export interface ManualAttributes {
     title: string;
     prevent_delete: boolean;
     prevent_edit: boolean;
+    published: boolean;
     updated_by_user_id: number;
 }
 
@@ -13,7 +14,8 @@ export const EmptyManualAttributes = (): ManualAttributes => ({
     title: "",
     prevent_delete: false,
     prevent_edit: false,
-    updated_by_user_id: -1,
+    published: false,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "manual" })
@@ -27,6 +29,8 @@ export default class Manual
     public prevent_delete!: boolean;
     @Column()
     public prevent_edit!: boolean;
+    @Column()
+    public published!: boolean;
 
     public constructor(options?: Partial<ManualAttributes>) {
         super();

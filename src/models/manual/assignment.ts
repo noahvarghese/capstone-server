@@ -11,10 +11,10 @@ export interface ManualAssignmentAttributes {
 
 export const EmptyManualAssignmentAttributes =
     (): ManualAssignmentAttributes => ({
-        department_id: -1,
-        role_id: -1,
-        manual_id: -1,
-        updated_by_user_id: -1,
+        department_id: NaN,
+        role_id: NaN,
+        manual_id: NaN,
+        updated_by_user_id: NaN,
     });
 
 @Entity({ name: "manual_assignment" })
