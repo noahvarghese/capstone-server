@@ -143,6 +143,34 @@ All database tests are run using jest and the ./jest.config.database.ts file, se
 
 Create a [name].db.test.ts file, see files in \_\_test\_\_/models for utilities available.
 
+### REST Endpoint
+
+All details are located in ./api_spec.json, visualized with <a href="https://editor.swagger.io">swagger</a>.
+To ensure there is one source of truth I have extended the OpenAPI spec for the <a href="https://swagger.io/specification/#operation-object">operations object</a> to have the following format.
+
+The permissions value is an array of the fields of the Permissions table.
+The requireAuth value dictates whether the user should be logged in.
+The passthrough value dictates whether the permissions are required in the middleware, or if the permissions will be passed to the route, this allows for more complex processing like if a manual is published, it doen't require the permissions, but it requires that the manual be assigned to the user.
+
+```json
+"/route": {
+    "get": {
+        "details": {
+            "permissions": ["These should be a reference to #/components/schemas/Permissions/properties/permission_name"],
+            "requireAuth": true,
+            "passthrough": true,
+        }
+    }
+}
+
+```
+
+This allows us to utilize this within our middleware(s).
+
+#### Creating a testable REST endpoint
+
+#### Creating tests
+
 ### Adding new api tests
 
 1. Create file in \_\_test\_\_/api/actions
