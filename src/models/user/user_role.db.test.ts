@@ -56,5 +56,3 @@ test("Read User Role", async () => {
         ["user_id", "role_id"]
     );
 });
-
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
