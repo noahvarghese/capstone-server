@@ -58,7 +58,7 @@ test("Read Quiz QuizSection", async () => {
     );
 });
 
-test("Delete Question while Manual is locked doesn't work", async () => {
+test("Delete Section while Quiz is locked doesn't work", async () => {
     await ModelTestParentPrevent.delete<
         Quiz,
         QuizAttributes,
@@ -72,7 +72,7 @@ test("Delete Question while Manual is locked doesn't work", async () => {
     );
 });
 
-test("Update Question while Quiz is locked doesn't work", async () => {
+test("Update Section while Quiz is locked doesn't work", async () => {
     await ModelTestParentPrevent.update<
         Quiz,
         QuizAttributes,

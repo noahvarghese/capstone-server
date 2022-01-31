@@ -55,14 +55,14 @@ Can change the database being used by the server and the tests.
 Can either pass in argv[2] the extension to be added to the database name, this is just a wrapper that sets the DB_ENV environment variable.
 Or set the DB_ENV environement variable to pass the extension.
 
-## Tests 
+## Tests
 
 Tests are broken up into
 
-- database
-- unit
-- integration
-- e2e
+-   database
+-   unit
+-   integration
+-   e2e
 
 Each of these can be targeted as their own test suite.
 
@@ -70,8 +70,8 @@ Uses different jest configurations and a test script to run each set of tests ag
 
 ### Automated Testing
 
-- Pre commit hook runs unit tests.
-- CI job should run any tests that have source files changed specifically (currently just outputs if any tests were affected for all sebsections, but only tests unit tests)
+-   Pre commit hook runs unit tests.
+-   CI job should run any tests that have source files changed specifically (currently just outputs if any tests were affected for all sebsections, but only tests unit tests)
 
 ### NPM Test Scripts
 
@@ -116,7 +116,31 @@ Also contains seperate setup and teardown instructions.
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
 | SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
 
-## Tests
+## Development
+
+### Models
+
+My models are all initially developed in an sql script and have triggers applied, the tests run are to ensure the triggers execute correctly, and relationships are as expected.
+
+#### Creating a testable model
+
+How to create a new model for the application for use with my model testing framework found in \_\_test\_\_/model.
+
+This allows usage of the ModelTest/ModelActions/ModelTestFail/ModelTestRelations utilities.
+
+1. Create typeorm model
+2. Create interface for model attributes
+3. Create factory to generate default attributes
+4. Add function that creates testable versions of the attributes that returns the interface created in step 2.
+5. Add name to union type in \_\_test\_\_/model/index.ts
+6. Add entry to \_\_test\_\_/model/dependencies.ts using the same name used in the previous step as the key, and the value is an array of dependencies from the same type ordered by dependant -> independant
+7. Add entry to \_\_test\_\_/model/types.ts using the same name from previous for the key, and the value should be the type of the model created in step 1
+
+#### Creating a test
+
+All database tests are run using jest and the ./jest.config.database.ts file, see package.json #/scripts/database:test.
+
+Create a [name].db.test.ts file, see files in \_\_test\_\_/models for utilities available.
 
 ### Adding new api tests
 
