@@ -37,7 +37,7 @@ describe("USing permission setup", () => {
             baseWorld,
             Permission,
 
-            { global_assign_resources_to_department: false }
+            { global_assign_resources_to_role: false }
         );
     });
 

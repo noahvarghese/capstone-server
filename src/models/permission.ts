@@ -12,9 +12,7 @@ export interface PermissionAttributes {
     global_crud_department: boolean;
     global_crud_role: boolean;
     global_crud_resources: boolean;
-    global_assign_users_to_department: boolean;
     global_assign_users_to_role: boolean;
-    global_assign_resources_to_department: boolean;
     global_assign_resources_to_role: boolean;
     global_view_reports: boolean;
     dept_crud_role: boolean;
@@ -30,9 +28,7 @@ export const EmptyPermissionAttributes = (): PermissionAttributes => ({
     global_crud_department: false,
     global_crud_role: false,
     global_crud_resources: false,
-    global_assign_users_to_department: false,
     global_assign_users_to_role: false,
-    global_assign_resources_to_department: false,
     global_assign_resources_to_role: false,
     global_view_reports: false,
     dept_crud_role: false,
@@ -57,11 +53,7 @@ export default class Permission
     @Column()
     public global_crud_resources!: boolean;
     @Column()
-    public global_assign_users_to_department!: boolean;
-    @Column()
     public global_assign_users_to_role!: boolean;
-    @Column()
-    public global_assign_resources_to_department!: boolean;
     @Column()
     public global_assign_resources_to_role!: boolean;
     @Column()

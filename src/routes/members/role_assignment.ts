@@ -27,7 +27,6 @@ router.post("/", async (req: Request, res: Response) => {
         SqlConnection,
         [
             "global_crud_users",
-            "global_assign_users_to_department",
             "global_assign_users_to_role",
             "dept_assign_users_to_role",
         ]
@@ -112,7 +111,6 @@ router.delete("/", async (req: Request, res: Response) => {
         SqlConnection,
         [
             "global_crud_users",
-            "global_assign_users_to_department",
             "global_assign_users_to_role",
             "dept_assign_users_to_role",
         ]
