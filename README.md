@@ -128,13 +128,14 @@ How to create a new model for the application for use with my model testing fram
 
 This allows usage of the ModelTest/ModelActions/ModelTestFail/ModelTestRelations utilities.
 
-1. Create typeorm model
-2. Create interface for model attributes
-3. Create factory to generate default attributes
-4. Add function that creates testable versions of the attributes that returns the interface created in step 2.
-5. Add name to union type in \_\_test\_\_/model/index.ts
-6. Add entry to \_\_test\_\_/model/dependencies.ts using the same name used in the previous step as the key, and the value is an array of dependencies from the same type ordered by dependant -> independant
-7. Add entry to \_\_test\_\_/model/types.ts using the same name from previous for the key, and the value should be the type of the model created in step 1
+1. Create typeorm model - if it has a relationship with another table, the foreign key must be named the snake case version of the class name with an '\_id' as the suffix e.g. QuizQuestion -> quiz_question_id
+2. Add reference to model to ./src/config/database.ts
+3. Create interface for model attributes
+4. Create factory to generate default attributes
+5. Add function that creates testable versions of the attributes that returns the interface created in step 2.
+6. Add name to union type in \_\_test\_\_/model/index.ts
+7. Add entry to \_\_test\_\_/model/dependencies.ts using the same name used in the previous step as the key, and the value is an array of dependencies from the same type ordered by dependant -> independant
+8. Add entry to \_\_test\_\_/model/types.ts using the same name from previous for the key, and the value should be the type of the model created in step 1
 
 #### Creating a test
 
