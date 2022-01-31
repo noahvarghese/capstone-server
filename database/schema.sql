@@ -158,7 +158,6 @@ CREATE TABLE manual (
 );
 
 CREATE TABLE manual_assignment (
-    id INT NOT NULL AUTO_INCREMENT,
     role_id INT DEFAULT NULL,
     department_id INT DEFAULT NULL,
     manual_id INT NOT NULL,
@@ -170,7 +169,7 @@ CREATE TABLE manual_assignment (
     FOREIGN KEY (department_id) REFERENCES department(id),
     FOREIGN KEY (manual_id) REFERENCES manual(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    PRIMARY KEY (id)
+    PRIMARY KEY (role_id, department_id, manual_id)
 );
 
 CREATE TABLE manual_section (
@@ -293,11 +292,8 @@ CREATE TABLE quiz_attempt (
 );
 
 CREATE TABLE quiz_result (
-    id INT NOT NULL AUTO_INCREMENT,
     quiz_attempt_id INT NOT NULL,
     quiz_question_id INT NOT NULL,
-    /* If value is null, then incorrect */
-    /* Else check corresponding quiz_answer.correct */
     quiz_answer_id INT DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
@@ -307,7 +303,7 @@ CREATE TABLE quiz_result (
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
     FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
     FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id),
-    PRIMARY KEY (id)
+    PRIMARY KEY (quiz_attempt_id, quiz_question_id)
 );
 
 CREATE TABLE content_read (

@@ -47,7 +47,7 @@ ON manual_assignment FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentInsertError: Cannot add a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualAssignmentInsertError: Cannot add a manual_assignment without a role or department ', CAST(NEW.manual_id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
@@ -62,7 +62,7 @@ ON manual_assignment FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
     IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentUpdateError: Cannot update a manual_assignment without a role or department ', CAST(NEW.id AS CHAR));
+        SET msg = CONCAT('ManualAssignmentUpdateError: Cannot update a manual_assignment without a role or department ', CAST(NEW.manual_id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
     SET NEW.updated_on = NOW();
