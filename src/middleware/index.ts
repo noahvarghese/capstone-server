@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { getConnection } from "typeorm";
 import Logs from "@util/logs/logs";
 import { client } from "@util/permalink";
 
@@ -97,44 +96,8 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const retrieveConnection = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    const connection = getConnection();
-
-    if (!connection) {
-        Logs.Error("Cannot get database connection");
-        res.status(500).json({ message: "Could not connect to database." });
-        return;
-    }
-
-    req.SqlConnection = connection;
-    next();
-};
-
-const parseRequestBodyToJSON = (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        req.body =
-            typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
-        next();
-    } catch (_e) {
-        const e = _e as Error;
-        Logs.Error(e.message);
-        res.sendStatus(500);
-    }
-};
-
 const middlewares = {
     requireAuth,
-    retrieveConnection,
-    parseRequestBodyToJSON,
 };
 
 export default Object.values(middlewares);
