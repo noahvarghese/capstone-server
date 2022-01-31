@@ -56,5 +56,3 @@ test("Read Quiz Result", async () => {
         ["quiz_attempt_id", "quiz_question_id", "quiz_answer_id"]
     );
 });
-
-// May want to add a trigger to not allow last updated by user to be the same as the user this role applies to
