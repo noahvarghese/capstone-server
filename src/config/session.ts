@@ -7,8 +7,18 @@ import Logs from "@util/logs/logs";
 
 dotenv.config();
 
+let database = process.env.DB_NAME ?? "";
+
+if (typeof process.env.DB_ENV === "string") {
+    if (process.env.DB_ENV.startsWith("_")) {
+        database += process.env.DB_ENV;
+    } else {
+        database += `_${process.env.DB_ENV}`;
+    }
+}
+
 const options = {
-    database: process.env.DB ?? "",
+    database,
     host: process.env.DB_URL ?? "",
     user: process.env.DB_USER ?? "",
     password: process.env.DB_PWD ?? "",
