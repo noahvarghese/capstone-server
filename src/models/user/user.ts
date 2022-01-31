@@ -7,7 +7,7 @@ export interface UserAttributes {
     first_name: string;
     last_name: string;
     email: string;
-    phone: string;
+    phone: string | null;
     birthday: Date | undefined;
     password: string;
     token?: string | undefined | null;
@@ -34,7 +34,7 @@ export default class User extends BaseModel implements UserAttributes {
     public last_name!: string;
     @Column()
     public email!: string;
-    @Column()
+    @Column({ nullable: true })
     public phone!: string;
     @Column()
     public birthday!: Date;
