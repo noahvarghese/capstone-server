@@ -17,7 +17,7 @@ export interface RegisterBusinessProps {
     first_name: string;
     last_name: string;
     email: string;
-    phone: string;
+    phone: string | null;
     address: string;
     city: string;
     postal_code: string;
@@ -72,7 +72,7 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    if (!isPhone(phone)) {
+    if (!isPhone(phone ?? "")) {
         res.status(400).json({
             message: "Invalid phone number",
             field: "phone",

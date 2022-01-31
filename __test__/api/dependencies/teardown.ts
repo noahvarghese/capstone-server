@@ -81,7 +81,7 @@ const dependencies: { [i in ModelTest]: ModelTest[] } = {
         "manualSection",
         "policy",
     ],
-    policyRead: [
+    contentRead: [
         "business",
         "user",
         "membership",
@@ -115,6 +115,7 @@ const dependencies: { [i in ModelTest]: ModelTest[] } = {
         "manual",
         "quiz",
     ],
+    quizQuestionType: [],
     quizQuestion: [
         "business",
         "user",
