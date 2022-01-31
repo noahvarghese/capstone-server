@@ -248,16 +248,18 @@ CREATE TABLE quiz_question_type (
     PRIMARY KEY (id)
 );
 
+INSERT INTO quiz_question_type (question_type, html_tag, html_attributes) VALUES ("multiple choice", "input", '{"type": "checkbox"}');
+
 CREATE TABLE quiz_question (
     id INT NOT NULL AUTO_INCREMENT,
     question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
     quiz_section_id INT NOT NULL,
-    question_type_id INT NOT NULL,
+    quiz_question_type_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (question_type_id) REFERENCES quiz_question_type(id),
+    FOREIGN KEY (quiz_question_type_id) REFERENCES quiz_question_type(id),
     FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
