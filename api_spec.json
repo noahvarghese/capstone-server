@@ -325,16 +325,8 @@
                         "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
                         "type": "boolean"
                     },
-                    "global_assign_users_to_department": {
-                        "description": "Allowed to assign members of the business to departments within the business.",
-                        "type": "boolean"
-                    },
                     "global_assign_users_to_role": {
                         "description": "Allowed to assign members of the business to roles within the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_resources_to_department": {
-                        "description": "Allows to assign manuals/quizzes to department(s) within the business.",
                         "type": "boolean"
                     },
                     "global_assign_resources_to_role": {
@@ -819,6 +811,11 @@
                     "500": {
                         "description": "Database connection failed"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": false,
+                    "passthrough": false
                 }
             }
         },
@@ -866,6 +863,11 @@
                     "500": {
                         "description": "Database connection failed"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": false,
+                    "passthrough": false
                 }
             }
         },
@@ -901,25 +903,30 @@
                     "500": {
                         "description": "Database connection failed"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": false,
+                    "passthrough": false
                 }
             }
         },
         "/auth/reset_password/{token}": {
+            "parameters": [
+                {
+                    "name": "token",
+                    "in": "path",
+                    "description": "Token generated in /auth/forgot_password",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
             "post": {
                 "tags": ["auth", "user"],
                 "summary": "Allows user to set a new password",
                 "description": "Provided the token is correct, the user can set a new password.",
-                "parameters": [
-                    {
-                        "name": "token",
-                        "in": "path",
-                        "description": "Token generated in /auth/forgot_password",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -952,6 +959,11 @@
                     "401": {
                         "description": "Invalid token provided"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": false,
+                    "passthrough": false
                 }
             }
         },
@@ -970,6 +982,11 @@
                     "500": {
                         "description": "Database connection failed"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -993,6 +1010,11 @@
                         "$ref": "#/components/responses/AuthenticationError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1012,12 +1034,17 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "put": {
                 "tags": ["business"],
                 "summary": "change default business",
-                "description": "changes which business you are looking at after logging in",
+                "description": "changes which business you are looking at after logging in, user must be a member of the business",
                 "responses": {
                     "200": {
                         "$ref": "#/components/responses/Success"
@@ -1030,6 +1057,11 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1087,6 +1119,21 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_department"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "post": {
@@ -1121,15 +1168,24 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_department"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
         "/departments/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["department"],
                 "summary": "gets details about department",
                 "description": "gets extra statistics about department",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1153,13 +1209,30 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_department"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "put": {
                 "tags": ["department"],
                 "summary": "updates department",
                 "description": "changes the name of the department, admin department cannot be edited",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1194,13 +1267,21 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_department"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
                 "tags": ["department"],
                 "summary": "deletes department",
                 "description": "Checks if any users or manuals are assigned to this department before deleting. Also checks for delete lock, as the admin departments cannot be deleted.",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "$ref": "#/components/responses/Success"
@@ -1218,46 +1299,24 @@
                         "$ref": "#/components/responses/ForeignKeyError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/departments/{id}/manuals": {
-            "get": {
-                "tags": ["manual assignment"],
-                "summary": "Get manuals associated with department",
-                "description": "Gets manuals assigned to department, permissions are required to access resource",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ManualResponse"
-                                    }
-                                }
-                            }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_department"
                         }
-                    },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
         "/departments/{id}/roles": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["role"],
                 "summary": "get all roles in department",
                 "description": "requires permissions",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1280,6 +1339,27 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_department"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1362,9 +1442,30 @@
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
                     },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -1420,15 +1521,27 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
         "/manuals/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["manual"],
                 "summary": "get individual manual",
                 "description": "requires permissions, or assignment and published",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1448,13 +1561,30 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
                 "tags": ["manual"],
                 "summary": "update manual",
                 "description": "update details for individual manual",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1483,6 +1613,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -1503,15 +1645,27 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
-        "/manuals/{id}/departments": {
+        "/manuals/{id}/quizzes": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
-                "tags": ["manual assignment"],
-                "summary": "get departments that manual is associated with",
-                "description": "requires permissions",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "tags": ["quiz"],
+                "summary": "get the quiz associated with the manual",
+                "description": "only works if the logged in user is assigned the manual and the manual and quiz are published, or the user has permissions to edit the quiz",
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1522,52 +1676,22 @@
                                     "items": {
                                         "type": "object",
                                         "properties": {
-                                            "id": {
+                                            "id": { "type": "integer" },
+                                            "title": { "type": "string" },
+                                            "attempt_number": {
                                                 "type": "integer"
                                             },
-                                            "name": { "type": "string" }
+                                            "published": { "type": "boolean" },
+                                            "delete_lock": {
+                                                "type": "boolean"
+                                            },
+                                            "edit_lock": { "type": "boolean" }
                                         }
                                     }
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "$ref": "#/components/responses/ArgumentsError"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/manuals/{manual_id}/departments/{department_id}": {
-            "post": {
-                "tags": ["manual assignment"],
-                "summary": "associate department and manual",
-                "description": "assign manual to department, requires permission",
-                "parameters": [
-                    {
-                        "name": "manual_id",
-                        "description": "ID of manual",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    },
-                    {
-                        "name": "department_id",
-                        "description": "ID of department",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    }
-                ],
-                "responses": {
-                    "201": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
@@ -1576,75 +1700,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "delete": {
-                "tags": ["manual assignment"],
-                "summary": "disassociate department from manual",
-                "description": "remove assignment of manual to department, requires permission",
-                "parameters": [
-                    {
-                        "name": "manual_id",
-                        "description": "ID of manual",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    },
-                    {
-                        "name": "department_id",
-                        "description": "ID of department",
-                        "in": "path",
-                        "required": true,
-                        "schema": { "type": "integer" }
-                    }
-                ],
-                "responses": {
-                    "201": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/manuals/{id}/quizzes": {
-            "parameters": [{ "$ref": "#/components/parameters/ID" }],
-            "get": {
-                "tags": ["quiz"],
-                "summary": "get the quiz associated with the manual",
-                "description": "only works if the logged in user is assigned the manual and the manual and quiz are published, or the user has permissions to edit the quiz",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": { "type": "integer" },
-                                        "title": { "type": "string" },
-                                        "attempt_number": { "type": "integer" },
-                                        "published": { "type": "boolean" },
-                                        "delete_lock": { "type": "boolean" },
-                                        "edit_lock": { "type": "boolean" }
-                                    }
-                                }
-                            }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
                         }
-                    },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -1677,6 +1744,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1708,6 +1787,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -1745,6 +1836,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1773,6 +1876,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -1807,6 +1922,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -1827,6 +1954,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1858,6 +1997,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -1891,6 +2042,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -1919,6 +2082,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -1952,6 +2127,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -1971,6 +2158,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2002,6 +2201,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -2038,6 +2249,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2066,6 +2289,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -2102,6 +2337,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -2121,6 +2368,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2158,6 +2417,11 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -2175,6 +2439,11 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -2212,6 +2481,18 @@
                             }
                         }
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2246,6 +2527,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -2278,6 +2571,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2361,6 +2666,21 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2383,6 +2703,21 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "delete": {
@@ -2406,6 +2741,21 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2451,6 +2801,15 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2476,6 +2835,15 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2533,6 +2901,11 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": false,
+                    "passthrough": true
                 }
             }
         },
@@ -2584,6 +2957,21 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -2622,6 +3010,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -2658,6 +3058,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2737,6 +3149,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -2773,6 +3197,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -2808,6 +3244,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -2827,6 +3275,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2857,6 +3317,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -2887,6 +3359,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -2917,6 +3401,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -2947,6 +3443,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -2968,6 +3476,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3001,6 +3521,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -3038,6 +3570,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3068,6 +3612,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -3105,6 +3661,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -3124,6 +3692,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3157,6 +3737,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -3193,6 +3785,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3223,6 +3827,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "put": {
@@ -3259,6 +3875,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -3278,6 +3906,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3333,6 +3973,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "post": {
@@ -3363,6 +4015,11 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -3431,6 +4088,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -3531,6 +4200,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "post": {
@@ -3547,6 +4228,11 @@
                         "$ref": "#/components/responses/NotPublishedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -3566,6 +4252,11 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "delete": {
@@ -3582,10 +4273,22 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
-        "/quizzes/attemps/user/{id}": {
+        "/quizzes/attempts/user/{id}": {
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["quiz attempt"],
@@ -3682,6 +4385,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         },
@@ -3699,6 +4414,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_resources"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_resources"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3777,6 +4504,15 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3894,6 +4630,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -3948,6 +4696,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4076,6 +4836,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4168,6 +4940,18 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4199,6 +4983,18 @@
                             }
                         }
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_view_reports"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_view_reports"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4269,6 +5065,24 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "post": {
@@ -4326,6 +5140,15 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4385,6 +5208,24 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_users"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             },
             "put": {
@@ -4423,6 +5264,18 @@
                         "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             },
             "delete": {
@@ -4447,6 +5300,18 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4503,6 +5368,24 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_users_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4534,6 +5417,24 @@
                         "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
+                },
+                "details": {
+                    "permissions": [
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_assign_resources_to_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/global_crud_role"
+                        },
+                        {
+                            "$ref": "#/components/schemas/Permission/properties/dept_crud_role"
+                        }
+                    ],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4570,6 +5471,11 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": false
                 }
             }
         },
@@ -4628,6 +5534,11 @@
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
+                },
+                "details": {
+                    "permissions": [],
+                    "requireAuth": true,
+                    "passthrough": true
                 }
             }
         }
