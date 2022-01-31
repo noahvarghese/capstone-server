@@ -44,7 +44,8 @@ Any end to end tests will be located in the tests repo.
 
 ## Documentation
 
-See ./api_spec.json using <a href="https://editor.swagger.io">Swagger Editor</a>.
+See ./api.json using <a href="https://editor.swagger.io">Swagger Editor</a>.
+./api_spec.json is for development use and is used to generate ./api.json.
 Mockups, ERD, class diagrams are currently in my private DropBox.
 They may be moved into their own repo at the end of this to showcase all parts of this project.
 

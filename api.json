@@ -1,0 +1,4174 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "OnBoard API",
+        "version": "1.0.0",
+        "description": "This is the backend for a text based learning management system. Built to digitize traditional onboarding documents and training, as well as keep track of user's progress.",
+        "contact": {
+            "name": "Noah Varghese",
+            "url": "https://noahvarghese.me",
+            "email": "noah.varghese@mohawkcollege.ca"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.capstone.noahvarghese.me",
+            "description": "production server"
+        },
+        { "url": "http://localhost:8080", "description": "development server" }
+    ],
+    "components": {
+        "parameters": {
+            "ID": {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "unique identifier",
+                "schema": { "type": "integer" }
+            },
+            "Limit": {
+                "name": "limit",
+                "description": "Maximum number of records to return.",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "integer" }
+            },
+            "Page": {
+                "name": "page",
+                "description": "The nth group to return when the results are divided by the limit.",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "integer" }
+            },
+            "Search": {
+                "name": "search",
+                "description": "text to search for",
+                "in": "query",
+                "required": false,
+                "schema": { "type": "string" }
+            },
+            "SortOrder": {
+                "name": "sort_order",
+                "description": "The direction to sort in",
+                "in": "query",
+                "required": false,
+                "schema": { "enum": ["ASC", "DESC"] }
+            }
+        },
+        "schemas": {
+            "Business": {
+                "description": "Businesses that a user would be a member of",
+                "type": "object",
+                "properties": {
+                    "default": {
+                        "description": "Whether this is the user's default business.",
+                        "type": "boolean"
+                    },
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "Name of the business",
+                        "type": "string"
+                    }
+                }
+            },
+            "Department": {
+                "description": "Department within Business",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "department name",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "num_members": {
+                        "description": "number of members assigned to roles within department",
+                        "type": "integer"
+                    },
+                    "num_roles": {
+                        "description": "the number of roles within the department",
+                        "type": "integer"
+                    }
+                }
+            },
+            "ManualAssignment": {
+                "description": "Allows multiple assignments of a manual to different roles or departments",
+                "type": "object",
+                "properties": {
+                    "manual_id": {
+                        "description": "id of the manual",
+                        "type": "integer"
+                    },
+                    "role_id": {
+                        "description": "id of role that is assigned to",
+                        "type": "integer"
+                    },
+                    "department_id": {
+                        "description": "id of department that is assigned to",
+                        "type": "integer"
+                    }
+                }
+            },
+            "ManualContent": {
+                "description": "Each policy can have multiple pieces of content",
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "title": {
+                        "description": "Title of the piece of content",
+                        "type": "string"
+                    },
+                    "content": {
+                        "description": "Stored as long text in markdown, retrieved as HTML",
+                        "type": "string"
+                    }
+                }
+            },
+            "ManualPolicy": {
+                "description": "Each Section can have multiple policies",
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "title": {
+                        "description": "title of policy",
+                        "type": "string"
+                    },
+                    "contents": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ManualContent"
+                        }
+                    }
+                }
+            },
+            "ManualSection": {
+                "description": "Each manual can have multiple sections",
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "title": {
+                        "description": "title of section",
+                        "type": "string"
+                    },
+                    "policies": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/ManualPolicy" }
+                    }
+                }
+            },
+            "Manual": {
+                "description": "Full manual object",
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "published": {
+                        "description": "Flag to tell whether this manual is available for the user's it is assigned to to read.",
+                        "type": "boolean"
+                    },
+                    "editable_by_user": {
+                        "description": "Flag to tell UI whether current user is allowed to edit the manual.",
+                        "type": "boolean"
+                    },
+                    "title": {
+                        "description": "title of document",
+                        "type": "string"
+                    },
+                    "delete_lock": {
+                        "description": "prevents users from deleting by accident",
+                        "type": "boolean"
+                    },
+                    "edit_lock": {
+                        "description": "prevents users from editing",
+                        "type": "boolean"
+                    },
+                    "sections": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ManualSection"
+                        }
+                    }
+                }
+            },
+            "ManualResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "title": {
+                        "description": "title of document",
+                        "type": "string"
+                    },
+                    "published": {
+                        "description": "Flag for whether to make it visible to the user's it is assigned to",
+                        "type": "boolean"
+                    },
+                    "delete_lock": {
+                        "description": "Flag to prevent users from deleting by accident",
+                        "type": "boolean"
+                    },
+                    "edit_lock": {
+                        "description": "Flag to prevent users from editing",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PermissionResponse": {
+                "description": "Permissions applied to members of a Role.",
+                "type": "object",
+                "properties": {
+                    "global_crud_users": {
+                        "description": "Allows user to invite users to, or remove users from business.",
+                        "type": "boolean"
+                    },
+                    "global_crud_department": {
+                        "description": "Allows user to create/remove/change name of department(s).",
+                        "type": "boolean"
+                    },
+                    "global_crud_role": {
+                        "description": "Allows user to create/remove/change name of role(s), as well as modify the permissions of this role.",
+                        "type": "boolean"
+                    },
+                    "global_crud_resources": {
+                        "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_department": {
+                        "description": "Allowed to assign members of the business to departments within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_role": {
+                        "description": "Allowed to assign members of the business to roles within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_department": {
+                        "description": "Allows to assign manuals/quizzes to department(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_role": {
+                        "description": "Allows to assign manuals/quizzes to role(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_view_reports": {
+                        "description": "Allows user to view reports for all areas of business.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_role": {
+                        "description": "Allows user to create/delete/update roles within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_resources": {
+                        "description": "Allows user to create/delete/update resources within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_users_to_role": {
+                        "description": "Allows user to update other users assignment to roles within the department that both users reside in.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_resources_to_role": {
+                        "description": "Allows user to update resource assignment within the department that they are already apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_view_reports": {
+                        "description": "Allows user to view reports for all objects residing in current department.",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "Permission": {
+                "description": "Permissions applied to members of a Role.",
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "global_crud_users": {
+                        "description": "Allows user to invite users to, or remove users from business.",
+                        "type": "boolean"
+                    },
+                    "global_crud_department": {
+                        "description": "Allows user to create/remove/change name of department(s).",
+                        "type": "boolean"
+                    },
+                    "global_crud_role": {
+                        "description": "Allows user to create/remove/change name of role(s), as well as modify the permissions of this role.",
+                        "type": "boolean"
+                    },
+                    "global_crud_resources": {
+                        "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_users_to_role": {
+                        "description": "Allowed to assign members of the business to roles within the business.",
+                        "type": "boolean"
+                    },
+                    "global_assign_resources_to_role": {
+                        "description": "Allows to assign manuals/quizzes to role(s) within the business.",
+                        "type": "boolean"
+                    },
+                    "global_view_reports": {
+                        "description": "Allows user to view reports for all areas of business.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_role": {
+                        "description": "Allows user to create/delete/update roles within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_crud_resources": {
+                        "description": "Allows user to create/delete/update resources within the department they are apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_users_to_role": {
+                        "description": "Allows user to update other users assignment to roles within the department that both users reside in.",
+                        "type": "boolean"
+                    },
+                    "dept_assign_resources_to_role": {
+                        "description": "Allows user to update resource assignment within the department that they are already apart of.",
+                        "type": "boolean"
+                    },
+                    "dept_view_reports": {
+                        "description": "Allows user to view reports for all objects residing in current department.",
+                        "type": "boolean"
+                    }
+                }
+            },
+            "QuizAnswer": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "answer": { "type": "string" },
+                    "correct": { "type": "boolean" }
+                }
+            },
+            "QuizAnswerResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "answer": { "type": "string" }
+                }
+            },
+            "QuizQuestion": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "question": { "type": "string" },
+                    "type": { "type": "string" },
+                    "html_tag": { "type": "string" },
+                    "html_attributes": { "type": "object" },
+                    "answers": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QuizAnswerResponse"
+                        }
+                    }
+                }
+            },
+            "QuizAttemptResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "quiz": {
+                        "type": "object",
+                        "properties": {
+                            "id": { "type": "integer" },
+                            "title": { "type": "string" }
+                        }
+                    },
+                    "user": { "$ref": "#/components/schemas/UserResponse" }
+                }
+            },
+            "QuizAttempt": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "quiz": { "$ref": "#/components/schemas/Quiz" },
+                    "user": { "$ref": "#/components/schemas/User" }
+                }
+            },
+            "QuizResult": {
+                "type": "object",
+                "properties": {
+                    "attempt": { "$ref": "#/components/schemas/QuizAttempt" },
+                    "question": { "$ref": "#/components/schemas/QuizQuestion" },
+                    "answer": { "$ref": "#/components/schemas/QuizAnswer" }
+                }
+            },
+            "QuizSection": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "title": { "type": "string" },
+                    "questions": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/QuizQuestion" }
+                    }
+                }
+            },
+            "Quiz": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "title": { "type": "string" },
+                    "max_attempts": { "type": "integer" },
+                    "prevent_delete": { "type": "boolean" },
+                    "prevent_edit": { "type": "boolean" },
+                    "published": { "type": "boolean" },
+                    "manual": { "$ref": "#/components/schemas/ManualResponse" },
+                    "sections": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/QuizSection" }
+                    }
+                }
+            },
+            "Role": {
+                "description": "Role within Department",
+                "type": "object",
+                "properties": {
+                    "default": { "type": "boolean" },
+                    "name": { "description": "role name", "type": "string" },
+                    "id": {
+                        "description": "unique identifier",
+                        "type": "integer"
+                    },
+                    "permissions": {
+                        "$ref": "#/components/schemas/Permission"
+                    },
+                    "department": { "$ref": "#/components/schemas/Department" }
+                }
+            },
+            "RoleResponse": {
+                "description": "return value of role routes",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "unique identifier"
+                    },
+                    "name": { "type": "string", "description": "role name" },
+                    "department": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "description": "unique identifier"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "department name"
+                            }
+                        }
+                    },
+                    "num_members": {
+                        "type": "integer",
+                        "description": "number of members assigned to this role"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "first_name": {
+                        "description": "The user's first name",
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "description": "The user's last name",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "The user's email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "description": "The user's phone number",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Whether the user has accepted their membership yet",
+                        "type": "boolean"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/RoleResponse" }
+                    }
+                }
+            },
+            "UserResponse": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "integer" },
+                    "first_name": {
+                        "description": "The user's first name",
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "description": "The user's last name",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "The user's email",
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "description": "The user's phone number",
+                        "type": "string"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": "unique identifier"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "role name"
+                                },
+                                "department": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "unique identifier"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "description": "department name"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "responses": {
+            "Success": { "description": "success" },
+            "ForeignKeyError": {
+                "description": "Foreign key references still exist for entity"
+            },
+            "ResourceLockedError": {
+                "description": "Lock preventing resource from being used this way"
+            },
+            "ArgumentsError": {
+                "description": "invalid request body or parameters"
+            },
+            "AuthenticationError": { "description": "Not logged in" },
+            "NotPublishedError": { "description": "resource not available" },
+            "PermissionsError": { "description": "invalid permissions" },
+            "DatabaseError": { "description": "Database connection failed" }
+        }
+    },
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Allows user to (de)authenticate with server to send requests."
+        },
+        { "name": "business", "description": "Business operations" },
+        { "name": "user", "description": "User operations" },
+        {
+            "name": "membership",
+            "description": "Membership operations. Model joins one User to one Business, allows many to many relationship."
+        },
+        {
+            "name": "membership invitation",
+            "description": "Invite operations. Model joins one User to one Business, allows many to many relationship. Intermediary table before Member table."
+        },
+        {
+            "name": "department",
+            "description": "Department operations. One Business has many Departments"
+        },
+        {
+            "name": "role",
+            "description": "Role operations. One Department has many Businesses"
+        },
+        {
+            "name": "permission",
+            "description": "Permission operations. One Role has one set of Permissions."
+        },
+        {
+            "name": "user role",
+            "description": "User Role operations. Model joins one User to one Role, allows many to many relationship. Requires that the User be a Member of the Business."
+        },
+        {
+            "name": "manual",
+            "description": "Manual operations. One business has many Manuals."
+        },
+        {
+            "name": "manual assignment",
+            "description": "Manual Assignemnt operations. Model joins one Manual to either one of Department or Role, allows many to many relationship. Requires that all invlovled objects be linked to the same business."
+        },
+        {
+            "name": "manual section",
+            "description": "Manual Section operations. One Manual has many Sections."
+        },
+        {
+            "name": "policy",
+            "description": "Policy operations. One Manual has many Policies."
+        },
+        {
+            "name": "content",
+            "description": "Content operations. One Policy has many pieces of Content."
+        },
+        {
+            "name": "content read",
+            "description": "Content Read operations. Model joins User and Content, allows many to many relationship."
+        },
+        {
+            "name": "quiz",
+            "description": "Quiz operations. One Manual has one Quiz."
+        },
+        {
+            "name": "quiz sections",
+            "description": "Quiz Section operations. One Quiz has many Sections."
+        },
+        {
+            "name": "quiz question",
+            "description": "Quiz Question operations. One Section has many Questions."
+        },
+        {
+            "name": "quiz answer",
+            "description": "Quiz Answer operations. One Question has many Answers (only one of them correct)."
+        },
+        {
+            "name": "quiz attempt",
+            "description": "Quiz Attempt operations. Model joins Quiz as a whole to User, allows many to many relationship."
+        },
+        {
+            "name": "quiz result",
+            "description": "Quiz Result operations. Model joins Quiz Attempt to Quiz Question, and Member's selected Quiz Answer, allows many to many to many relationship."
+        },
+        {
+            "name": "settings",
+            "description": "Settings related to user permissions"
+        },
+        { "name": "reports", "description": "admin reports" }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "auth",
+                    "business",
+                    "user",
+                    "membership",
+                    "department",
+                    "role",
+                    "permission",
+                    "user role"
+                ],
+                "operationId": "CreateBusinessWithAdminAccount",
+                "summary": "Creates a new business account with an administrator account for the business with appropriate permissions.",
+                "description": "Responsible for instantiating all records to support an Admin account.\nCreates Business.\nCreates User.\nCreates Member.\nCreates Admin Department.\nCreates Admin Role with full Permissions.\nAssigns new Member to Role.\nSends back a cookie containing the user_id and business_id.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "description": "User's first name",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "User's last name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "User's phone number, currently only accepts Canadian numbers",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "User's password",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "confirm_password": {
+                                        "description": "Copy of the user's password to confirm they typed it correctly",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "name": {
+                                        "description": "Name of the business",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Business street address",
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "description": "City of business",
+                                        "type": "string"
+                                    },
+                                    "postal_code": {
+                                        "description": "Postal code of business",
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "description": "Province of business",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "first_name",
+                                    "email",
+                                    "phone",
+                                    "password",
+                                    "confirm_password",
+                                    "name",
+                                    "address",
+                                    "city",
+                                    "province",
+                                    "postal_code"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created business, user, admin department, admin role, and assigned user to business and role."
+                    },
+                    "400": {
+                        "description": "Missing or invalid request body."
+                    },
+                    "500": { "description": "Database connection failed" }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": ["auth"],
+                "operationId": "Login",
+                "summary": "Logs in a registered user.",
+                "description": "Authenticates user against database. Checks if database password is empty. Sends back a cookie containing the user_id and business_id.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "User's password",
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "required": ["email", "password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Found user, and user is a member of a business."
+                    },
+                    "400": {
+                        "description": "Missing or invalid request body."
+                    },
+                    "401": { "description": "User does not exist." },
+                    "403": {
+                        "description": "User is not a member of a business."
+                    },
+                    "500": { "description": "Database connection failed" }
+                }
+            }
+        },
+        "/auth/forgot_password": {
+            "post": {
+                "tags": ["auth", "user"],
+                "summary": "Sends email to user to reset password",
+                "description": "Creates a token with an expiry and emails the link with the token to the user.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "description": "Email of the user who forgot the password",
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "required": ["email"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully set the token and expiry"
+                    },
+                    "400": {
+                        "description": " Request body missing or invalid"
+                    },
+                    "500": { "description": "Database connection failed" }
+                }
+            }
+        },
+        "/auth/reset_password/{token}": {
+            "parameters": [
+                {
+                    "name": "token",
+                    "in": "path",
+                    "description": "Token generated in /auth/forgot_password",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                }
+            ],
+            "post": {
+                "tags": ["auth", "user"],
+                "summary": "Allows user to set a new password",
+                "description": "Provided the token is correct, the user can set a new password.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "password": {
+                                        "description": "The new password",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "confirm_password": {
+                                        "description": "Copy of the new password to ensure its typed properly.",
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "required": ["password", "confirm_password"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Password reset successfully" },
+                    "400": { "description": "Invalid or missing request body" },
+                    "401": { "description": "Invalid token provided" }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": ["auth"],
+                "summary": "Logout user",
+                "description": "Invalidate cookie",
+                "responses": {
+                    "200": { "description": "User logged out" },
+                    "400": { "description": "Invalid cookie sent" },
+                    "500": { "description": "Database connection failed" }
+                }
+            }
+        },
+        "/businesses": {
+            "get": {
+                "tags": ["business"],
+                "summary": "get businesses the logged in user is a member of",
+                "description": "uses the cookie the see which user is logged in",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Business"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/businesses/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "post": {
+                "tags": ["business"],
+                "summary": "change business user is logged into",
+                "description": "user must be a member of the business",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["business"],
+                "summary": "change default business",
+                "description": "changes which business you are looking at after logging in, user must be a member of the business",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/departments": {
+            "get": {
+                "tags": ["department"],
+                "summary": "Get all departments in business",
+                "description": "Only Users who have global permissions can access this.",
+                "parameters": [
+                    { "$ref": "#/components/parameters/Search" },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["name", "num_members", "num_roles"]
+                        }
+                    },
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    { "$ref": "#/components/parameters/Page" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Department"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["department"],
+                "summary": "create new department",
+                "description": "only users who have crud permissions for departments can use this",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "description": "name of new department",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/departments/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["department"],
+                "summary": "gets details about department",
+                "description": "gets extra statistics about department",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Department"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["department"],
+                "summary": "updates department",
+                "description": "changes the name of the department, admin department cannot be edited",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "description": "new name of department",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["department"],
+                "summary": "deletes department",
+                "description": "Checks if any users or manuals are assigned to this department before deleting. Also checks for delete lock, as the admin departments cannot be deleted.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": { "$ref": "#/components/responses/ForeignKeyError" },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/departments/{id}/roles": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["role"],
+                "summary": "get all roles in department",
+                "description": "requires permissions",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals": {
+            "get": {
+                "tags": ["manual"],
+                "summary": "gets available manuals",
+                "description": "Retrieves combination of manuals that are assigned to user's role/department. Check user's permissions to determine if the user is allowed to edit the manual. If manual is assigned to same role as the user they are not allowed to edit. requires permissions, or assignment and published",
+                "parameters": [
+                    {
+                        "name": "published",
+                        "description": "whether to get manuals that are published or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "editable",
+                        "description": "whether to get manuals that are editable by the user or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "enum": ["role", "department"] }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "integer", "description": "ids" }
+                        }
+                    },
+                    { "$ref": "#/components/parameters/Search" },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "enum": ["title", "role", "department"] }
+                    },
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    { "$ref": "#/components/parameters/Page" }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["manual"],
+                "summary": "Create new manual",
+                "description": "Create manual for role/department",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "name of manual",
+                                        "type": "string"
+                                    },
+                                    "published": {
+                                        "description": "Flag for whether to make it visible to the user's it is assigned to",
+                                        "type": "boolean"
+                                    },
+                                    "delete_lock": {
+                                        "description": "Flag to prevent users from deleting by accident",
+                                        "type": "boolean"
+                                    },
+                                    "edit_lock": {
+                                        "description": "Flag to prevent users from editing",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "published",
+                                    "delete_lock",
+                                    "edit_lock"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["manual"],
+                "summary": "get individual manual",
+                "description": "requires permissions, or assignment and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["manual"],
+                "summary": "update manual",
+                "description": "update details for individual manual",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": { "type": "string" },
+                                    "edit_lock": { "type": "boolean" },
+                                    "delete_lock": { "type": "boolean" },
+                                    "published": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["manual"],
+                "summary": "delete manual",
+                "description": "delete individual manual",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/{id}/quizzes": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz"],
+                "summary": "get the quiz associated with the manual",
+                "description": "only works if the logged in user is assigned the manual and the manual and quiz are published, or the user has permissions to edit the quiz",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "title": { "type": "string" },
+                                            "attempt_number": {
+                                                "type": "integer"
+                                            },
+                                            "published": { "type": "boolean" },
+                                            "delete_lock": {
+                                                "type": "boolean"
+                                            },
+                                            "edit_lock": { "type": "boolean" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz"],
+                "summary": "create quiz for manual",
+                "description": "will not work if a quiz already exists, or if user doesn;t have permissions",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": { "type": "string" },
+                                    "published": { "type": "boolean" },
+                                    "max_attempts": { "type": "integer" },
+                                    "prevent_delete": { "type": "boolean" },
+                                    "prevent_edit": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/{id}/sections": {
+            "get": {
+                "tags": ["manual section"],
+                "summary": "get all sections of manual",
+                "description": "requires permissions, or assignment and published",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualSection"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["manual section"],
+                "summary": "create a new section",
+                "description": "requires permissions.",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "the title of the section",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/{id}": {
+            "get": {
+                "tags": ["manual section"],
+                "summary": "get one section of manual",
+                "description": "requires permissions, or assignment and published",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualSection"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["manual section"],
+                "summary": "update section",
+                "description": "requires permissions and that edit lock not be on",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": { "title": { "type": "string" } }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["manual section"],
+                "summary": "delete manual section",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/{id}/policies": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["policy"],
+                "summary": "get all policies in section",
+                "description": "requires permissions, or assignment and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualPolicy"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["policy"],
+                "summary": "create a new polciy in the given manual section",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of policy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/policies/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["policy"],
+                "summary": "get individual policy",
+                "description": "requires permissions, or assignment and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualPolicy"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["policy"],
+                "summary": "update policy",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of policy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["policy"],
+                "summary": "delete policy",
+                "description": "requires permissions and that delete lock not be on",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/policies/{id}/contents": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["content"],
+                "summary": "get all contents of policy",
+                "description": "requires permissions, or assignment and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualContent"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["content"],
+                "summary": "create new content in the given policy",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of policy"
+                                    },
+                                    "content": {
+                                        "description": "the markdown of the content"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/policies/contents/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["content"],
+                "summary": "get individual content",
+                "description": "requires permissions, or assignment and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ManualContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["content"],
+                "summary": "update content",
+                "description": "requires permissions and that edit lock not be on",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "description": "title of content"
+                                    },
+                                    "content": {
+                                        "description": "the markdown of the content"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["content"],
+                "summary": "delete content",
+                "description": "requires permissions and that delete lock not be on",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/sections/policies/contents/{id}/read": {
+            "description": "requires manual be published and assigned",
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["content read"],
+                "summary": "retrieves whether the logged in user has read the content yet",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "read": { "type": "boolean" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["content read"],
+                "summary": "states that user has read the content",
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/NotPublishedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/manuals/{id}/roles": {
+            "get": {
+                "tags": ["manual assignment"],
+                "summary": "get roles that manual is associated with",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "name": { "type": "string" },
+                                            "permissions": {
+                                                "$ref": "#/components/schemas/PermissionResponse"
+                                            },
+                                            "department": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "name": { "type": "string" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manuals/{manual_id}/roles/{role_id}": {
+            "post": {
+                "tags": ["manual assignment"],
+                "summary": "associate role and manual",
+                "description": "assign manual to role, requries permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "ID of role",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["manual assignment"],
+                "summary": "disassociate role from manual",
+                "description": "remove assignment of manual to role, requries permission",
+                "parameters": [
+                    {
+                        "name": "manual_id",
+                        "description": "ID of manual",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "ID of role",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members": {
+            "get": {
+                "tags": ["membership"],
+                "summary": "Retrieves all users in business or department depending on permissions.",
+                "description": "Filters by department, role, member status, has pagination and sorting as well. Depending on calling user's permissions this may restrict the user's shown to be either company or department wide.",
+                "parameters": [
+                    { "$ref": "#/components/parameters/Search" },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": [
+                                "department",
+                                "role",
+                                "first_name",
+                                "last_name",
+                                "email",
+                                "phone"
+                            ]
+                        }
+                    },
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    { "$ref": "#/components/parameters/Page" },
+                    {
+                        "name": "filter_field",
+                        "description": "the field to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "enum": ["role", "department"] }
+                    },
+                    {
+                        "name": "filter_ids",
+                        "description": "the ids of the applicable model to filter for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "integer" }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/{id}": {
+            "get": {
+                "tags": ["membership"],
+                "summary": "get individual user",
+                "description": "Get user by id. Underpriveleged users can get their own user but no one else's.",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/schemas/User" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["membership"],
+                "summary": "Delete membership",
+                "description": "cannot delete first admin membership made on creation",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/invite": {
+            "post": {
+                "summary": "Send invite to user to join.",
+                "description": "Creates a user object using the provided details. Creates entry in membership invitation and generates token, then sends notification to use useing email/sms. Can be used multiple times if user deletes email/sms message. The link generated is to the frontend so that it can send a test patch call to /members/invite/{token}, if it fails with 405 then show form to add name and password.",
+                "tags": ["membership invitation", "user"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "description": "the email of the user to be invited",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "the phone of the user to be invited",
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["email"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "token created and email sent to user with link to /members/invite/{token} using token."
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/invite/{id}": {
+            "delete": {
+                "tags": ["membership invitation"],
+                "summary": "deletes sent invitation",
+                "description": "deletes row in table",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/invite/{token}": {
+            "patch": {
+                "summary": "Makes invited user a member of the business.",
+                "description": "Checks that token is valid. Checks if the user that is associated has a password set yet. If not it fails with method not allowed. Otherwise it deletes record of membership invitation and creates new membership record.",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "description": "the token generated from the post request to the same url",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "tags": ["membership invitation", "membership"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "description": "All fields are required if 405 is returned when none are sent",
+                                "properties": {
+                                    "first_name": { "type": "string" },
+                                    "last_name": { "type": "string" },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "confirm_password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "description": "user has not registered yet, indicates for the frontend to display a form for the user to fill out and resubmit to this url."
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/{user_id}/roles": {
+            "get": {
+                "tags": ["user role"],
+                "summary": "Get all roles the user is associated with",
+                "description": "Must have permissions to view user details, or be logged in as the same user",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "description": "the id of the user that is being queried",
+                        "required": true,
+                        "in": "path",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "unique identifier"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "description": "role name"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/members/{user_id}/roles/{role_id}": {
+            "post": {
+                "tags": ["user role"],
+                "summary": "assign user to role",
+                "description": "Must have permissions to assign user to role.",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "description": "the id of the user that is being assigned to a role",
+                        "required": true,
+                        "in": "path",
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "the id of the role that the user is being assigned to",
+                        "required": true,
+                        "in": "path",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["user role"],
+                "summary": "removes user from role",
+                "description": "Must have permissions to remove user from role.",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "description": "the id of the user that is being removed from the role",
+                        "required": true,
+                        "in": "path",
+                        "schema": { "type": "integer" }
+                    },
+                    {
+                        "name": "role_id",
+                        "description": "the id of the role that the user is being removed from",
+                        "required": true,
+                        "in": "path",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes": {
+            "get": {
+                "tags": ["quiz"],
+                "summary": "get all quizzes",
+                "parameters": [
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "required": false,
+                        "in": "query",
+                        "schema": { "enum": ["role", "department"] }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "integer", "description": "ids" }
+                        }
+                    },
+                    {
+                        "name": "published",
+                        "description": "whether to get manuals that are published or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    },
+                    {
+                        "name": "editable",
+                        "description": "whether to get manuals that are editable by the user or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "title": { "type": "string" },
+                                            "attempt_number": {
+                                                "type": "integer"
+                                            },
+                                            "published": { "type": "boolean" },
+                                            "delete_lock": {
+                                                "type": "boolean"
+                                            },
+                                            "edit_lock": { "type": "boolean" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz"],
+                "summary": "get individual quiz",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "integer" },
+                                        "title": { "type": "string" },
+                                        "attempt_number": { "type": "integer" },
+                                        "published": { "type": "boolean" },
+                                        "delete_lock": { "type": "boolean" },
+                                        "edit_lock": { "type": "boolean" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz"],
+                "summary": "update quiz",
+                "description": "requires permissions.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": { "type": "string" },
+                                    "published": { "type": "boolean" },
+                                    "max_attempts": { "type": "integer" },
+                                    "prevent_delete": { "type": "boolean" },
+                                    "prevent_edit": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz"],
+                "summary": "delete quiz",
+                "description": "requires permissions.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/{id}/sections": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz sections"],
+                "summary": "get all sections of quiz",
+                "description": "requires assignment and being published, otherwise crud permissions.",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuizSection"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz sections"],
+                "summary": "create a new section",
+                "description": "requires edit lock to be off, and permissions for user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": { "title": { "type": "string" } }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/sections/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz sections"],
+                "summary": "get one section",
+                "description": "requires assignment and being published, otherwise crud permissions.",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuizSection"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz sections"],
+                "summary": "updates section",
+                "description": "requires edit lock to be off, and permissions for user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": { "title": { "type": "string" } }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz sections"],
+                "summary": "deletes section",
+                "description": "requires edit lock to be off, and permissions for user, does not require delete lock",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/sections/{id}/questions": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz question"],
+                "summary": "get all questions in section",
+                "description": "requires either: permissions if it is not assigned to the user, or that it is published and assigned",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/QuizQuestion"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz question"],
+                "summary": "create quiz question",
+                "description": "requires crud permissions, and editable",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question": { "type": "string" },
+                                    "question_type_id": {
+                                        "type": "integer",
+                                        "description": "retrieved from list via GET /question_types"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/sections/questions/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz question"],
+                "summary": "get question in section",
+                "description": "requires either: permissions if it is not assigned to the user, or that it is published and assigned",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuizQuestion"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz question"],
+                "summary": "update question",
+                "description": "requires crud permissions, and editable",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question": { "type": "string" },
+                                    "question_type_id": {
+                                        "type": "integer",
+                                        "description": "retrieved from list via GET /question_types"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz question"],
+                "summary": "delete question",
+                "description": "requires crud permissions, and editable",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/sections/questions/{id}/answers": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz answer"],
+                "summary": "get all answers for question",
+                "description": "requires either: permissions if it is not assigned to the user, or that it is published and assigned",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/QuizAnswerResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz answer"],
+                "summary": "create quiz answer",
+                "description": "requires crud permissions, and editable",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "answer": { "type": "string" },
+                                    "correct": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/sections/questions/answers/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz answer"],
+                "summary": "get answer in question",
+                "description": "admin only as it contains whether the answer is correct",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuizAnswer"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz answer"],
+                "summary": "update answer",
+                "description": "requires crud permissions, and editable",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "answer": { "type": "string" },
+                                    "correct": { "type": "boolean" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz answer"],
+                "summary": "delete answer",
+                "description": "requires crud permissions, and editable",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/attempts/{attempt_id}/{user_id}/results": {
+            "parameters": [
+                {
+                    "name": "attempt_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "user_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                }
+            ],
+            "get": {
+                "tags": ["quiz result"],
+                "summary": "get all results for one attempt",
+                "description": "must logged in as the same user, or have permissions to view reports",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "question": {
+                                                "$ref": "#/components/schemas/QuizQuestion"
+                                            },
+                                            "answer": {
+                                                "$ref": "#/components/schemas/QuizAnswer"
+                                            },
+                                            "attempt": {
+                                                "$ref": "#/components/schemas/QuizAttemptResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz result"],
+                "summary": "create user's quiz answer",
+                "description": "can only be done by the same user that is being referenced",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "user_id": { "type": "integer" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/attempts/{attempt_id}/{user_id}/results/{result_id}": {
+            "parameters": [
+                {
+                    "name": "attempt_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "user_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "result_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                }
+            ],
+            "get": {
+                "tags": ["quiz result"],
+                "summary": "get specific result for one attempt",
+                "description": "must logged in as the same user, or have permissions to view reports",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "required": false,
+                        "in": "query",
+                        "schema": { "type": "integer" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/QuizQuestion"
+                                        },
+                                        "answer": {
+                                            "$ref": "#/components/schemas/QuizAnswer"
+                                        },
+                                        "attempt": {
+                                            "$ref": "#/components/schemas/QuizAttemptResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/{id}/attempts": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz attempt"],
+                "summary": "get all attempts for quiz",
+                "description": "requires permissions",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "quiz": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "title": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "role name"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "description": "unique identifier"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "department name"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "attempt": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "score": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["quiz attempt"],
+                "summary": "creates quiz attempt entry",
+                "description": "this should get called right before the user starts a quiz, can only be called if quiz and manual are published",
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/NotPublishedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/attempts/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "put": {
+                "tags": ["quiz attempt"],
+                "summary": "updates quiz attempt entry",
+                "description": "Signals the end of an attempt. Sends update with new 'updated_on' and causes trigger to fire on table, only if the created_on and updated_on match.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["quiz attempt"],
+                "summary": "deletes quiz attempt entry",
+                "description": "Only those with crud permissions on the resource can remove attempts.",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/quizzes/attempts/user/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz attempt"],
+                "summary": "get user's attempts for quiz",
+                "description": "requires permissions, or that the user be looking at their onw",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "quiz": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "title": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "role name"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "description": "unique identifier"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "department name"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "attempt": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "score": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/question_types": {
+            "get": {
+                "tags": ["quiz question"],
+                "summary": "get available quiz types",
+                "description": "for creating quiz questions. requires permissions for resources",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/admin": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "get all members with elevated priviliges for each department",
+                "description": "requires permissions",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "user": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "first_name": {
+                                                        "description": "The user's first name",
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "description": "The user's last name",
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "description": "The user's email",
+                                                        "type": "string",
+                                                        "format": "email"
+                                                    },
+                                                    "phone": {
+                                                        "description": "The user's phone number",
+                                                        "type": "string"
+                                                    },
+                                                    "role": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/manuals": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "retrieve table of user and manual combinations and whether they have been read yet or not",
+                "description": "requires permissions and is filterable, has pagination and sorting, will filter based off user permissions if they are only allowed to view department reports",
+                "parameters": [
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Search" },
+                    { "$ref": "#/components/parameters/Page" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    {
+                        "name": "read",
+                        "description": "whether the user(s) has read the manual or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "boolean" }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["role", "department", "manual", "user"]
+                        }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "integer", "description": "ids" }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "first_name": { "type": "string" },
+                                            "last_name": { "type": "string" },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "manual": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "read": {
+                                                        "description": "computed from joining section -> policy -> content -> content_read",
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            },
+                                            "role": {
+                                                "description": "retrieve by following how the manual is assigned to the user",
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "department": {
+                                                        "description": "since assignment can happen on the department level, auto populate all roles for department in here",
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/manuals/unread": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "get users that have unread manuals",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": { "type": "integer" },
+                                        "first_name": { "type": "string" },
+                                        "last_name": { "type": "string" },
+                                        "email": { "type": "string" },
+                                        "manuals": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "title": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/quizzes": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "retrieve a table of user and quiz combinations and whether they have been completed or not.",
+                "description": "requires permissions",
+                "parameters": [
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    { "$ref": "#/components/parameters/Search" },
+                    { "$ref": "#/components/parameters/Page" },
+                    { "$ref": "#/components/parameters/Limit" },
+                    {
+                        "name": "completed",
+                        "description": "whether the user(s) has completed the quiz or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "boolean" }
+                    },
+                    {
+                        "name": "passed",
+                        "description": "whether the user(s) has passed the quiz or not",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "type": "boolean" }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "fields to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "enum": ["role", "department", "user"] }
+                    },
+                    {
+                        "name": "filter_values",
+                        "description": "values for filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "integer", "description": "ids" }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": { "type": "integer" },
+                                            "first_name": { "type": "string" },
+                                            "last_name": { "type": "string" },
+                                            "email": {
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "quiz": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "high_score": {
+                                                        "description": "computed from counting the # of questions in the quiz, and then checking which results the yser got correct for each attempt",
+                                                        "type": "integer"
+                                                    },
+                                                    "attempts": {
+                                                        "type": "integer",
+                                                        "description": "number of attempts the user took"
+                                                    }
+                                                }
+                                            },
+                                            "role": {
+                                                "description": "retrieve by following how the manual is assigned to the user",
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "department": {
+                                                        "description": "since assignment can happen on the department level, auto populate all roles for department in here",
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/quizzes/attempts": {
+            "get": {
+                "tags": ["reports", "quiz attempt"],
+                "summary": "get average attempts per person, per role and per department, requires permissions",
+                "description": "just to keep the computation out of the frontend",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "role_details": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "role": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "role name"
+                                                            },
+                                                            "department": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "description": "unique identifier"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "description": "department name"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "total_attempts": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "department_details": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "department": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "description": "unique identifier"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "description": "department name"
+                                                            }
+                                                        }
+                                                    },
+                                                    "total_attempts": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/reports/quizzes/incomplete": {
+            "get": {
+                "tags": ["reports"],
+                "summary": "get all users who have incomplete quizzes",
+                "description": "requires permissions, and published",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResponse"
+                                        },
+                                        "quiz": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": { "type": "integer" },
+                                                "title": { "type": "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/roles": {
+            "get": {
+                "tags": ["role"],
+                "summary": "Get all roles",
+                "description": "get all roles in business, requires permissions",
+                "parameters": [
+                    { "$ref": "#/components/parameters/Limit" },
+                    { "$ref": "#/components/parameters/Page" },
+                    { "$ref": "#/components/parameters/Search" },
+                    { "$ref": "#/components/parameters/SortOrder" },
+                    {
+                        "name": "sort_field",
+                        "description": "The field to sort on",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "enum": ["num_members", "department", "name"]
+                        }
+                    },
+                    {
+                        "name": "filter_field",
+                        "description": "the field to filter by",
+                        "in": "query",
+                        "required": false,
+                        "schema": { "enum": ["department"] }
+                    },
+                    {
+                        "name": "filter_ids",
+                        "description": "the ids of the applicable model to filter for",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": { "type": "integer" }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "post": {
+                "tags": ["role"],
+                "summary": "create new role",
+                "description": "creates new role if logged in user has department or global permissions, cannot create multiple roles for the admin department.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "description": "role name",
+                                        "type": "string"
+                                    },
+                                    "department_id": {
+                                        "description": "the unique identifier of the department the role will be apart of",
+                                        "type": "integer"
+                                    },
+                                    "permissions": {
+                                        "$ref": "#/components/schemas/PermissionResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/RoleResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/roles/{id}": {
+            "get": {
+                "tags": ["role", "permission"],
+                "summary": "get individual role details",
+                "description": "Any authenticated user can retrieve details about the role(s) they are apart of. Or if they have the necessary permissions, the can retrieve any of them.",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "description": "return value of role routes",
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "description": "unique identifier"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "description": "role name"
+                                        },
+                                        "department": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "description": "unique identifier"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "department name"
+                                                }
+                                            }
+                                        },
+                                        "permissions": {
+                                            "$ref": "#/components/schemas/PermissionResponse"
+                                        },
+                                        "num_members": {
+                                            "type": "integer",
+                                            "description": "number of members assigned to this role"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["role", "permission"],
+                "summary": "update individual role",
+                "description": "Can update the name of the role, the first role that is created for the admin department cannot be edited",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "the new name of the role"
+                                    },
+                                    "permissions": {
+                                        "$ref": "#/components/schemas/PermissionResponse"
+                                    }
+                                },
+                                "required": ["name", "permissions"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "delete": {
+                "tags": ["role", "permission"],
+                "summary": "delete role by id",
+                "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist, cannot delete the first role for the admin department",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": { "$ref": "#/components/responses/ForeignKeyError" },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/roles/{id}/members": {
+            "get": {
+                "tags": ["user role"],
+                "summary": "get all members associated with role",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "description": "user id",
+                                                "type": "integer"
+                                            },
+                                            "first_name": {
+                                                "description": "User's first name",
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "description": "User's last name",
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "description": "User's email",
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "phone": {
+                                                "description": "User's phone number",
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/roles/{id}/manuals": {
+            "get": {
+                "tags": ["manual assignment"],
+                "summary": "Get manuals associated with role",
+                "description": "requires permissions",
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ManualResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/settings/nav": {
+            "get": {
+                "tags": ["settings"],
+                "summary": "Get the navigation links for the user",
+                "description": "Requires the user to be logged in",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "home": { "type": "boolean" },
+                                        "members": { "type": "boolean" },
+                                        "department": { "type": "boolean" },
+                                        "roles": { "type": "boolean" },
+                                        "manuals": { "type": "boolean" },
+                                        "quizzes": { "type": "boolean" },
+                                        "reports": { "type": "boolean" },
+                                        "scores": { "type": "boolean" },
+                                        "logout": { "type": "boolean" }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
+        "/users/{id}": {
+            "put": {
+                "summary": "update user (Not password)",
+                "description": "Updates basic user details",
+                "tags": ["user"],
+                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {
+                                        "description": "the new first name of the user",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "the new last name of the user",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "the new email of the user",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "description": "the new phone number of the user",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User object succesfully updated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        }
+    }
+}
