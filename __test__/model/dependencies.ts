@@ -111,6 +111,7 @@ const dependencies: { [i in ModelTest]: ModelTest[] } = {
         "manual",
         "quiz",
     ],
+    quizQuestionType: [],
     quizQuestion: [
         "business",
         "user",
@@ -122,6 +123,7 @@ const dependencies: { [i in ModelTest]: ModelTest[] } = {
         "manual",
         "quiz",
         "quizSection",
+        "quizQuestionType",
     ],
     quizAnswer: [
         "business",
@@ -134,6 +136,7 @@ const dependencies: { [i in ModelTest]: ModelTest[] } = {
         "manual",
         "quiz",
         "quizSection",
+        "quizQuestionType",
         "quizQuestion",
     ],
     quizAttempt: [
@@ -158,6 +161,7 @@ const dependencies: { [i in ModelTest]: ModelTest[] } = {
         "manual",
         "quiz",
         "quizSection",
+        "quizQuestionType",
         "quizQuestion",
         "quizAnswer",
         "quizAttempt",

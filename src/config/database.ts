@@ -21,6 +21,7 @@ import Read from "@models/manual/content/read";
 import Event from "@models/event";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
+import QuizQuestionType from "@models/quiz/question/question_type";
 
 const entities = [
     Business,
@@ -39,6 +40,7 @@ const entities = [
     Quiz,
     QuizSection,
     Question,
+    QuizQuestionType,
     Answer,
     Attempt,
     Result,

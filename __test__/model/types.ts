@@ -20,6 +20,7 @@ import ManualAssignment from "@models/manual/assignment";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
 import ModelTest from ".";
+import QuizQuestionType from "@models/quiz/question/question_type";
 
 /**
  * Set of types so we can iterate over them in tests
@@ -42,6 +43,7 @@ const types: { [i in ModelTest]: new () => unknown } = {
     quiz: Quiz,
     quizSection: QuizSection,
     quizQuestion: QuizQuestion,
+    quizQuestionType: QuizQuestionType,
     quizAnswer: QuizAnswer,
     quizAttempt: QuizAttempt,
     quizResult: QuizResult,

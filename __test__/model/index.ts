@@ -15,6 +15,7 @@ type ModelTest =
     | "contentRead"
     | "quiz"
     | "quizSection"
+    | "quizQuestionType"
     | "quizQuestion"
     | "quizAnswer"
     | "quizResult"

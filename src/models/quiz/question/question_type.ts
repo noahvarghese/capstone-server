@@ -1,6 +1,5 @@
 import { AttributeFactory } from "@models/abstract/base_model";
-import EditableContentModel from "@models/abstract/editable_content_model";
-import { Entity, Column } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 export interface QuizQuestionTypeAttributes {
     question_type: "multiple choice" | "single choice";
@@ -17,10 +16,9 @@ export const EmptyQuizQuestionTypeAttributes =
     });
 
 @Entity({ name: "quiz_question_type" })
-export default class QuizQuestionType
-    extends EditableContentModel
-    implements QuizQuestionTypeAttributes
-{
+export default class QuizQuestionType implements QuizQuestionTypeAttributes {
+    @PrimaryGeneratedColumn()
+    public id!: number;
     @Column()
     public question_type!: "multiple choice";
     @Column()
@@ -29,7 +27,6 @@ export default class QuizQuestionType
     public html_attributes!: string;
 
     public constructor(options?: Partial<QuizQuestionTypeAttributes>) {
-        super();
         Object.assign(
             this,
             AttributeFactory(options, EmptyQuizQuestionTypeAttributes)
