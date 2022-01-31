@@ -102,9 +102,15 @@ export default class ModelTestFail {
             );
         } catch (e) {
             errorThrown = true;
-            expect((e as Partial<{ message?: string }>).message).toMatch(
-                expectedErrorMessage
-            );
+            if (expectedErrorMessage instanceof RegExp) {
+                expect((e as Partial<{ message?: string }>).message).toMatch(
+                    expectedErrorMessage
+                );
+            } else {
+                expect((e as Partial<{ message?: string }>).message).toBe(
+                    expectedErrorMessage
+                );
+            }
             await ModelActions.delete<T>(baseWorld, type);
         }
 

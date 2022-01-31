@@ -39,37 +39,6 @@ END;
 
 //
 
-DROP TRIGGER IF EXISTS manual_assignment_insert //
-
-CREATE TRIGGER manual_assignment_insert
-BEFORE INSERT
-ON manual_assignment FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentInsertError: Cannot add a manual_assignment without a role or department ', CAST(NEW.manual_id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-END;
-
-//
-
-DROP TRIGGER IF EXISTS manual_assignment_update //
-
-CREATE TRIGGER manual_assignment_update
-BEFORE UPDATE
-ON manual_assignment FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    IF (NEW.role_id IS NULL OR NEW.role_id = '') AND (NEW.department_id IS NULL OR NEW.department_id = '') THEN
-        SET msg = CONCAT('ManualAssignmentUpdateError: Cannot update a manual_assignment without a role or department ', CAST(NEW.manual_id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-    SET NEW.updated_on = NOW();
-END;
-
-//
-
 DROP TRIGGER IF EXISTS manual_section_insert //
 
 CREATE TRIGGER manual_section_insert

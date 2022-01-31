@@ -182,7 +182,6 @@ export const manualAttributes = (): ManualAttributes =>
 export const manualAssignmentAttributes = (): ManualAssignmentAttributes =>
     AttributeFactory(
         {
-            department_id: NaN,
             manual_id: NaN,
             role_id: NaN,
             updated_by_user_id: NaN,
