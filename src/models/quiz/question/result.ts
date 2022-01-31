@@ -1,6 +1,6 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column, PrimaryColumn } from "typeorm";
 import { AttributeFactory } from "@models/abstract/base_model";
-import EditableContentModel from "@models/abstract/editable_content_model";
+import EventDates from "@models/abstract/event_dates";
 
 export interface QuizResultAttributes {
     quiz_attempt_id: number;
@@ -18,15 +18,17 @@ export const EmptyResultAttributes = (): QuizResultAttributes => ({
 
 @Entity({ name: "quiz_result" })
 export default class QuizResult
-    extends EditableContentModel
+    extends EventDates
     implements QuizResultAttributes
 {
-    @Column()
+    @PrimaryColumn()
     public quiz_attempt_id!: number;
-    @Column()
+    @PrimaryColumn()
     public quiz_question_id!: number;
-    @Column()
+    @PrimaryColumn()
     public quiz_answer_id!: number;
+    @Column()
+    public updated_by_user_id!: number;
 
     public constructor(options?: Partial<QuizResultAttributes>) {
         super();
