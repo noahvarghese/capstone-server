@@ -12,7 +12,7 @@ type ModelTest =
     | "manualSection"
     | "policy"
     | "content"
-    | "policyRead"
+    | "contentRead"
     | "quiz"
     | "quizSection"
     | "quizQuestion"

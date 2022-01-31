@@ -4,7 +4,7 @@ import Content from "@models/manual/content/content";
 import Manual from "@models/manual/manual";
 import ManualSection from "@models/manual/section";
 import Policy from "@models/manual/policy";
-import PolicyRead from "@models/manual/content/read";
+import ContentRead from "@models/manual/content/read";
 import Permission from "@models/permission";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
@@ -38,7 +38,7 @@ const types: { [i in ModelTest]: new () => unknown } = {
     manualSection: ManualSection,
     policy: Policy,
     content: Content,
-    policyRead: PolicyRead,
+    contentRead: ContentRead,
     quiz: Quiz,
     quizSection: QuizSection,
     quizQuestion: QuizQuestion,

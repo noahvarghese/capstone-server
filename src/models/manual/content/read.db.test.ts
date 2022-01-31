@@ -23,7 +23,7 @@ afterEach(async () => {
 });
 
 // Tests
-test("Create Policy Read", async () => {
+test("Create Content Read", async () => {
     await ModelTestPass.create<ContentRead, ContentReadAttributes>(
         baseWorld,
         ContentRead
@@ -35,11 +35,11 @@ test("Update model should fail", async () => {
         baseWorld,
         ContentRead,
         { content_id: -1 },
-        /ContentReadUpdateError: Cannot update policy_read/
+        /ContentReadUpdateError: Cannot update content_read/
     );
 });
 
-test("Delete Policy Read", async () => {
+test("Delete Content Read", async () => {
     await ModelTestPass.delete<ContentRead, ContentReadAttributes>(
         baseWorld,
         ContentRead,
@@ -47,7 +47,7 @@ test("Delete Policy Read", async () => {
     );
 });
 
-test("Read Policy Read", async () => {
+test("Read Content Read", async () => {
     await ModelTestPass.read<ContentRead, ContentReadAttributes>(
         baseWorld,
         ContentRead,
