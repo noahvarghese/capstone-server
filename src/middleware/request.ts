@@ -14,7 +14,7 @@ export const parseBodyToJSON = (
     } catch (_e) {
         const e = _e as Error;
         Logs.Error(e.message);
-        res.sendStatus(500);
+        res.status(500).send("Failed to parse request body");
     }
 };
 
@@ -31,7 +31,7 @@ export const parseQueryToJSON = (
     } catch (_e) {
         const e = _e as Error;
         Logs.Error(e.message);
-        res.sendStatus(500);
+        res.status(500).send("Failed to parse URL query");
     }
 };
 
@@ -48,6 +48,6 @@ export const parseParamToJSON = (
     } catch (_e) {
         const e = _e as Error;
         Logs.Error(e.message);
-        res.sendStatus(500);
+        res.status(500).send("Failed to parse URL parameters");
     }
 };

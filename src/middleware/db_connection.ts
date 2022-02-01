@@ -2,7 +2,7 @@ import Logs from "@util/logs/logs";
 import { NextFunction, Request, Response } from "express";
 import { getConnection } from "typeorm";
 
-const sqlConnection = (
+const dbConnection = (
     req: Request,
     res: Response,
     next: NextFunction
@@ -15,8 +15,8 @@ const sqlConnection = (
         return;
     }
 
-    req.sqlConnection = connection;
+    req.dbConnection = connection;
     next();
 };
 
-export default sqlConnection;
+export default dbConnection;
