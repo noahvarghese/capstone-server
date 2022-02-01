@@ -1,17 +1,19 @@
 import { Router, Request, Response } from "express";
-import loginRoute from "./login";
-import logoutRoute from "./logout";
-import registerRoute from "./register";
-import forgotRoute from "./forgot_password";
-import resetRoute from "./reset_password";
+import {
+    forgotPasswordController,
+    loginController,
+    logoutController,
+    registerController,
+    resetPasswordController,
+} from "./controllers";
 
 const router = Router();
 
-router.use("/login", loginRoute);
-router.use("/register", registerRoute);
-router.use("/logout", logoutRoute);
-router.use("/forgot_password", forgotRoute);
-router.use("/reset_password", resetRoute);
+router.post("/login", loginController);
+router.post("/register", registerController);
+router.post("/logout", logoutController);
+router.post("/forgot_password", forgotPasswordController);
+router.post("/reset_password/:token", resetPasswordController);
 
 router.post("/", (req: Request, res: Response) => {
     if (
@@ -21,7 +23,7 @@ router.post("/", (req: Request, res: Response) => {
     ) {
         res.sendStatus(200);
     } else {
-        res.status(400).json({ message: "Not authenticated" });
+        res.status(401).json();
     }
 });
 

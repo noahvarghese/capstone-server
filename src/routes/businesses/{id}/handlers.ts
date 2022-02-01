@@ -22,15 +22,15 @@ export const isMemberHandler = async (
         const { message } = _e as Error;
         Logs.Error(message);
         throw new DataServiceError(
-            "Failed to retrieve memberships",
-            ServiceErrorReasons.DATABASE
+            ServiceErrorReasons.DATABASE,
+            "Failed to retrieve memberships"
         );
     }
 
     if (count > 1)
         throw new DataServiceError(
-            "Multiple memberships returned",
-            ServiceErrorReasons.DATABASE
+            ServiceErrorReasons.DATABASE,
+            "Multiple memberships returned"
         );
 
     return count === 1;
@@ -77,8 +77,8 @@ export const changeDefaultBusinessHandler = async (
         const { message } = _e as Error;
         Logs.Error(message);
         throw new DataServiceError(
-            "Unable to set default membership",
-            ServiceErrorReasons.DATABASE
+            ServiceErrorReasons.DATABASE,
+            "Unable to set default membership"
         );
     }
 };
