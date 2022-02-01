@@ -6,7 +6,7 @@ import departmentRouter from "./departments";
 import roleRouter from "./roles";
 import settingsRoute from "./settings";
 import memberRoute from "./members";
-import businessRouter from "./business";
+import businessRouter from "./businesses";
 
 const router = Router();
 
