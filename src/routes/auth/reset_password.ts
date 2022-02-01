@@ -8,7 +8,7 @@ import Membership from "@models/membership";
 const router = Router();
 
 router.post("/:token", async (request: Request, response: Response) => {
-    const { SqlConnection: connection } = request;
+    const { dbConnection: connection } = request;
     const { token } = request.params;
     const { password, confirm_password } = request.body;
 

@@ -33,7 +33,7 @@ router.post("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
     } = req;
-    const { SqlConnection: connection } = req;
+    const { dbConnection: connection } = req;
 
     //check permissions
     const hasPermission = await Permission.checkPermission(
@@ -213,7 +213,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 router.post("/:token", async (req: Request, res: Response) => {
     const { token } = req.params;
-    const { SqlConnection: connection } = req;
+    const { dbConnection: connection } = req;
 
     let membershipRequest: MembershipRequest;
 

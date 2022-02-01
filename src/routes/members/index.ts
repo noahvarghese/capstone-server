@@ -42,7 +42,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const {
         params: { id },
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
     } = req;
 
     if (Number(id) !== Number(user_id)) {
@@ -50,7 +50,7 @@ router.get("/:id", async (req: Request, res: Response) => {
         const hasPermission = await Permission.checkPermission(
             Number(user_id),
             Number(current_business_id),
-            SqlConnection,
+            dbConnection,
             [
                 "global_crud_users",
                 "global_assign_users_to_role",
@@ -66,11 +66,12 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     try {
         const { email, first_name, last_name, phone, birthday } =
-            await SqlConnection.manager.findOneOrFail(User, {
+            await dbConnection.manager.findOneOrFail(User, {
                 where: { id },
             });
 
-        const roles = await SqlConnection.createQueryBuilder()
+        const roles = await dbConnection
+            .createQueryBuilder()
             .select([
                 "r.id",
                 "ur.primary_role_for_user",
@@ -125,7 +126,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.get("/", async (req: Request, res: Response) => {
     const {
         query,
-        SqlConnection: connection,
+        dbConnection: connection,
         session: { current_business_id, user_id },
     } = req;
 
@@ -328,7 +329,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.delete("/:id", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
+        dbConnection,
         params: { id: user_id },
         session: { current_business_id, user_id: current_user_id },
     } = req;
@@ -337,7 +338,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(current_user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_users"]
     );
 
@@ -346,7 +347,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
         return;
     }
 
-    const membership = await SqlConnection.manager.findOne(Membership, {
+    const membership = await dbConnection.manager.findOne(Membership, {
         where: { user_id, business_id: current_business_id },
     });
 
@@ -356,7 +357,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        SqlConnection.manager.delete(Membership, membership);
+        dbConnection.manager.delete(Membership, membership);
         res.sendStatus(200);
         return;
     } catch (e) {
@@ -369,7 +370,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 
 router.put("/:id", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
+        dbConnection,
         params: { id: user_id },
         session: { current_business_id, user_id: current_user_id },
         body: { first_name, last_name, email, phone, birthday },
@@ -380,7 +381,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         const hasPermission = await Permission.checkPermission(
             Number(current_user_id),
             Number(current_business_id),
-            SqlConnection,
+            dbConnection,
             ["global_crud_users"]
         );
 
@@ -429,7 +430,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        await SqlConnection.manager.update(User, user_id, {
+        await dbConnection.manager.update(User, user_id, {
             first_name,
             last_name,
             email,

@@ -23,14 +23,14 @@ router.get("/:id", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
         params: { id },
-        SqlConnection,
+        dbConnection,
     } = req;
 
     //check permissions
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_department"]
     );
 
@@ -40,7 +40,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        const department = await SqlConnection.manager.findOne(Department, {
+        const department = await dbConnection.manager.findOne(Department, {
             where: { business_id: current_business_id, id },
         });
 
@@ -49,7 +49,8 @@ router.get("/:id", async (req: Request, res: Response) => {
             return;
         }
 
-        const numMembers = await SqlConnection.createQueryBuilder()
+        const numMembers = await dbConnection
+            .createQueryBuilder()
             .select("COUNT(user.id)", "count")
             .from(Department, "d")
             .leftJoin(Role, "r", "r.department_id = d.id")
@@ -58,7 +59,8 @@ router.get("/:id", async (req: Request, res: Response) => {
             .leftJoin(User, "user", "user.id = ur.user_id")
             .getRawOne();
 
-        const numRoles = await SqlConnection.createQueryBuilder()
+        const numRoles = await dbConnection
+            .createQueryBuilder()
             .select("COUNT(r.id)", "count")
             .from(Department, "d")
             .leftJoin(Role, "r", "r.department_id = d.id")
@@ -84,14 +86,14 @@ router.get("/", async (req: Request, res: Response) => {
     const {
         query,
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
     } = req;
 
     //check permissions
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_department"]
     );
 
@@ -131,7 +133,8 @@ router.get("/", async (req: Request, res: Response) => {
     try {
         const returnVal: DepartmentResponse[] = [];
 
-        let departmentQuery = SqlConnection.createQueryBuilder()
+        let departmentQuery = dbConnection
+            .createQueryBuilder()
             .select("d")
             .from(Department, "d")
             .where("d.business_id = :business_id", {
@@ -161,7 +164,8 @@ router.get("/", async (req: Request, res: Response) => {
             .getMany();
 
         for (const dept of departments) {
-            const numMembers = await SqlConnection.createQueryBuilder()
+            const numMembers = await dbConnection
+                .createQueryBuilder()
                 .select("COUNT(user.id)", "count")
                 .from(Department, "d")
                 .leftJoin(Role, "r", "r.department_id = d.id")
@@ -170,7 +174,8 @@ router.get("/", async (req: Request, res: Response) => {
                 .leftJoin(User, "user", "user.id = ur.user_id")
                 .getRawOne();
 
-            const numRoles = await SqlConnection.createQueryBuilder()
+            const numRoles = await dbConnection
+                .createQueryBuilder()
                 .select("COUNT(r.id)", "count")
                 .from(Department, "d")
                 .leftJoin(Role, "r", "r.department_id = d.id")
@@ -220,7 +225,7 @@ router.get("/", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         body: { name, prevent_delete, prevent_edit },
     } = req;
 
@@ -228,7 +233,7 @@ router.post("/", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_department"]
     );
 
@@ -238,7 +243,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // check department exists
-    const count = await SqlConnection.manager.count(Department, {
+    const count = await dbConnection.manager.count(Department, {
         where: { name, business_id: current_business_id },
     });
 
@@ -248,7 +253,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     try {
-        const result = await SqlConnection.manager.insert(
+        const result = await dbConnection.manager.insert(
             Department,
             new Department({
                 name,
@@ -273,7 +278,7 @@ router.post("/", async (req: Request, res: Response) => {
 router.delete("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         query: { ids: queryIds },
     } = req;
 
@@ -291,7 +296,7 @@ router.delete("/", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_department"]
     );
 
@@ -302,7 +307,8 @@ router.delete("/", async (req: Request, res: Response) => {
 
     // check if users are joined to department
     try {
-        const numUsersInDepartment = await SqlConnection.createQueryBuilder()
+        const numUsersInDepartment = await dbConnection
+            .createQueryBuilder()
             .select("COUNT(ur.id)")
             .from(UserRole, "ur")
             .leftJoin(Role, "r", "r.id = ur.role_id")
@@ -333,7 +339,7 @@ router.delete("/", async (req: Request, res: Response) => {
 
     // remove non user associations
     try {
-        await SqlConnection.transaction(
+        await dbConnection.transaction(
             async (transactionManager: EntityManager) => {
                 try {
                     await transactionManager
@@ -403,7 +409,7 @@ router.delete("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         params: { id: queryId },
         body: { name },
     } = req;
@@ -428,7 +434,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_department"]
     );
 
@@ -438,7 +444,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        await SqlConnection.manager.update(Department, { id }, { name });
+        await dbConnection.manager.update(Department, { id }, { name });
         res.sendStatus(200);
         return;
     } catch (_e) {

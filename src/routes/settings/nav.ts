@@ -163,7 +163,7 @@ const adminDepartmentHasUser = async (
 
 router.get("/", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
+        dbConnection,
         session: { user_id, current_business_id },
     } = req;
 
@@ -172,7 +172,7 @@ router.get("/", async (req: Request, res: Response) => {
         throw new Error("Not authenticated");
     }
 
-    const nav = new Nav(current_business_id, user_id, SqlConnection);
+    const nav = new Nav(current_business_id, user_id, dbConnection);
     const links = await nav.getLinks();
 
     res.status(200).json(links);

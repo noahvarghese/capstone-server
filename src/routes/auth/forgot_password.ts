@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/", async (request: Request, response: Response) => {
     const { email } = request.body;
-    const { SqlConnection: connection } = request;
+    const { dbConnection: connection } = request;
     const users = await connection.manager.find(User, { where: { email } });
 
     if (users.length === 0) {

@@ -10,7 +10,7 @@ export interface LoginProps {
 }
 
 router.post("/", async (req: Request, res: Response) => {
-    const { SqlConnection: connection } = req;
+    const { dbConnection: connection } = req;
 
     // because form data gets sent as an object
     // and sending a stringified json results in a string

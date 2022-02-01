@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
+        dbConnection,
         body: { user_id, role_ids },
         session: { current_business_id, user_id: current_user_id },
     } = req;
@@ -24,7 +24,7 @@ router.post("/", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(current_user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         [
             "global_crud_users",
             "global_assign_users_to_role",
@@ -38,7 +38,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // check user is a member
-    const membership = await SqlConnection.manager.findOne(Membership, {
+    const membership = await dbConnection.manager.findOne(Membership, {
         where: { user_id, business_id: current_business_id },
     });
 
@@ -53,7 +53,8 @@ router.post("/", async (req: Request, res: Response) => {
     for (const id of role_ids) {
         try {
             // check role is part of business
-            const role = await SqlConnection.createQueryBuilder()
+            const role = await dbConnection
+                .createQueryBuilder()
                 .select("r")
                 .from(Role, "r")
                 .where("r.id = :role_id", { role_id: id })
@@ -70,7 +71,7 @@ router.post("/", async (req: Request, res: Response) => {
                 return;
             }
 
-            await SqlConnection.manager.insert(
+            await dbConnection.manager.insert(
                 UserRole,
                 new UserRole({
                     role_id: id,
@@ -94,7 +95,7 @@ router.post("/", async (req: Request, res: Response) => {
 
 router.delete("/", async (req: Request, res: Response) => {
     const {
-        SqlConnection,
+        dbConnection,
         query: { user_id, role_ids },
         session: { current_business_id, user_id: current_user_id },
     } = req;
@@ -108,7 +109,7 @@ router.delete("/", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(current_user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         [
             "global_crud_users",
             "global_assign_users_to_role",
@@ -124,14 +125,14 @@ router.delete("/", async (req: Request, res: Response) => {
     // may find a way to use promise.all
     for (const id of JSON.parse(role_ids as string)) {
         try {
-            const userRole = await SqlConnection.manager.findOneOrFail(
+            const userRole = await dbConnection.manager.findOneOrFail(
                 UserRole,
                 {
                     where: { user_id, role_id: id },
                 }
             );
 
-            await SqlConnection.manager.delete(UserRole, userRole);
+            await dbConnection.manager.delete(UserRole, userRole);
         } catch (e) {
             const { message } = e as Error;
             Logs.Error(message);

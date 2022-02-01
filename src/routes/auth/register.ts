@@ -101,7 +101,7 @@ router.post("/", async (req: Request, res: Response) => {
         return;
     }
 
-    const { SqlConnection: connection } = req;
+    const { dbConnection: connection } = req;
 
     // check for existing business
     const foundBusiness = await connection.manager.find(Business, {

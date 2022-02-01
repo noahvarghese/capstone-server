@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", async (req: Request, res: Response) => {
     const {
-        SqlConnection: connection,
+        dbConnection: connection,
         session: { user_id },
     } = req;
 

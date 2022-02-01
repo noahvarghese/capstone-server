@@ -31,7 +31,7 @@ export interface RoleResponse {
 router.get("/:id", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         params: { id },
     } = req;
 
@@ -44,7 +44,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         [
             "global_crud_role",
             "global_assign_resources_to_role",
@@ -68,7 +68,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     };
 
     try {
-        const roleModel = await SqlConnection.manager.findOneOrFail(Role, {
+        const roleModel = await dbConnection.manager.findOneOrFail(Role, {
             where: { id },
         });
 
@@ -81,7 +81,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        const departmentModel = await SqlConnection.manager.findOneOrFail(
+        const departmentModel = await dbConnection.manager.findOneOrFail(
             Department,
             { where: { id: role.department.id } }
         );
@@ -91,7 +91,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        const permissionModel = await SqlConnection.manager.findOneOrFail(
+        const permissionModel = await dbConnection.manager.findOneOrFail(
             Permission,
             { where: { id: role.permissions.id } }
         );
@@ -110,14 +110,14 @@ router.get("/", async (req: Request, res: Response) => {
     const {
         query,
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
     } = req;
 
     //check permissions
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         [
             "global_crud_role",
             "global_assign_resources_to_role",
@@ -172,7 +172,8 @@ router.get("/", async (req: Request, res: Response) => {
             department: { id: number; name: string };
         }[] = [];
 
-        let roleQuery = SqlConnection.createQueryBuilder()
+        let roleQuery = dbConnection
+            .createQueryBuilder()
             .select("r")
             .from(Role, "r")
             .leftJoin(Department, "d", "d.id = r.department_id")
@@ -212,7 +213,7 @@ router.get("/", async (req: Request, res: Response) => {
             .getMany();
 
         for (const role of roles) {
-            const department = await SqlConnection.manager.findOneOrFail(
+            const department = await dbConnection.manager.findOneOrFail(
                 Department,
                 {
                     where: { id: role.department_id },
@@ -242,7 +243,7 @@ router.get("/", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         body: { name, department: department_id, ...rest },
     } = req;
 
@@ -250,7 +251,7 @@ router.post("/", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_role"]
     );
 
@@ -265,7 +266,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     // check role exists
-    const count = await SqlConnection.manager.count(Role, {
+    const count = await dbConnection.manager.count(Role, {
         where: { name, department_id },
     });
 
@@ -276,12 +277,12 @@ router.post("/", async (req: Request, res: Response) => {
 
     // try create
     try {
-        const permissionResult = await SqlConnection.manager.insert(
+        const permissionResult = await dbConnection.manager.insert(
             Permission,
             new Permission({ ...rest, updated_by_user_id: user_id })
         );
 
-        const result = await SqlConnection.manager.insert(
+        const result = await dbConnection.manager.insert(
             Role,
             new Role({
                 name,
@@ -305,7 +306,7 @@ router.post("/", async (req: Request, res: Response) => {
 router.delete("/", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         query: { ids: queryIds },
     } = req;
 
@@ -323,7 +324,7 @@ router.delete("/", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_role"]
     );
 
@@ -334,7 +335,7 @@ router.delete("/", async (req: Request, res: Response) => {
 
     // check if users are joined to role
     try {
-        const count = await SqlConnection.manager.count(UserRole, {
+        const count = await dbConnection.manager.count(UserRole, {
             where: ids.map((id: number) => ({ role_id: id })),
         });
 
@@ -359,7 +360,7 @@ router.delete("/", async (req: Request, res: Response) => {
 
     // remove non user associations
     try {
-        await SqlConnection.transaction(
+        await dbConnection.transaction(
             async (transactionManager: EntityManager) => {
                 try {
                     await transactionManager
@@ -412,7 +413,7 @@ router.delete("/", async (req: Request, res: Response) => {
 router.put("/:id", async (req: Request, res: Response) => {
     const {
         session: { current_business_id, user_id },
-        SqlConnection,
+        dbConnection,
         params: { id: queryId },
         body: { name, department_id, permissions },
     } = req;
@@ -437,7 +438,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     const hasPermission = await Permission.checkPermission(
         Number(user_id),
         Number(current_business_id),
-        SqlConnection,
+        dbConnection,
         ["global_crud_role"]
     );
 
@@ -447,11 +448,11 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     try {
-        const currentRole = await SqlConnection.manager.findOneOrFail(Role, {
+        const currentRole = await dbConnection.manager.findOneOrFail(Role, {
             where: { id },
         });
 
-        await SqlConnection.manager.update(
+        await dbConnection.manager.update(
             Role,
             { id },
             {
@@ -461,7 +462,7 @@ router.put("/:id", async (req: Request, res: Response) => {
         );
 
         if (permissions) {
-            await SqlConnection.manager.update(
+            await dbConnection.manager.update(
                 Permission,
                 { id: currentRole.permission_id },
                 { ...permissions }
