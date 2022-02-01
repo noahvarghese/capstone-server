@@ -5,6 +5,7 @@ import User, { UserAttributes } from "./user";
 import dotenv from "dotenv";
 import Model from "@test/model/helpers";
 import ModelActions from "@test/model/helpers/actions";
+import { uid } from "rand-token";
 
 dotenv.config();
 
@@ -51,7 +52,7 @@ test("Create Token", async () => {
     const user = new User();
     const initialVal = user.token;
 
-    user.createToken();
+    user.token = uid(32);
 
     expect(user.token).not.toBe(initialVal);
 
@@ -64,7 +65,7 @@ test("Updated user should have 1hr to update password", async () => {
     }
 
     let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
-    user.createToken();
+    user.token = uid(32);
     user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
         token: user.token,
     });
@@ -93,7 +94,7 @@ test("Token Should Be Valid", async () => {
 
     let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
 
-    user.createToken();
+    user.token = uid(32);
 
     user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
         token: user.token,
@@ -113,12 +114,13 @@ test("Invalid token expiry", async () => {
 
     let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
 
-    user.createToken();
+    user.token = uid(32);
 
     user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
         token: user.token,
     });
 
+    // UNSET expiration
     user.token_expiry = new Date(0);
 
     const match = user.compareToken(user.token ?? "");
@@ -143,8 +145,8 @@ test("Wrong token should not match", async () => {
     let user1 = new User(attributes);
     let user2 = new User({ ...attributes2, email: "test@test.com" });
 
-    user1.createToken();
-    user2.createToken();
+    user1.token = uid(32);
+    user2.token = uid(32);
 
     user1 = await connection.manager.save(user1);
     user1 =
@@ -177,14 +179,13 @@ test("Reset Password", async () => {
     const oldPassword = attributes.password;
 
     let user = await ModelActions.create<User, UserAttributes>(baseWorld, User);
-    user.createToken();
+    user.token = uid(32);
     user = await ModelActions.update<User, UserAttributes>(baseWorld, User, {
         token: user.token,
     });
 
-    const result = await user.resetPassword(oldPassword, user.token ?? "");
+    await user.resetPassword(oldPassword);
 
-    expect(result).toBe(true);
     expect(user.token).toBe(null);
     expect(user.token_expiry).toBe(null);
     expect(user.password).not.toBe(oldPassword);
@@ -205,15 +206,20 @@ test("Reset password empty", async () => {
     const oldPassword = attributes.password;
 
     let user = new User(attributes);
-    user.createToken();
+    user.token = uid(32);
     user = await connection.manager.save(user);
     user =
         (await connection.manager.find(User, { where: { id: user.id } }))[0] ??
         user;
 
-    const result = await user.resetPassword("", user.token ?? "");
+    let errorThrown = false;
+    try {
+        await user.resetPassword("");
+    } catch (_) {
+        errorThrown = true;
+    }
 
-    expect(result).toBe(false);
+    expect(errorThrown).toBe(true);
     expect(user.token).not.toBe(undefined);
     expect(user.token_expiry).not.toBe(undefined);
     expect(user.password).toBe(oldPassword);

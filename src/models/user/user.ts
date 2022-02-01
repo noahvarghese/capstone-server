@@ -1,7 +1,7 @@
-import { uid } from "rand-token";
 import bcrypt from "bcryptjs";
 import { Entity, Column } from "typeorm";
 import BaseModel, { AttributeFactory } from "@models/abstract/base_model";
+import validator from "validator";
 
 export interface UserAttributes {
     first_name: string;
@@ -27,7 +27,6 @@ export const EmptyUserAttributes = (): UserAttributes => ({
 
 @Entity({ name: "user" })
 export default class User extends BaseModel implements UserAttributes {
-    public static max_password_length = 8;
     @Column()
     public first_name!: string;
     @Column()
@@ -49,17 +48,6 @@ export default class User extends BaseModel implements UserAttributes {
         super();
         Object.assign(this, AttributeFactory(options, EmptyUserAttributes));
     }
-
-    // pass reference back so we can chain it within the connection.manager.save method
-    public createToken = (): User => {
-        const tokenExpiry = new Date();
-        tokenExpiry.setHours(tokenExpiry.getHours() + 4);
-
-        this.token = uid(32);
-        this.token_expiry = tokenExpiry;
-
-        return this;
-    };
 
     public compareToken = (_token: string): boolean => {
         if (
@@ -98,19 +86,11 @@ export default class User extends BaseModel implements UserAttributes {
         return this;
     }
 
-    public resetPassword = async (
-        password: string,
-        token: string
-    ): Promise<boolean> => {
-        if (this.compareToken(token)) {
-            if (password.length >= User.max_password_length) {
-                await this.hashPassword(password);
-                this.token = null;
-                this.token_expiry = null;
-                return true;
-            }
-        }
-
-        return false;
+    public resetPassword = async (password: string): Promise<void> => {
+        if (validator.isEmpty(password, { ignore_whitespace: true }))
+            throw new Error("Password cannot be empty");
+        await this.hashPassword(password);
+        this.token = null;
+        this.token_expiry = null;
     };
 }
