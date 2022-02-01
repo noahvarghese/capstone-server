@@ -3,7 +3,7 @@ export enum ServiceErrorReasons {
     DATABASE,
     RESOURCE_LOCKED,
     PERMISSIONS,
-    PARAMETERS_MISSING,
+    PARAMETERS,
     NOT_AUTHENTICATED,
 }
 
@@ -14,7 +14,7 @@ type ServiceErrorCodes = {
 const statusCode: ServiceErrorCodes = {
     [ServiceErrorReasons.DATABASE]: 500,
     [ServiceErrorReasons.UTILITY]: 500,
-    [ServiceErrorReasons.PARAMETERS_MISSING]: 400,
+    [ServiceErrorReasons.PARAMETERS]: 400,
     [ServiceErrorReasons.NOT_AUTHENTICATED]: 401,
     [ServiceErrorReasons.PERMISSIONS]: 403,
     [ServiceErrorReasons.RESOURCE_LOCKED]: 405,
@@ -38,7 +38,7 @@ export default class DataServiceError extends Error {
         return this._field ?? "";
     }
 
-    constructor(message: string, reason: ServiceErrorReasons, field?: string) {
+    constructor(reason: ServiceErrorReasons, message = "", field?: string) {
         super(message);
         this._reason = reason;
         this._field = field;
