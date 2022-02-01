@@ -11,7 +11,7 @@ declare global {
     namespace Express {
         interface Request {
             routeSettings: RouteSettings;
-            sqlConnection: Connection;
+            dbConnection: Connection;
         }
     }
 }
