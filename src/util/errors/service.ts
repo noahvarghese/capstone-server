@@ -25,12 +25,17 @@ export const dataServiceResponse = (s: ServiceErrorReasons): number =>
 
 export default class DataServiceError extends Error {
     private _reason: ServiceErrorReasons;
+    private _code!: number;
+    set reason(val: ServiceErrorReasons) {
+        this._reason = val;
+        this.setCode();
+    }
     get reason(): ServiceErrorReasons {
         return this._reason;
     }
 
     get code(): number {
-        return dataServiceResponse(this.reason);
+        return this._code;
     }
 
     private _field?: string;
@@ -41,7 +46,14 @@ export default class DataServiceError extends Error {
     constructor(reason: ServiceErrorReasons, message = "", field?: string) {
         super(message);
         this._reason = reason;
+        this.setCode();
         this._field = field;
-        Object.setPrototypeOf(this, Error.prototype);
+        // Keeping this commented out allows my properties to be processed????
+        // Tests fail otherwise
+        // Object.setPrototypeOf(this, Error.prototype);
+    }
+
+    private setCode() {
+        this._code = dataServiceResponse(this.reason);
     }
 }

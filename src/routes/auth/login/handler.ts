@@ -15,7 +15,7 @@ export const loginHandler = async (
     const user = await connection.manager.findOne(User, { where: { email } });
 
     // Not logged in
-    if (!user || !user.password || !user.comparePassword(password))
+    if (!user || !user.password || !(await user.comparePassword(password)))
         throw new DataServiceError(ServiceErrorReasons.NOT_AUTHENTICATED);
 
     const m = await connection.manager.find(Membership, {
