@@ -16,7 +16,7 @@ const data = {
     address: "TEST",
     city: "TEST",
     province: "TE",
-    postal_code: "TEST",
+    postal_code: "L5V2A4",
     first_name: "TEST",
     last_name: "TEST",
     email: "test@test.com",
@@ -66,6 +66,23 @@ test("Invalid phone", async () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith("Invalid field phone");
+});
+
+test("Invalid postal code", async () => {
+    prevValue = data.postal_code;
+    data.postal_code = "A";
+
+    await registerController(
+        {
+            body: data,
+        } as unknown as Request,
+        res
+    );
+
+    data.postal_code = prevValue as typeof data.postal_code;
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith("Invalid field postal code");
 });
 
 test("Province should prevent adding entries where the length is greater than the shortform", async () => {

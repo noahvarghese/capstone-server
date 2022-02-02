@@ -30,7 +30,7 @@ export const registerController = async (
         field = "address";
     else if (validator.isEmpty(body.city ?? "", { ignore_whitespace: true }))
         field = "city";
-    else if (isPostalCode(body.postal_code ?? "")) field = "postal_code";
+    else if (!isPostalCode(body.postal_code ?? "")) field = "postal code";
     else if (
         validator.isEmpty(body.province ?? "", { ignore_whitespace: true }) ||
         body.province.length > 2
