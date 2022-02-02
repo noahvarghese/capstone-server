@@ -5,6 +5,15 @@ export const logoutController = async (
     req: Request,
     res: Response
 ): Promise<void> => {
+    if (
+        !req.session.user_id ||
+        !req.session.business_ids ||
+        !req.session.current_business_id
+    ) {
+        res.sendStatus(401);
+        return;
+    }
+
     const { SESSION_ID } = process.env;
 
     if (!SESSION_ID) {

@@ -974,13 +974,13 @@
                 "description": "Invalidate cookie",
                 "responses": {
                     "200": {
-                        "description": "User logged out"
+                        "$ref": "#/components/responses/Success"
                     },
-                    "400": {
-                        "description": "Invalid cookie sent"
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "500": {
-                        "description": "Database connection failed"
+                        "$ref": "#/components/responses/DatabaseError"
                     }
                 },
                 "details": {
