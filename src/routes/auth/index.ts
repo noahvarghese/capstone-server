@@ -3,7 +3,7 @@ import forgotPasswordRoute from "./forgot_password";
 import loginRoute from "./login";
 import logoutRoute from "./logout";
 import registerRoute from "./register";
-import resetPasswordRoute from "./reset_password";
+import resetPasswordRoute from "./reset_password/{token}";
 
 const router = Router();
 
