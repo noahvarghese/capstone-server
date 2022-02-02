@@ -19,15 +19,23 @@ export const forgotPasswordController = async (
         return;
     }
 
+    const user = await dbConnection.manager.findOne(User, {
+        where: { email },
+    });
+
+    if (!user) {
+        res.status(400).send("No account for user " + email);
+        return;
+    }
+
     try {
         await forgotPasswordHandler(dbConnection, email);
 
-        const user = await dbConnection.manager.findOneOrFail(User, {
-            where: { email },
-        });
-
         if (await requestResetPasswordEmail(user)) res.sendStatus(200);
-        else res.sendStatus(500);
+        else
+            res.status(500).send(
+                "Unable to send reset instructions, please try again"
+            );
     } catch (_e) {
         const { code, message } = _e as DataServiceError;
         res.status(code).send(message);
