@@ -237,4 +237,16 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS event_delete //
+CREATE TRIGGER event_delete
+BEFORE DELETE
+ON event FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = 'EventDeleteError: Cannot delete events';
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+END;
+
+//
+
 DELIMITER ;
