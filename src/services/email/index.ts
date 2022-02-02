@@ -1,4 +1,3 @@
-import { getConnection } from "typeorm";
 import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
@@ -7,6 +6,7 @@ import MembershipRequest from "@models/membership_request";
 import Logs from "@util/logs/logs";
 import Model from "@util/model";
 import { client } from "@util/permalink";
+import { Connection } from "typeorm";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
 
@@ -38,6 +38,7 @@ export interface MailOpts {
 // '<div><sub><em>Please do not reply to this email. It will not reach the intended recipient. If there are any issues please email <a href="mailto:varghese.noah@gmail.com">Noah Varghese</a></em></sub></div>';
 
 export const sendUserInviteEmail = async (
+    connection: Connection,
     business: Business,
     membershipRequest: MembershipRequest,
     sendingUser: User,
@@ -56,6 +57,7 @@ export const sendUserInviteEmail = async (
                 url,
             },
         },
+        connection,
         new Event({
             name: "User Invite Email",
             business_id: business.id,
@@ -65,6 +67,7 @@ export const sendUserInviteEmail = async (
 };
 
 export const requestResetPasswordEmail = async (
+    connection: Connection,
     user: User
 ): Promise<boolean> => {
     const url = client(`resetPassword/${user.token}`);
@@ -74,6 +77,7 @@ export const requestResetPasswordEmail = async (
             message: { to: user.email },
             locals: { url, first_name: user.first_name },
         },
+        connection,
         new Event({
             name: "Request Reset Password",
             user_id: user.id,
@@ -81,19 +85,24 @@ export const requestResetPasswordEmail = async (
     );
 };
 
-export const resetPasswordEmail = async (user: User): Promise<boolean> => {
+export const resetPasswordEmail = async (
+    connection: Connection,
+    user: User
+): Promise<boolean> => {
     return await sendMail(
         {
             template: "reset_password",
             message: { to: user.email },
             locals: { first_name: user.first_name },
         },
+        connection,
         new Event({ name: "Password Reset", user_id: user.id })
     );
 };
 
 export const sendMail = async (
     options: Email.EmailOptions,
+    connection: Connection,
     event: Event
 ): Promise<boolean> => {
     try {
@@ -105,6 +114,6 @@ export const sendMail = async (
         event.reason = JSON.stringify(e);
     }
 
-    await Model.create<Event>(getConnection(), Event, event);
+    await Model.create<Event>(connection, Event, event);
     return event.status === "PASS";
 };
