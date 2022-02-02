@@ -1,4 +1,5 @@
 import { getMockRes } from "@jest-mock/express";
+import Event from "@models/event";
 import User from "@models/user/user";
 import DBConnection from "@test/support/db_connection";
 import { Request } from "express";
@@ -53,10 +54,12 @@ describe("database connection required", () => {
         });
 
         afterAll(async () => {
-            await (await DBConnection.get()).manager.delete(User, () => "");
+            const conn = await DBConnection.get();
+            await conn.manager.clear(Event);
+            await conn.manager.delete(User, () => "");
         });
 
-        test("creates token and sends instructions", async () => {
+        test("creates token", async () => {
             let errorThrown = false;
             const conn = await DBConnection.get();
             try {
@@ -74,6 +77,17 @@ describe("database connection required", () => {
                 new Date().getTime()
             );
             expect(errorThrown).toBe(false);
+        });
+
+        test("sends instructions", async () => {
+            await forgotPasswordController(
+                {
+                    dbConnection: await DBConnection.get(),
+                    body: { email: data.email },
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(200);
         });
     });
 });

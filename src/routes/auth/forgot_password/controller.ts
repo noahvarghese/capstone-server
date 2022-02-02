@@ -31,7 +31,8 @@ export const forgotPasswordController = async (
     try {
         await forgotPasswordHandler(dbConnection, email);
 
-        if (await requestResetPasswordEmail(user)) res.sendStatus(200);
+        if (await requestResetPasswordEmail(dbConnection, user))
+            res.sendStatus(200);
         else
             res.status(500).send(
                 "Unable to send reset instructions, please try again"
