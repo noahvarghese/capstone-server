@@ -1,10 +1,10 @@
-import { LoginProps } from "@routes/auth/login";
 import modelAttributes from "@test/model/attributes";
 import { deepClone } from "@util/obj";
 import AuthKeys from "../keys/auth";
 
 const user = modelAttributes.user();
 
+export type LoginProps = { email: string; password: string };
 export type LogoutProps = Record<string, never>;
 export type AuthCheckProps = Record<string, never>;
 export type AuthTypes = Record<

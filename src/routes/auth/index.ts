@@ -1,19 +1,17 @@
 import { Router, Request, Response } from "express";
-import {
-    forgotPasswordController,
-    loginController,
-    logoutController,
-    registerController,
-    resetPasswordController,
-} from "./controllers";
+import forgotPasswordRoute from "./forgot_password";
+import loginRoute from "./login";
+import logoutRoute from "./logout";
+import registerRoute from "./register";
+import resetPasswordRoute from "./reset_password";
 
 const router = Router();
 
-router.post("/login", loginController);
-router.post("/register", registerController);
-router.post("/logout", logoutController);
-router.post("/forgot_password", forgotPasswordController);
-router.post("/reset_password/:token", resetPasswordController);
+router.use("/forgot_password", forgotPasswordRoute);
+router.use("/login", loginRoute);
+router.use("/logout", logoutRoute);
+router.use("/register", registerRoute);
+router.use("/reset_password", resetPasswordRoute);
 
 router.post("/", (req: Request, res: Response) => {
     if (

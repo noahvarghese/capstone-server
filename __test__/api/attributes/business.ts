@@ -1,7 +1,7 @@
 import { deepClone } from "@util/obj";
-import { RegisterBusinessProps } from "@routes/auth/register";
 import modelAttributes from "@test/model/attributes";
 import BusinessKey from "../keys/business";
+import { RegisterBusinessProps } from "@routes/auth/register/handler";
 
 const business = modelAttributes.business();
 const user = modelAttributes.user();

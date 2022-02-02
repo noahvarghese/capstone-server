@@ -1,7 +1,7 @@
-import { InviteMemberProps } from "@routes/members/invite";
 import { deepClone } from "@util/obj";
 import MemberKeys from "../keys/member";
 
+export type InviteMemberProps = { email: string; phone?: string };
 export type AcceptInviteProps = Record<string, never>;
 export type ReadOneMemberProps = undefined;
 export type ReadManyMemberProps = undefined;

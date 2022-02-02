@@ -27,8 +27,8 @@ export const getBusinessHandler = async (
         const { message } = _e as Error;
         Logs.Error(message);
         throw new DataServiceError(
-            "Failed to retrieve businesses",
-            ServiceErrorReasons.DATABASE
+            ServiceErrorReasons.DATABASE,
+            "Failed to retrieve businesses"
         );
     }
 };

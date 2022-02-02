@@ -1,6 +1,4 @@
 import User from "@models/user/user";
-import { InviteMemberProps } from "@routes/members/invite";
-import { LoginProps } from "./login";
 import Helpers from "@test/helpers";
 import { apiRequest } from "@test/api/actions";
 import Request from "@test/api/helpers/request";
@@ -79,7 +77,10 @@ describe("Login with user that has not accepted an invite", () => {
         await inviteMember.call(inviteMember, baseWorld, "new");
 
         // hash plaintext password
-        const { email, password } = attributes.login() as LoginProps;
+        const { email, password } = attributes.login() as {
+            email: string;
+            password: string;
+        };
 
         const connection = baseWorld.getConnection();
         const user = await connection.manager.findOneOrFail(User, {
@@ -94,13 +95,16 @@ describe("Login with user that has not accepted an invite", () => {
     });
 
     test("Valid credentials", async () => {
-        const { password } = attributes.login() as LoginProps;
+        const { password } = attributes.login() as {
+            email: string;
+            password: string;
+        };
 
         await apiRequest(baseWorld, "login", {
             cookie: { withCookie: false, saveCookie: true },
             errorOnFail: false,
             body: {
-                email: (attributes.inviteMember() as InviteMemberProps).email,
+                email: (attributes.inviteMember() as { email: string }).email,
                 password,
             },
         });

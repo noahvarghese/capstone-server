@@ -10,6 +10,7 @@ import Logs from "@util/logs/logs";
 import { MoreThan } from "typeorm";
 import Membership from "@models/membership";
 import Permission from "@models/permission";
+import { uid } from "rand-token";
 
 export interface InviteMemberProps {
     first_name: string;
@@ -284,7 +285,7 @@ router.post("/:token", async (req: Request, res: Response) => {
             await connection.manager.update(
                 User,
                 { email: user.email },
-                { token: user.createToken().token }
+                { token: uid(32) }
             );
         }
     } catch (_e) {

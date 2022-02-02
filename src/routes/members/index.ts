@@ -10,12 +10,12 @@ import { isPhone } from "@util/validators";
 import { Router, Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
-import inviteRoute from "./invite";
+// import inviteRoute from "./invite";
 import roleAssignmentRouter from "./role_assignment";
 
 const router = Router();
 
-router.use("/invite", inviteRoute);
+// router.use("/invite", inviteRoute);
 router.use("/role_assignment", roleAssignmentRouter);
 
 export interface ReadMembers {

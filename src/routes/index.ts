@@ -30,6 +30,7 @@ router.use("/*", (req: Request, res: Response) => {
         }
     }
     res.redirect(redirectURL);
+    Logs.Event("Sent to ", redirectURL);
 });
 
 export default router;

@@ -7,105 +7,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
 import Logs from "@util/logs/logs";
-import { uid } from "rand-token";
 import { Connection } from "typeorm";
-
-export const forgotPasswordHandler = async (
-    connection: Connection,
-    email: string
-): Promise<void> => {
-    try {
-        // gen token
-        await connection.manager.update(
-            User,
-            { email: email },
-            { token: uid(32) }
-        );
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        throw new DataServiceError(
-            ServiceErrorReasons.DATABASE,
-            "Unable to create token"
-        );
-    }
-};
-
-export const loginHandler = async (
-    connection: Connection,
-    email: string,
-    password: string
-): Promise<{
-    user_id: number;
-    business_ids: number[];
-    current_business_id: number;
-}> => {
-    const user = await connection.manager.findOne(User, { where: { email } });
-
-    // Not logged in
-    if (!user || !user.password || !user.comparePassword(password))
-        throw new DataServiceError(ServiceErrorReasons.NOT_AUTHENTICATED);
-
-    const m = await connection.manager.find(Membership, {
-        where: { user_id: user.id },
-    });
-
-    if (m.length === 0)
-        throw new DataServiceError(
-            ServiceErrorReasons.PERMISSIONS,
-            "Please contact your manager"
-        );
-
-    const defaultBusinessId =
-        m.find((x) => x.default_option)?.business_id ?? NaN;
-
-    if (isNaN(defaultBusinessId))
-        throw new DataServiceError(
-            ServiceErrorReasons.UTILITY,
-            "No default business set"
-        );
-
-    return {
-        user_id: user.id,
-        business_ids: m.map((x) => x.business_id),
-        current_business_id: defaultBusinessId,
-    };
-};
-
-export const resetPasswordHandler = async (
-    connection: Connection,
-    token: string,
-    password: string
-): Promise<void> => {
-    const user = await connection.manager.findOne(User, { where: { token } });
-
-    if (!user)
-        throw new DataServiceError(ServiceErrorReasons.NOT_AUTHENTICATED);
-
-    if (!user.compareToken(token))
-        throw new DataServiceError(ServiceErrorReasons.NOT_AUTHENTICATED);
-
-    try {
-        await user.resetPassword(password);
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        throw new DataServiceError(
-            ServiceErrorReasons.UTILITY,
-            "Failed to reset password"
-        );
-    }
-
-    try {
-        await connection.manager.update(User, user.id, {
-            password: user.password,
-        });
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        throw new DataServiceError(ServiceErrorReasons.DATABASE);
-    }
-};
 
 export interface RegisterBusinessProps {
     name: string;
@@ -125,15 +27,26 @@ export const registerHandler = async (
     connection: Connection,
     options: RegisterBusinessProps
 ): Promise<void> => {
-    const [businessCount, userCount] = await Promise.all([
-        connection.manager.count(Business, { where: { name: options.name } }),
-        connection.manager.count(User, { where: { email: options.email } }),
-    ]);
+    let businessCount = 0,
+        userCount = 0;
+
+    try {
+        [businessCount, userCount] = await Promise.all([
+            connection.manager.count(Business, {
+                where: { name: options.name },
+            }),
+            connection.manager.count(User, { where: { email: options.email } }),
+        ]);
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        throw new DataServiceError(ServiceErrorReasons.DATABASE);
+    }
 
     if (businessCount > 0 || userCount > 0)
         throw new DataServiceError(
             ServiceErrorReasons.PARAMETERS,
-            `${businessCount > 0 ? "Business name" : "Email"} is in use.`
+            `${businessCount > 0 ? "Business name" : "Email"} is in use`
         );
 
     let u = new User({

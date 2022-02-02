@@ -1,4 +1,4 @@
-import setupServer, { shutdown } from "@services/app";
+import setupServer, { shutdown } from "@config/server";
 import { Server } from "http";
 import { Connection } from "typeorm";
 
