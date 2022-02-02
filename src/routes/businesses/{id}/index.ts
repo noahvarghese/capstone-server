@@ -1,13 +1,11 @@
 import { Router } from "express";
-import {
-    setCurrentBusinessController,
-    setDefaultBusinessController,
-} from "./controllers";
-import middlewares from "./middlewares";
+import { setCurrentBusinessController } from "./post_controller";
+import { setDefaultBusinessController } from "./put_controller";
+import middleware from "./middleware";
 
 const router = Router();
 
-router.use(middlewares);
+router.use(middleware);
 router.post("/", setCurrentBusinessController);
 router.put("/", setDefaultBusinessController);
 

@@ -1,6 +1,6 @@
 import DataServiceError from "@util/errors/service";
 import { Request, Response } from "express";
-import { getBusinessHandler } from "./handlers";
+import { getBusinessHandler } from "./get_handler";
 
 export const getBusinessController = async (
     req: Request,
@@ -11,13 +11,12 @@ export const getBusinessController = async (
         session: { user_id },
     } = req;
 
-    if (!user_id) {
-        res.status(401).send("Not authenticated");
-        return;
-    }
-
     try {
-        const businesses = await getBusinessHandler(connection, user_id);
+        const businesses = await getBusinessHandler(
+            connection,
+            // forced coersion as we check in the middleware
+            Number(user_id)
+        );
         res.status(200).send(businesses);
     } catch (_e) {
         const { code, message } = _e as DataServiceError;

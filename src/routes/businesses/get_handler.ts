@@ -11,7 +11,7 @@ export const getBusinessHandler = async (
     try {
         const res = await connection
             .createQueryBuilder()
-            .select("b.id, b.name, m.default")
+            .select("b.id, b.name, m.default_option")
             .from(Membership, "m")
             .where("m.user_id = :user_id", { user_id })
             .leftJoin(Business, "b", "b.id = m.business_id")
