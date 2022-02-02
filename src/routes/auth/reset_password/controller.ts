@@ -15,15 +15,15 @@ export const resetPasswordController = async (
         body: { password, confirm_password },
     } = req;
 
-    if (validator.isEmpty(token, { ignore_whitespace: true })) {
-        res.status(401);
+    if (validator.isEmpty(token ?? "", { ignore_whitespace: true })) {
+        res.sendStatus(401);
         return;
     }
 
     if (
         password !== confirm_password ||
-        validator.isEmpty(password, { ignore_whitespace: true }) ||
-        validator.isEmpty(confirm_password, { ignore_whitespace: true })
+        validator.isEmpty(password ?? "", { ignore_whitespace: true }) ||
+        validator.isEmpty(confirm_password ?? "", { ignore_whitespace: true })
     ) {
         res.sendStatus(400);
         return;
@@ -44,6 +44,6 @@ export const resetPasswordController = async (
         return;
     }
 
-    if (await resetPasswordEmail(user)) res.sendStatus(200);
+    if (await resetPasswordEmail(dbConnection, user)) res.sendStatus(200);
     else res.sendStatus(500);
 };
