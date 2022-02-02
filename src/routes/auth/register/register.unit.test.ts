@@ -96,11 +96,11 @@ test("passwords don't match", async () => {
     );
 });
 
-describe("requires cleanup", () => {
+describe("requires database", () => {
     beforeAll(DBConnection.init);
     afterAll(DBConnection.close);
 
-    afterEach(async () => {
+    const cleanup = async () => {
         // delete EVERYTHING from database
         const conn = await DBConnection.get();
 
@@ -131,42 +131,48 @@ describe("requires cleanup", () => {
             conn.manager.delete(User, () => ""),
             conn.manager.delete(Business, () => ""),
         ]);
+    };
+
+    describe("tests success, requires cleanup after each", () => {
+        afterEach(cleanup);
+
+        test("Valid parameters, no phone", async () => {
+            prevValue = data.phone;
+            data.phone = "";
+
+            await registerController(
+                {
+                    body: data,
+                    session: {},
+                    dbConnection: await DBConnection.get(),
+                } as unknown as Request,
+                res
+            );
+
+            expect(res.sendStatus).toHaveBeenCalledWith(201);
+
+            data.phone = prevValue as typeof data.phone;
+        });
+
+        test("Valid parameters, with phone", async () => {
+            await registerController(
+                {
+                    body: data,
+                    session: {},
+                    dbConnection: await DBConnection.get(),
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(201);
+        });
     });
 
-    test("Valid parameters, no phone", async () => {
-        prevValue = data.phone;
-        data.phone = "";
-
-        await registerController(
-            {
-                body: data,
-                session: {},
-                dbConnection: await DBConnection.get(),
-            } as unknown as Request,
-            res
-        );
-
-        expect(res.sendStatus).toHaveBeenCalledWith(201);
-
-        data.phone = prevValue as typeof data.phone;
-    });
-
-    test("Valid parameters, with phone", async () => {
-        await registerController(
-            {
-                body: data,
-                session: {},
-                dbConnection: await DBConnection.get(),
-            } as unknown as Request,
-            res
-        );
-        expect(res.sendStatus).toHaveBeenCalledWith(201);
-    });
-
-    describe("requires setup", () => {
-        beforeEach(async () => {
+    describe("tests fail, requires existing model", () => {
+        beforeAll(async () => {
             await registerHandler(await DBConnection.get(), data);
         });
+
+        afterAll(cleanup);
 
         test("Business with name already exists (HANDLER)", async () => {
             prevValue = data.email;
