@@ -77,7 +77,7 @@ export default class Permission
         );
     }
 
-    public static async getAllForUserAndBusiness(
+    public static async getAll(
         user_id: number,
         business_id: number,
         connection: Connection
@@ -103,29 +103,29 @@ export default class Permission
         }
     }
 
-    public static async checkPermission(
+    public static async hasPermission(
         user_id: number,
         business_id: number,
         connection: Connection,
-        permission: (keyof Permission)[]
+        searchKeys: (keyof Permission)[]
     ): Promise<boolean> {
         try {
-            const permissions = await Permission.getAllForUserAndBusiness(
+            let permissions = await Permission.getAll(
                 user_id,
                 business_id,
                 connection
             );
 
-            const result = permissions.find((p) => {
-                for (const [key, value] of Object.entries(p)) {
-                    if (permission.includes(key as keyof Permission) && value) {
+            permissions = permissions.filter((p) => {
+                for (const key of searchKeys) {
+                    if (Object.keys(p).includes(key) && p[key]) {
                         return true;
                     }
                 }
                 return false;
             });
 
-            return Boolean(result);
+            return permissions.length > 0;
         } catch ({ message }) {
             Logs.Error(message);
             return false;

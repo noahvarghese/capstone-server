@@ -1,7 +1,12 @@
 import bcrypt from "bcryptjs";
-import { Entity, Column } from "typeorm";
+import { Entity, Column, Connection } from "typeorm";
 import BaseModel, { AttributeFactory } from "@models/abstract/base_model";
 import validator from "validator";
+import Role from "@models/role";
+import Permission, { PermissionAttributes } from "@models/permission";
+import Membership from "@models/membership";
+import Logs from "@util/logs/logs";
+import UserRole from "./user_role";
 
 export interface UserAttributes {
     first_name: string;
@@ -93,4 +98,52 @@ export default class User extends BaseModel implements UserAttributes {
         this.token = null;
         this.token_expiry = null;
     };
+
+    public static async getRoles(
+        connection: Connection,
+        id: number,
+        business_id: number
+    ): Promise<(Role & Permission)[]> {
+        try {
+            const roles = await connection
+                .createQueryBuilder()
+                .select("r, p")
+                .from(Role, "r")
+                .leftJoin(Permission, "p", "p.id = r.permission_id")
+                .leftJoin(UserRole, "ur", "ur.role_id = r.id")
+                .leftJoin(User, "u", "u.id = ur.user_id")
+                .leftJoin(Membership, "m", "m.user_id = u.id")
+                .where("m.user_id = :id", { id })
+                .andWhere("m.business_id = :business_id", {
+                    business_id,
+                })
+                .getRawAndEntities<Role & Permission>();
+
+            return roles.raw;
+        } catch (e) {
+            if (e instanceof Error) Logs.Error(e.message);
+            return [];
+        }
+    }
+
+    public static async hasGlobalPermission(
+        connection: Connection,
+        id: number,
+        business_id: number,
+        permission: keyof PermissionAttributes
+    ): Promise<boolean> {
+        // Force looking for global permission
+        if (!permission.startsWith("global_")) {
+            throw new Error("Invalid argument " + permission);
+        }
+
+        let roles = await User.getRoles(connection, id, business_id);
+
+        // Check if any role(s) have permission set
+        roles = roles.filter((r) => {
+            return r[permission];
+        });
+
+        return roles.length > 0;
+    }
 }

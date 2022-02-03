@@ -114,7 +114,7 @@ test("Cannot update multiple times", async () => {
     } catch (e) {
         errorThrown = true;
         expect((e as Partial<{ message?: string }>).message).toMatch(
-            /QuizAttemptUpdateError: quiz_attempt_id \d has been completed/
+            /QuizAttemptUpdateError: quiz_attempt_id \d+ has been completed/
         );
         await ModelActions.delete<QuizAttempt>(baseWorld, QuizAttempt);
     }

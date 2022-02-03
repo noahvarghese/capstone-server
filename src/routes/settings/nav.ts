@@ -83,7 +83,7 @@ export class Nav {
     }
 
     private async setLinksByPermission(): Promise<void> {
-        const permissions = await Permission.getAllForUserAndBusiness(
+        const permissions = await Permission.getAll(
             this.userId,
             this.businessId,
             this.connection

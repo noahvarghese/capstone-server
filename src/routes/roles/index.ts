@@ -41,7 +41,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     //check permissions
-    const hasPermission = await Permission.checkPermission(
+    const hasPermission = await Permission.hasPermission(
         Number(user_id),
         Number(current_business_id),
         dbConnection,
@@ -114,7 +114,7 @@ router.get("/", async (req: Request, res: Response) => {
     } = req;
 
     //check permissions
-    const hasPermission = await Permission.checkPermission(
+    const hasPermission = await Permission.hasPermission(
         Number(user_id),
         Number(current_business_id),
         dbConnection,
@@ -248,7 +248,7 @@ router.post("/", async (req: Request, res: Response) => {
     } = req;
 
     //check permissions
-    const hasPermission = await Permission.checkPermission(
+    const hasPermission = await Permission.hasPermission(
         Number(user_id),
         Number(current_business_id),
         dbConnection,
@@ -321,7 +321,7 @@ router.delete("/", async (req: Request, res: Response) => {
     }
 
     // check permissions
-    const hasPermission = await Permission.checkPermission(
+    const hasPermission = await Permission.hasPermission(
         Number(user_id),
         Number(current_business_id),
         dbConnection,
@@ -435,7 +435,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
 
     // check permissions
-    const hasPermission = await Permission.checkPermission(
+    const hasPermission = await Permission.hasPermission(
         Number(user_id),
         Number(current_business_id),
         dbConnection,
