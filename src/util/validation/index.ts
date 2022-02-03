@@ -1,29 +1,15 @@
-import { PhoneNumber, PhoneNumberUtil } from "google-libphonenumber";
 import validator from "validator";
-import DataServiceError, { ServiceErrorReasons } from "./errors/service";
-import Logs from "./logs/logs";
+import DataServiceError, { ServiceErrorReasons } from "../errors/service";
+import Logs from "../logs/logs";
+import { FormatKey, formatValidators } from "./format_checker";
 
-// Only canadian postal codes
-export const isPostalCode = (val: string): boolean =>
-    /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i.test(
-        val
-    );
-
-export const isPhone = (val: string, regionCode = "CA"): boolean => {
-    const phoneUtil = new PhoneNumberUtil();
-
-    let phone: string | PhoneNumber = val;
-
-    try {
-        phone = phoneUtil.parseAndKeepRawInput(phone, regionCode);
-
-        return phoneUtil.isValidNumber(phone);
-    } catch (e) {
-        return false;
-    }
+export type ValidatorMap<T extends string> = {
+    [x in T]: {
+        validator: (v?: unknown) => boolean;
+    };
 };
 
-type EmptyMapperKey =
+type TypeKey =
     | "string"
     | "number"
     | "undefined"
@@ -33,13 +19,9 @@ type EmptyMapperKey =
     | "bigint"
     | "symbol";
 
-type EmptyMapper = {
-    [x in EmptyMapperKey]: {
-        validator: (v?: unknown) => boolean;
-    };
-};
+type TypeMap = ValidatorMap<TypeKey>;
 
-const empty: EmptyMapper = {
+const typeValidators: TypeMap = {
     string: {
         validator: (v: unknown) =>
             !validator.isEmpty(v as string, { ignore_whitespace: true }),
@@ -85,29 +67,38 @@ type Expected = {
     [x: string]: {
         required: boolean;
         value: unknown;
+        format?: FormatKey;
     };
 };
 
 /**
- * Throws error with details that can be used to generate a response
+ * Given the expectations, checks that items are as they should be
  * @param obj
  */
-export const emptyChecker = (
+export const validationChecker = (
     obj: Expected
 ): undefined | { message: string; field: keyof typeof obj } => {
     for (const key of Object.keys(obj)) {
-        const { value, required } = obj[key];
-        const validatorFn = empty[typeof value].validator;
+        const { value, required, format } = obj[key];
+        const validatorFn = typeValidators[typeof value].validator;
 
         try {
-            const valid = validatorFn(value);
+            let valid = validatorFn(value);
 
             if (required && !valid) {
-                const message = `${key.replace(
-                    "_",
-                    " "
-                )} cannot be empty, value -> ${value}, required -> ${required}`;
+                const message = `${key.replace("_", " ")} cannot be empty`;
                 return { message, field: key };
+            }
+
+            if (valid && format) {
+                valid = formatValidators[format].validator(value);
+                if (!valid) {
+                    const message = `${key.replace(
+                        "_",
+                        " "
+                    )} is formatted incorrectly`;
+                    return { message, field: key };
+                }
             }
         } catch (_e) {
             Logs.Error((_e as Error).message);

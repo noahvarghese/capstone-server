@@ -1,5 +1,6 @@
-import Logs from "./logs/logs";
-import { emptyChecker, isPostalCode } from "./validators";
+import Logs from "@util/logs/logs";
+import { validationChecker } from ".";
+import { isPostalCode } from "./format_checker";
 
 describe("postal code", () => {
     test("too short", () => {
@@ -46,7 +47,7 @@ describe("empty checker", () => {
         ];
 
         test.each(cases)("test %p", ({ value, required }) => {
-            const res = emptyChecker({ test: { value, required } });
+            const res = validationChecker({ test: { value, required } });
             if (res)
                 Logs.Error({
                     expected: "undefined",
@@ -67,7 +68,7 @@ describe("empty checker", () => {
         ];
 
         test.each(cases)("test %p", ({ value, required }) => {
-            const res = emptyChecker({ test: { value, required } });
+            const res = validationChecker({ test: { value, required } });
             if (!res)
                 Logs.Error({
                     expected: "ERROR",

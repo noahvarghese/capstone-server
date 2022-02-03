@@ -6,7 +6,7 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@util/logs/logs";
 import isSortFieldFactory from "@util/sortFieldFactory";
-import { isPhone } from "@util/validators";
+import { isPhone } from "@util/validation/format_checker";
 import { Router, Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
