@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { postController } from "./post_controller";
+import { sendInviteController } from "./post_controller";
 
 const router = Router();
 
-router.post("/", postController);
+router.post("/", sendInviteController);
 
 export default router;

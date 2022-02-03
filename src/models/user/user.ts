@@ -5,7 +5,6 @@ import validator from "validator";
 import Role from "@models/role";
 import Permission, { PermissionAttributes } from "@models/permission";
 import Membership from "@models/membership";
-import Logs from "@util/logs/logs";
 import UserRole from "./user_role";
 
 export interface UserAttributes {
@@ -103,34 +102,55 @@ export default class User extends BaseModel implements UserAttributes {
         connection: Connection,
         id: number,
         business_id: number
-    ): Promise<(Role & Permission)[]> {
-        try {
-            const roles = await connection
-                .createQueryBuilder()
-                .select("r, p")
-                .from(Role, "r")
-                .leftJoin(Permission, "p", "p.id = r.permission_id")
-                .leftJoin(UserRole, "ur", "ur.role_id = r.id")
-                .leftJoin(User, "u", "u.id = ur.user_id")
-                .leftJoin(Membership, "m", "m.user_id = u.id")
-                .where("m.user_id = :id", { id })
-                .andWhere("m.business_id = :business_id", {
-                    business_id,
-                })
-                .getRawAndEntities<Role & Permission>();
+    ): Promise<
+        Omit<
+            Role & Permission,
+            "created_on" | "updated_on" | "deleted_on" | "updated_by_user_id"
+        >[]
+    > {
+        const roles = await connection
+            .createQueryBuilder()
+            .select("r")
+            .addSelect("p")
+            .from(Role, "r")
+            .leftJoin(Permission, "p", "p.id = r.permission_id")
+            .leftJoin(UserRole, "ur", "ur.role_id = r.id")
+            .leftJoin(User, "u", "u.id = ur.user_id")
+            .leftJoin(Membership, "m", "m.user_id = u.id")
+            .where("m.user_id = :id", { id })
+            .andWhere("m.business_id = :business_id", {
+                business_id,
+            })
+            .getRawMany();
 
-            return roles.raw;
-        } catch (e) {
-            if (e instanceof Error) Logs.Error(e.message);
-            return [];
-        }
+        return roles.map((raw) => ({
+            name: raw.r_name,
+            id: raw.r_id,
+            prevent_edit: raw.r_prevent_edit,
+            prevent_delete: raw.r_prevent_delete,
+            department_id: raw.r_department_id,
+            permission_id: raw.r_permission_id,
+            global_crud_users: raw.p_global_crud_users,
+            global_crud_department: raw.p_global_crud_department,
+            global_crud_role: raw.p_global_crud_role,
+            global_assign_resources_to_role:
+                raw.p_global_assign_resources_to_role,
+            global_assign_users_to_role: raw.p_global_assign_users_to_role,
+            global_crud_resources: raw.p_global_crud_resources,
+            global_view_reports: raw.p_global_view_reports,
+            dept_assign_resources_to_role: raw.p_dept_assign_resources_to_role,
+            dept_assign_users_to_role: raw.p_dept_assign_users_to_role,
+            dept_crud_resources: raw.p_dept_crud_resources,
+            dept_crud_role: raw.p_dept_crud_role,
+            dept_view_reports: raw.p_dept_view_reports,
+        }));
     }
 
     public static async hasGlobalPermission(
         connection: Connection,
         id: number,
         business_id: number,
-        permission: keyof PermissionAttributes
+        permission: Omit<keyof PermissionAttributes, "updated_by_user_id">
     ): Promise<boolean> {
         // Force looking for global permission
         if (!permission.startsWith("global_")) {
@@ -141,7 +161,7 @@ export default class User extends BaseModel implements UserAttributes {
 
         // Check if any role(s) have permission set
         roles = roles.filter((r) => {
-            return r[permission];
+            return r[permission as keyof typeof r];
         });
 
         return roles.length > 0;

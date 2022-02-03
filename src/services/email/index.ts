@@ -3,7 +3,6 @@ import User from "@models/user/user";
 import Event from "@models/event";
 import Business from "@models/business";
 import Logs from "@util/logs/logs";
-import Model from "@util/model";
 import { client } from "@util/permalink";
 import { Connection } from "typeorm";
 import MembershipRequest from "@models/membership_request";
@@ -127,6 +126,6 @@ export const sendMail = async (
         event.reason = JSON.stringify(e);
     }
 
-    await Model.create<Event>(connection, Event, event);
+    await connection.manager.insert(Event, event);
     return event.status === "PASS";
 };

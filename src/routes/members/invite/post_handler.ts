@@ -27,7 +27,7 @@ export const postHandler = async (
 
     if (!user_id) {
         ({
-            identifiers: [{ user_id }],
+            identifiers: [{ id: user_id }],
         } = await connection.manager.insert(User, new User(options)));
     }
 

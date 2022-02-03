@@ -7,7 +7,7 @@ import { Request, Response } from "express";
 import validator from "validator";
 import { postHandler } from "./post_handler";
 
-export const postController = async (
+export const sendInviteController = async (
     req: Request,
     res: Response
 ): Promise<void> => {
@@ -17,12 +17,8 @@ export const postController = async (
         dbConnection,
     } = req;
 
-    if (
-        !user_id ||
-        isNaN(Number(user_id)) ||
-        !current_business_id ||
-        isNaN(Number(current_business_id))
-    ) {
+    // despite checking in the middleware, we need to explicitly define these as numbers
+    if (!user_id || !current_business_id) {
         res.sendStatus(401);
         return;
     }
@@ -83,5 +79,4 @@ export const postController = async (
         Logs.Error(message);
         res.sendStatus(500);
     }
-    return;
 };

@@ -12,10 +12,11 @@ import { Brackets, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
 // import inviteRoute from "./invite";
 import roleAssignmentRouter from "./role_assignment";
+import inviteRouter from "./invite";
 
 const router = Router();
 
-// router.use("/invite", inviteRoute);
+router.use("/invite", inviteRouter);
 router.use("/role_assignment", roleAssignmentRouter);
 
 export interface ReadMembers {
