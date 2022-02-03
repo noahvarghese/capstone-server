@@ -72,7 +72,9 @@ export type Expected = {
 };
 
 /**
- * Given the expectations, checks that items are as they should be
+ * Given the expectations checks that object values are correct
+ * If incorrect throw error
+ * If all correct return objects as T (rename func to parseObj)
  * @param obj
  */
 export const validationChecker = (
