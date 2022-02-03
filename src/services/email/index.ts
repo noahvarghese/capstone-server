@@ -2,11 +2,11 @@ import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
 import Business from "@models/business";
-import MembershipRequest from "@models/membership_request";
 import Logs from "@util/logs/logs";
 import Model from "@util/model";
 import { client } from "@util/permalink";
 import { Connection } from "typeorm";
+import MembershipRequest from "@models/membership_request";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
 
@@ -39,29 +39,42 @@ export interface MailOpts {
 
 export const sendUserInviteEmail = async (
     connection: Connection,
-    business: Business,
-    membershipRequest: MembershipRequest,
-    sendingUser: User,
-    receivingUser: User
+    business_id: number,
+    user_id: number,
+    new_user_id: number
 ): Promise<boolean> => {
-    const url = client(`member/invite/${membershipRequest.token}`);
+    const [
+        { name: businessName },
+        { first_name: sendingUserName },
+        { first_name: newUserName, email: newUserEmail },
+        { token },
+    ] = await Promise.all([
+        connection.manager.findOneOrFail(Business, business_id),
+        connection.manager.findOneOrFail(User, user_id),
+        connection.manager.findOneOrFail(User, new_user_id),
+        connection.manager.findOneOrFail(MembershipRequest, {
+            where: { user_id: new_user_id, business_id },
+        }),
+    ]);
+
+    const url = client(`member/invite/${token}`);
 
     return await sendMail(
         {
             template: "invite_user",
-            message: { to: receivingUser.email },
+            message: { to: newUserEmail },
             locals: {
-                business: business.name,
-                receiver: receivingUser.first_name,
-                sender: sendingUser.first_name,
+                business: businessName,
+                receiver: newUserName,
+                sender: sendingUserName,
                 url,
             },
         },
         connection,
         new Event({
             name: "User Invite Email",
-            business_id: business.id,
-            user_id: receivingUser.id,
+            business_id: business_id,
+            user_id: new_user_id,
         })
     );
 };
