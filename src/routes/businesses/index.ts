@@ -1,11 +1,11 @@
 import { Router } from "express";
 import idRoutes from "./{id}";
-import middleware from "./middleware";
 import { getBusinessController } from "./get_controller";
+import authenticated from "@middleware/authenticated";
 
 const router = Router();
 
-router.use(middleware);
+router.use(authenticated);
 
 router.get("/", getBusinessController);
 router.use("/:id", idRoutes);

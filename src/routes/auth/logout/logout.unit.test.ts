@@ -6,11 +6,8 @@ const { res, mockClear } = getMockRes();
 
 beforeEach(mockClear);
 
-test("not logged in", async () => {
-    await logoutController({ session: {} } as unknown as Request, res);
-    expect(res.sendStatus).toHaveBeenCalledWith(401);
-});
-
+// This means nothing without the tests for a non authenticated user being blocked from calling this
+// See the integration tests later on
 test("success", async () => {
     await logoutController(
         {
