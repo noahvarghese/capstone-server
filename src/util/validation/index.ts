@@ -63,7 +63,7 @@ const typeValidators: TypeMap = {
     },
 };
 
-type Expected = {
+export type Expected = {
     [x: string]: {
         required: boolean;
         value: unknown;

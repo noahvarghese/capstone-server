@@ -1,30 +1,7 @@
 import Logs from "@util/logs/logs";
-import { validationChecker } from ".";
-import { isPostalCode } from "./format_checker";
+import { Expected, validationChecker } from ".";
 
-describe("postal code", () => {
-    test("too short", () => {
-        const valid = isPostalCode("A");
-        expect(valid).toBe(false);
-    });
-
-    test("Incorrect order", () => {
-        const valid = isPostalCode("1A12B3");
-        expect(valid).toBe(false);
-    });
-
-    test("Valid", () => {
-        const valid = isPostalCode("L5V 2A4");
-        expect(valid).toBe(true);
-    });
-
-    test("No space should be valid", () => {
-        const valid = isPostalCode("L5V2A4");
-        expect(valid).toBe(true);
-    });
-});
-
-describe("empty checker", () => {
+describe("validation checker, no formats", () => {
     describe("valid options", () => {
         const cases = [
             { value: "hi", required: true },
@@ -77,6 +54,46 @@ describe("empty checker", () => {
                     required,
                 });
             expect(res).not.toBe(undefined);
+        });
+    });
+});
+
+describe("format checker", () => {
+    describe("valid", () => {
+        const cases: Expected[keyof Expected][] = [
+            { value: "test@email.com", required: true, format: "email" },
+            { value: "test@email.com", required: false, format: "email" },
+            { value: "2898371245", required: true, format: "phone" },
+            { value: "2898371245", required: false, format: "phone" },
+            { value: "L6H4E1", required: true, format: "postal_code" },
+            { value: "L6H4E1", required: false, format: "postal_code" },
+            { value: "ON", required: true, format: "province" },
+            { value: "ON", required: false, format: "province" },
+        ];
+
+        test.each(cases)("%p", ({ value, required, format }) => {
+            expect(
+                validationChecker({ test: { value, required, format } })
+            ).toBe(undefined);
+        });
+    });
+
+    describe("invalid", () => {
+        const cases: Expected[keyof Expected][] = [
+            { value: "email", required: true, format: "email" },
+            { value: "email", required: false, format: "email" },
+            { value: "phone", required: true, format: "phone" },
+            { value: "phone", required: false, format: "phone" },
+            { value: "postal_code", required: true, format: "postal_code" },
+            { value: "postal_code", required: false, format: "postal_code" },
+            { value: "province", required: true, format: "province" },
+            { value: "province", required: false, format: "province" },
+        ];
+
+        test.each(cases)("%p", ({ value, required, format }) => {
+            expect(
+                validationChecker({ test: { value, required, format } })
+            ).not.toBe(undefined);
         });
     });
 });
