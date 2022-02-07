@@ -1,4 +1,4 @@
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import { Entity, Column, Connection } from "typeorm";
 import { AttributeFactory } from "./abstract/base_model";
 import EditableContentModel from "./abstract/editable_content_model";
