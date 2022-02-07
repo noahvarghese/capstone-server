@@ -1,5 +1,5 @@
+import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
-import Logs from "@util/logs/logs";
 
 export const logoutController = async (
     req: Request,

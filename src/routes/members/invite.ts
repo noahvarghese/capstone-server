@@ -1,10 +1,10 @@
 import { Request, Response, Router } from "express";
 import User from "@models/user/user";
 import MembershipRequest from "@models/membership_request";
-import Logs from "@util/logs/logs";
 import { MoreThan } from "typeorm";
 import Membership from "@models/membership";
 import { uid } from "rand-token";
+import Logs from "@noahvarghese/logger";
 
 export interface InviteMemberProps {
     first_name: string;

@@ -4,13 +4,13 @@ No other person’s work has been used without due acknowledgement.
 I have not made my work available to anyone else.”
 */
 import { Logger, QueryRunner } from "typeorm";
-import Logs from "./logs";
+import Logs from "@noahvarghese/logger";
 
 export default class DBLogger implements Logger {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     logQuery(query: string, parameters?: unknown[], _?: QueryRunner): void {
         const message = `Query executing: ${query}\nParams: ${parameters}`;
-        Logs.SQL(message);
+        Logs.Sql(message);
     }
     logQueryError(
         error: string | Error,
@@ -28,15 +28,15 @@ export default class DBLogger implements Logger {
         queryRunner?: QueryRunner
     ): void {
         const message = `Query: ${query}\nRunning too slow at ${time}ms\nParams: ${parameters}\nQuery Runner: ${queryRunner}`;
-        Logs.Warning(message);
+        Logs.Warn(message);
     }
     logSchemaBuild(contents: string, queryRunner?: QueryRunner): void {
         const message = `Schema being built: ${contents}\nQuery Runner: ${queryRunner}`;
-        Logs.SQL(message);
+        Logs.Sql(message);
     }
     logMigration(contents: string, queryRunner?: QueryRunner): void {
         const message = `Migration being ran: ${contents}\nQuery Runner: ${queryRunner}`;
-        Logs.SQL(message);
+        Logs.Sql(message);
     }
     log(
         level: "log" | "info" | "warn",
@@ -44,6 +44,6 @@ export default class DBLogger implements Logger {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _?: QueryRunner
     ): void {
-        Logs.SQL(`[${level.toUpperCase()}]`, message);
+        Logs.Sql(`[${level.toUpperCase()}]`, message);
     }
 }

@@ -5,8 +5,8 @@ import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
+import Logs from "@noahvarghese/logger";
 import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
-import Logs from "@util/logs/logs";
 import { Connection } from "typeorm";
 
 export interface RegisterBusinessProps {

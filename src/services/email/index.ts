@@ -2,10 +2,10 @@ import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
 import Business from "@models/business";
-import Logs from "@util/logs/logs";
 import { client } from "@util/permalink";
 import { Connection } from "typeorm";
 import MembershipRequest from "@models/membership_request";
+import Logs from "@noahvarghese/logger";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
 

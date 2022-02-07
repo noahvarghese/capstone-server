@@ -4,7 +4,6 @@ import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import Logs from "@util/logs/logs";
 import isSortFieldFactory from "@util/sortFieldFactory";
 import { isPhone } from "@util/validation/format_checker";
 import { Router, Request, Response } from "express";
@@ -13,6 +12,7 @@ import validator from "validator";
 // import inviteRoute from "./invite";
 import roleAssignmentRouter from "./role_assignment";
 import inviteRouter from "./invite";
+import Logs from "@noahvarghese/logger";
 
 const router = Router();
 

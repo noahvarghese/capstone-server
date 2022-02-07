@@ -1,4 +1,4 @@
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import { NextFunction, Request, Response } from "express";
 import { getConnection } from "typeorm";
 

@@ -10,7 +10,7 @@ import ManualSection from "@models/manual/section";
 import ManualAssignment from "@models/manual/assignment";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import DBLogger from "@util/logs/db_logger";
+import DBLogger from "@util/db_logger";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
 import Question from "@models/quiz/question/question";

@@ -1,6 +1,6 @@
 import User from "@models/user/user";
+import Logs from "@noahvarghese/logger";
 import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
-import Logs from "@util/logs/logs";
 import { uid } from "rand-token";
 import { Connection } from "typeorm";
 

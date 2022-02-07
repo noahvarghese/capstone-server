@@ -1,4 +1,4 @@
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import { pathsToModuleNameMapper } from "ts-jest/utils";
 import { compilerOptions } from "./tsconfig.json";
 
@@ -15,7 +15,7 @@ if (process.env.DB_ENV.startsWith("_")) {
 }
 
 if (process.argv.includes("--listTests") === false) {
-    Logs.Event("Jest config loaded");
+    Logs.Log("Jest config loaded");
     Logs.Log(`Using database: ${database}`);
 }
 

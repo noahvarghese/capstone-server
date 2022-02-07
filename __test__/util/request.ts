@@ -1,5 +1,5 @@
+import Logs from "@noahvarghese/logger";
 import axios, { AxiosResponse } from "axios";
-import Logs from "@util/logs/logs";
 
 export const getCookie = (headers: { [name: string]: string }): string => {
     for (const [key, value] of Object.entries(headers)) {

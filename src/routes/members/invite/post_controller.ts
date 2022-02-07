@@ -1,7 +1,7 @@
 import User from "@models/user/user";
+import Logs from "@noahvarghese/logger";
 import { sendUserInviteEmail } from "@services/email";
 import DataServiceError from "@util/errors/service";
-import Logs from "@util/logs/logs";
 import { isPhone } from "@util/validation/format_checker";
 import { Request, Response } from "express";
 import validator from "validator";

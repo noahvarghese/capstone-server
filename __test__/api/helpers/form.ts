@@ -3,7 +3,7 @@ import BaseWorld from "@test/support/base_world";
 import apiAttributes from "@test/api/attributes";
 import { getCookie } from "@test/util/request";
 import { server } from "@util/permalink";
-import { outputStack } from "@util/logs/logs";
+import {getStackFrame} from "@noahvarghese/logger/build/lib/callstack";
 
 /**
  *
@@ -117,7 +117,7 @@ export default class Form {
                 e.message,
                 seperator,
                 response?.data.message ?? undefined,
-                outputStack(3)
+                getStackFrame(3)
             );
 
             if (response) {

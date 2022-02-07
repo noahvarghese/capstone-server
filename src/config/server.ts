@@ -3,13 +3,13 @@ import cookieParser from "cookie-parser";
 import cluster from "cluster";
 import createConnection from "@config/database";
 import express from "express";
-import Logs from "@util/logs/logs";
 import middlewares from "@middleware/index";
 import router from "@routes/index";
 import { createSession } from "./session";
 import { Server } from "http";
 import fileUpload from "express-fileupload";
 import { Connection } from "typeorm";
+import Logs from "@noahvarghese/logger";
 
 const port = process.env.PORT || 8081;
 
@@ -17,7 +17,7 @@ const port = process.env.PORT || 8081;
 const setupServer = async (
     disableLogs = false
 ): Promise<{ server: Server; connection: Connection }> => {
-    Logs.configureLogs(disableLogs);
+    Logs.init(disableLogs);
     /* Connect to database */
     /* No try catch cuz if it fails theres a bigger issue */
     const connection = await createConnection();
@@ -61,7 +61,7 @@ const setupServer = async (
 
         server.on("listening", () => {
             console.log("\n");
-            Logs.Event(`Server started on port: ${port} using ${pid}`);
+            Logs.Log(`Server started on port: ${port} using ${pid}`);
             console.log("\n");
 
             res(server);
@@ -80,7 +80,7 @@ export const shutdown = async (app: {
             if (err) Logs.Error(err.message);
 
             console.log("\n");
-            Logs.Event("Server terminated");
+            Logs.Log("Server terminated");
             console.log("\n");
 
             if (err) {

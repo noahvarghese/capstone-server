@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import Logs from "@util/logs/logs";
 import { client } from "@util/permalink";
 import authRouter from "./auth";
 import departmentRouter from "./departments";
@@ -7,6 +6,7 @@ import roleRouter from "./roles";
 import settingsRoute from "./settings";
 import memberRoute from "./members";
 import businessRouter from "./businesses";
+import Logs from "@noahvarghese/logger";
 
 const router = Router();
 
@@ -30,7 +30,6 @@ router.use("/*", (req: Request, res: Response) => {
         }
     }
     res.redirect(redirectURL);
-    Logs.Event("Sent to ", redirectURL);
 });
 
 export default router;

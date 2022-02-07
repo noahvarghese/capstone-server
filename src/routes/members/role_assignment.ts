@@ -3,7 +3,7 @@ import Membership from "@models/membership";
 import Permission from "@models/permission";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import { Router, Request, Response } from "express";
 
 const router = Router();

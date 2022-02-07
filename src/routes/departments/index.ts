@@ -4,7 +4,7 @@ import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import isSortFieldFactory from "@util/sortFieldFactory";
 import { Router, Response, Request } from "express";
 import { EntityManager } from "typeorm/entity-manager/EntityManager";

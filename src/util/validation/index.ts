@@ -1,6 +1,6 @@
+import Logs from "@noahvarghese/logger";
 import validator from "validator";
 import DataServiceError, { ServiceErrorReasons } from "../errors/service";
-import Logs from "../logs/logs";
 import { FormatKey, formatValidators } from "./format_checker";
 
 export type ValidatorMap<T extends string> = {

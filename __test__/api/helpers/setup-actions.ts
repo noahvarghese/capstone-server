@@ -15,7 +15,7 @@ export async function createRegularUser(
 ): Promise<{ id: number; password: string; email: string }> {
     const email = process.env.MAIL_USER ?? "";
     const { password } = attributes.login();
-    const { first_name, last_name, phone } = inviteMemberAttributes();
+    const { phone } = inviteMemberAttributes();
 
     const connection = this.getConnection();
 
@@ -29,8 +29,6 @@ export async function createRegularUser(
 
     const user = await new User({
         email,
-        first_name,
-        last_name,
         phone,
     }).hashPassword(password);
 
@@ -44,7 +42,7 @@ export async function createRegularUser(
         new Membership({
             business_id,
             user_id,
-            default: true,
+            default_option: true,
         })
     );
 
@@ -189,7 +187,6 @@ export async function assignUserToRole(
     user_id: number,
     role_id: number,
     admin_id?: number,
-    is_primary_role?: boolean
 ): Promise<{ user_id: number; role_id: number }> {
     const connection = this.getConnection();
 
@@ -197,7 +194,6 @@ export async function assignUserToRole(
         role_id,
         user_id,
         updated_by_user_id: admin_id ?? user_id,
-        primary_role_for_user: is_primary_role,
     });
 
     return res.identifiers[0] as { user_id: number; role_id: number };

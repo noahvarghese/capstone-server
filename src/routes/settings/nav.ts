@@ -2,8 +2,8 @@ import Department from "@models/department";
 import Permission from "@models/permission";
 import Role from "@models/role";
 import UserRole from "@models/user/user_role";
+import Logs from "@noahvarghese/logger";
 import { deepClone } from "@util/obj";
-import Logs from "@util/logs/logs";
 import { Request, Response, Router } from "express";
 import { Connection } from "typeorm";
 

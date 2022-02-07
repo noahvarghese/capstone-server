@@ -1,6 +1,6 @@
 import Membership from "@models/membership";
+import Logs from "@noahvarghese/logger";
 import DataServiceError, { ServiceErrorReasons } from "@util/errors/service";
-import Logs from "@util/logs/logs";
 import { Connection } from "typeorm";
 
 /**

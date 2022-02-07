@@ -418,8 +418,6 @@ describe("User who lacks CRUD rights", () => {
         expect(response.roles.length).toBe(0);
 
         expect(response.user.birthday).toBe(null);
-        expect(response.user.first_name).toBe(inviteMember().first_name);
-        expect(response.user.last_name).toBe(inviteMember().last_name);
         expect(response.user.email).toBe(user.email);
         expect(response.user.phone).toBe(inviteMember().phone);
         expect(response.user.id).toBe(user.id);

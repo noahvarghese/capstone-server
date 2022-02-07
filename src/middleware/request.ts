@@ -1,5 +1,5 @@
+import Logs from "@noahvarghese/logger";
 import { NextFunction, Request, Response } from "express";
-import Logs from "@util/logs/logs";
 
 export const parseBodyToJSON = (
     req: Request,

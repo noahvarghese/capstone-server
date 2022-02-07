@@ -1,4 +1,4 @@
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import { Expected, validationChecker } from ".";
 
 describe("validation checker, no formats", () => {
