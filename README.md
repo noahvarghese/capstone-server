@@ -63,11 +63,12 @@ Tests are broken up into
 -   database
 -   unit
 -   integration
--   e2e
 
 Each of these can be targeted as their own test suite.
 
 Uses different jest configurations and a test script to run each set of tests against their own database.
+
+The source of truth for all test data stems from \_\_test\_\_/model/attributes. Any modifications for scenarios specific to the domain can be found in \_\_test\_\_/{model,api,unit}/attributes.
 
 ### Automated Testing
 
