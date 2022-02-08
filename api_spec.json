@@ -5544,7 +5544,26 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/User"
+                                    "type": "object",
+                                    "properties": {
+                                        "first_name": {
+                                            "description": "The user's first name",
+                                            "type": "string"
+                                        },
+                                        "last_name": {
+                                            "description": "The user's last name",
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "description": "The user's email",
+                                            "type": "string",
+                                            "format": "email"
+                                        },
+                                        "phone": {
+                                            "description": "The user's phone number",
+                                            "type": "string"
+                                        }
+                                    }
                                 }
                             }
                         }
