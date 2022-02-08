@@ -5550,6 +5550,9 @@
                         }
                     },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"
                     }
