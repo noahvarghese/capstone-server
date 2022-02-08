@@ -1,28 +1,14 @@
+import { Expected, ValidatorMap } from "@noahvarghese/get_j_opts";
 import { PhoneNumber, PhoneNumberUtil } from "google-libphonenumber";
 import validator from "validator";
-import { ValidatorMap } from ".";
 
 /**
  * different types that will have their own format validators
  */
-export type FormatKey = "email" | "postal_code" | "province" | "phone";
-
-export type FormatMap = ValidatorMap<FormatKey>;
-
-export const formatValidators: FormatMap = {
-    email: {
-        validator: (v: unknown) => validator.isEmail(v as string),
-    },
-    phone: {
-        validator: (v: unknown) => isPhone(v as string),
-    },
-    postal_code: {
-        validator: (v: unknown) => isPostalCode(v as string),
-    },
-    province: {
-        validator: (v: unknown) => (v as string).length === 2,
-    },
-};
+const formatTypes = ["email", "postal_code", "province", "phone"] as const;
+type FormatKey = typeof formatTypes[number];
+type FormatMap = ValidatorMap<FormatKey>;
+export type ExpectedFormat = Expected<FormatKey>;
 
 /**
  * Only canadian postal codes
@@ -44,4 +30,11 @@ export const isPhone = (val: string, regionCode = "CA"): boolean => {
     } catch (e) {
         return false;
     }
+};
+
+export const formatValidators: FormatMap = {
+    email: (v: unknown) => validator.isEmail(v as string),
+    phone: (v: unknown) => isPhone(v as string),
+    postal_code: (v: unknown) => isPostalCode(v as string),
+    province: (v: unknown) => (v as string).length === 2,
 };

@@ -115,6 +115,7 @@
         "typescript": "^4.2.4"
     },
     "dependencies": {
+        "@noahvarghese/get_j_opts": "^1.0.0-alpha.0",
         "@noahvarghese/logger": "^1.0.0",
         "bcryptjs": "^2.4.3",
         "cluster": "^0.7.7",
