@@ -23,6 +23,14 @@ export interface RegisterBusinessProps {
     confirm_password: string;
 }
 
+/**
+ * Creates Business, User, Membership, Department, Permission, Role, and UserRole objects
+ * Sets up department and role as admin, with all permissions
+ * Prevent edit and delete of membership, department, role and user role objects as this user is the owner of the business
+ * @param conn
+ * @param options
+ * @throws DataServiceError whichg contains an HTTP status code representing the type of error that occurred as well as an optional messge
+ */
 export const registerHandler = async (
     connection: Connection,
     options: RegisterBusinessProps
