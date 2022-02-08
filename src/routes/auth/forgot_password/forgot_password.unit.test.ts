@@ -1,16 +1,18 @@
 import { getMockRes } from "@jest-mock/express";
 import Event from "@models/event";
 import User from "@models/user/user";
+import { userAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { Request } from "express";
 import { forgotPasswordController } from "./controller";
 import { forgotPasswordHandler } from "./handler";
 
+const { email, first_name, last_name, password } = userAttributes();
 const data = {
-    email: process.env.MAIL_USER ?? "",
-    first_name: "TEST",
-    last_name: "TEST",
-    password: "TEST",
+    email,
+    first_name,
+    last_name,
+    password,
 };
 
 const { res, mockClear } = getMockRes();
