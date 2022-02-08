@@ -1,5 +1,5 @@
 import DataServiceError from "@util/errors/service";
-import { isPhone, isPostalCode } from "@util/validation/format_checker";
+import { isPhone, isPostalCode } from "@util/format_checker";
 import { Request, Response } from "express";
 import validator from "validator";
 import { loginHandler } from "../login/handler";
