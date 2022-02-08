@@ -5,7 +5,7 @@ import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import isSortFieldFactory from "@util/sortFieldFactory";
-import { isPhone } from "@util/validation/format_checker";
+import { isPhone } from "@util/format_checker";
 import { Router, Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import validator from "validator";
