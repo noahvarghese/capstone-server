@@ -11,7 +11,7 @@ const TEMPLATE_DIR = `${__dirname}/templates`;
 
 const email = new Email({
     message: {
-        from: process.env.MAIL_USER ?? "noreply@onboard.com",
+        from: process.env.MAIL_USER ?? "",
     },
     views: { root: TEMPLATE_DIR },
     send: process.env.NODE_ENV !== "test",

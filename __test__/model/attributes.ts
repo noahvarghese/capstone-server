@@ -107,7 +107,7 @@ export const userAttributes = (): UserAttributes =>
         {
             first_name: "Noah",
             last_name: "Varghese",
-            email: "varghese.noah@gmail.com",
+            email: process.env.TEST_EMAIL_1 ?? "",
             phone: "9053393294",
             birthday: new Date("1996-08-07"),
             password: "password",

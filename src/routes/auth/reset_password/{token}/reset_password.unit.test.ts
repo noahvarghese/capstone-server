@@ -93,7 +93,7 @@ describe("database", () => {
                 await new User({
                     first_name: "TEST",
                     last_name: "TEST",
-                    email: process.env.MAIL_USER ?? "",
+                    email: process.env.TEST_EMAIL_1 ?? "",
                 }).hashPassword("password")
             ));
 

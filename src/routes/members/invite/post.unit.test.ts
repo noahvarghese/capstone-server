@@ -59,7 +59,10 @@ describe("database usage", () => {
                 identifiers: [{ id: business_id }],
             },
         ] = await Promise.all([
-            conn.manager.insert(User, new User({ email: "test@test.com" })),
+            conn.manager.insert(
+                User,
+                new User({ email: process.env.TEST_EMAIL_1 ?? "" })
+            ),
             conn.manager.insert(
                 Business,
                 new Business({
@@ -158,7 +161,7 @@ describe("database usage", () => {
                     current_business_id: business_id,
                     business_ids: [business_id],
                 },
-                body: { email: process.env.MAIL_USER ?? "" },
+                body: { email: process.env.TEST_EMAIL_1 ?? "" },
                 dbConnection: conn,
             } as unknown as Request,
             res
@@ -180,7 +183,7 @@ describe("database usage", () => {
                         current_business_id: business_id,
                         business_ids: [business_id],
                     },
-                    body: { email: process.env.MAIL_USER ?? "" },
+                    body: { email: process.env.TEST_EMAIL_2 ?? "" },
                     dbConnection: conn,
                 } as unknown as Request,
                 res
@@ -194,7 +197,7 @@ describe("database usage", () => {
         test("Invited user is new to system", async () => {
             // delete user
             let user = await conn.manager.findOneOrFail(User, {
-                where: { email: process.env.MAIL_USER ?? "" },
+                where: { email: process.env.TEST_EMAIL_2 ?? "" },
             });
 
             await conn.manager.clear(Event);
@@ -210,7 +213,7 @@ describe("database usage", () => {
             try {
                 await postHandler(
                     conn,
-                    { email: process.env.MAIL_USER ?? "" },
+                    { email: process.env.TEST_EMAIL_2 ?? "" },
                     user_id,
                     business_id
                 );
@@ -221,7 +224,7 @@ describe("database usage", () => {
             expect(errorThrown).toBe(false);
 
             user = await conn.manager.findOneOrFail(User, {
-                where: { email: process.env.MAIL_USER ?? "" },
+                where: { email: process.env.TEST_EMAIL_2 ?? "" },
             });
 
             const m = await conn.manager.findOne(MembershipRequest, {
@@ -234,7 +237,7 @@ describe("database usage", () => {
         test("Invited user exists in system", async () => {
             // delete membership request
             const user = await conn.manager.findOneOrFail(User, {
-                where: { email: process.env.MAIL_USER ?? "" },
+                where: { email: process.env.TEST_EMAIL_2 ?? "" },
             });
 
             await conn.manager.clear(Event);
@@ -247,7 +250,7 @@ describe("database usage", () => {
             try {
                 await postHandler(
                     conn,
-                    { email: process.env.MAIL_USER ?? "" },
+                    { email: process.env.TEST_EMAIL_2 ?? "" },
                     user_id,
                     business_id
                 );
@@ -266,7 +269,7 @@ describe("database usage", () => {
 
         test("Invited user has been invited already, should update and resend", async () => {
             const user = await conn.manager.findOneOrFail(User, {
-                where: { email: process.env.MAIL_USER ?? "" },
+                where: { email: process.env.TEST_EMAIL_2 ?? "" },
             });
             const mStart = await conn.manager.findOneOrFail(MembershipRequest, {
                 user_id: user.id,
@@ -279,7 +282,7 @@ describe("database usage", () => {
             try {
                 await postHandler(
                     conn,
-                    { email: process.env.MAIL_USER ?? "" },
+                    { email: process.env.TEST_EMAIL_2 ?? "" },
                     user_id,
                     business_id
                 );
