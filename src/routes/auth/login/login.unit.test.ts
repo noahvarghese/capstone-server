@@ -167,7 +167,7 @@ describe("user exists", () => {
                         } as unknown as Request,
                         res
                     );
-                    expect(res.sendStatus).toHaveBeenCalledWith(200);
+                    expect(res.status).toHaveBeenCalledWith(200);
                 });
             });
         });

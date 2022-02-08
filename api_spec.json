@@ -461,9 +461,6 @@
                 "description": "Role within Department",
                 "type": "object",
                 "properties": {
-                    "default": {
-                        "type": "boolean"
-                    },
                     "name": {
                         "description": "role name",
                         "type": "string"
@@ -849,7 +846,15 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Found user, and user is a member of a business."
+                        "description": "Found user, and user is a member of a business.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer",
+                                    "description": "the user id"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Missing or invalid request body."
@@ -2648,7 +2653,55 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/User"
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "first_name": {
+                                                "description": "The user's first name",
+                                                "type": "string"
+                                            },
+                                            "last_name": {
+                                                "description": "The user's last name",
+                                                "type": "string"
+                                            },
+                                            "email": {
+                                                "description": "The user's email",
+                                                "type": "string",
+                                                "format": "email"
+                                            },
+                                            "phone": {
+                                                "description": "The user's phone number",
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "description": "Whether the user has accepted their membership yet",
+                                                "type": "boolean"
+                                            },
+                                            "roles": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "description": "role name",
+                                                            "type": "string"
+                                                        },
+                                                        "id": {
+                                                            "description": "unique identifier",
+                                                            "type": "integer"
+                                                        },
+                                                        "permissions": {
+                                                            "$ref": "#/components/schemas/Permission"
+                                                        },
+                                                        "department": {
+                                                            "$ref": "#/components/schemas/Department"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -5480,11 +5533,37 @@
             }
         },
         "/users/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "summary": "get user details",
+                "description": "retrieve basic user details, only for the logged in user",
+                "tags": ["user"],
+                "responses": {
+                    "200": {
+                        "description": "User object succesfully retrieved.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "500": {
+                        "$ref": "#/components/responses/DatabaseError"
+                    }
+                },
+                "details": {
+                    "passthrough": false,
+                    "permissions": [],
+                    "requireAuth": "true"
+                }
+            },
             "put": {
                 "summary": "update user (Not password)",
                 "description": "Updates basic user details",
                 "tags": ["user"],
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -5515,21 +5594,11 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "User object succesfully updated.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/User"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/Success"
                     },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
                     },
                     "500": {
                         "$ref": "#/components/responses/DatabaseError"

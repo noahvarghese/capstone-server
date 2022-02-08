@@ -27,7 +27,7 @@ export const loginController = async (
         req.session.business_ids = business_ids;
         req.session.current_business_id = current_business_id;
         req.session.user_id = user_id;
-        res.sendStatus(200);
+        res.status(200).send(user_id);
     } catch (_e) {
         const { code, message } = _e as DataServiceError;
         res.status(code).send(message);
