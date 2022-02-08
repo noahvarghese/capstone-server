@@ -2,7 +2,6 @@ import Department from "@models/department";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import { registerHandler } from "@routes/auth/register/handler";
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
