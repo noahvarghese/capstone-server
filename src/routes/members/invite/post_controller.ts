@@ -2,7 +2,7 @@ import User from "@models/user/user";
 import Logs from "@noahvarghese/logger";
 import { sendUserInviteEmail } from "@services/email";
 import DataServiceError from "@util/errors/service";
-import { isPhone } from "@util/format_checker";
+import { isPhone } from "@util/formats";
 import { Request, Response } from "express";
 import validator from "validator";
 import { postHandler } from "./post_handler";
@@ -38,7 +38,7 @@ export const sendInviteController = async (
         dbConnection,
         user_id,
         current_business_id,
-        "global_crud_users"
+        ["global_crud_users"]
     );
 
     if (!hasPermissions) {

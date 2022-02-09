@@ -1,10 +1,10 @@
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import Logs from "@noahvarghese/logger";
-import { ExpectedFormat, formatValidators } from "@util/format_checker";
+import { ExpectedBody, bodyValidators } from "@util/formats/body";
 import { Request, Response } from "express";
 
-const options: ExpectedFormat = {
+const options: ExpectedBody = {
     email: {
         required: false,
         type: "string",
@@ -31,7 +31,7 @@ export const updateUserController = async (
     let data: UpdatedUser;
 
     try {
-        data = getJOpts(req.body, options, formatValidators) as UpdatedUser;
+        data = getJOpts(req.body, options, bodyValidators) as UpdatedUser;
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);

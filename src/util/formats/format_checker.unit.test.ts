@@ -1,4 +1,4 @@
-import { isPhone, isPostalCode } from "./format_checker";
+import { isPhone, isPostalCode } from ".";
 
 describe("postal code", () => {
     test("too short", () => {

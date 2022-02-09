@@ -1,4 +1,3 @@
-import { ExpectedFormat, formatValidators } from "@util/format_checker";
 import { Request, Response } from "express";
 import Business from "@models/business";
 import Department from "@models/department";
@@ -9,8 +8,9 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@noahvarghese/logger";
 import getJOpts from "@noahvarghese/get_j_opts";
+import { bodyValidators, ExpectedBody } from "@util/formats/body";
 
-const businessOpts: ExpectedFormat = {
+const businessOpts: ExpectedBody = {
     name: {
         type: "string",
         required: true,
@@ -35,7 +35,7 @@ const businessOpts: ExpectedFormat = {
     },
 };
 
-const userOpts: ExpectedFormat = {
+const userOpts: ExpectedBody = {
     password: {
         type: "string",
         required: true,
@@ -94,13 +94,13 @@ export const registerController = async (
         b = getJOpts(
             req.body,
             businessOpts,
-            formatValidators
+            bodyValidators
         ) as unknown as BusinessOptions;
 
         u = getJOpts(
             req.body,
             userOpts,
-            formatValidators
+            bodyValidators
         ) as unknown as UserOptions;
     } catch (_e) {
         const { message } = _e as Error;
