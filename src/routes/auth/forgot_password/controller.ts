@@ -1,9 +1,9 @@
 import User from "@models/user/user";
+import Logs from "@noahvarghese/logger";
 import { requestResetPasswordEmail } from "@services/email";
-import DataServiceError from "@util/errors/service";
 import { Request, Response } from "express";
+import { uid } from "rand-token";
 import validator from "validator";
-import { forgotPasswordHandler } from "./handler";
 
 export const forgotPasswordController = async (
     req: Request,
@@ -29,8 +29,20 @@ export const forgotPasswordController = async (
     }
 
     try {
-        await forgotPasswordHandler(dbConnection, email);
+        // gen token
+        await dbConnection.manager.update(
+            User,
+            { email: email },
+            { token: uid(32) }
+        );
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500);
+        return;
+    }
 
+    try {
         if (await requestResetPasswordEmail(dbConnection, user))
             res.sendStatus(200);
         else
@@ -38,7 +50,9 @@ export const forgotPasswordController = async (
                 "Unable to send reset instructions, please try again"
             );
     } catch (_e) {
-        const { code, message } = _e as DataServiceError;
-        res.status(code).send(message);
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500);
+        return;
     }
 };

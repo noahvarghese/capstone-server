@@ -5,7 +5,6 @@ import { userAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { Request } from "express";
 import { forgotPasswordController } from "./controller";
-import { forgotPasswordHandler } from "./handler";
 
 const { email, first_name, last_name, password } = userAttributes();
 const data = {
@@ -62,14 +61,13 @@ describe("database connection required", () => {
         });
 
         test("creates token", async () => {
-            let errorThrown = false;
             const conn = await DBConnection.get();
-            try {
-                await forgotPasswordHandler(conn, data.email);
-            } catch (_) {
-                errorThrown = true;
-            }
 
+            await forgotPasswordController(
+                { dbConnection: conn, body: { email: data.email } } as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(200);
             const user = await conn.manager.findOneOrFail(User, {
                 where: { email: data.email },
             });
@@ -78,7 +76,6 @@ describe("database connection required", () => {
             expect(user.token_expiry?.getTime()).toBeGreaterThan(
                 new Date().getTime()
             );
-            expect(errorThrown).toBe(false);
         });
 
         test("sends instructions", async () => {
