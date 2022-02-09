@@ -2,10 +2,10 @@ import bcrypt from "bcryptjs";
 import { Entity, Column, Connection } from "typeorm";
 import BaseModel, { AttributeFactory } from "@models/abstract/base_model";
 import validator from "validator";
-import Role from "@models/role";
-import Permission, { PermissionAttributes } from "@models/permission";
+import Business from "@models/business";
 import Membership from "@models/membership";
 import UserRole from "./user_role";
+import Role, { AccessKey } from "@models/role";
 
 export interface UserAttributes {
     first_name: string;
@@ -98,81 +98,37 @@ export default class User extends BaseModel implements UserAttributes {
         this.token_expiry = null;
     };
 
-    public static async getRoles(
-        connection: Connection,
-        id: number,
+    /**
+     *
+     * @throws when database connection fails
+     */
+    private static async isRole(
+        conn: Connection,
         business_id: number,
-        permissions?: Omit<keyof PermissionAttributes, "updated_by_user_id">[]
-    ): Promise<
-        Omit<
-            Role & Permission,
-            "created_on" | "updated_on" | "deleted_on" | "updated_by_user_id"
-        >[]
-    > {
-        let query = connection
-            .createQueryBuilder()
-            .select("r")
-            .addSelect("p")
-            .from(Role, "r")
-            .leftJoin(Permission, "p", "p.id = r.permission_id")
-            .leftJoin(UserRole, "ur", "ur.role_id = r.id")
-            .leftJoin(User, "u", "u.id = ur.user_id")
-            .leftJoin(Membership, "m", "m.user_id = u.id")
-            .where("m.user_id = :id", { id })
-            .andWhere("m.business_id = :business_id", {
-                business_id,
-            });
-
-        if (permissions) {
-            for (const perm of permissions) {
-                query = query.andWhere(`p.${perm} = 1`);
-            }
-        }
-
-        const roles = await query.getRawMany();
-
-        return roles.map((raw) => ({
-            name: raw.r_name,
-            id: raw.r_id,
-            prevent_edit: raw.r_prevent_edit,
-            prevent_delete: raw.r_prevent_delete,
-            department_id: raw.r_department_id,
-            permission_id: raw.r_permission_id,
-            global_crud_users: raw.p_global_crud_users,
-            global_crud_department: raw.p_global_crud_department,
-            global_crud_role: raw.p_global_crud_role,
-            global_assign_resources_to_role:
-                raw.p_global_assign_resources_to_role,
-            global_assign_users_to_role: raw.p_global_assign_users_to_role,
-            global_crud_resources: raw.p_global_crud_resources,
-            global_view_reports: raw.p_global_view_reports,
-            dept_assign_resources_to_role: raw.p_dept_assign_resources_to_role,
-            dept_assign_users_to_role: raw.p_dept_assign_users_to_role,
-            dept_crud_resources: raw.p_dept_crud_resources,
-            dept_crud_role: raw.p_dept_crud_role,
-            dept_view_reports: raw.p_dept_view_reports,
-        }));
+        user_id: number,
+        access: AccessKey
+    ): Promise<boolean> {
+        return (
+            (await conn
+                .createQueryBuilder()
+                .select()
+                .from(Business, "b")
+                .leftJoin(Membership, "m", "m.business_id = b.id")
+                .leftJoin(User, "u", "u.id = m.user_id")
+                .leftJoin(UserRole, "ur", "ur.user_id = u.id")
+                .leftJoin(Role, "r", "r.id = ur.role_id")
+                .where("b.id = :business_id", { business_id })
+                .andWhere("u.id = :user_id", { user_id })
+                .andWhere("r.access = :access", { access })
+                .getCount()) === 1
+        );
     }
 
-    public static async hasGlobalPermission(
-        connection: Connection,
-        id: number,
+    public static async isAdmin(
+        conn: Connection,
         business_id: number,
-        permissions: Omit<keyof PermissionAttributes, "updated_by_user_id">[]
+        user_id: number
     ): Promise<boolean> {
-        for (const p of permissions) {
-            if (!p.startsWith("global_")) {
-                throw new Error("Invalid argument " + p);
-            }
-        }
-
-        const roles = await User.getRoles(
-            connection,
-            id,
-            business_id,
-            permissions
-        );
-
-        return roles.length > 0;
+        return User.isRole(conn, business_id, user_id, "ADMIN");
     }
 }

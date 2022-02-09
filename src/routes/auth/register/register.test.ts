@@ -5,7 +5,6 @@ import UserRole from "@models/user/user_role";
 import Business from "@models/business";
 import Department from "@models/department";
 import Membership from "@models/membership";
-import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import DBConnection from "@test/support/db_connection";
@@ -100,7 +99,6 @@ describe("requires database", () => {
 
         await Promise.all([
             conn.manager.delete(Membership, () => ""),
-            conn.manager.delete(Permission, () => ""),
             conn.manager.delete(Department, () => ""),
         ]);
 

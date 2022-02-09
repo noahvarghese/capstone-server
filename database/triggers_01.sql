@@ -122,28 +122,6 @@ END;
 
 //
 
-DROP TRIGGER IF EXISTS permission_update //
-
-/* Prevent changing for admin role/department */
-CREATE TRIGGER permission_update
-BEFORE UPDATE
-ON permission FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    DECLARE prevent_role_edit INT;
-
-    SET prevent_role_edit = (SELECT prevent_edit FROM role WHERE role.permission_id = OLD.id);
-
-    IF prevent_role_edit = 1 THEN
-        SET msg = CONCAT('PermissionUpdateError: Cannot edit permissions while edit lock is set. ', CAST(OLD.id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-
-    SET NEW.updated_on = NOW();
-END;
-
-//
-
 DROP TRIGGER IF EXISTS role_delete //
 
 CREATE TRIGGER role_delete

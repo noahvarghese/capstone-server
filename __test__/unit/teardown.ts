@@ -9,7 +9,6 @@ import Policy from "@models/manual/policy";
 import ManualSection from "@models/manual/section";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
-import Permission from "@models/permission";
 import QuizAttempt from "@models/quiz/attempt";
 import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
@@ -46,7 +45,6 @@ export const unitTeardown = async (conn: Connection): Promise<void> => {
         conn.manager.delete(QuizAnswer, ALL),
         conn.manager.delete(Policy, ALL),
         conn.manager.delete(Department, ALL),
-        conn.manager.delete(Permission, ALL),
     ]);
     await Promise.all([
         conn.manager.delete(QuizQuestion, ALL),

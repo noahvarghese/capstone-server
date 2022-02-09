@@ -2,10 +2,13 @@ import { Entity, Column } from "typeorm";
 import { AttributeFactory } from "./abstract/base_model";
 import EditableContentModel from "./abstract/editable_content_model";
 
+const accessKeys = ["ADMIN", "MANAGER", "USER"] as const;
+export type AccessKey = typeof accessKeys[number];
+
 export interface RoleAttributes {
     name: string;
     department_id: number;
-    permission_id: number;
+    access: AccessKey;
     prevent_delete: boolean;
     prevent_edit: boolean;
     updated_by_user_id: number;
@@ -14,7 +17,7 @@ export interface RoleAttributes {
 export const EmptyRoleAttributes = (): RoleAttributes => ({
     name: "",
     department_id: NaN,
-    permission_id: NaN,
+    access: "USER",
     prevent_delete: false,
     updated_by_user_id: NaN,
     prevent_edit: false,
@@ -30,7 +33,7 @@ export default class Role
     @Column()
     public department_id!: number;
     @Column()
-    public permission_id!: number;
+    public access!: AccessKey;
     @Column()
     public prevent_edit!: boolean;
     @Column()

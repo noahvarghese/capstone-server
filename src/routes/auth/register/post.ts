@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import Business from "@models/business";
 import Department from "@models/department";
 import Membership from "@models/membership";
-import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -168,7 +167,7 @@ export const registerController = async (
                 tm.insert(Business, b),
             ]);
 
-            const [departmentRes, permissionRes] = await Promise.all([
+            const [departmentRes] = await Promise.all([
                 tm.insert(
                     Department,
                     new Department({
@@ -177,24 +176,6 @@ export const registerController = async (
                         name: "Admin",
                         prevent_delete: true,
                         prevent_edit: true,
-                    })
-                ),
-                tm.insert(
-                    Permission,
-                    new Permission({
-                        updated_by_user_id: user_id,
-                        global_assign_resources_to_role: true,
-                        global_assign_users_to_role: true,
-                        global_crud_department: true,
-                        global_crud_resources: true,
-                        global_crud_role: true,
-                        global_crud_users: true,
-                        global_view_reports: true,
-                        dept_assign_resources_to_role: true,
-                        dept_assign_users_to_role: true,
-                        dept_crud_resources: true,
-                        dept_crud_role: true,
-                        dept_view_reports: true,
                     })
                 ),
                 tm.insert(
@@ -209,14 +190,13 @@ export const registerController = async (
                 ),
             ]);
 
-            const department_id = departmentRes.identifiers[0].id,
-                permission_id = permissionRes.identifiers[0].id;
+            const department_id = departmentRes.identifiers[0].id;
 
             const roleRes = await tm.insert(
                 Role,
                 new Role({
                     department_id,
-                    permission_id,
+                    access: "ADMIN",
                     name: "General",
                     prevent_edit: true,
                     prevent_delete: true,

@@ -6,12 +6,12 @@ printf "\n\n"
 
 npm ci
 
-CHANGED_UNIT_TEST_FILES=($(npm run --silent unit:test:list:recent))
+CHANGED_UNIT_TEST_FILES=($(npm run --silent test:recent -- --listTests))
 
 if [[ ${#CHANGED_UNIT_TEST_FILES[@]} -gt 0 ]]; then
     echo -e "\n\n[ LOG ]: Unit Tests:"
     printf '%s\n' "${CHANGED_UNIT_TEST_FILES[@]}" 
-    npm run unit:test:recent
+    npm run test:recent
 else
     echo -e "\n\n[ INFO ]: No new tests found"
 fi

@@ -1,8 +1,6 @@
 import { Request, Response, Router } from "express";
 import { client } from "@util/permalink";
 import authRouter from "./auth";
-import departmentRouter from "./departments";
-import roleRouter from "./roles";
 import settingsRoute from "./settings";
 import memberRoute from "./members";
 import businessRouter from "./businesses";
@@ -12,9 +10,7 @@ const router = Router();
 
 /* Uncomment after creating the other routes */
 router.use("/auth", authRouter);
-router.use("/departments", departmentRouter);
 router.use("/members", memberRoute);
-router.use("/roles", roleRouter);
 router.use("/settings", settingsRoute);
 router.use("/businesses", businessRouter);
 

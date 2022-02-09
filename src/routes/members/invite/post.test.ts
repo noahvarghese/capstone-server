@@ -4,7 +4,6 @@ import Department from "@models/department";
 import Event from "@models/event";
 import Membership from "@models/membership";
 import MembershipRequest from "@models/membership_request";
-import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -41,10 +40,7 @@ test("Invalid phone", async () => {
 });
 
 describe("database usage", () => {
-    let user_id!: number,
-        business_id!: number,
-        permission_id!: number,
-        conn!: Connection;
+    let user_id!: number, business_id!: number, conn!: Connection;
 
     beforeAll(async () => {
         await DBConnection.init();
@@ -80,9 +76,6 @@ describe("database usage", () => {
             {
                 identifiers: [{ id: department_id }],
             },
-            {
-                identifiers: [{ id }],
-            },
         ] = await Promise.all([
             conn.manager.insert(
                 Membership,
@@ -100,16 +93,7 @@ describe("database usage", () => {
                     updated_by_user_id: user_id,
                 })
             ),
-            conn.manager.insert(
-                Permission,
-                new Permission({
-                    global_crud_users: true,
-                    updated_by_user_id: user_id,
-                })
-            ),
         ]);
-
-        permission_id = id;
 
         const {
             identifiers: [{ id: role_id }],
@@ -117,8 +101,8 @@ describe("database usage", () => {
             Role,
             new Role({
                 department_id,
-                permission_id,
                 updated_by_user_id: user_id,
+                access: "ADMIN",
             })
         );
 
@@ -136,7 +120,6 @@ describe("database usage", () => {
         ]);
         await conn.manager.delete(Role, () => "");
         await Promise.all([
-            conn.manager.delete(Permission, () => ""),
             conn.manager.delete(Department, () => ""),
             conn.manager.delete(Membership, () => ""),
         ]);
@@ -148,29 +131,26 @@ describe("database usage", () => {
         await DBConnection.close();
     });
 
-    test("user doesnt have global crud permissions for users", async () => {
-        await conn.manager.update(Permission, permission_id, {
-            global_crud_users: false,
-        });
-
-        await sendInviteController(
-            {
-                session: {
-                    user_id,
-                    current_business_id: business_id,
-                    business_ids: [business_id],
-                },
-                body: { email: process.env.TEST_EMAIL_1 ?? "" },
-                dbConnection: conn,
-            } as unknown as Request,
-            res
-        );
-
-        await conn.manager.update(Permission, permission_id, {
-            global_crud_users: true,
-        });
-
-        expect(res.sendStatus).toHaveBeenCalledWith(403);
+    test.skip("user isnt admin", async () => {
+        // await conn.manager.update(Permission, access_id, {
+        //     global_crud_users: false,
+        // });
+        // await sendInviteController(
+        //     {
+        //         session: {
+        //             user_id,
+        //             current_business_id: business_id,
+        //             business_ids: [business_id],
+        //         },
+        //         body: { email: process.env.TEST_EMAIL_1 ?? "" },
+        //         dbConnection: conn,
+        //     } as unknown as Request,
+        //     res
+        // );
+        // await conn.manager.update(Permission, access_id, {
+        //     global_crud_users: true,
+        // });
+        // expect(res.sendStatus).toHaveBeenCalledWith(403);
     });
 
     describe("success", () => {

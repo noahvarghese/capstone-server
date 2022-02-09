@@ -42,14 +42,7 @@ export const sendInviteController = async (
     }
 
     try {
-        const hasPermissions = await User.hasGlobalPermission(
-            dbConnection,
-            user_id,
-            current_business_id,
-            ["global_crud_users"]
-        );
-
-        if (!hasPermissions) {
+        if (!(await User.isAdmin(dbConnection, current_business_id, user_id))) {
             res.sendStatus(403);
             return;
         }

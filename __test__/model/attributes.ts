@@ -30,10 +30,6 @@ import {
     QuizSectionAttributes,
 } from "@models/quiz/section";
 import {
-    EmptyPermissionAttributes,
-    PermissionAttributes,
-} from "@models/permission";
-import {
     EmptyQuestionAttributes,
     QuizQuestionAttributes,
 } from "@models/quiz/question/question";
@@ -127,26 +123,6 @@ export const departmentAttributes = (): DepartmentAttributes =>
         EmptyDeparmentAttributes
     );
 
-export const permissionAttributes = (): PermissionAttributes =>
-    AttributeFactory(
-        {
-            global_crud_users: true,
-            global_crud_department: true,
-            global_crud_role: true,
-            global_crud_resources: true,
-            global_assign_users_to_role: true,
-            global_assign_resources_to_role: true,
-            global_view_reports: true,
-            dept_crud_role: true,
-            dept_crud_resources: true,
-            dept_assign_users_to_role: true,
-            dept_assign_resources_to_role: true,
-            dept_view_reports: true,
-            updated_by_user_id: NaN,
-        },
-        EmptyPermissionAttributes
-    );
-
 export const roleAttributes = (): RoleAttributes =>
     AttributeFactory(
         {
@@ -154,7 +130,7 @@ export const roleAttributes = (): RoleAttributes =>
             prevent_delete: false,
             prevent_edit: false,
             department_id: NaN,
-            permission_id: NaN,
+            access: "USER",
             updated_by_user_id: NaN,
         },
         EmptyRoleAttributes
@@ -323,7 +299,6 @@ export default {
     membership: membershipAttributes,
     membershipRequest: membershipRequestAttributes,
     user: userAttributes,
-    permission: permissionAttributes,
     department: departmentAttributes,
     role: roleAttributes,
     userRole: userRoleAttributes,

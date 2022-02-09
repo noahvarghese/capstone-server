@@ -1,7 +1,7 @@
 import Business from "@models/business";
 import User from "@models/user/user";
-import { registerHandler } from "@routes/auth/register/handler";
-import { businessAttributes, userAttributes } from "@test/model/attributes";
+// import { registerController } from "@routes/auth/register/post";
+// import { businessAttributes, userAttributes } from "@test/model/attributes";
 import { Connection } from "typeorm";
 
 /**
@@ -15,22 +15,22 @@ import { Connection } from "typeorm";
 export const setupAdmin = async (
     conn: Connection
 ): Promise<{ business_id: number; user_id: number }> => {
-    const b = businessAttributes();
-    const u = userAttributes();
+    // const b = businessAttributes();
+    // const u = userAttributes();
 
-    await registerHandler(conn, {
-        address: b.address,
-        city: b.city,
-        confirm_password: u.password,
-        password: u.password,
-        name: b.name,
-        email: u.email,
-        first_name: u.first_name,
-        last_name: u.last_name,
-        phone: u.phone,
-        postal_code: b.postal_code,
-        province: b.province,
-    });
+    // await registerHandler(conn, {
+    //     address: b.address,
+    //     city: b.city,
+    //     confirm_password: u.password,
+    //     password: u.password,
+    //     name: b.name,
+    //     email: u.email,
+    //     first_name: u.first_name,
+    //     last_name: u.last_name,
+    //     phone: u.phone,
+    //     postal_code: b.postal_code,
+    //     province: b.province,
+    // });
 
     return {
         business_id: (await conn.manager.findOne(Business))?.id ?? NaN,

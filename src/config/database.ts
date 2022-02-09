@@ -1,7 +1,6 @@
 import { createConnection, ConnectionOptions, Connection } from "typeorm";
 import Business from "@models/business";
 import Department from "@models/department";
-import Permission from "@models/permission";
 import Role from "@models/role";
 import Content from "@models/manual/content/content";
 import Manual from "@models/manual/manual";
@@ -29,7 +28,6 @@ const entities = [
     MembershipRequest,
     Membership,
     Department,
-    Permission,
     Role,
     UserRole,
     Manual,
