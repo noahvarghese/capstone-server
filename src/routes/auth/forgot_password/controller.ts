@@ -1,30 +1,49 @@
 import User from "@models/user/user";
+import getJOpts from "@noahvarghese/get_j_opts";
 import Logs from "@noahvarghese/logger";
 import { requestResetPasswordEmail } from "@services/email";
+import { bodyValidators, ExpectedBody } from "@util/formats/body";
 import { Request, Response } from "express";
 import { uid } from "rand-token";
-import validator from "validator";
+
+const options: ExpectedBody = {
+    email: { type: "string", required: true, format: "email" },
+};
 
 export const forgotPasswordController = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    const {
-        body: { email },
-        dbConnection,
-    } = req;
+    const { dbConnection } = req;
 
-    if (!validator.isEmail(email)) {
-        res.status(400).send("Invalid email");
+    let email = "";
+
+    try {
+        const data = getJOpts(req.body, options, bodyValidators);
+        email = data.email as string;
+    } catch (_e) {
+        const { message } = _e as Error;
+        res.status(400).send(message);
         return;
     }
 
-    const user = await dbConnection.manager.findOne(User, {
-        where: { email },
-    });
+    let user: User;
 
-    if (!user) {
-        res.status(400).send("No account for user " + email);
+    try {
+        const u = await dbConnection.manager.findOne(User, {
+            where: { email },
+        });
+
+        if (!u) {
+            res.status(400).send("No account for user " + email);
+            return;
+        }
+
+        user = u;
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.sendStatus(500);
         return;
     }
 
