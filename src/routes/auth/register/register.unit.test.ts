@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { getMockRes } from "@jest-mock/express";
-import { registerController } from "./controller";
+import { registerController } from "./post";
 import UserRole from "@models/user/user_role";
 import Business from "@models/business";
 import Department from "@models/department";

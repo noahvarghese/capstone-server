@@ -2,12 +2,9 @@ import { getMockRes } from "@jest-mock/express";
 import Business from "@models/business";
 import Membership from "@models/membership";
 import User from "@models/user/user";
-import Logs from "@noahvarghese/logger";
 import DBConnection from "@test/support/db_connection";
-import DataServiceError from "@util/errors/service";
 import { Request } from "express";
-import { setDefaultBusinessController } from "./put_controller";
-import { setDefaultBusinessHandler } from "./put_handler";
+import { setDefaultBusinessController } from "./put";
 
 const { mockClear, res } = getMockRes();
 
@@ -82,21 +79,20 @@ describe("user is a member", () => {
         await DBConnection.close();
     });
     test("user has no 'default memberships' set", async () => {
-        let errorThrown = false;
+        await setDefaultBusinessController(
+            {
+                session: {
+                    user_id,
+                    business_ids: [business_id],
+                    current_business_id: business_id,
+                },
+                params: { id: business_id },
+                dbConnection: await DBConnection.get(),
+            } as unknown as Request,
+            res
+        );
 
-        try {
-            await setDefaultBusinessHandler(
-                await DBConnection.get(),
-                user_id,
-                business_id
-            );
-        } catch (_e) {
-            errorThrown = true;
-            const { code } = _e as DataServiceError;
-            expect(code).toBe(500);
-        }
-
-        expect(errorThrown).toBe(true);
+        expect(res.sendStatus).toHaveBeenCalledWith(500);
     });
 
     test("user has a default membership set", async () => {
@@ -108,19 +104,19 @@ describe("user is a member", () => {
                 default_option: true,
             }
         );
-        let errorThrown = false;
+        await setDefaultBusinessController(
+            {
+                session: {
+                    user_id,
+                    business_ids: [business_id],
+                    current_business_id: business_id,
+                },
+                params: { id: business_id },
+                dbConnection: await DBConnection.get(),
+            } as unknown as Request,
+            res
+        );
 
-        try {
-            await setDefaultBusinessHandler(
-                await DBConnection.get(),
-                user_id,
-                business_id
-            );
-        } catch (_e) {
-            Logs.Test(_e);
-            errorThrown = true;
-        }
-
-        expect(errorThrown).toBe(false);
+        expect(res.sendStatus).toHaveBeenCalledWith(200);
     });
 });

@@ -1,23 +1,44 @@
 import { Request, Response } from "express";
-import validator from "validator";
 import Membership from "@models/membership";
 import User from "@models/user/user";
 import Logs from "@noahvarghese/logger";
+import { bodyValidators } from "@util/formats/body";
+import getJOpts, { Expected } from "@noahvarghese/get_j_opts";
+
+const options: Expected<"email"> = {
+    email: {
+        type: "string",
+        required: true,
+        format: "email",
+    },
+    password: {
+        type: "string",
+        required: true,
+    },
+};
 
 export const loginController = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    const {
-        dbConnection: connection,
-        body: { email, password },
-    } = req;
+    const { dbConnection: connection } = req;
 
-    if (
-        !validator.isEmail(email) ||
-        validator.isEmpty(password, { ignore_whitespace: true })
-    ) {
-        res.status(400).send("Invalid email OR empty password");
+    let email = "",
+        password = "";
+
+    try {
+        const data = getJOpts<"email", { email: string; password: string }>(
+            req.body,
+            options,
+            {
+                email: bodyValidators.email,
+            }
+        );
+        email = data.email as string;
+        password = data.password as string;
+    } catch (_e) {
+        const { message } = _e as Error;
+        res.status(400).send(message);
         return;
     }
 
@@ -52,6 +73,7 @@ export const loginController = async (
             res.status(500).send("No default business set");
             return;
         }
+
         req.session.business_ids = m.map((x) => x.business_id);
         req.session.current_business_id = defaultBusinessId;
         req.session.user_id = user.id;

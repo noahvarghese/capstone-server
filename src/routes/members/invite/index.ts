@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { sendInviteController } from "./post_controller";
+import { sendInviteController } from "./post";
 
 const router = Router();
 

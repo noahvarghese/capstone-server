@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { setCurrentBusinessController } from "./post_controller";
-import { setDefaultBusinessController } from "./put_controller";
+import { setCurrentBusinessController } from "./post";
+import { setDefaultBusinessController } from "./put";
 import requireParam from "@middleware/require_param";
 
 const router = Router();

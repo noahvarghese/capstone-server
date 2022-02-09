@@ -1,6 +1,6 @@
 import authenticated from "@middleware/authenticated";
 import { Router } from "express";
-import { logoutController } from "./controller";
+import { logoutController } from "./post";
 
 const router = Router();
 

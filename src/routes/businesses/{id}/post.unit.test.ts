@@ -1,6 +1,6 @@
 import { getMockRes } from "@jest-mock/express";
 import { Request } from "express";
-import { setCurrentBusinessController } from "./post_controller";
+import { setCurrentBusinessController } from "./post";
 
 const { mockClear, res } = getMockRes();
 

@@ -4,7 +4,7 @@ import Membership from "@models/membership";
 import User from "@models/user/user";
 import DBConnection from "@test/support/db_connection";
 import { Request } from "express";
-import { loginController } from "./controller";
+import { loginController } from "./post";
 
 const data = {
     email: "test@test.com",
@@ -25,18 +25,18 @@ test("invalid email", async () => {
         res
     );
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid email OR empty password");
+    expect(res.send).toHaveBeenCalledWith("email format invalid -> TEST");
 });
 
 test("empty password", async () => {
     await loginController(
         {
-            body: { email: "TEST", password: data.password },
+            body: { email: "test@test.com", password: "" },
         } as unknown as Request,
         res
     );
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid email OR empty password");
+    expect(res.send).toHaveBeenCalledWith("password does not exist in data");
 });
 
 describe("user exists", () => {

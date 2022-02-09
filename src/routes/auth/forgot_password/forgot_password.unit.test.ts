@@ -4,7 +4,7 @@ import User from "@models/user/user";
 import { userAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { Request } from "express";
-import { forgotPasswordController } from "./controller";
+import { forgotPasswordController } from "./post";
 
 const { email, first_name, last_name, password } = userAttributes();
 const data = {

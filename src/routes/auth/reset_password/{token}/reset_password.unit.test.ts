@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { getMockRes } from "@jest-mock/express";
 import { uid } from "rand-token";
-import { resetPasswordController } from "./controller";
+import { resetPasswordController } from "./post";
 import DBConnection from "@test/support/db_connection";
 import Event from "@models/event";
 import User from "@models/user/user";

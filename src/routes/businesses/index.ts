@@ -1,6 +1,6 @@
 import { Router } from "express";
 import idRoutes from "./{id}";
-import { getBusinessController } from "./get_controller";
+import { getBusinessController } from "./get";
 import authenticated from "@middleware/authenticated";
 
 const router = Router();

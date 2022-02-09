@@ -101,14 +101,15 @@ export default class User extends BaseModel implements UserAttributes {
     public static async getRoles(
         connection: Connection,
         id: number,
-        business_id: number
+        business_id: number,
+        permissions?: Omit<keyof PermissionAttributes, "updated_by_user_id">[]
     ): Promise<
         Omit<
             Role & Permission,
             "created_on" | "updated_on" | "deleted_on" | "updated_by_user_id"
         >[]
     > {
-        const roles = await connection
+        let query = connection
             .createQueryBuilder()
             .select("r")
             .addSelect("p")
@@ -120,8 +121,15 @@ export default class User extends BaseModel implements UserAttributes {
             .where("m.user_id = :id", { id })
             .andWhere("m.business_id = :business_id", {
                 business_id,
-            })
-            .getRawMany();
+            });
+
+        if (permissions) {
+            for (const perm of permissions) {
+                query = query.andWhere(`p.${perm} = 1`);
+            }
+        }
+
+        const roles = await query.getRawMany();
 
         return roles.map((raw) => ({
             name: raw.r_name,
@@ -150,19 +158,20 @@ export default class User extends BaseModel implements UserAttributes {
         connection: Connection,
         id: number,
         business_id: number,
-        permission: Omit<keyof PermissionAttributes, "updated_by_user_id">
+        permissions: Omit<keyof PermissionAttributes, "updated_by_user_id">[]
     ): Promise<boolean> {
-        // Force looking for global permission
-        if (!permission.startsWith("global_")) {
-            throw new Error("Invalid argument " + permission);
+        for (const p of permissions) {
+            if (!p.startsWith("global_")) {
+                throw new Error("Invalid argument " + p);
+            }
         }
 
-        let roles = await User.getRoles(connection, id, business_id);
-
-        // Check if any role(s) have permission set
-        roles = roles.filter((r) => {
-            return r[permission as keyof typeof r];
-        });
+        const roles = await User.getRoles(
+            connection,
+            id,
+            business_id,
+            permissions
+        );
 
         return roles.length > 0;
     }

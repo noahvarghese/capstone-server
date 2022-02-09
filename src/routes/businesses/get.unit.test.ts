@@ -1,10 +1,17 @@
+import { getMockRes } from "@jest-mock/express";
 import Business from "@models/business";
 import Membership from "@models/membership";
 import User from "@models/user/user";
 import DBConnection from "@test/support/db_connection";
-import { getBusinessHandler } from "./get_handler";
+import { Request } from "express";
+import { getBusinessController } from "./get";
+
+const { res, mockClear } = getMockRes();
+
+beforeEach(mockClear);
 
 let business_id!: number, user_id!: number;
+
 beforeAll(async () => {
     await DBConnection.init();
     const conn = await DBConnection.get();
@@ -60,8 +67,12 @@ afterAll(async () => {
 });
 
 test("can read all businesses the user is a member of", async () => {
-    const res = await getBusinessHandler(await DBConnection.get(), user_id);
-    expect(res.length).toBe(1);
-    expect(res[0].id).toBe(business_id);
-    expect(res[0].default).toBe(true);
+    await getBusinessController(
+        {
+            session: { user_id },
+            dbConnection: await DBConnection.get(),
+        } as Request,
+        res
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
 });

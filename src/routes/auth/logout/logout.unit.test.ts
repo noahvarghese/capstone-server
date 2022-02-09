@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { getMockRes } from "@jest-mock/express";
-import { logoutController } from "./controller";
+import { logoutController } from "./post";
 
 const { res, mockClear } = getMockRes();
 

@@ -12,8 +12,7 @@ import DBConnection from "@test/support/db_connection";
 import sleep from "@util/sleep";
 import { Request } from "express";
 import { Connection } from "typeorm";
-import { sendInviteController } from "./post_controller";
-import { postHandler } from "./post_handler";
+import { sendInviteController } from "./post";
 
 const { mockClear, res } = getMockRes();
 
@@ -193,7 +192,6 @@ describe("database usage", () => {
             expect(res.sendStatus).toHaveBeenCalledWith(201);
         });
 
-        // Handler
         test("Invited user is new to system", async () => {
             // delete user
             let user = await conn.manager.findOneOrFail(User, {
@@ -208,20 +206,20 @@ describe("database usage", () => {
                 id: user.id,
             });
 
-            let errorThrown = false;
+            await sendInviteController(
+                {
+                    session: {
+                        user_id,
+                        current_business_id: business_id,
+                        business_ids: [business_id],
+                    },
+                    body: { email: process.env.TEST_EMAIL_2 ?? "" },
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
 
-            try {
-                await postHandler(
-                    conn,
-                    { email: process.env.TEST_EMAIL_2 ?? "" },
-                    user_id,
-                    business_id
-                );
-            } catch (_e) {
-                errorThrown = true;
-            }
-
-            expect(errorThrown).toBe(false);
+            expect(res.sendStatus).toHaveBeenCalledWith(201);
 
             user = await conn.manager.findOneOrFail(User, {
                 where: { email: process.env.TEST_EMAIL_2 ?? "" },
@@ -245,20 +243,20 @@ describe("database usage", () => {
                 user_id: user.id,
             });
 
-            let errorThrown = false;
+            await sendInviteController(
+                {
+                    session: {
+                        user_id,
+                        current_business_id: business_id,
+                        business_ids: [business_id],
+                    },
+                    body: { email: process.env.TEST_EMAIL_2 ?? "" },
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
 
-            try {
-                await postHandler(
-                    conn,
-                    { email: process.env.TEST_EMAIL_2 ?? "" },
-                    user_id,
-                    business_id
-                );
-            } catch (_e) {
-                errorThrown = true;
-            }
-
-            expect(errorThrown).toBe(false);
+            expect(res.sendStatus).toHaveBeenCalledWith(201);
 
             const m = await conn.manager.findOne(MembershipRequest, {
                 user_id: user.id,
@@ -277,20 +275,20 @@ describe("database usage", () => {
 
             await sleep(2000);
 
-            let errorThrown = false;
+            await sendInviteController(
+                {
+                    session: {
+                        user_id,
+                        current_business_id: business_id,
+                        business_ids: [business_id],
+                    },
+                    body: { email: process.env.TEST_EMAIL_2 ?? "" },
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
 
-            try {
-                await postHandler(
-                    conn,
-                    { email: process.env.TEST_EMAIL_2 ?? "" },
-                    user_id,
-                    business_id
-                );
-            } catch (_e) {
-                errorThrown = true;
-            }
-
-            expect(errorThrown).toBe(false);
+            expect(res.sendStatus).toHaveBeenCalledWith(201);
 
             const mEnd = await conn.manager.findOneOrFail(MembershipRequest, {
                 user_id: user.id,

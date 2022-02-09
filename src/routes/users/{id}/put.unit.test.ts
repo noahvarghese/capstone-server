@@ -2,7 +2,7 @@ import { getMockRes } from "@jest-mock/express";
 import User from "@models/user/user";
 import DBConnection from "@test/support/db_connection";
 import { Request } from "express";
-import { updateUserController } from "./put_controller";
+import { updateUserController } from "./put";
 
 const { mockClear, res } = getMockRes();
 
