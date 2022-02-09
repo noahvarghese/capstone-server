@@ -5,8 +5,6 @@ import { resetPasswordController } from "./controller";
 import DBConnection from "@test/support/db_connection";
 import Event from "@models/event";
 import User from "@models/user/user";
-import { resetPasswordHandler } from "./handler";
-import DataServiceError from "@util/errors/service";
 
 const { res, mockClear } = getMockRes();
 
@@ -77,7 +75,7 @@ describe("database", () => {
             res
         );
 
-        expect(res.status).toHaveBeenCalledWith(401);
+        expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
 
     describe("create user", () => {
@@ -104,47 +102,6 @@ describe("database", () => {
             const conn = await DBConnection.get();
             await conn.manager.clear(Event);
             await conn.manager.delete(User, () => "");
-        });
-
-        test.skip("expired token, skipped as we are not waiting an hour because there is an sql trigger to keep the token alive for an hour", async () => {
-            const conn = await DBConnection.get();
-            const { token_expiry, token } = await conn.manager.findOneOrFail(
-                User,
-                user_id
-            );
-
-            // set token expiry to 1970
-            await conn.manager.update(User, user_id, {
-                token_expiry: new Date(0),
-            });
-
-            let errorThrown = false;
-
-            try {
-                await resetPasswordHandler(conn, token ?? "", "new password");
-            } catch (_e) {
-                errorThrown = true;
-                const { code } = _e as DataServiceError;
-                expect(code).toBe(401);
-            }
-
-            expect(errorThrown).toBe(true);
-
-            await conn.manager.update(User, user_id, { token_expiry });
-        });
-
-        test("handler success", async () => {
-            const conn = await DBConnection.get();
-            let errorThrown = false;
-            const { token } = await conn.manager.findOneOrFail(User, user_id);
-
-            try {
-                await resetPasswordHandler(conn, token ?? "", "new password");
-            } catch (_) {
-                errorThrown = true;
-            }
-
-            expect(errorThrown).toBe(false);
         });
 
         test("controller success", async () => {

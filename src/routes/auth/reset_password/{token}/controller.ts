@@ -1,16 +1,15 @@
 import User from "@models/user/user";
+import Logs from "@noahvarghese/logger";
 import { resetPasswordEmail } from "@services/email";
-import DataServiceError from "@util/errors/service";
 import { Request, Response } from "express";
 import validator from "validator";
-import { resetPasswordHandler } from "./handler";
 
 export const resetPasswordController = async (
     req: Request,
     res: Response
 ): Promise<void> => {
     const {
-        dbConnection,
+        dbConnection: connection,
         params: { token },
         body: { password, confirm_password },
     } = req;
@@ -29,21 +28,33 @@ export const resetPasswordController = async (
         return;
     }
 
-    try {
-        await resetPasswordHandler(dbConnection, token, password);
-    } catch (_e) {
-        const { code, message } = _e as DataServiceError;
-        res.status(code).send(message);
+    const user = await connection.manager.findOne(User, { where: { token } });
+
+    if (!user || !user.compareToken(token)) {
+        res.sendStatus(401);
         return;
     }
 
-    const user = await dbConnection.manager.findOne(User, { where: { token } });
+    try {
+        await user.resetPassword(password);
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.status(500).send("Failed to reset password");
+        return;
+    }
 
-    if (!user) {
+    try {
+        await connection.manager.update(User, user.id, {
+            password: user.password,
+        });
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
         res.sendStatus(500);
         return;
     }
 
-    if (await resetPasswordEmail(dbConnection, user)) res.sendStatus(200);
+    if (await resetPasswordEmail(connection, user)) res.sendStatus(200);
     else res.sendStatus(500);
 };
