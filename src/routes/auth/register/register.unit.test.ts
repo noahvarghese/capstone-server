@@ -8,7 +8,6 @@ import Membership from "@models/membership";
 import Permission from "@models/permission";
 import Role from "@models/role";
 import User from "@models/user/user";
-import { registerHandler } from "./handler";
 import DBConnection from "@test/support/db_connection";
 
 const data = {
@@ -32,69 +31,30 @@ beforeEach(() => {
     mockClear();
 });
 
-test("Missing parameters", async () => {
-    prevValue = data.name;
-    data.name = "";
+describe("missing parameters", () => {
+    const cases = [
+        { key: "name", value: "" },
+        { key: "email", value: "test" },
+        { key: "phone", value: "test" },
+        { key: "postal_code", value: "test" },
+        { key: "province", value: "test" },
+    ];
 
-    await registerController({ body: data } as unknown as Request, res);
+    test.each(cases)("%p", async ({ key, value }) => {
+        const prevValue = data[key as keyof typeof data];
+        data[key as keyof typeof data] = value;
 
-    data.name = prevValue as typeof data.name;
+        await registerController({ body: data } as Request, res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid field name");
-});
+        data[key as keyof typeof data] = prevValue;
 
-test("Invalid email", async () => {
-    prevValue = data.email;
-    data.email = "TEST";
-
-    await registerController({ body: data } as unknown as Request, res);
-
-    data.email = prevValue as typeof data.email;
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid field email");
-});
-
-test("Invalid phone", async () => {
-    prevValue = data.phone;
-    data.phone = "A";
-
-    await registerController({ body: data } as unknown as Request, res);
-
-    data.phone = prevValue as typeof data.phone;
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid field phone");
-});
-
-test("Invalid postal code", async () => {
-    prevValue = data.postal_code;
-    data.postal_code = "A";
-
-    await registerController(
-        {
-            body: data,
-        } as unknown as Request,
-        res
-    );
-
-    data.postal_code = prevValue as typeof data.postal_code;
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid field postal code");
-});
-
-test("Province should prevent adding entries where the length is greater than the shortform", async () => {
-    prevValue = data.province;
-    data.province = "ABC";
-
-    await registerController({ body: data } as unknown as Request, res);
-
-    data.province = prevValue as typeof data.province;
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Invalid field province");
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.send).toHaveBeenCalledWith(
+            value
+                ? `${key} format invalid -> ${value}`
+                : `${key} does not exist in data`
+        );
+    });
 });
 
 test("passwords don't match", async () => {
@@ -166,9 +126,9 @@ describe("requires database", () => {
                 res
             );
 
-            expect(res.sendStatus).toHaveBeenCalledWith(201);
-
             data.phone = prevValue as typeof data.phone;
+
+            expect(res.status).toHaveBeenCalledWith(201);
         });
 
         test("Valid parameters, with phone", async () => {
@@ -180,51 +140,56 @@ describe("requires database", () => {
                 } as unknown as Request,
                 res
             );
-            expect(res.sendStatus).toHaveBeenCalledWith(201);
+            expect(res.status).toHaveBeenCalledWith(201);
         });
     });
 
     describe("tests fail, requires existing model", () => {
         beforeAll(async () => {
-            await registerHandler(await DBConnection.get(), data);
+            await registerController(
+                {
+                    dbConnection: await DBConnection.get(),
+                    session: {},
+                    body: data,
+                } as Request,
+                res
+            );
         });
 
         afterAll(cleanup);
 
-        test("Business with name already exists (HANDLER)", async () => {
+        test("Business with name already exists", async () => {
             prevValue = data.email;
             data.email = "yolo@test123.com";
 
-            let errorThrown = false;
-            try {
-                await registerHandler(await DBConnection.get(), data);
-            } catch (_e) {
-                const { message } = _e as Error;
-                errorThrown = true;
-                expect(message).toBe("Business name is in use");
-            }
+            await registerController(
+                {
+                    dbConnection: await DBConnection.get(),
+                    body: data,
+                } as Request,
+                res
+            );
 
-            data.email = prevValue as typeof data.email;
-
-            expect(errorThrown).toBe(true);
+            data.email = prevValue as string;
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith("Business name is in use");
         });
 
-        test("User with email already exists (HANDLER)", async () => {
+        test("User with email already exists", async () => {
             prevValue = data.name;
             data.name = "Res taur Ant";
 
-            let errorThrown = false;
-            try {
-                await registerHandler(await DBConnection.get(), data);
-            } catch (_e) {
-                const { message } = _e as Error;
-                errorThrown = true;
-                expect(message).toBe("Email is in use");
-            }
+            await registerController(
+                {
+                    dbConnection: await DBConnection.get(),
+                    body: data,
+                } as Request,
+                res
+            );
 
-            data.name = prevValue as typeof data.name;
-
-            expect(errorThrown).toBe(true);
+            data.name = prevValue as string;
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith("Email is in use");
         });
     });
 });
