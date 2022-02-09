@@ -3,10 +3,8 @@ import Business from "@models/business";
 import Membership from "@models/membership";
 import User from "@models/user/user";
 import DBConnection from "@test/support/db_connection";
-import DataServiceError from "@util/errors/service";
 import { Request } from "express";
 import { loginController } from "./controller";
-import { loginHandler } from "./handler";
 
 const data = {
     email: "test@test.com",
@@ -63,40 +61,26 @@ describe("user exists", () => {
     });
 
     test("invalid password", async () => {
-        let errorThrown = false;
-
-        try {
-            await loginHandler(
-                await DBConnection.get(),
-                data.email,
-                "Wrong password"
-            );
-        } catch (_e) {
-            errorThrown = true;
-            const code = (_e as DataServiceError).code;
-            expect(code).toBe(401);
-        }
-
-        expect(errorThrown).toBe(true);
+        await loginController(
+            {
+                dbConnection: await DBConnection.get(),
+                body: { email: data.email, password: "Wrong password" },
+            } as Request,
+            res
+        );
+        expect(res.sendStatus).toHaveBeenCalledWith(401);
     });
 
     describe("valid login", () => {
         test("not a member of a business", async () => {
-            let errorThrown = false;
-
-            try {
-                await loginHandler(
-                    await DBConnection.get(),
-                    data.email,
-                    data.password
-                );
-            } catch (_e) {
-                errorThrown = true;
-                const code = (_e as DataServiceError).code;
-                expect(code).toBe(403);
-            }
-
-            expect(errorThrown).toBe(true);
+            await loginController(
+                {
+                    dbConnection: await DBConnection.get(),
+                    body: { email: data.email, password: data.password },
+                } as Request,
+                res
+            );
+            expect(res.status).toHaveBeenCalledWith(403);
         });
 
         describe("user is a member of a business", () => {
@@ -132,21 +116,14 @@ describe("user exists", () => {
             });
 
             test("default business not set", async () => {
-                let errorThrown = false;
-
-                try {
-                    await loginHandler(
-                        await DBConnection.get(),
-                        data.email,
-                        data.password
-                    );
-                } catch (_e) {
-                    errorThrown = true;
-                    const code = (_e as DataServiceError).code;
-                    expect(code).toBe(500);
-                }
-
-                expect(errorThrown).toBe(true);
+                await loginController(
+                    {
+                        dbConnection: await DBConnection.get(),
+                        body: { email: data.email, password: data.password },
+                    } as Request,
+                    res
+                );
+                expect(res.status).toHaveBeenCalledWith(500);
             });
 
             describe("Default business set", () => {
