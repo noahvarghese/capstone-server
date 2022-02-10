@@ -6,6 +6,7 @@ import Business from "@models/business";
 import Membership from "@models/membership";
 import UserRole from "./user_role";
 import Role, { AccessKey } from "@models/role";
+import Logs from "@noahvarghese/logger";
 
 export interface UserAttributes {
     first_name: string;
@@ -67,6 +68,8 @@ export default class User extends BaseModel implements UserAttributes {
         return await new Promise((res, rej) => {
             bcrypt.compare(_password, this.password, (err, same) => {
                 if (err) {
+                    const { message } = err;
+                    Logs.Error(message);
                     rej(err);
                 }
                 res(same);
@@ -79,6 +82,8 @@ export default class User extends BaseModel implements UserAttributes {
         const hash = await new Promise<string>((res, rej) => {
             bcrypt.hash(_password, 12, (err, hash) => {
                 if (err) {
+                    const { message } = err;
+                    Logs.Error(message);
                     rej(err);
                 }
 
