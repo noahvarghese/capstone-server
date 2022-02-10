@@ -7,6 +7,7 @@ import UserRole from "@models/user/user_role";
 import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
+import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 
 const filterFields = ["department", "role"] as const;
 
@@ -98,12 +99,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (limit && isNaN(Number(limit))) {
+    if (limit && !isNumber(limit)) {
         res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (page && isNaN(Number(page))) {
+    if (page && !isNumber(page)) {
         res.status(400).send("Invalid pagination options");
         return;
     }

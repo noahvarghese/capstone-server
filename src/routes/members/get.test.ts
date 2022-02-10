@@ -205,7 +205,7 @@ describe("requires db connection", () => {
                 describe("invalid", () => {
                     const cases = [
                         { limit: "yolo", page: 1 },
-                        // { limit: " ", page: 1 },
+                        { limit: " ", page: 1 },
                         { limit: false, page: 1 },
                         // { limit: true, page: 1 },
                         { limit: {}, page: 1 },
@@ -213,6 +213,17 @@ describe("requires db connection", () => {
                         { limit: "", page: 1 },
                         { limit: undefined, page: 1 },
                         { limit: null, page: 1 },
+                        { page: "yolo", limit: 1 },
+                        { page: " ", limit: 1 },
+                        { page: false, limit: 1 },
+                        // { page: true, limit: 1 },
+                        { page: {}, limit: 1 },
+                        { page: { test: "" }, limit: 1 },
+                        { page: "", limit: 1 },
+                        { page: undefined, limit: 1 },
+                        { page: null, limit: 1 },
+                        { limit: 1 },
+                        { page: 1 },
                     ];
 
                     test.each(cases)("%p", async ({ limit, page }) => {
@@ -236,6 +247,9 @@ describe("requires db connection", () => {
                             res
                         );
                         expect(res.status).toHaveBeenCalledWith(400);
+                        expect(res.send).toHaveBeenCalledWith(
+                            "Invalid pagination options"
+                        );
                     });
                 });
                 test.todo("limit");
