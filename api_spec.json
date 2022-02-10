@@ -2867,7 +2867,7 @@
             }
         },
         "/members/invite/{token}": {
-            "patch": {
+            "put": {
                 "summary": "Makes invited user a member of the business.",
                 "description": "Checks that token is valid. Checks if the user that is associated has a password set yet. If not it fails with method not allowed. Otherwise it deletes record of membership invitation and creates new membership record.",
                 "parameters": [
