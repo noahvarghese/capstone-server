@@ -17,7 +17,7 @@
         "premodule-alias": "cp ./src/index.ts /tmp",
         "module-alias": "printf '%s\n%s\n' 'import \"module-alias/register\";' \"$(cat ./src/index.ts)\" > ./src/index.ts",
         "module-alias:cleanup": "mv /tmp/index.ts ./src/index.ts",
-        "badges": "istanbul-badges-readme --coverageDir='./__test__/coverage'",
+        "badges": "istanbul-badges-readme --coverageDir='./coverage'",
         "prebuild": "npm run module-alias",
         "build": "rm -rf ./build && tsc -p ./tsconfig.build.json",
         "build:local": "npm run build && cp .env ./build",

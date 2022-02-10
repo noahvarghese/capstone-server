@@ -22,6 +22,14 @@ if (process.argv.includes("--listTests") === false) {
 export default {
     bail: true,
     collectCoverage: true,
+    coveragePathIgnorePatterns: ["__test__"],
+    coverageReporters: [
+        "clover",
+        "json",
+        "json-summary",
+        "lcov",
+        ["text", { skipFull: true }],
+    ],
     detectOpenHandles: true,
     errorOnDeprecated: true,
     forceExit: true,

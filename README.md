@@ -1,6 +1,14 @@
 ![Continuous Deployment](https://github.com/noahvarghese/capstone-server/actions/workflows/cd.yaml/badge.svg)
 <br />
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
+<br />
+![Statements](https://img.shields.io/badge/statements-88.55%25-yellow.svg?style=flat)
+<br />
+![Lines](https://img.shields.io/badge/lines-87.02%25-yellow.svg?style=flat)
+<br />
+![Functions](https://img.shields.io/badge/functions-91.17%25-brightgreen.svg?style=flat)
+<br />
+![Branches](https://img.shields.io/badge/branches-70.16%25-red.svg?style=flat)
 
 # OnBoard - Backend
 

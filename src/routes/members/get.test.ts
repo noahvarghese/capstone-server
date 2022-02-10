@@ -207,7 +207,7 @@ describe("requires db connection", () => {
                         { limit: "yolo", page: 1 },
                         { limit: " ", page: 1 },
                         { limit: false, page: 1 },
-                        // { limit: true, page: 1 },
+                        { limit: true, page: 1 },
                         { limit: {}, page: 1 },
                         { limit: { test: "" }, page: 1 },
                         { limit: "", page: 1 },
@@ -216,7 +216,7 @@ describe("requires db connection", () => {
                         { page: "yolo", limit: 1 },
                         { page: " ", limit: 1 },
                         { page: false, limit: 1 },
-                        // { page: true, limit: 1 },
+                        { page: true, limit: 1 },
                         { page: {}, limit: 1 },
                         { page: { test: "" }, limit: 1 },
                         { page: "", limit: 1 },
@@ -257,7 +257,63 @@ describe("requires db connection", () => {
             });
 
             describe("filter", () => {
-                return;
+                describe("invalid", () => {
+                    const cases = [
+                        { filter_field: "", filter_ids: "[]" },
+                        { filter_field: "role", filter_ids: "[]" },
+                        { filter_field: "department", filter_ids: "[]" },
+                        { filter_field: "test", filter_ids: "[1]" },
+                        { filter_field: undefined, filter_ids: "[1]" },
+                        { filter_field: null, filter_ids: "[1]" },
+                        { filter_field: {}, filter_ids: "[1]" },
+                        { filter_field: { test: "" }, filter_ids: "[1]" },
+                        { filter_field: 1, filter_ids: "[1]" },
+                        { filter_field: NaN, filter_ids: "[1]" },
+                        { filter_field: " ", filter_ids: "[1]" },
+                        { filter_field: "role", filter_ids: "" },
+                        { filter_field: "role", filter_ids: null },
+                        { filter_field: "role", filter_ids: undefined },
+                        { filter_field: "role", filter_ids: " " },
+                        { filter_field: "department", filter_ids: {} },
+                        {
+                            filter_field: "department",
+                            filter_ids: { test: "" },
+                        },
+                    ];
+                    test.each(cases)(
+                        "%p",
+                        async ({ filter_field, filter_ids }) => {
+                            const conn = await DBConnection.get();
+                            await getController(
+                                {
+                                    query: { filter_field, filter_ids },
+                                    session: {
+                                        user_id: (
+                                            await conn.manager.findOneOrFail(
+                                                User,
+                                                {
+                                                    where: {
+                                                        email: process.env
+                                                            .TEST_EMAIL_2,
+                                                    },
+                                                }
+                                            )
+                                        ).id,
+                                        current_business_id: business_id,
+                                        business_ids: [business_id],
+                                    },
+                                    dbConnection: conn,
+                                } as unknown as Request,
+                                res
+                            );
+                            expect(res.status).toHaveBeenCalledWith(400);
+                            expect(res.send).toHaveBeenCalledWith(
+                                "Invalid filter options"
+                            );
+                            return;
+                        }
+                    );
+                });
             });
 
             describe("search", () => {
@@ -265,7 +321,52 @@ describe("requires db connection", () => {
             });
 
             describe("sort", () => {
-                return;
+                describe("invalid", () => {
+                    const cases = [
+                        { sort_field: "", sort_order: "ASC" },
+                        { sort_field: "", sort_order: "DESC" },
+                        { sort_field: "", sort_order: "YOLO" },
+                        { sort_field: "first_name", sort_order: "" },
+                        { sort_field: "last_name", sort_order: " " },
+                        { sort_field: "email", sort_order: 1 },
+                        { sort_field: "phone", sort_order: NaN },
+                        { sort_field: "department", sort_order: null },
+                        { sort_field: "role", sort_order: undefined },
+                    ];
+                    test.each(cases)(
+                        "%p",
+                        async ({ sort_field, sort_order }) => {
+                            const conn = await DBConnection.get();
+                            await getController(
+                                {
+                                    query: { sort_field, sort_order },
+                                    session: {
+                                        user_id: (
+                                            await conn.manager.findOneOrFail(
+                                                User,
+                                                {
+                                                    where: {
+                                                        email: process.env
+                                                            .TEST_EMAIL_2,
+                                                    },
+                                                }
+                                            )
+                                        ).id,
+                                        current_business_id: business_id,
+                                        business_ids: [business_id],
+                                    },
+                                    dbConnection: conn,
+                                } as unknown as Request,
+                                res
+                            );
+                            expect(res.status).toHaveBeenCalledWith(400);
+                            expect(res.send).toHaveBeenCalledWith(
+                                "Invalid sort options"
+                            );
+                            return;
+                        }
+                    );
+                });
             });
         });
     });

@@ -1,17 +1,14 @@
 import { Request, Response, Router } from "express";
 import { client } from "@util/permalink";
 import authRouter from "./auth";
-import settingsRoute from "./settings";
 import memberRoute from "./members";
 import businessRouter from "./businesses";
 import Logs from "@noahvarghese/logger";
 
 const router = Router();
 
-/* Uncomment after creating the other routes */
 router.use("/auth", authRouter);
 router.use("/members", memberRoute);
-router.use("/settings", settingsRoute);
 router.use("/businesses", businessRouter);
 
 // Default route handler to serve the website if requests are made
