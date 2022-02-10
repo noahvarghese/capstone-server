@@ -273,8 +273,8 @@ describe("database usage", () => {
                 user_id: user.id,
             });
 
-            expect(mEnd.token_expiry.getTime()).toBeGreaterThan(
-                mStart.token_expiry.getTime()
+            expect(mEnd.token_expiry?.getTime() ?? -Infinity).toBeGreaterThan(
+                mStart.token_expiry?.getTime() ?? Infinity
             );
             expect(mEnd.token).not.toEqual(mStart.token);
         });
