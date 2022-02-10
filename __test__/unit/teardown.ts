@@ -27,6 +27,25 @@ const ALL = () => "";
  */
 export const unitTeardown = async (conn: Connection): Promise<void> => {
     await Promise.all([
+        conn.manager.update(Membership, () => "", { prevent_delete: false }),
+        conn.manager.update(Role, () => "", {
+            prevent_delete: false,
+            prevent_edit: false,
+        }),
+        conn.manager.update(Department, () => "", {
+            prevent_delete: false,
+            prevent_edit: false,
+        }),
+        conn.manager.update(Manual, () => "", {
+            prevent_delete: false,
+            prevent_edit: false,
+        }),
+        conn.manager.update(Quiz, () => "", {
+            prevent_delete: false,
+            prevent_edit: false,
+        }),
+    ]);
+    await Promise.all([
         conn.manager.clear(Event),
         conn.manager.delete(ContentRead, ALL),
         conn.manager.delete(QuizResult, ALL),

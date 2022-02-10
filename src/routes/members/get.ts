@@ -4,6 +4,7 @@ import Membership from "@models/membership";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
+import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 
@@ -31,7 +32,7 @@ type Members = {
     email: string;
     phone: string;
     birthday?: Date;
-    status: boolean;
+    accepted: boolean;
     roles: {
         name: string;
         id: number;
@@ -49,6 +50,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             sort_field,
             limit,
             page,
+            accepted,
         },
         session: { user_id, current_business_id },
         dbConnection,
@@ -106,21 +108,28 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const [isAdmin, isManager] = await Promise.all([
-        await User.isAdmin(
-            dbConnection,
-            current_business_id ?? NaN,
-            user_id ?? NaN
-        ),
-        await User.isManager(
-            dbConnection,
-            current_business_id ?? NaN,
-            user_id ?? NaN
-        ),
-    ]);
+    try {
+        const [isAdmin, isManager] = await Promise.all([
+            await User.isAdmin(
+                dbConnection,
+                current_business_id ?? NaN,
+                user_id ?? NaN
+            ),
+            await User.isManager(
+                dbConnection,
+                current_business_id ?? NaN,
+                user_id ?? NaN
+            ),
+        ]);
 
-    if (!(isAdmin || isManager)) {
-        res.sendStatus(403);
+        if (!(isAdmin || isManager)) {
+            res.sendStatus(403);
+            return;
+        }
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.sendStatus(500);
         return;
     }
 
@@ -134,6 +143,16 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .leftJoin(Role, "r", "ur.role_id = r.id")
         .leftJoin(Department, "d", "d.id = r.department_id")
         .where("b.id = :business_id", { business_id: current_business_id });
+
+    if (
+        JSON.parse(accepted as string) === false ||
+        JSON.parse(accepted as string) === true
+    ) {
+        query = query.andWhere(
+            "m.accepted = :accepted",
+            JSON.parse(accepted as string)
+        );
+    }
 
     if (filter_field && filter_ids) {
         query = query.andWhere(
@@ -181,7 +200,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
                 email: curr.u_email,
                 phone: curr.u_phone,
                 birthday: curr.u_birthday,
-                status: true,
+                accepted: curr.m_accepted,
                 roles:
                     curr.r_id && curr.r_name
                         ? [

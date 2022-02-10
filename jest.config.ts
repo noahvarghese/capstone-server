@@ -21,7 +21,7 @@ if (process.argv.includes("--listTests") === false) {
 
 export default {
     bail: true,
-    collectCoverage: false,
+    collectCoverage: true,
     detectOpenHandles: true,
     errorOnDeprecated: true,
     forceExit: true,

@@ -13,8 +13,8 @@ const { res, mockClear } = getMockRes();
 
 beforeEach(mockClear);
 
-test.skip("db connection failed", async () => {
-    await getController({} as Request, res);
+test("db connection failed", async () => {
+    await getController({ query: {}, session: {} } as Request, res);
     expect(res.sendStatus).toHaveBeenCalledWith(500);
 });
 
@@ -32,7 +32,10 @@ describe("requires db connection", () => {
             ));
         });
 
-        afterAll(async () => unitTeardown(await DBConnection.get()));
+        afterAll(async () => {
+            const conn = await DBConnection.get();
+            await unitTeardown(conn);
+        });
 
         describe("requires secondary user", () => {
             beforeAll(async () => {
@@ -71,13 +74,18 @@ describe("requires db connection", () => {
                     new Role({
                         updated_by_user_id: user_id,
                         department_id,
+                        access: "USER",
                         name: "test",
                     })
                 );
 
                 await conn.manager.insert(
                     UserRole,
-                    new UserRole({ user_id: secondaryUserId, role_id })
+                    new UserRole({
+                        user_id: secondaryUserId,
+                        role_id,
+                        updated_by_user_id: user_id,
+                    })
                 );
                 return;
             });
