@@ -1,8 +1,15 @@
 import { getMockRes } from "@jest-mock/express";
+import Business from "@models/business";
 import Department from "@models/department";
+import Membership from "@models/membership";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
+import {
+    departmentAttributes,
+    roleAttributes,
+    userAttributes,
+} from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
@@ -37,6 +44,34 @@ describe("requires db connection", () => {
             await unitTeardown(conn);
         });
 
+        test("admin read", async () => {
+            const conn = await DBConnection.get();
+
+            const business_id: number = (
+                await conn.manager.findOneOrFail(Business)
+            ).id;
+
+            user_id = (
+                await conn.manager.findOneOrFail(User, {
+                    where: { email: process.env.TEST_EMAIL_1 },
+                })
+            ).id;
+
+            await getController(
+                {
+                    query: {},
+                    session: {
+                        user_id,
+                        current_business_id: business_id,
+                        business_ids: [business_id],
+                    },
+                    dbConnection: conn,
+                } as Request,
+                res
+            );
+            expect(res.status).toHaveBeenCalledWith(200);
+        });
+
         describe("requires secondary user", () => {
             beforeAll(async () => {
                 // create secondary user/department/role/user role
@@ -52,21 +87,31 @@ describe("requires db connection", () => {
                     conn.manager.insert(
                         User,
                         new User({
-                            first_name: "test",
-                            last_name: "test",
+                            first_name: userAttributes().first_name,
+                            last_name: userAttributes().last_name,
                             email: process.env.TEST_EMAIL_2 ?? "",
                         })
                     ),
                     conn.manager.insert(
                         Department,
                         new Department({
-                            name: "test",
+                            name: departmentAttributes().name,
                             business_id,
                             updated_by_user_id: user_id,
                         })
                     ),
                 ]);
 
+                await conn.manager.insert(
+                    Membership,
+                    new Membership({
+                        user_id: secondaryUserId,
+                        updated_by_user_id: user_id,
+                        business_id,
+                        accepted: true,
+                        default_option: true,
+                    })
+                );
                 const {
                     identifiers: [{ id: role_id }],
                 } = await conn.manager.insert(
@@ -75,7 +120,7 @@ describe("requires db connection", () => {
                         updated_by_user_id: user_id,
                         department_id,
                         access: "USER",
-                        name: "test",
+                        name: roleAttributes().name,
                     })
                 );
 
@@ -91,8 +136,37 @@ describe("requires db connection", () => {
             });
 
             describe("permissions", () => {
-                test.todo("admin");
-                test.todo("department");
+                test("manager", async () => {
+                    const conn = await DBConnection.get();
+                    await conn.manager.update(
+                        Role,
+                        { access: "USER" },
+                        { access: "MANAGER" }
+                    );
+
+                    await getController(
+                        {
+                            query: {},
+                            session: {
+                                user_id: (
+                                    await conn.manager.findOneOrFail(User, {
+                                        where: {
+                                            email: process.env.TEST_EMAIL_2,
+                                        },
+                                    })
+                                ).id,
+                                current_business_id: business_id,
+                                business_ids: [business_id],
+                            },
+                            dbConnection: conn,
+                        } as Request,
+                        res
+                    );
+                    expect(res.sendStatus).not.toHaveBeenCalledWith(500);
+                    expect(res.sendStatus).not.toHaveBeenCalledWith(400);
+                    expect(res.sendStatus).not.toHaveBeenCalledWith(403);
+                    expect(res.status).toHaveBeenCalledWith(200);
+                });
                 test.todo("none");
             });
 

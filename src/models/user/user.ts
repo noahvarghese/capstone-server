@@ -108,20 +108,21 @@ export default class User extends BaseModel implements UserAttributes {
         user_id: number,
         access: AccessKey
     ): Promise<boolean> {
-        return (
-            (await conn
-                .createQueryBuilder()
-                .select()
-                .from(Business, "b")
-                .leftJoin(Membership, "m", "m.business_id = b.id")
-                .leftJoin(User, "u", "u.id = m.user_id")
-                .leftJoin(UserRole, "ur", "ur.user_id = u.id")
-                .leftJoin(Role, "r", "r.id = ur.role_id")
-                .where("b.id = :business_id", { business_id })
-                .andWhere("u.id = :user_id", { user_id })
-                .andWhere("r.access = :access", { access })
-                .getCount()) === 1
-        );
+        const query = conn
+            .createQueryBuilder()
+            .select()
+            .from(Business, "b")
+            .leftJoin(Membership, "m", "m.business_id = b.id")
+            .leftJoin(User, "u", "u.id = m.user_id")
+            .leftJoin(UserRole, "ur", "ur.user_id = u.id")
+            .leftJoin(Role, "r", "r.id = ur.role_id")
+            .where("b.id = :business_id", { business_id })
+            .andWhere("u.id = :user_id", { user_id })
+            .andWhere("r.access = :access", { access });
+
+        const count = await query.getCount();
+
+        return count > 0;
     }
 
     public static async isAdmin(

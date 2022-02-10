@@ -145,8 +145,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .where("b.id = :business_id", { business_id: current_business_id });
 
     if (
-        JSON.parse(accepted as string) === false ||
-        JSON.parse(accepted as string) === true
+        accepted !== undefined &&
+        (JSON.parse(accepted as string) === false ||
+            JSON.parse(accepted as string) === true)
     ) {
         query = query.andWhere(
             "m.accepted = :accepted",
