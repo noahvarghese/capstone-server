@@ -191,7 +191,29 @@ describe("token created", () => {
             expect(res.sendStatus).toHaveBeenCalledWith(400);
         });
 
-        test.todo("valid token, new user");
+        test("valid token, new user", async () => {
+            await putController(
+                {
+                    params: { token },
+                    body: {
+                        first_name: "test",
+                        last_name: "test",
+                        password: "123",
+                        confirm_password: "123",
+                    },
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+
+            expect(res.sendStatus).toHaveBeenCalledWith(200);
+            const m = await conn.manager.findOneOrFail(Membership, {
+                where: { user_id, business_id },
+            });
+            expect(m.token).toBe(null);
+            expect(m.token_expiry).toBe(null);
+            expect(m.accepted).toBe(true);
+        });
         test.todo("valid token, existing user");
     });
 });

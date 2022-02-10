@@ -30,11 +30,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         params: { token },
     } = req;
 
-    if (!token) {
-        res.sendStatus(400);
-        return;
-    }
-
     let data: { [x in keyof typeof options]: string };
 
     try {
@@ -120,10 +115,11 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     // confirm accepted, remove token
     await dbConnection.manager.update(
         Membership,
-        { where: { token } },
+        { token },
         { token: null, token_expiry: null, accepted: true }
     );
-    return;
+
+    res.sendStatus(200);
 };
 
 export default putController;
