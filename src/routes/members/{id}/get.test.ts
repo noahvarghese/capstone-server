@@ -14,7 +14,6 @@ let business_id: number, user_id: number;
 
 beforeAll(async () => {
     await DBConnection.init();
-    // Create admin user
     ({ business_id, user_id } = await setupAdmin(await DBConnection.get()));
 });
 
