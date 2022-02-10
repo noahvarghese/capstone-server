@@ -47,16 +47,17 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     }
 
     const dataExists =
-        (data.first_name ||
-            data.last_name ||
-            data.password ||
-            data.confirm_password) &&
-        !(
-            data.first_name &&
-            data.last_name &&
-            data.password &&
-            data.confirm_password
-        );
+        data.first_name &&
+        data.last_name &&
+        data.password &&
+        data.confirm_password;
+
+    if (dataExists) {
+        if (data.password !== data.confirm_password) {
+            res.sendStatus(400);
+            return;
+        }
+    }
 
     let m: Membership | undefined;
 
@@ -96,7 +97,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     }
 
     // check if user has signed up (name/password)
-    if (!(u.last_name || u.first_name) && !u.password) {
+    if (!(u.last_name || u.first_name) || !u.password) {
         // check if details sent
         if (!dataExists) {
             // if no to both return 405
@@ -106,13 +107,14 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (dataExists) {
-        const newUser = new User(data);
-        newUser.hashPassword(data.password);
-        await dbConnection.manager.update(
-            User,
-            { where: { user_id: u.id } },
-            newUser
-        );
+        const { password } = await new User().hashPassword(data.password);
+        const { first_name, last_name } = data;
+
+        await dbConnection.manager.update(User, u.id, {
+            first_name,
+            last_name,
+            password,
+        });
     }
 
     // confirm accepted, remove token
