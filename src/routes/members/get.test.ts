@@ -13,7 +13,7 @@ import {
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
-import { Request } from "express";
+import { Request, Response } from "express";
 import getController from "./get";
 
 const { res, mockClear } = getMockRes();
@@ -252,8 +252,75 @@ describe("requires db connection", () => {
                         );
                     });
                 });
-                test.todo("limit");
-                test.todo("page");
+
+                describe("page", () => {
+                    const cases = [
+                        { limit: 1, page: 1, email: process.env.TEST_EMAIL_2 },
+                        { limit: 1, page: 2, email: process.env.TEST_EMAIL_1 },
+                    ];
+                    test.each(cases)("%p", async ({ limit, page, email }) => {
+                        const conn = await DBConnection.get();
+                        await getController(
+                            {
+                                query: { limit, page },
+                                session: {
+                                    user_id,
+                                    current_business_id: business_id,
+                                    business_ids: [business_id],
+                                },
+                                dbConnection: conn,
+                            } as unknown as Request,
+                            res
+                        );
+                        expect(res.status).toHaveBeenCalledWith(200);
+                        expect(res.send).toHaveBeenCalledWith(
+                            expect.arrayContaining([
+                                expect.objectContaining({
+                                    email,
+                                }),
+                            ])
+                        );
+                    });
+                });
+
+                describe("limit", () => {
+                    const cases = [
+                        { limit: 1, page: 1 },
+                        { limit: 2, page: 1 },
+                    ];
+                    test.each(cases)("%p", async ({ limit, page }) => {
+                        const conn = await DBConnection.get();
+                        let status;
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        let send: any;
+                        await getController(
+                            {
+                                query: { limit, page },
+                                session: {
+                                    user_id,
+                                    current_business_id: business_id,
+                                    business_ids: [business_id],
+                                },
+                                dbConnection: conn,
+                            } as unknown as Request,
+                            {
+                                send: (v: unknown) => {
+                                    send = v;
+                                },
+                                status: (v: unknown) => {
+                                    status = v;
+                                    return {
+                                        send: (v: unknown) => {
+                                            send = v;
+                                        },
+                                    };
+                                },
+                            } as Response
+                        );
+                        expect(status).toBe(200);
+                        expect(send.length).toBe(limit);
+                    });
+                });
             });
 
             describe("filter", () => {

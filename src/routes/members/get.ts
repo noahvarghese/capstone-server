@@ -136,7 +136,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     let query = dbConnection
         .createQueryBuilder()
-        .select()
+        .select("u")
+        .addSelect("r")
+        .addSelect("d")
         .from(Business, "b")
         .leftJoin(Membership, "m", "m.business_id = b.id")
         .leftJoin(User, "u", "m.user_id = u.id")
@@ -176,18 +178,24 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         );
     }
 
-    const memberResult = await query
-        .orderBy(
-            sort_field === "department"
-                ? "d.name"
-                : sort_field === "role"
-                ? "r.name"
-                : sort_field
-                ? `u.${sort_field}`
-                : "m.created_on",
-            (sort_order as SortOrderKey) ?? "DESC"
-        )
-        .getRawMany();
+    query = query.orderBy(
+        sort_field === "department"
+            ? "d.name"
+            : sort_field === "role"
+            ? "r.name"
+            : sort_field
+            ? `u.${sort_field}`
+            : "m.created_on",
+        (sort_order as SortOrderKey) ?? "DESC"
+    );
+
+    if (page && limit) {
+        query = query
+            .limit(Number(limit))
+            .offset(Number(page) * Number(limit) - Number(limit));
+    }
+
+    const memberResult = await query.getRawMany();
 
     const members: Members = memberResult.reduce((prev, curr) => {
         const el = (prev as Members).find((e) => {
