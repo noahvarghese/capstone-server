@@ -1,4 +1,3 @@
-import Business from "@models/business";
 import Department from "@models/department";
 import Membership from "@models/membership";
 import Role from "@models/role";
@@ -26,7 +25,7 @@ type SortFieldKey = typeof sortFields[number];
 const sortOrders = ["ASC", "DESC"] as const;
 type SortOrderKey = typeof sortOrders[number];
 
-type Members = {
+export type Member = {
     id: number;
     first_name: string;
     last_name: string;
@@ -39,7 +38,7 @@ type Members = {
         id: number;
         department: { name: string; id: number };
     }[];
-}[];
+};
 
 const getController = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -139,13 +138,14 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select("u")
         .addSelect("r")
         .addSelect("d")
-        .from(Business, "b")
-        .leftJoin(Membership, "m", "m.business_id = b.id")
+        .from(Membership, "m")
         .leftJoin(User, "u", "m.user_id = u.id")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
         .leftJoin(Role, "r", "ur.role_id = r.id")
         .leftJoin(Department, "d", "d.id = r.department_id")
-        .where("b.id = :business_id", { business_id: current_business_id });
+        .where("m.business_id = :business_id", {
+            business_id: current_business_id,
+        });
 
     if (
         accepted !== undefined &&
@@ -197,8 +197,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     const memberResult = await query.getRawMany();
 
-    const members: Members = memberResult.reduce((prev, curr) => {
-        const el = (prev as Members).find((e) => {
+    const members: Member[] = memberResult.reduce((prev, curr) => {
+        const el = (prev as Member[]).find((e) => {
             e.id === curr.u_id;
         });
 
@@ -224,7 +224,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
                               },
                           ]
                         : [],
-            } as Members[keyof Members]);
+            } as Member[][keyof Member[]]);
         } else {
             el.roles.push({
                 id: curr.r_id,
@@ -237,7 +237,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         }
 
         return prev;
-    }, [] as Members);
+    }, [] as Member[]);
 
     res.status(200).send(members);
     return;
