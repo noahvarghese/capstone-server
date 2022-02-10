@@ -13,6 +13,7 @@ import {
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
+import { deepClone } from "@util/obj";
 import { Request, Response } from "express";
 import getController from "./get";
 
@@ -276,13 +277,6 @@ describe("requires db connection", () => {
                         expect(res.send).toHaveBeenCalledWith(
                             expect.objectContaining({ length: 1 })
                         );
-                        // expect(res.send).toHaveBeenCalledWith(
-                        //     expect.arrayContaining([
-                        //         expect.objectContaining({
-                        //             email,
-                        //         }),
-                        //     ])
-                        // );
                     });
                 });
 
@@ -422,6 +416,67 @@ describe("requires db connection", () => {
             });
 
             describe("sort", () => {
+                const cases = [
+                    { sort_field: "first_name", sort_order: "ASC" },
+                    { sort_field: "first_name", sort_order: "DESC" },
+                    { sort_field: "last_name", sort_order: "ASC" },
+                    { sort_field: "last_name", sort_order: "DESC" },
+                    { sort_field: "email", sort_order: "ASC" },
+                    { sort_field: "email", sort_order: "DESC" },
+                    { sort_field: "phone", sort_order: "ASC" },
+                    { sort_field: "phone", sort_order: "DESC" },
+                ];
+
+                test.each(cases)(
+                    "given sort field %p and sort order %p, the results will match",
+                    async ({ sort_field, sort_order }) => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        let data: { [x: string]: any }[] = [];
+
+                        await getController(
+                            {
+                                session: {
+                                    user_id,
+                                    current_business_id: business_id,
+                                    business_ids: [business_id],
+                                },
+                                query: { sort_field, sort_order },
+                                dbConnection: await DBConnection.get(),
+                            } as unknown as Request,
+                            {
+                                status: () => {
+                                    return {
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        send: (u: { [x: string]: any }[]) => {
+                                            data = u;
+                                        },
+                                    };
+                                },
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                send: (u: { [x: string]: any }[]) => {
+                                    data = u;
+                                },
+                            } as unknown as Response
+                        );
+                        expect(data.length).toBeGreaterThan(1);
+                        const dataCopy = deepClone(data);
+                        const sortedData = dataCopy.sort((a, b): number => {
+                            const aVal = JSON.stringify(a[sort_field]);
+                            const bVal = JSON.stringify(b[sort_field]);
+
+                            if (sort_order === "ASC") {
+                                return aVal < bVal ? -1 : aVal === bVal ? 0 : 1;
+                            } else {
+                                return aVal < bVal ? 1 : aVal === bVal ? 0 : -1;
+                            }
+                        });
+
+                        expect(JSON.stringify(data)).toBe(
+                            JSON.stringify(sortedData)
+                        );
+                    }
+                );
+
                 describe("invalid", () => {
                     const cases = [
                         { sort_field: "", sort_order: "ASC" },
