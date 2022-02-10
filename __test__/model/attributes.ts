@@ -112,7 +112,7 @@ export const departmentAttributes = (): DepartmentAttributes =>
 export const roleAttributes = (): RoleAttributes =>
     AttributeFactory(
         {
-            name: "Admin",
+            name: "General",
             prevent_delete: false,
             prevent_edit: false,
             department_id: NaN,

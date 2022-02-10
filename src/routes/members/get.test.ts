@@ -355,17 +355,7 @@ describe("requires db connection", () => {
                                 {
                                     query: { filter_field, filter_ids },
                                     session: {
-                                        user_id: (
-                                            await conn.manager.findOneOrFail(
-                                                User,
-                                                {
-                                                    where: {
-                                                        email: process.env
-                                                            .TEST_EMAIL_2,
-                                                    },
-                                                }
-                                            )
-                                        ).id,
+                                        user_id,
                                         current_business_id: business_id,
                                         business_ids: [business_id],
                                     },
@@ -377,14 +367,55 @@ describe("requires db connection", () => {
                             expect(res.send).toHaveBeenCalledWith(
                                 "Invalid filter options"
                             );
-                            return;
                         }
                     );
                 });
             });
 
             describe("search", () => {
-                return;
+                const cases = [
+                    {
+                        search: "man",
+                        partial: {
+                            roles: [{ department: { name: "Management" } }],
+                        },
+                    },
+                ];
+                test.each(cases)("%p", async ({ search, partial }) => {
+                    const conn = await DBConnection.get();
+                    let status;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    let send: any;
+                    await getController(
+                        {
+                            query: { search },
+                            session: {
+                                user_id,
+                                current_business_id: business_id,
+                                business_ids: [business_id],
+                            },
+                            dbConnection: conn,
+                        } as unknown as Request,
+                        {
+                            send: (v: unknown) => {
+                                send = v;
+                            },
+                            status: (v: unknown) => {
+                                status = v;
+                                return {
+                                    send: (v: unknown) => {
+                                        send = v;
+                                    },
+                                };
+                            },
+                        } as Response
+                    );
+                    expect(status).toBe(200);
+                    expect(send.length).toBe(1);
+                    expect(send[0].roles[0].department.name).toBe(
+                        partial.roles[0].department.name
+                    );
+                });
             });
 
             describe("sort", () => {
