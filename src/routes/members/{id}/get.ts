@@ -5,13 +5,20 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
+import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Member } from "../get";
 
 const getController = async (req: Request, res: Response): Promise<void> => {
     const {
         session: { user_id, current_business_id },
         dbConnection,
+        params: { id },
     } = req;
+
+    if (!isNumber(id)) {
+        res.sendStatus(400);
+        return;
+    }
 
     try {
         const [isAdmin, isManager] = await Promise.all([
@@ -51,7 +58,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .where("m.business_id = :business_id", {
             business_id: current_business_id,
         })
-        .andWhere("u.id = :user_id", { user_id })
+        .andWhere("u.id = :id", { id })
         .getRawMany();
 
     const members: Member[] = result.reduce((prev, curr) => {
