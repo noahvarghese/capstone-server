@@ -70,7 +70,7 @@ describe("token created", () => {
             await conn.manager.update(
                 Membership,
                 { user_id, business_id },
-                { token_expiry: new Date(0) }
+                { token_expiry: null }
             );
         });
         test("fails", async () => {
@@ -85,15 +85,20 @@ describe("token created", () => {
             expect(res.sendStatus).toHaveBeenCalledWith(400);
         });
     });
-    describe("valid token", () => {
+    describe("valid token, empty user", () => {
         beforeEach(async () => {
             token = uid(32);
+
+            const token_expiry = new Date();
+            token_expiry.setDate(token_expiry.getDate() + 1);
+
             await conn.manager.update(
                 Membership,
                 { user_id, business_id },
                 // reseting the token resets the date as well
-                { token, accepted: false }
+                { token, token_expiry, accepted: false }
             );
+
             await conn.manager.update(User, user_id, {
                 first_name: "",
                 last_name: "",
@@ -101,7 +106,7 @@ describe("token created", () => {
             });
         });
 
-        test("new user, no data", async () => {
+        test("no data", async () => {
             await putController(
                 {
                     params: { token },
@@ -113,7 +118,7 @@ describe("token created", () => {
             expect(res.sendStatus).toHaveBeenCalledWith(405);
         });
 
-        describe("new user, invalid/missing data", () => {
+        describe("new user, missing data", () => {
             const cases = [
                 {
                     first_name: "",
@@ -127,6 +132,24 @@ describe("token created", () => {
                     password: " ",
                     confirm_password: " ",
                 },
+            ];
+
+            test.each(cases)("%p", async (body) => {
+                await putController(
+                    {
+                        params: { token },
+                        body,
+                        dbConnection: conn,
+                    } as unknown as Request,
+                    res
+                );
+
+                expect(res.sendStatus).toHaveBeenCalledWith(405);
+            });
+        });
+
+        describe("new user, invalid data", () => {
+            const cases = [
                 {
                     first_name: "asdf",
                     last_name: "",
@@ -169,7 +192,7 @@ describe("token created", () => {
                     res
                 );
 
-                expect(res.sendStatus).toHaveBeenCalledWith(405);
+                expect(res.sendStatus).toHaveBeenCalledWith(400);
             });
         });
 
@@ -214,6 +237,44 @@ describe("token created", () => {
             expect(m.token_expiry).toBe(null);
             expect(m.accepted).toBe(true);
         });
-        test.todo("valid token, existing user");
+    });
+
+    describe("existing user", () => {
+        beforeAll(async () => {
+            token = uid(32);
+            const token_expiry = new Date();
+            token_expiry.setDate(token_expiry.getDate() + 1);
+            await Promise.all([
+                conn.manager.update(
+                    Membership,
+                    { user_id, business_id },
+                    { accepted: false, token, token_expiry }
+                ),
+                conn.manager.update(User, user_id, {
+                    first_name: "TEST",
+                    last_name: "TEST",
+                    password: "TEST",
+                }),
+            ]);
+        });
+
+        test("Success", async () => {
+            await putController(
+                {
+                    params: { token },
+                    body: {},
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+
+            expect(res.sendStatus).toHaveBeenCalledWith(200);
+            const m = await conn.manager.findOneOrFail(Membership, {
+                where: { user_id, business_id },
+            });
+            expect(m.token).toBe(null);
+            expect(m.token_expiry).toBe(null);
+            expect(m.accepted).toBe(true);
+        });
     });
 });

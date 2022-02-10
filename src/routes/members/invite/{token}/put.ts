@@ -58,7 +58,11 @@ const putController = async (req: Request, res: Response): Promise<void> => {
 
     try {
         m = await dbConnection.manager.findOne(Membership, {
-            where: { token, token_expiry: MoreThanOrEqual(new Date()) },
+            where: {
+                accepted: false,
+                token,
+                token_expiry: MoreThanOrEqual(new Date()),
+            },
         });
     } catch (_e) {
         const { message } = _e as Error;
@@ -68,17 +72,8 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (!m) {
+        Logs.Error("No membership");
         res.sendStatus(400);
-        return;
-    }
-
-    if (m.accepted) {
-        await dbConnection.manager.update(
-            Membership,
-            { where: { token } },
-            { token: null, token_expiry: null }
-        );
-        res.sendStatus(200);
         return;
     }
 
@@ -95,8 +90,14 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     if (!(u.last_name || u.first_name) || !u.password) {
         // check if details sent
         if (!dataExists) {
-            // if no to both return 405
-            res.sendStatus(405);
+            if (
+                data.first_name ||
+                data.last_name ||
+                data.password ||
+                data.confirm_password
+            )
+                res.sendStatus(400);
+            else res.sendStatus(405);
             return;
         }
     }

@@ -70,12 +70,15 @@ export const sendInviteController = async (
     }
 
     const token = uid(32);
+    const token_expiry = new Date();
+    token_expiry.setDate(token_expiry.getDate() + 1);
 
     await dbConnection.manager.save(
         Membership,
         new Membership({
             accepted: false,
             token,
+            token_expiry,
             user_id: invitedUserId,
             business_id: current_business_id,
             updated_by_user_id: user_id,
