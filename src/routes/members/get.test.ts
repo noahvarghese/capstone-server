@@ -202,6 +202,42 @@ describe("requires db connection", () => {
             });
 
             describe("pagination", () => {
+                describe("invalid", () => {
+                    const cases = [
+                        { limit: "yolo", page: 1 },
+                        // { limit: " ", page: 1 },
+                        { limit: false, page: 1 },
+                        // { limit: true, page: 1 },
+                        { limit: {}, page: 1 },
+                        { limit: { test: "" }, page: 1 },
+                        { limit: "", page: 1 },
+                        { limit: undefined, page: 1 },
+                        { limit: null, page: 1 },
+                    ];
+
+                    test.each(cases)("%p", async ({ limit, page }) => {
+                        const conn = await DBConnection.get();
+                        await getController(
+                            {
+                                query: { limit, page },
+                                session: {
+                                    user_id: (
+                                        await conn.manager.findOneOrFail(User, {
+                                            where: {
+                                                email: process.env.TEST_EMAIL_2,
+                                            },
+                                        })
+                                    ).id,
+                                    current_business_id: business_id,
+                                    business_ids: [business_id],
+                                },
+                                dbConnection: conn,
+                            } as unknown as Request,
+                            res
+                        );
+                        expect(res.status).toHaveBeenCalledWith(400);
+                    });
+                });
                 test.todo("limit");
                 test.todo("page");
             });
