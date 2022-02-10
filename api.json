@@ -219,123 +219,6 @@
                     }
                 }
             },
-            "PermissionResponse": {
-                "description": "Permissions applied to members of a Role.",
-                "type": "object",
-                "properties": {
-                    "global_crud_users": {
-                        "description": "Allows user to invite users to, or remove users from business.",
-                        "type": "boolean"
-                    },
-                    "global_crud_department": {
-                        "description": "Allows user to create/remove/change name of department(s).",
-                        "type": "boolean"
-                    },
-                    "global_crud_role": {
-                        "description": "Allows user to create/remove/change name of role(s), as well as modify the permissions of this role.",
-                        "type": "boolean"
-                    },
-                    "global_crud_resources": {
-                        "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_users_to_department": {
-                        "description": "Allowed to assign members of the business to departments within the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_users_to_role": {
-                        "description": "Allowed to assign members of the business to roles within the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_resources_to_department": {
-                        "description": "Allows to assign manuals/quizzes to department(s) within the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_resources_to_role": {
-                        "description": "Allows to assign manuals/quizzes to role(s) within the business.",
-                        "type": "boolean"
-                    },
-                    "global_view_reports": {
-                        "description": "Allows user to view reports for all areas of business.",
-                        "type": "boolean"
-                    },
-                    "dept_crud_role": {
-                        "description": "Allows user to create/delete/update roles within the department they are apart of.",
-                        "type": "boolean"
-                    },
-                    "dept_crud_resources": {
-                        "description": "Allows user to create/delete/update resources within the department they are apart of.",
-                        "type": "boolean"
-                    },
-                    "dept_assign_users_to_role": {
-                        "description": "Allows user to update other users assignment to roles within the department that both users reside in.",
-                        "type": "boolean"
-                    },
-                    "dept_assign_resources_to_role": {
-                        "description": "Allows user to update resource assignment within the department that they are already apart of.",
-                        "type": "boolean"
-                    },
-                    "dept_view_reports": {
-                        "description": "Allows user to view reports for all objects residing in current department.",
-                        "type": "boolean"
-                    }
-                }
-            },
-            "Permission": {
-                "description": "Permissions applied to members of a Role.",
-                "type": "object",
-                "properties": {
-                    "id": { "type": "integer" },
-                    "global_crud_users": {
-                        "description": "Allows user to invite users to, or remove users from business.",
-                        "type": "boolean"
-                    },
-                    "global_crud_department": {
-                        "description": "Allows user to create/remove/change name of department(s).",
-                        "type": "boolean"
-                    },
-                    "global_crud_role": {
-                        "description": "Allows user to create/remove/change name of role(s), as well as modify the permissions of this role.",
-                        "type": "boolean"
-                    },
-                    "global_crud_resources": {
-                        "description": "Able to create/remove/edit manuals or quizzes for any department in the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_users_to_role": {
-                        "description": "Allowed to assign members of the business to roles within the business.",
-                        "type": "boolean"
-                    },
-                    "global_assign_resources_to_role": {
-                        "description": "Allows to assign manuals/quizzes to role(s) within the business.",
-                        "type": "boolean"
-                    },
-                    "global_view_reports": {
-                        "description": "Allows user to view reports for all areas of business.",
-                        "type": "boolean"
-                    },
-                    "dept_crud_role": {
-                        "description": "Allows user to create/delete/update roles within the department they are apart of.",
-                        "type": "boolean"
-                    },
-                    "dept_crud_resources": {
-                        "description": "Allows user to create/delete/update resources within the department they are apart of.",
-                        "type": "boolean"
-                    },
-                    "dept_assign_users_to_role": {
-                        "description": "Allows user to update other users assignment to roles within the department that both users reside in.",
-                        "type": "boolean"
-                    },
-                    "dept_assign_resources_to_role": {
-                        "description": "Allows user to update resource assignment within the department that they are already apart of.",
-                        "type": "boolean"
-                    },
-                    "dept_view_reports": {
-                        "description": "Allows user to view reports for all objects residing in current department.",
-                        "type": "boolean"
-                    }
-                }
-            },
             "QuizAnswer": {
                 "type": "object",
                 "properties": {
@@ -433,9 +316,7 @@
                         "description": "unique identifier",
                         "type": "integer"
                     },
-                    "permissions": {
-                        "$ref": "#/components/schemas/Permission"
-                    },
+                    "access": { "enum": ["ADMIN", "MANAGER", "USER"] },
                     "department": { "$ref": "#/components/schemas/Department" }
                 }
             },
@@ -590,10 +471,6 @@
         {
             "name": "role",
             "description": "Role operations. One Department has many Businesses"
-        },
-        {
-            "name": "permission",
-            "description": "Permission operations. One Role has one set of Permissions."
         },
         {
             "name": "user role",
@@ -1911,21 +1788,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "id": { "type": "integer" },
-                                            "name": { "type": "string" },
-                                            "permissions": {
-                                                "$ref": "#/components/schemas/PermissionResponse"
-                                            },
-                                            "department": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": { "type": "integer" },
-                                                    "name": { "type": "string" }
-                                                }
-                                            }
-                                        }
+                                        "$ref": "#/components/schemas/Role"
                                     }
                                 }
                             }
@@ -2079,23 +1942,7 @@
                                             "roles": {
                                                 "type": "array",
                                                 "items": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "description": "role name",
-                                                            "type": "string"
-                                                        },
-                                                        "id": {
-                                                            "description": "unique identifier",
-                                                            "type": "integer"
-                                                        },
-                                                        "permissions": {
-                                                            "$ref": "#/components/schemas/Permission"
-                                                        },
-                                                        "department": {
-                                                            "$ref": "#/components/schemas/Department"
-                                                        }
-                                                    }
+                                                    "$ref": "#/components/schemas/Role"
                                                 }
                                             }
                                         }
@@ -3869,22 +3716,7 @@
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "description": "role name",
-                                        "type": "string"
-                                    },
-                                    "department_id": {
-                                        "description": "the unique identifier of the department the role will be apart of",
-                                        "type": "integer"
-                                    },
-                                    "permissions": {
-                                        "$ref": "#/components/schemas/PermissionResponse"
-                                    }
-                                }
-                            }
+                            "schema": { "$ref": "#/components/schemas/Role" }
                         }
                     }
                 },
@@ -3918,7 +3750,7 @@
         },
         "/roles/{id}": {
             "get": {
-                "tags": ["role", "permission"],
+                "tags": ["role"],
                 "summary": "get individual role details",
                 "description": "Any authenticated user can retrieve details about the role(s) they are apart of. Or if they have the necessary permissions, the can retrieve any of them.",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
@@ -3930,36 +3762,7 @@
                                 "schema": {
                                     "description": "return value of role routes",
                                     "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "description": "unique identifier"
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "role name"
-                                        },
-                                        "department": {
-                                            "type": "object",
-                                            "properties": {
-                                                "id": {
-                                                    "type": "integer",
-                                                    "description": "unique identifier"
-                                                },
-                                                "name": {
-                                                    "type": "string",
-                                                    "description": "department name"
-                                                }
-                                            }
-                                        },
-                                        "permissions": {
-                                            "$ref": "#/components/schemas/PermissionResponse"
-                                        },
-                                        "num_members": {
-                                            "type": "integer",
-                                            "description": "number of members assigned to this role"
-                                        }
-                                    }
+                                    "$ref": "#/components/schemas/Role"
                                 }
                             }
                         }
@@ -3975,7 +3778,7 @@
                 }
             },
             "put": {
-                "tags": ["role", "permission"],
+                "tags": ["role"],
                 "summary": "update individual role",
                 "description": "Can update the name of the role, the first role that is created for the admin department cannot be edited",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
@@ -3988,8 +3791,8 @@
                                         "type": "string",
                                         "description": "the new name of the role"
                                     },
-                                    "permissions": {
-                                        "$ref": "#/components/schemas/PermissionResponse"
+                                    "access": {
+                                        "enum": ["ADMIN", "MANAGER", "USER"]
                                     }
                                 },
                                 "required": ["name", "permissions"]
@@ -4013,7 +3816,7 @@
                 }
             },
             "delete": {
-                "tags": ["role", "permission"],
+                "tags": ["role"],
                 "summary": "delete role by id",
                 "description": "checks permissions before deleting role, as well as checking if any foreign key relationships exist, cannot delete the first role for the admin department",
                 "parameters": [{ "$ref": "#/components/parameters/ID" }],
