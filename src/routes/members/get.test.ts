@@ -167,7 +167,38 @@ describe("requires db connection", () => {
                     expect(res.sendStatus).not.toHaveBeenCalledWith(403);
                     expect(res.status).toHaveBeenCalledWith(200);
                 });
-                test.todo("none");
+
+                test("none", async () => {
+                    const conn = await DBConnection.get();
+                    await conn.manager.update(
+                        Role,
+                        { access: "MANAGER" },
+                        { access: "USER" }
+                    );
+
+                    await getController(
+                        {
+                            query: {},
+                            session: {
+                                user_id: (
+                                    await conn.manager.findOneOrFail(User, {
+                                        where: {
+                                            email: process.env.TEST_EMAIL_2,
+                                        },
+                                    })
+                                ).id,
+                                current_business_id: business_id,
+                                business_ids: [business_id],
+                            },
+                            dbConnection: conn,
+                        } as Request,
+                        res
+                    );
+                    expect(res.sendStatus).not.toHaveBeenCalledWith(500);
+                    expect(res.sendStatus).not.toHaveBeenCalledWith(400);
+                    expect(res.status).not.toHaveBeenCalledWith(200);
+                    expect(res.sendStatus).toHaveBeenCalledWith(403);
+                });
             });
 
             describe("pagination", () => {
