@@ -55,10 +55,6 @@ import {
 import { EmptyEventAttributes, EventAttributes } from "@models/event";
 import { AttributeFactory } from "@models/abstract/base_model";
 import {
-    EmptyMembershipRequestAttributes,
-    MembershipRequestAttributes,
-} from "@models/membership_request";
-import {
     EmptyQuizQuestionTypeAttributes,
     QuizQuestionTypeAttributes,
 } from "@models/quiz/question/question_type";
@@ -80,22 +76,12 @@ export const businessAttributes = (): BusinessAttributes =>
 export const membershipAttributes = (): MembershipAttributes =>
     AttributeFactory(
         {
+            accepted: false,
             user_id: NaN,
             business_id: NaN,
             updated_by_user_id: NaN,
         },
         EmptyMembershipAttributes
-    );
-
-export const membershipRequestAttributes = (): MembershipRequestAttributes =>
-    AttributeFactory(
-        {
-            business_id: NaN,
-            token: "",
-            user_id: NaN,
-            updated_by_user_id: NaN,
-        },
-        EmptyMembershipRequestAttributes
     );
 
 export const userAttributes = (): UserAttributes =>
@@ -297,7 +283,6 @@ export const eventAttributes = (): EventAttributes =>
 export default {
     business: businessAttributes,
     membership: membershipAttributes,
-    membershipRequest: membershipRequestAttributes,
     user: userAttributes,
     department: departmentAttributes,
     role: roleAttributes,

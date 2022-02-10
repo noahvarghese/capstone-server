@@ -41,25 +41,12 @@ CREATE TABLE user (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE membership_request (
-    user_id INT NOT NULL,
-    business_id INT NOT NULL,
-    token VARCHAR(32) NOT NULL,
-    token_expiry DATETIME NOT NULL,
-    updated_by_user_id INT NOT NULL,
-    created_on DATETIME NOT NULL DEFAULT NOW(),
-    updated_on DATETIME NOT NULL DEFAULT NOW(),
-    deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    UNIQUE(token),
-    FOREIGN KEY (business_id) REFERENCES business(id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    PRIMARY KEY (business_id, user_id)
-);
-
 CREATE TABLE membership (
     business_id INT NOT NULL,
     user_id INT NOT NULL,
+    accepted TINYINT(1) NOT NULL DEFAULT 0,
+    token VARCHAR(32) NOT NULL,
+    token_expiry DATETIME NOT NULL,
     prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     default_option TINYINT(1) NOT NULL,
     updated_by_user_id INT NOT NULL,
@@ -69,6 +56,7 @@ CREATE TABLE membership (
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     FOREIGN KEY (business_id) REFERENCES business(id),
     FOREIGN KEY (user_id) REFERENCES user(id),
+    UNIQUE(token),
     PRIMARY KEY (business_id, user_id)
 );
 

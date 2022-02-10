@@ -18,6 +18,7 @@ export const getBusinessController = async (
             .select("b.id, b.name, m.default_option")
             .from(Membership, "m")
             .where("m.user_id = :user_id", { user_id: Number(user_id) })
+            .andWhere("m.accepted = :accepted", { accepted: false })
             .leftJoin(Business, "b", "b.id = m.business_id")
             .orderBy("m.created_on", "DESC")
             .getRawMany<{ id: number; name: string; default_option: 1 | 0 }>();

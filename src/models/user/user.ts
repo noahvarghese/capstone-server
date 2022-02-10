@@ -131,4 +131,12 @@ export default class User extends BaseModel implements UserAttributes {
     ): Promise<boolean> {
         return User.isRole(conn, business_id, user_id, "ADMIN");
     }
+
+    public static async isManager(
+        conn: Connection,
+        business_id: number,
+        user_id: number
+    ): Promise<boolean> {
+        return User.isRole(conn, business_id, user_id, "MANAGER");
+    }
 }

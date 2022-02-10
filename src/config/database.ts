@@ -19,13 +19,11 @@ import Result from "@models/quiz/question/result";
 import Read from "@models/manual/content/read";
 import Event from "@models/event";
 import Membership from "@models/membership";
-import MembershipRequest from "@models/membership_request";
 import QuizQuestionType from "@models/quiz/question/question_type";
 
 const entities = [
     Business,
     User,
-    MembershipRequest,
     Membership,
     Department,
     Role,

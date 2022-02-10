@@ -67,7 +67,7 @@ export const loginController = async (
         }
 
         const defaultBusinessId =
-            m.find((x) => x.default_option)?.business_id ?? NaN;
+            m.find((x) => x.default_option && x.accepted)?.business_id ?? NaN;
 
         if (isNaN(defaultBusinessId)) {
             res.status(500).send("No default business set");

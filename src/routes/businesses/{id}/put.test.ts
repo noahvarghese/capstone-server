@@ -63,6 +63,7 @@ describe("user is a member", () => {
                 business_id,
                 updated_by_user_id: user_id,
                 default_option: false,
+                accepted: true,
             })
         );
     });

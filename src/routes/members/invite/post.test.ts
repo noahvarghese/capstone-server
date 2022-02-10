@@ -3,7 +3,6 @@ import Business from "@models/business";
 import Department from "@models/department";
 import Event from "@models/event";
 import Membership from "@models/membership";
-import MembershipRequest from "@models/membership_request";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -116,7 +115,7 @@ describe("database usage", () => {
         await Promise.all([
             conn.manager.clear(Event),
             conn.manager.delete(UserRole, () => ""),
-            conn.manager.delete(MembershipRequest, () => ""),
+            conn.manager.delete(Membership, () => ""),
         ]);
         await conn.manager.delete(Role, () => "");
         await Promise.all([
@@ -179,7 +178,7 @@ describe("database usage", () => {
             });
 
             await conn.manager.clear(Event);
-            await conn.manager.delete(MembershipRequest, {
+            await conn.manager.delete(Membership, {
                 user_id: user.id,
             });
             await conn.manager.delete(User, {
@@ -205,7 +204,7 @@ describe("database usage", () => {
                 where: { email: process.env.TEST_EMAIL_2 ?? "" },
             });
 
-            const m = await conn.manager.findOne(MembershipRequest, {
+            const m = await conn.manager.findOne(Membership, {
                 user_id: user.id,
             });
 
@@ -219,7 +218,7 @@ describe("database usage", () => {
             });
 
             await conn.manager.clear(Event);
-            await conn.manager.delete(MembershipRequest, {
+            await conn.manager.delete(Membership, {
                 user_id: user.id,
             });
 
@@ -238,7 +237,7 @@ describe("database usage", () => {
 
             expect(res.sendStatus).toHaveBeenCalledWith(201);
 
-            const m = await conn.manager.findOne(MembershipRequest, {
+            const m = await conn.manager.findOne(Membership, {
                 user_id: user.id,
             });
 
@@ -249,7 +248,7 @@ describe("database usage", () => {
             const user = await conn.manager.findOneOrFail(User, {
                 where: { email: process.env.TEST_EMAIL_2 ?? "" },
             });
-            const mStart = await conn.manager.findOneOrFail(MembershipRequest, {
+            const mStart = await conn.manager.findOneOrFail(Membership, {
                 user_id: user.id,
             });
 
@@ -270,7 +269,7 @@ describe("database usage", () => {
 
             expect(res.sendStatus).toHaveBeenCalledWith(201);
 
-            const mEnd = await conn.manager.findOneOrFail(MembershipRequest, {
+            const mEnd = await conn.manager.findOneOrFail(Membership, {
                 user_id: user.id,
             });
 

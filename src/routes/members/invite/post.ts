@@ -1,10 +1,11 @@
-import MembershipRequest from "@models/membership_request";
+import Membership from "@models/membership";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import Logs from "@noahvarghese/logger";
 import { sendUserInviteEmail } from "@services/email";
 import { bodyValidators } from "@util/formats/body";
 import { Request, Response } from "express";
+import { uid } from "rand-token";
 
 export const sendInviteController = async (
     req: Request,
@@ -68,9 +69,13 @@ export const sendInviteController = async (
         ));
     }
 
+    const token = uid(32);
+
     await dbConnection.manager.save(
-        MembershipRequest,
-        new MembershipRequest({
+        Membership,
+        new Membership({
+            accepted: false,
+            token,
             user_id: invitedUserId,
             business_id: current_business_id,
             updated_by_user_id: user_id,
@@ -83,7 +88,8 @@ export const sendInviteController = async (
                 dbConnection,
                 current_business_id,
                 user_id,
-                invitedUserId ?? NaN
+                invitedUserId ?? NaN,
+                token
             )
         ) {
             res.sendStatus(201);

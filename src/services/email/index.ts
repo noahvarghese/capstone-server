@@ -4,7 +4,6 @@ import Event from "@models/event";
 import Business from "@models/business";
 import { client } from "@util/permalink";
 import { Connection } from "typeorm";
-import MembershipRequest from "@models/membership_request";
 import Logs from "@noahvarghese/logger";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
@@ -40,20 +39,17 @@ export const sendUserInviteEmail = async (
     connection: Connection,
     business_id: number,
     user_id: number,
-    new_user_id: number
+    new_user_id: number,
+    token: string
 ): Promise<boolean> => {
     const [
         { name: businessName },
         { first_name: sendingUserName },
         { first_name: newUserName, email: newUserEmail },
-        { token },
     ] = await Promise.all([
         connection.manager.findOneOrFail(Business, business_id),
         connection.manager.findOneOrFail(User, user_id),
         connection.manager.findOneOrFail(User, new_user_id),
-        connection.manager.findOneOrFail(MembershipRequest, {
-            where: { user_id: new_user_id, business_id },
-        }),
     ]);
 
     const url = client(`member/invite/${token}`);

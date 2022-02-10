@@ -104,6 +104,7 @@ describe("user exists", () => {
                     new Membership({
                         user_id,
                         business_id,
+                        accepted: true,
                         updated_by_user_id: user_id,
                     })
                 );

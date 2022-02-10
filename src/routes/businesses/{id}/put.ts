@@ -36,7 +36,7 @@ export const setDefaultBusinessController = async (
         const defaultMembership = await connection.manager.findOneOrFail(
             Membership,
             {
-                where: { default_option: true, user_id },
+                where: { default_option: true, user_id, accepted: true },
             }
         );
 
