@@ -182,26 +182,22 @@ describe("search", () => {
     });
 });
 
-describe.skip("pagination", () => {
+describe("pagination", () => {
     beforeAll(async () => {
         // create second department
     });
 
     describe("page", () => {
         const cases = [
-            { limit: 1, page: 1, email: process.env.TEST_EMAIL_2 },
-            { limit: 1, page: 2, email: process.env.TEST_EMAIL_1 },
+            { limit: 1, page: 1 },
+            { limit: 1, page: 2 },
         ];
         test.each(cases)("%p", async ({ limit, page }) => {
             const conn = await DBConnection.get();
             await getController(
                 {
                     query: { limit, page },
-                    session: {
-                        user_id,
-                        current_business_id: business_id,
-                        business_ids: [business_id],
-                    },
+                    session,
                     dbConnection: conn,
                 } as unknown as Request,
                 res
@@ -226,11 +222,7 @@ describe.skip("pagination", () => {
             await getController(
                 {
                     query: { limit, page },
-                    session: {
-                        user_id,
-                        current_business_id: business_id,
-                        business_ids: [business_id],
-                    },
+                    session,
                     dbConnection: conn,
                 } as unknown as Request,
                 {
