@@ -7,19 +7,13 @@ import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
+import { isJson } from "@util/obj";
 
 const filterFields = ["department", "role"] as const;
 
 type FilterKey = typeof filterFields[number];
 
-const sortFields = [
-    "department",
-    "role",
-    "first_name",
-    "last_name",
-    "email",
-    "phone",
-] as const;
+const sortFields = ["first_name", "last_name", "email", "phone"] as const;
 type SortFieldKey = typeof sortFields[number];
 
 const sortOrders = ["ASC", "DESC"] as const;
@@ -43,7 +37,7 @@ export type Member = {
 const getController = async (req: Request, res: Response): Promise<void> => {
     const {
         query: {
-            filter_ids,
+            filter_ids: filterIds,
             filter_field,
             search,
             sort_order,
@@ -55,6 +49,10 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         session: { user_id, current_business_id },
         dbConnection,
     } = req;
+
+    const filter_ids = isJson(filterIds as string)
+        ? JSON.parse(filterIds as string)
+        : null;
 
     if ((filter_ids && !filter_field) || (!filter_ids && filter_field)) {
         res.status(400).send("Invalid filter options");
@@ -161,7 +159,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     if (filter_field && filter_ids) {
         query = query.andWhere(
             `${(filter_field as string)[0]}.id IN (:...ids)`,
-            Array.from(filter_ids as string)
+            { ids: filter_ids }
         );
     }
 
@@ -179,13 +177,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     }
 
     query = query.orderBy(
-        sort_field === "department"
-            ? "d.name"
-            : sort_field === "role"
-            ? "r.name"
-            : sort_field
-            ? `u.${sort_field}`
-            : "m.created_on",
+        sort_field ? `u.${sort_field}` : "m.created_on",
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
