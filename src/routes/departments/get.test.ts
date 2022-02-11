@@ -140,25 +140,24 @@ describe("sort", () => {
     );
 });
 
-describe.skip("search", () => {
+describe("search", () => {
     const cases = [
         {
             search: "man",
         },
+        {
+            search: "dm",
+        },
     ];
+
     test.each(cases)("%p", async ({ search }) => {
-        const conn = await DBConnection.get();
         let status;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let send: any;
         await getController(
             {
                 query: { search },
-                session: {
-                    user_id,
-                    current_business_id: business_id,
-                    business_ids: [business_id],
-                },
+                session,
                 dbConnection: conn,
             } as unknown as Request,
             {
@@ -177,7 +176,9 @@ describe.skip("search", () => {
         );
         expect(status).toBe(200);
         expect(send.length).toBe(1);
-        expect(send[0].name).toBe(departmentAttributes().name);
+        expect((send[0].name as string).toLowerCase()).toContain(
+            search.toLowerCase()
+        );
     });
 });
 
