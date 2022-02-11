@@ -83,14 +83,16 @@ describe("permissions", () => {
     });
 });
 
-describe.skip("sort", () => {
+describe("sort", () => {
     const cases = [
         { sort_field: "name", sort_order: "ASC" },
         { sort_field: "name", sort_order: "DESC" },
         { sort_field: "num_managers", sort_order: "ASC" },
         { sort_field: "num_managers", sort_order: "DESC" },
-        { sort_field: "num_employees", sort_order: "ASC" },
-        { sort_field: "num_employees", sort_order: "DESC" },
+        { sort_field: "num_members", sort_order: "ASC" },
+        { sort_field: "num_members", sort_order: "DESC" },
+        { sort_field: "num_roles", sort_order: "ASC" },
+        { sort_field: "num_roles", sort_order: "DESC" },
     ];
 
     test.each(cases)(
@@ -101,13 +103,9 @@ describe.skip("sort", () => {
 
             await getController(
                 {
-                    session: {
-                        user_id,
-                        current_business_id: business_id,
-                        business_ids: [business_id],
-                    },
+                    session,
                     query: { sort_field, sort_order },
-                    dbConnection: await DBConnection.get(),
+                    dbConnection: conn,
                 } as unknown as Request,
                 {
                     status: () => {
