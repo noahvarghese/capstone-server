@@ -24,7 +24,7 @@ jobs:
   continuous-integration:
     if: "(!contains(github.event.head_commit.message, 'pipeline skip') && !contains(github.event.head_commit.message, 'skip pipeline')) || (!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci'))"
     env:
-      DB: ${{ secrets.DB }}
+      DB_NAME: ${{ secrets.DB_NAME }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DB_PWD: ${{ secrets.DB_PWD }}
       DB_TYPE: ${{ secrets.DB_TYPE }}
