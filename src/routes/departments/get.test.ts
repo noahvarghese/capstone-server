@@ -8,6 +8,8 @@ import Department from "@models/department";
 import { departmentAttributes } from "@test/model/attributes";
 import { unitTeardown } from "@test/unit/teardown";
 import { deepClone } from "@util/obj";
+import { SessionData } from "express-session";
+import Role, { AccessKey } from "@models/role";
 
 const { res, mockClear } = getMockRes();
 
@@ -15,12 +17,19 @@ beforeEach(mockClear);
 
 let business_id: number, user_id: number;
 let conn: Connection;
+let session: Omit<SessionData, "cookie">;
 
 beforeAll(async () => {
     await DBConnection.init();
     conn = await DBConnection.get();
 
     ({ business_id, user_id } = await setupAdmin(conn));
+
+    session = {
+        user_id,
+        business_ids: [business_id],
+        current_business_id: business_id,
+    };
 
     await conn.manager.insert(
         Department,
@@ -38,8 +47,40 @@ afterAll(async () => {
 });
 
 describe("permissions", () => {
-    test.todo("");
-    return;
+    const cases = [
+        { access: "ADMIN" },
+        { access: "MANAGER" },
+        { access: "USER" },
+    ];
+
+    describe.each(cases)("%p", ({ access }) => {
+        beforeAll(async () => {
+            await conn.manager.update(Role, () => "", {
+                access: access as AccessKey,
+                prevent_edit: false,
+            });
+        });
+        afterAll(async () => {
+            await conn.manager.update(Role, () => "", {
+                access: "ADMIN",
+                prevent_edit: true,
+            });
+        });
+        test(access !== "USER" ? "success" : "fail", async () => {
+            await getController(
+                {
+                    session,
+                    query: {},
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+            if (access === "USER")
+                expect(res.sendStatus).toHaveBeenCalledWith(403);
+            else expect(res.status).toBeCalledWith(200);
+            return;
+        });
+    });
 });
 
 describe.skip("sort", () => {
