@@ -42,53 +42,6 @@ describe("permissions", () => {
     return;
 });
 
-describe.skip("filter", () => {
-    test("success", async () => {
-        const conn = await DBConnection.get();
-        const { id: department_id } = await conn.manager.findOneOrFail(
-            Department,
-            {
-                where: { name: departmentAttributes().name },
-            }
-        );
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let data: any;
-
-        await getController(
-            {
-                query: {
-                    filter_ids: JSON.stringify([department_id]),
-                    filter_field: "department",
-                },
-                dbConnection: conn,
-                session: {
-                    user_id,
-                    current_business_id: business_id,
-                    business_ids: [business_id],
-                },
-            } as unknown as Request,
-            {
-                send: (u: unknown) => {
-                    data = u;
-                },
-                status: () => ({
-                    send: (u: unknown) => {
-                        data = u;
-                    },
-                }),
-            } as unknown as Response
-        );
-
-        // Because we are only creating one extra user
-        expect(data.length).toBe(1);
-        expect(data[0].roles[0].department.name).toBe(
-            departmentAttributes().name
-        );
-    });
-    return;
-});
-
 describe.skip("sort", () => {
     const cases = [
         { sort_field: "name", sort_order: "ASC" },

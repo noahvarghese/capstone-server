@@ -131,6 +131,19 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // TODO: Need to seperate out joining and reducing of roles from getting all members
+    // fixes the pagination problem of duplicated users in current query
+
+    // Sample query:
+    /**
+     * SELECT u.first_name, u.last_name, CONCAT("[", GROUP_CONCAT('{"id": "', r.id, '", "name": "', r.name,'", "department": {"id": "', d.id,'", "name": "', d.name, '"}}'), "]") AS roles
+     * FROM membership m
+     * JOIN user AS u ON m.user_id = u.id
+     * JOIN user_role AS ur ON ur.user_id = u.id
+     * JOIN role AS r ON r.id = ur.role_id
+     * JOIN department AS d ON d.id = r.department_id;
+     */
+    // Then json parse the result
     let query = dbConnection
         .createQueryBuilder()
         .select("u")
