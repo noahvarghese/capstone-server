@@ -101,7 +101,6 @@ test("bad db connection", async () => {
     await deleteController(
         {
             session: { user_id, current_business_id: business_id },
-            body: { name: "TEst" },
             params: {
                 id,
             },
