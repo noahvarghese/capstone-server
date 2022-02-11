@@ -183,10 +183,6 @@ describe("search", () => {
 });
 
 describe("pagination", () => {
-    beforeAll(async () => {
-        // create second department
-    });
-
     describe("page", () => {
         const cases = [
             { limit: 1, page: 1 },
