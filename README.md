@@ -2,13 +2,13 @@
 <br />
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
 <br />
-![Statements](https://img.shields.io/badge/statements-86.32%25-yellow.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-86.7%25-yellow.svg?style=flat)
 <br />
-![Lines](https://img.shields.io/badge/lines-84.94%25-yellow.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-85.79%25-yellow.svg?style=flat)
 <br />
-![Functions](https://img.shields.io/badge/functions-91.22%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-87.4%25-yellow.svg?style=flat)
 <br />
-![Branches](https://img.shields.io/badge/branches-73.55%25-red.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-70.39%25-red.svg?style=flat)
 
 # OnBoard - Backend
 
@@ -64,7 +64,7 @@ Passes preset jest command line arguments that I have arranged into useful snipp
 
 | name                  | type                       | description                                                                                                                      |
 | --------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| DB                    | string                     | the name of the SQL database to be connected to                                                                                  |
+| DB_NAME               | string                     | the name of the SQL database to be connected to                                                                                  |
 | DB_PORT               | number                     | the port to connect on                                                                                                           |
 | DB_PWD                | string                     | the password to connect to the SQL database                                                                                      |
 | DB_TYPE               | "mysql" \| "postgres"      | the type of SQL database to be connected to                                                                                      |
@@ -83,7 +83,8 @@ Passes preset jest command line arguments that I have arranged into useful snipp
 | SESSION_ID            | string                     | id to use for session cookie                                                                                                     |
 | SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
-| SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
+| TEST_EMAIL_1  | string                     | secondary email to use for regular user tests                                                                                    |
+| TEST_EMAIL_2  | string                     | secondary email to use for regular user tests                                                                                    |
 
 ## Areas of Focus
 
