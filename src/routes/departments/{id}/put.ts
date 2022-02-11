@@ -54,8 +54,13 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (!(await dbConnection.manager.findOne(Department, id))) {
+    const dept = await dbConnection.manager.findOne(Department, id);
+
+    if (!dept) {
         res.sendStatus(400);
+        return;
+    } else if (dept.prevent_edit) {
+        res.sendStatus(405);
         return;
     }
 

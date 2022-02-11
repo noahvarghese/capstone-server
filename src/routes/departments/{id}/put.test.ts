@@ -17,6 +17,7 @@ let conn: Connection;
 
 let id: number;
 const oldName = "TEST";
+const newName = "NEWTEST";
 
 beforeAll(async () => {
     await DBConnection.init();
@@ -39,6 +40,40 @@ afterAll(async () => {
     const conn = await DBConnection.get();
     await unitTeardown(conn);
     await DBConnection.close();
+});
+
+describe("prevent edit", () => {
+    beforeAll(async () => {
+        await conn.manager.update(
+            Department,
+            { id, business_id },
+            { prevent_edit: true }
+        );
+    });
+    afterAll(async () => {
+        await conn.manager.update(
+            Department,
+            { id, business_id },
+            { prevent_edit: false }
+        );
+    });
+    test("405", async () => {
+        await putController(
+            {
+                session: {
+                    user_id,
+                    current_business_id: business_id,
+                    business_ids: [business_id],
+                },
+                params: { id },
+                body: { name: newName },
+                dbConnection: conn,
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(405);
+    });
 });
 
 describe("invalid id", () => {
@@ -133,7 +168,6 @@ describe("permissions", () => {
         { access: "MANAGER" },
         { access: "USER" },
     ];
-    const newName = "NEWTEST";
 
     describe.each(cases)("%p", ({ access }) => {
         beforeEach(async () => {
