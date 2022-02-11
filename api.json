@@ -1962,12 +1962,20 @@
                 }
             }
         },
-        "/members/{id}": {
+        "/members/{user_id}": {
             "get": {
                 "tags": ["membership"],
                 "summary": "get individual user",
                 "description": "Get user by id. Underpriveleged users can get their own user but no one else's.",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "description": "unique identifier",
+                        "schema": { "type": "integer" }
+                    }
+                ],
                 "responses": {
                     "200": { "$ref": "#/components/schemas/User" },
                     "401": {

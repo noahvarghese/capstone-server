@@ -42,7 +42,7 @@ describe("permissions", () => {
                     business_ids: [business_id],
                     current_business_id: business_id,
                 },
-                params: { id: user_id },
+                params: { user_id },
                 dbConnection: conn,
             } as unknown as Request,
             res
