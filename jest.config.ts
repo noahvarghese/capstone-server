@@ -49,7 +49,7 @@ export default {
                 includeConsoleLog: true,
                 includeFailureMsg: true,
                 includeSuiteFailure: true,
-                outputPath: "./__test__/unit-test-report.html",
+                outputPath: "./__test__/report.html",
                 pageTitle: "Unit Test Report",
             },
         ],
