@@ -3,13 +3,15 @@ import { client } from "@util/permalink";
 import authRouter from "./auth";
 import memberRoute from "./members";
 import businessRouter from "./businesses";
+import departmentRoute from "./departments";
 import Logs from "@noahvarghese/logger";
 
 const router = Router();
 
 router.use("/auth", authRouter);
-router.use("/members", memberRoute);
 router.use("/businesses", businessRouter);
+router.use("/members", memberRoute);
+router.use("/departments", departmentRoute);
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {
