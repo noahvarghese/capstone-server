@@ -114,12 +114,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     try {
         const [isAdmin, isManager] = await Promise.all([
-            await User.isAdmin(
+            User.isAdmin(
                 dbConnection,
                 current_business_id ?? NaN,
                 user_id ?? NaN
             ),
-            await User.isManager(
+            User.isManager(
                 dbConnection,
                 current_business_id ?? NaN,
                 user_id ?? NaN
