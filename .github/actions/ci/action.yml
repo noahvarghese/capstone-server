@@ -14,15 +14,7 @@ runs:
       uses: ./.github/actions/cache-node-modules
     - name: "List changed unit tests"
       run: |
-        npm run unit:test:list:branch -- "${{ steps.changed.outputs.changed }}"
-      shell: bash
-    - name: "List changed integration tests"
-      run: |
-        npm run integration:test:list:branch -- "${{ steps.changed.outputs.changed }}"
-      shell: bash
-    - name: "List changed database tests"
-      run: |
-        npm run database:test:list:branch -- "${{ steps.changed.outputs.changed }}"
+        npm run jest:list:changed:branch -- "${{ steps.changed.outputs.changed }}"
       shell: bash
     - name: test
       run: |
