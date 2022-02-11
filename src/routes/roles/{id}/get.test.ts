@@ -114,9 +114,7 @@ describe("permissions", () => {
         } else {
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.send).toHaveBeenCalledWith(
-                expect.arrayContaining([
-                    expect.objectContaining({ name: role.name }),
-                ])
+                expect.objectContaining({ name: role.name })
             );
         }
     });
