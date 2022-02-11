@@ -13,7 +13,13 @@ const filterFields = ["department", "role"] as const;
 
 type FilterKey = typeof filterFields[number];
 
-const sortFields = ["first_name", "last_name", "email", "phone"] as const;
+const sortFields = [
+    "first_name",
+    "last_name",
+    "email",
+    "phone",
+    "birthday",
+] as const;
 type SortFieldKey = typeof sortFields[number];
 
 const sortOrders = ["ASC", "DESC"] as const;
@@ -131,26 +137,13 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    // TODO: Need to seperate out joining and reducing of roles from getting all members
-    // fixes the pagination problem of duplicated users in current query
-
-    // Sample query:
-    /**
-     * SELECT u.first_name, u.last_name, CONCAT("[", GROUP_CONCAT('{"id": "', r.id, '", "name": "', r.name,'", "department": {"id": "', d.id,'", "name": "', d.name, '"}}'), "]") AS roles
-     * FROM membership m
-     * JOIN user AS u ON m.user_id = u.id
-     * JOIN user_role AS ur ON ur.user_id = u.id
-     * JOIN role AS r ON r.id = ur.role_id
-     * JOIN department AS d ON d.id = r.department_id;
-     */
-    // Then json parse the result
     let query = dbConnection
         .createQueryBuilder()
-        .select("u")
-        .addSelect("r")
-        .addSelect("d")
-        .from(Membership, "m")
-        .leftJoin(User, "u", "m.user_id = u.id")
+        .select(
+            "first_name, last_name, email, phone, birthday, m.user_id, accepted"
+        )
+        .from(User, "u")
+        .leftJoin(Membership, "m", "m.user_id = u.id")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
         .leftJoin(Role, "r", "ur.role_id = r.id")
         .leftJoin(Department, "d", "d.id = r.department_id")
@@ -180,11 +173,25 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         const sqlizedSearchItem = `%${search}%`;
         query = query.andWhere(
             new Brackets((qb: WhereExpressionBuilder) => {
-                qb.where("r.name like :role_name", {
-                    role_name: sqlizedSearchItem,
-                }).orWhere("d.name like :department_name", {
-                    department_name: sqlizedSearchItem,
-                });
+                qb.where("u.birthday like :birthday", {
+                    birthday: sqlizedSearchItem,
+                })
+                    .orWhere("u.first_name like :first_name", {
+                        first_name: sqlizedSearchItem,
+                    })
+                    .orWhere("u.last_name like :last_name", {
+                        last_name: sqlizedSearchItem,
+                    })
+                    .orWhere("u.email like :email", {
+                        email: sqlizedSearchItem,
+                    })
+                    .orWhere("u.phone like :phone", {
+                        phone: sqlizedSearchItem,
+                    })
+                    .orWhere("r.name like :role", { role: sqlizedSearchItem })
+                    .orWhere("d.name like :department", {
+                        department: sqlizedSearchItem,
+                    });
             })
         );
     }
@@ -200,52 +207,56 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .offset(Number(page) * Number(limit) - Number(limit));
     }
 
-    const memberResult = await query.getRawMany();
+    try {
+        const memberResult = await query.getRawMany<{
+            user_id: number;
+            first_name: string;
+            last_name: string;
+            email: string;
+            phone: string;
+            birthday: Date | null;
+            accepted: boolean;
+        }>();
 
-    const members: Member[] = memberResult.reduce((prev, curr) => {
-        const el = (prev as Member[]).find((e) => {
-            e.id === curr.u_id;
-        });
-
-        if (!el) {
-            prev.push({
-                id: curr.u_id,
-                first_name: curr.u_first_name,
-                last_name: curr.u_last_name,
-                email: curr.u_email,
-                phone: curr.u_phone,
-                birthday: curr.u_birthday,
-                accepted: curr.m_accepted,
-                roles:
-                    curr.r_id && curr.r_name
-                        ? [
-                              {
-                                  id: curr.r_id,
-                                  name: curr.r_name,
-                                  department: {
-                                      id: curr.d_id,
-                                      name: curr.d_name,
-                                  },
-                              },
-                          ]
-                        : [],
-            } as Member[][keyof Member[]]);
-        } else {
-            el.roles.push({
-                id: curr.r_id,
-                name: curr.r_name,
-                department: {
-                    id: curr.d_id,
-                    name: curr.d_name,
-                },
-            });
-        }
-
-        return prev;
-    }, [] as Member[]);
-
-    res.status(200).send(members);
-    return;
+        const members = await Promise.all(
+            memberResult.map(async (m) => {
+                return {
+                    id: m.user_id,
+                    ...m,
+                    roles: (
+                        await dbConnection
+                            .createQueryBuilder()
+                            .select(
+                                "r.id AS role_id, r.name AS role_name, d.id AS department_id, d.name AS department_name"
+                            )
+                            .from(UserRole, "ur")
+                            .leftJoin(Role, "r", "r.id = ur.role_id")
+                            .leftJoin(Department, "d", "d.id = r.department_id")
+                            .where("ur.user_id = :user_id", { user_id })
+                            .getRawMany<{
+                                role_id: number;
+                                role_name: string;
+                                department_id: number;
+                                department_name: string;
+                            }>()
+                    ).map((r) => ({
+                        id: r.role_id,
+                        name: r.role_name,
+                        department: {
+                            id: r.department_id,
+                            name: r.department_name,
+                        },
+                    })),
+                };
+            })
+        );
+        res.status(200).send(members);
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.sendStatus(500);
+        return;
+    }
 };
 
 export default getController;
