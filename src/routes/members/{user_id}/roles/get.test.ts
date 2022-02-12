@@ -29,41 +29,6 @@ afterAll(async () => {
     await DBConnection.close();
 });
 
-test("bad connection", async () => {
-    await getController(
-        {
-            session: {
-                user_id,
-                business_ids: [business_id],
-                current_business_id: business_id,
-            },
-            params: {
-                user_id: 1,
-            },
-        } as unknown as Request,
-        res
-    );
-    expect(res.sendStatus).toHaveBeenLastCalledWith(500);
-});
-
-test("invalid id", async () => {
-    await getController(
-        {
-            session: {
-                user_id,
-                business_ids: [business_id],
-                current_business_id: business_id,
-            },
-            params: {
-                user_id: "YOLO",
-            },
-            dbConnection: conn,
-        } as unknown as Request,
-        res
-    );
-    expect(res.sendStatus).toHaveBeenLastCalledWith(400);
-});
-
 describe("requires second user with no permissions", () => {
     let newUserId: number, role_id: number;
 

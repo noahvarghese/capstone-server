@@ -30,43 +30,6 @@ afterAll(async () => {
     await DBConnection.close();
 });
 
-test("invalid connection", async () => {
-    await postController(
-        {
-            session: {
-                user_id,
-                current_business_id: business_id,
-                business_ids: [business_id],
-            },
-            params: {},
-        } as unknown as Request,
-        res
-    );
-    expect(res.sendStatus).toHaveBeenCalledWith(500);
-});
-
-describe("invalid parameters", () => {
-    const cases = [
-        { user_id: NaN, role_id: NaN },
-        { user_id: 10000, role_id: 100000 },
-    ];
-    test.each(cases)("%p", async () => {
-        await postController(
-            {
-                session: {
-                    user_id,
-                    current_business_id: business_id,
-                    business_ids: [business_id],
-                },
-                dbConnection: conn,
-                params: { user_id: NaN, role_id: "YOLO" },
-            } as unknown as Request,
-            res
-        );
-        expect(res.sendStatus).toHaveBeenCalledWith(400);
-    });
-});
-
 describe("permissions", () => {
     const cases = ["MANAGER", "ADMIN", "USER"];
     let newUserId: number, newRoleId: number;

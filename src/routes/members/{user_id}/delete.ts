@@ -1,7 +1,6 @@
 import Membership from "@models/membership";
 import User from "@models/user/user";
 import { Request, Response } from "express";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 
 const deleteController = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -9,16 +8,6 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
         params: { user_id: id },
     } = req;
-
-    if (!isNumber(id)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
 
     const isAdmin = await User.isAdmin(
         dbConnection,

@@ -54,11 +54,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const m = await dbConnection.manager.findOne(Membership, {
         where: {
             accepted: false,

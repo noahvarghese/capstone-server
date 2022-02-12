@@ -18,11 +18,6 @@ const { res, mockClear } = getMockRes();
 
 beforeEach(mockClear);
 
-test("db connection failed", async () => {
-    await getController({ query: {}, session: {} } as Request, res);
-    expect(res.sendStatus).toHaveBeenCalledWith(500);
-});
-
 describe("requires db connection", () => {
     beforeAll(DBConnection.init);
     afterAll(DBConnection.close);

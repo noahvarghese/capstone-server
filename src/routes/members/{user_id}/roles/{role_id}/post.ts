@@ -3,7 +3,6 @@ import Membership from "@models/membership";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 
@@ -14,19 +13,9 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (!(await User.isAdmin(dbConnection, business_id!, user_id!))) {
         res.sendStatus(403);
-        return;
-    }
-
-    if (!isNumber(id) || !isNumber(role_id)) {
-        res.sendStatus(400);
         return;
     }
 
