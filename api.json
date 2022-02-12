@@ -1963,19 +1963,19 @@
             }
         },
         "/members/{user_id}": {
+            "parameters": [
+                {
+                    "name": "user_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                }
+            ],
             "get": {
                 "tags": ["membership"],
                 "summary": "get individual user",
                 "description": "Get user by id. Underpriveleged users can get their own user but no one else's.",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true,
-                        "description": "unique identifier",
-                        "schema": { "type": "integer" }
-                    }
-                ],
                 "responses": {
                     "200": { "$ref": "#/components/schemas/User" },
                     "401": {
@@ -1991,7 +1991,6 @@
                 "tags": ["membership"],
                 "summary": "Delete membership",
                 "description": "cannot delete first admin membership made on creation",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": { "$ref": "#/components/responses/Success" },
                     "400": { "$ref": "#/components/responses/ArgumentsError" },
