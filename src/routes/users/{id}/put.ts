@@ -28,6 +28,11 @@ export const updateUserController = async (
         dbConnection,
     } = req;
 
+    if (!dbConnection || !dbConnection.isConnected) {
+        res.sendStatus(500);
+        return;
+    }
+
     let data: UpdatedUser;
 
     try {
@@ -38,12 +43,7 @@ export const updateUserController = async (
         return;
     }
 
-    try {
-        await dbConnection.manager.update(User, user_id, data);
-        res.sendStatus(200);
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        res.sendStatus(500);
-    }
+    Logs.Error(data);
+    await dbConnection.manager.update(User, user_id, data);
+    res.sendStatus(200);
 };
