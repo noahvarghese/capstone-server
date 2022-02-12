@@ -208,11 +208,6 @@ export const registerController = async (
         return;
     }
 
-    if (isNaN(user_id) || isNaN(business_id)) {
-        res.sendStatus(500);
-        return;
-    }
-
     req.session.business_ids = [business_id];
     req.session.current_business_id = business_id;
     req.session.user_id = user_id;
