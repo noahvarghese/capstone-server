@@ -1,6 +1,5 @@
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
-import Logs from "@noahvarghese/logger";
 import { ExpectedBody, bodyValidators } from "@util/formats/body";
 import { Request, Response } from "express";
 
@@ -43,7 +42,6 @@ export const updateUserController = async (
         return;
     }
 
-    Logs.Error(data);
     await dbConnection.manager.update(User, user_id, data);
     res.sendStatus(200);
 };
