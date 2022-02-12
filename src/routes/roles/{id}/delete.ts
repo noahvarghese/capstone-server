@@ -1,3 +1,4 @@
+import Department from "@models/department";
 import Role from "@models/role";
 import User from "@models/user/user";
 import { Request, Response } from "express";
@@ -15,7 +16,16 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const role = await dbConnection.manager.findOne(Role, id);
+    const role = await dbConnection
+        .createQueryBuilder()
+        .select("r")
+        .from(Role, "r")
+        .leftJoin(Department, "d", "d.id = r.department_id")
+        .where("r.id = :id", { id })
+        .andWhere("d.business_id = :current_business_id", {
+            current_business_id,
+        })
+        .getOne();
 
     if (!role) {
         res.sendStatus(400);
