@@ -22,20 +22,8 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
-    const isAdmin = await User.isAdmin(
-        dbConnection,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        current_business_id!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        user_id!
-    );
-
-    if (!isAdmin) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!(await User.isAdmin(dbConnection, current_business_id!, user_id!))) {
         res.sendStatus(403);
         return;
     }

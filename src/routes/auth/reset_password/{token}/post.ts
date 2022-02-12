@@ -44,16 +44,9 @@ export const resetPasswordController = async (
         return;
     }
 
-    try {
-        await connection.manager.update(User, user.id, {
-            password: user.password,
-        });
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        res.sendStatus(500);
-        return;
-    }
+    await connection.manager.update(User, user.id, {
+        password: user.password,
+    });
 
     if (await resetPasswordEmail(connection, user)) res.sendStatus(200);
     else res.sendStatus(500);

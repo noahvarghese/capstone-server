@@ -27,11 +27,6 @@ export const forgotPasswordController = async (
         return;
     }
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const user = await dbConnection.manager.findOne(User, {
         where: { email },
     });

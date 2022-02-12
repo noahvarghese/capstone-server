@@ -26,11 +26,6 @@ export const setDefaultBusinessController = async (
         current_business_id === business_id ||
         business_ids.includes(business_id);
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     if (!isMember) {
         res.sendStatus(403);
         return;

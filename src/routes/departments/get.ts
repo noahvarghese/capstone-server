@@ -54,11 +54,6 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const [isAdmin, isManager] = await Promise.all([
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         User.isAdmin(dbConnection, current_business_id!, user_id!),

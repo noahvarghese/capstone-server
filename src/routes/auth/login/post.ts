@@ -41,11 +41,6 @@ export const loginController = async (
         return;
     }
 
-    if (!connection || !connection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const user = await connection.manager.findOne(User, {
         where: { email },
     });

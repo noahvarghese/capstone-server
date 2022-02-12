@@ -115,11 +115,6 @@ export const registerController = async (
         return;
     }
 
-    if (!connection || !connection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const [businessCount, userCount] = await Promise.all([
         connection.manager.count(Business, {
             where: { name: b.name },

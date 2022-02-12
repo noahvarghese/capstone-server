@@ -11,11 +11,6 @@ export const getBusinessController = async (
         session: { user_id },
     } = req;
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const result = await dbConnection
         .createQueryBuilder()
         .select("b.id, b.name, m.default_option")

@@ -2,7 +2,6 @@ import Department from "@models/department";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Request, Response } from "express";
 
 const getController = async (req: Request, res: Response): Promise<void> => {
@@ -12,18 +11,10 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         params: { id },
     } = req;
 
-    if (!isNumber(id)) {
-        res.sendStatus(400);
-        return;
-    }
-
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const [isAdmin, isManager] = await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         User.isAdmin(dbConnection, current_business_id!, user_id!),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         User.isManager(dbConnection, current_business_id!, user_id!),
     ]);
 
