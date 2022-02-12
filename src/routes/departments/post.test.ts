@@ -38,18 +38,6 @@ test("bad db connection", async () => {
     expect(res.sendStatus).toHaveBeenCalledWith(500);
 });
 
-describe("missing session", () => {
-    const cases = [
-        { user_id: undefined, current_business_id: 1 },
-        { user_id: 1, current_business_id: undefined },
-    ];
-
-    test.each(cases)("%p", async (session) => {
-        await postController({ session } as unknown as Request, res);
-        expect(res.sendStatus).toHaveBeenCalledWith(401);
-    });
-});
-
 describe("invalid name", () => {
     const cases = [
         { name: 123 },
