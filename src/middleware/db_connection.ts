@@ -9,7 +9,7 @@ const dbConnection = (
 ): void => {
     const connection = getConnection();
 
-    if (!connection) {
+    if (!connection || !connection.isConnected) {
         Logs.Error("Cannot get database connection");
         res.status(500).json({ message: "Could not connect to database." });
         return;

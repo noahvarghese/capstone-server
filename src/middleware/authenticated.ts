@@ -1,3 +1,4 @@
+import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { NextFunction, Request, Response } from "express";
 
 export default (req: Request, res: Response, next: NextFunction): void => {
@@ -5,10 +6,10 @@ export default (req: Request, res: Response, next: NextFunction): void => {
         session: { user_id, current_business_id, business_ids },
     } = req;
 
-    if (!user_id || isNaN(Number(user_id))) {
+    if (!isNumber(user_id)) {
         res.sendStatus(401);
         return;
-    } else if (!current_business_id || isNaN(Number(current_business_id))) {
+    } else if (!isNumber(current_business_id)) {
         res.sendStatus(401);
         return;
     } else if (
