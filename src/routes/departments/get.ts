@@ -1,6 +1,5 @@
 import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import User from "@models/user/user";
-import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import Department from "@models/department";
@@ -55,28 +54,22 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    try {
-        const [isAdmin, isManager] = await Promise.all([
-            User.isAdmin(
-                dbConnection,
-                current_business_id ?? NaN,
-                user_id ?? NaN
-            ),
-            User.isManager(
-                dbConnection,
-                current_business_id ?? NaN,
-                user_id ?? NaN
-            ),
-        ]);
-
-        if (!(isAdmin || isManager)) {
-            res.sendStatus(403);
-            return;
-        }
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
+        return;
+    }
+
+    const [isAdmin, isManager] = await Promise.all([
+        User.isAdmin(dbConnection, current_business_id ?? NaN, user_id ?? NaN),
+        User.isManager(
+            dbConnection,
+            current_business_id ?? NaN,
+            user_id ?? NaN
+        ),
+    ]);
+
+    if (!(isAdmin || isManager)) {
+        res.sendStatus(403);
         return;
     }
 

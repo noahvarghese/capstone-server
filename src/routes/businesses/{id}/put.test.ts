@@ -9,12 +9,15 @@ import { setDefaultBusinessController } from "./put";
 const { mockClear, res } = getMockRes();
 
 beforeEach(mockClear);
+beforeAll(DBConnection.init);
+afterAll(DBConnection.close);
 
 test("user is not a member", async () => {
     await setDefaultBusinessController(
         {
             session: { user_id: 1, business_ids: [1], current_business_id: 1 },
             params: { id: 2 },
+            dbConnection: await DBConnection.get(),
         } as unknown as Request,
         res
     );
@@ -26,7 +29,6 @@ describe("user is a member", () => {
     let user_id!: number, business_id!: number;
 
     beforeAll(async () => {
-        await DBConnection.init();
         const conn = await DBConnection.get();
 
         [
@@ -76,8 +78,6 @@ describe("user is a member", () => {
             conn.manager.delete(User, () => ""),
             conn.manager.delete(Business, () => ""),
         ]);
-
-        await DBConnection.close();
     });
     test("user has no 'default memberships' set", async () => {
         await setDefaultBusinessController(

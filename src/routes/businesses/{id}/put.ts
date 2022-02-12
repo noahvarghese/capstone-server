@@ -7,7 +7,7 @@ export const setDefaultBusinessController = async (
     res: Response
 ): Promise<void> => {
     const {
-        dbConnection: connection,
+        dbConnection,
         session: {
             user_id: u_id,
             current_business_id: curr_b_id,
@@ -26,39 +26,41 @@ export const setDefaultBusinessController = async (
         current_business_id === business_id ||
         business_ids.includes(business_id);
 
+    if (!dbConnection || !dbConnection.isConnected) {
+        res.sendStatus(500);
+        return;
+    }
+
     if (!isMember) {
         res.sendStatus(403);
         return;
     }
 
-    try {
-        // get current default business for user
-        const defaultMembership = await connection.manager.findOneOrFail(
-            Membership,
-            {
-                where: { default_option: true, user_id, accepted: true },
-            }
-        );
+    // get current default business for user
+    const defaultMembership = await dbConnection.manager.findOne(Membership, {
+        where: { default_option: true, user_id, accepted: true },
+    });
 
-        await connection.transaction(async (tm) => {
-            await Promise.all([
-                tm.update(
-                    Membership,
-                    { user_id, business_id },
-                    { default_option: true }
-                ),
-                tm.update(
-                    Membership,
-                    { user_id, business_id: defaultMembership.business_id },
-                    { default_option: false }
-                ),
-            ]);
-        });
-
-        res.sendStatus(200);
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!defaultMembership) {
+        Logs.Error("No default membership set for user", user_id);
         res.sendStatus(500);
+        return;
     }
+
+    await dbConnection.transaction(async (tm) => {
+        await Promise.all([
+            tm.update(
+                Membership,
+                { user_id, business_id },
+                { default_option: true }
+            ),
+            tm.update(
+                Membership,
+                { user_id, business_id: defaultMembership.business_id },
+                { default_option: false }
+            ),
+        ]);
+    });
+
+    res.sendStatus(200);
 };
