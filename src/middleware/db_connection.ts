@@ -7,16 +7,16 @@ const dbConnection = (
     res: Response,
     next: NextFunction
 ): void => {
-    const connection = getConnection();
-
-    if (!connection || !connection.isConnected) {
-        Logs.Error("Cannot get database connection");
-        res.status(500).json({ message: "Could not connect to database." });
+    try {
+        const connection = getConnection();
+        req.dbConnection = connection;
+        next();
+    } catch (_e) {
+        const { message } = _e as Error;
+        Logs.Error(message);
+        res.sendStatus(500);
         return;
     }
-
-    req.dbConnection = connection;
-    next();
 };
 
 export default dbConnection;
