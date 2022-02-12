@@ -66,17 +66,6 @@ test("invalid email", async () => {
     );
 });
 
-test("invalid db connection", async () => {
-    await updateUserController(
-        {
-            session: { user_id: NaN },
-        } as Request,
-        res
-    );
-
-    expect(res.sendStatus).toHaveBeenCalledWith(500);
-});
-
 test("undefined values do not remove values", async () => {
     const updateUser = new User({
         first_name: "YOLO",

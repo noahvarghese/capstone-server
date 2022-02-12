@@ -10,11 +10,6 @@ export const getUserController = async (
         dbConnection,
     } = req;
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     const user = await dbConnection.manager.findOne(User, user_id);
 
     if (!user) {

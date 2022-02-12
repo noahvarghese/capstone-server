@@ -27,11 +27,6 @@ export const updateUserController = async (
         dbConnection,
     } = req;
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     let data: UpdatedUser;
 
     try {

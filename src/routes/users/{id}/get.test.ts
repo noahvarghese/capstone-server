@@ -22,15 +22,6 @@ describe("db connection required", () => {
         );
         expect(res.sendStatus).toHaveBeenCalledWith(400);
     });
-    test("db error", async () => {
-        await getUserController(
-            {
-                session: { user_id: 1 },
-            } as Request,
-            res
-        );
-        expect(res.sendStatus).toHaveBeenCalledWith(500);
-    });
 
     describe("Create a user", () => {
         let user: User;
