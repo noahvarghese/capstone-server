@@ -1,9 +1,10 @@
 import { Request, Response, Router } from "express";
 import { client } from "@util/permalink";
 import authRouter from "./auth";
-import memberRoute from "./members";
+import memberRouter from "./members";
+import manualRouter from "./manuals";
 import businessRouter from "./businesses";
-import departmentRoute from "./departments";
+import departmentRouter from "./departments";
 import roleRouter from "./roles";
 import Logs from "@noahvarghese/logger";
 
@@ -11,8 +12,9 @@ const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/businesses", businessRouter);
-router.use("/members", memberRoute);
-router.use("/departments", departmentRoute);
+router.use("/members", memberRouter);
+router.use("/manuals", manualRouter);
+router.use("/departments", departmentRouter);
 router.use("/roles", roleRouter);
 
 // Default route handler to serve the website if requests are made
