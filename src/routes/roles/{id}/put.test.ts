@@ -80,42 +80,6 @@ describe("prevent edit", () => {
     });
 });
 
-describe("invalid id", () => {
-    const cases = [{ id: "YOLO" }, { new_id: 10000 }];
-    test.each(cases)("%p", async ({ new_id }) => {
-        await putController(
-            {
-                session: {
-                    user_id,
-                    business_ids: [business_id],
-                    current_business_id: business_id,
-                },
-                params: {
-                    id: new_id,
-                },
-                body: { name: oldName },
-                dbConnection: conn,
-            } as unknown as Request,
-            res
-        );
-        expect(res.sendStatus).toHaveBeenLastCalledWith(400);
-    });
-});
-
-test("bad db connection", async () => {
-    await putController(
-        {
-            session: { user_id, current_business_id: business_id },
-            body: { name: "TEst" },
-            params: {
-                id,
-            },
-        } as unknown as Request,
-        res
-    );
-    expect(res.sendStatus).toHaveBeenCalledWith(500);
-});
-
 describe("invalid name", () => {
     const cases = [
         { name: 123 },

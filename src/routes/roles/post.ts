@@ -11,11 +11,6 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
-        return;
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (!(await User.isAdmin(dbConnection, current_business_id!, user_id!))) {
         res.sendStatus(403);

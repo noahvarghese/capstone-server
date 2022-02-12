@@ -27,17 +27,6 @@ afterAll(async () => {
     await DBConnection.close();
 });
 
-test("bad db connection", async () => {
-    await postController(
-        {
-            session: { user_id, current_business_id: business_id },
-            body: { name: "TEst" },
-        } as unknown as Request,
-        res
-    );
-    expect(res.sendStatus).toHaveBeenCalledWith(500);
-});
-
 describe("invalid body", () => {
     const cases = [
         { name: 123, department_id: 10000 },

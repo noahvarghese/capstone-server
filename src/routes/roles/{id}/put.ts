@@ -1,7 +1,6 @@
 import Role from "@models/role";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Request, Response } from "express";
 
 const putController = async (req: Request, res: Response): Promise<void> => {
@@ -10,11 +9,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         params: { id },
         dbConnection,
     } = req;
-
-    if (!isNumber(id)) {
-        res.sendStatus(400);
-        return;
-    }
 
     let name = "";
 
@@ -26,11 +20,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
-        return;
-    }
-
-    if (!dbConnection || !dbConnection.isConnected) {
-        res.sendStatus(500);
         return;
     }
 
