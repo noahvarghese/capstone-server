@@ -115,22 +115,17 @@ export const registerController = async (
         return;
     }
 
-    let businessCount = 0,
-        userCount = 0;
-
-    try {
-        [businessCount, userCount] = await Promise.all([
-            connection.manager.count(Business, {
-                where: { name: b.name },
-            }),
-            connection.manager.count(User, { where: { email: u.email } }),
-        ]);
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!connection || !connection.isConnected) {
         res.sendStatus(500);
         return;
     }
+
+    const [businessCount, userCount] = await Promise.all([
+        connection.manager.count(Business, {
+            where: { name: b.name },
+        }),
+        connection.manager.count(User, { where: { email: u.email } }),
+    ]);
 
     if (businessCount > 0 || userCount > 0) {
         res.status(400).send(
