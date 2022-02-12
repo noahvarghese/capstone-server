@@ -540,7 +540,6 @@
                     "membership",
                     "department",
                     "role",
-                    "permission",
                     "user role"
                 ],
                 "operationId": "CreateBusinessWithAdminAccount",
