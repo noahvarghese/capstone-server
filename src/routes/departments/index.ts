@@ -7,6 +7,7 @@ import idRouter from "./{id}";
 const router = Router();
 
 router.use(authenticated);
+
 router.get("/", getController);
 router.post("/", postController);
 router.use("/:id", idRouter);
