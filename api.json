@@ -524,10 +524,6 @@
             "name": "quiz result",
             "description": "Quiz Result operations. Model joins Quiz Attempt to Quiz Question, and Member's selected Quiz Answer, allows many to many to many relationship."
         },
-        {
-            "name": "settings",
-            "description": "Settings related to user permissions"
-        },
         { "name": "reports", "description": "admin reports" }
     ],
     "paths": {
@@ -3920,40 +3916,6 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/settings/nav": {
-            "get": {
-                "tags": ["settings"],
-                "summary": "Get the navigation links for the user",
-                "description": "Requires the user to be logged in",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "home": { "type": "boolean" },
-                                        "members": { "type": "boolean" },
-                                        "department": { "type": "boolean" },
-                                        "roles": { "type": "boolean" },
-                                        "manuals": { "type": "boolean" },
-                                        "quizzes": { "type": "boolean" },
-                                        "reports": { "type": "boolean" },
-                                        "scores": { "type": "boolean" },
-                                        "logout": { "type": "boolean" }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
