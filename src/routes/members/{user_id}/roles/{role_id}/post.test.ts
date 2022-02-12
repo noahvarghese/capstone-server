@@ -29,20 +29,6 @@ afterAll(async () => {
     await unitTeardown(conn);
     await DBConnection.close();
 });
-test("invalid session", async () => {
-    await postController(
-        {
-            session: {
-                user_id: NaN,
-                current_business_id: business_id,
-                business_ids: [business_id],
-            },
-            params: {},
-        } as unknown as Request,
-        res
-    );
-    expect(res.sendStatus).toHaveBeenCalledWith(401);
-});
 
 test("invalid connection", async () => {
     await postController(

@@ -3,7 +3,6 @@ import Membership from "@models/membership";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
 import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
@@ -112,28 +111,20 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    try {
-        const [isAdmin, isManager] = await Promise.all([
-            User.isAdmin(
-                dbConnection,
-                current_business_id ?? NaN,
-                user_id ?? NaN
-            ),
-            User.isManager(
-                dbConnection,
-                current_business_id ?? NaN,
-                user_id ?? NaN
-            ),
-        ]);
-
-        if (!(isAdmin || isManager)) {
-            res.sendStatus(403);
-            return;
-        }
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
+        return;
+    }
+
+    const [isAdmin, isManager] = await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        User.isAdmin(dbConnection, current_business_id!, user_id!),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        User.isManager(dbConnection, current_business_id!, user_id!),
+    ]);
+
+    if (!(isAdmin || isManager)) {
+        res.sendStatus(403);
         return;
     }
 
@@ -207,56 +198,50 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .offset(Number(page) * Number(limit) - Number(limit));
     }
 
-    try {
-        const memberResult = await query.getRawMany<{
-            user_id: number;
-            first_name: string;
-            last_name: string;
-            email: string;
-            phone: string;
-            birthday: Date | null;
-            accepted: boolean;
-        }>();
+    const memberResult = await query.getRawMany<{
+        user_id: number;
+        first_name: string;
+        last_name: string;
+        email: string;
+        phone: string;
+        birthday: Date | null;
+        accepted: boolean;
+    }>();
 
-        const members = await Promise.all(
-            memberResult.map(async (m) => {
-                return {
-                    id: m.user_id,
-                    ...m,
-                    roles: (
-                        await dbConnection
-                            .createQueryBuilder()
-                            .select(
-                                "r.id AS role_id, r.name AS role_name, d.id AS department_id, d.name AS department_name"
-                            )
-                            .from(UserRole, "ur")
-                            .leftJoin(Role, "r", "r.id = ur.role_id")
-                            .leftJoin(Department, "d", "d.id = r.department_id")
-                            .where("ur.user_id = :user_id", { user_id })
-                            .getRawMany<{
-                                role_id: number;
-                                role_name: string;
-                                department_id: number;
-                                department_name: string;
-                            }>()
-                    ).map((r) => ({
-                        id: r.role_id,
-                        name: r.role_name,
-                        department: {
-                            id: r.department_id,
-                            name: r.department_name,
-                        },
-                    })),
-                };
-            })
-        );
-        res.status(200).send(members);
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        res.sendStatus(500);
-        return;
-    }
+    const members = await Promise.all(
+        memberResult.map(async (m) => {
+            return {
+                id: m.user_id,
+                ...m,
+                roles: (
+                    await dbConnection
+                        .createQueryBuilder()
+                        .select(
+                            "r.id AS role_id, r.name AS role_name, d.id AS department_id, d.name AS department_name"
+                        )
+                        .from(UserRole, "ur")
+                        .leftJoin(Role, "r", "r.id = ur.role_id")
+                        .leftJoin(Department, "d", "d.id = r.department_id")
+                        .where("ur.user_id = :user_id", { user_id })
+                        .getRawMany<{
+                            role_id: number;
+                            role_name: string;
+                            department_id: number;
+                            department_name: string;
+                        }>()
+                ).map((r) => ({
+                    id: r.role_id,
+                    name: r.role_name,
+                    department: {
+                        id: r.department_id,
+                        name: r.department_name,
+                    },
+                })),
+            };
+        })
+    );
+
+    res.status(200).send(members);
 };
 
 export default getController;

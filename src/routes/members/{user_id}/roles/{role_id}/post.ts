@@ -14,19 +14,13 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
-    if (!isNumber(business_id) || !isNumber(user_id)) {
-        res.sendStatus(401);
-        return;
-    }
-
     if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
         return;
     }
 
-    if (
-        !(await User.isAdmin(dbConnection, business_id ?? NaN, user_id ?? NaN))
-    ) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!(await User.isAdmin(dbConnection, business_id!, user_id!))) {
         res.sendStatus(403);
         return;
     }

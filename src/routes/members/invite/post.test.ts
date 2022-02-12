@@ -130,26 +130,30 @@ describe("database usage", () => {
         await DBConnection.close();
     });
 
-    test.skip("user isnt admin", async () => {
-        // await conn.manager.update(Permission, access_id, {
-        //     global_crud_users: false,
-        // });
-        // await sendInviteController(
-        //     {
-        //         session: {
-        //             user_id,
-        //             current_business_id: business_id,
-        //             business_ids: [business_id],
-        //         },
-        //         body: { email: process.env.TEST_EMAIL_1 ?? "" },
-        //         dbConnection: conn,
-        //     } as unknown as Request,
-        //     res
-        // );
-        // await conn.manager.update(Permission, access_id, {
-        //     global_crud_users: true,
-        // });
-        // expect(res.sendStatus).toHaveBeenCalledWith(403);
+    describe("user isnt admin", () => {
+        const cases = ["USER", "MANAGER"];
+
+        afterAll(async () => {
+            await conn.manager.update(Role, () => "", { access: "ADMIN" });
+        });
+        test.each(cases)("%p", async () => {
+            await conn.manager.update(Role, () => "", {
+                access: "USER",
+            });
+            await sendInviteController(
+                {
+                    session: {
+                        user_id,
+                        current_business_id: business_id,
+                        business_ids: [business_id],
+                    },
+                    body: { email: process.env.TEST_EMAIL_1 ?? "" },
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(403);
+        });
     });
 
     describe("success", () => {

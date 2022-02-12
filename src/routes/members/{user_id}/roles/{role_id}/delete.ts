@@ -12,11 +12,6 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
-    if (!isNumber(business_id) || !isNumber(user_id)) {
-        res.sendStatus(401);
-        return;
-    }
-
     if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
         return;

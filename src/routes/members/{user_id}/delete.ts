@@ -1,6 +1,5 @@
 import Membership from "@models/membership";
 import User from "@models/user/user";
-import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 
@@ -16,21 +15,21 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    try {
-        const isAdmin = await User.isAdmin(
-            dbConnection,
-            current_business_id ?? NaN,
-            user_id ?? NaN
-        );
-
-        if (!isAdmin) {
-            res.sendStatus(403);
-            return;
-        }
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
+        return;
+    }
+
+    const isAdmin = await User.isAdmin(
+        dbConnection,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        current_business_id!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        user_id!
+    );
+
+    if (!isAdmin) {
+        res.sendStatus(403);
         return;
     }
 

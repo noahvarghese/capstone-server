@@ -54,22 +54,18 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         }
     }
 
-    let m: Membership | undefined;
-
-    try {
-        m = await dbConnection.manager.findOne(Membership, {
-            where: {
-                accepted: false,
-                token,
-                token_expiry: MoreThanOrEqual(new Date()),
-            },
-        });
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
         return;
     }
+
+    const m = await dbConnection.manager.findOne(Membership, {
+        where: {
+            accepted: false,
+            token,
+            token_expiry: MoreThanOrEqual(new Date()),
+        },
+    });
 
     if (!m) {
         Logs.Error("No membership");

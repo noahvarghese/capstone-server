@@ -16,12 +16,6 @@ export const sendInviteController = async (
         dbConnection,
     } = req;
 
-    // despite checking in the middleware, we need to explicitly define these as numbers
-    if (!user_id || !current_business_id) {
-        res.sendStatus(401);
-        return;
-    }
-
     let email = "",
         phone = "";
 
@@ -42,15 +36,9 @@ export const sendInviteController = async (
         return;
     }
 
-    try {
-        if (!(await User.isAdmin(dbConnection, current_business_id, user_id))) {
-            res.sendStatus(403);
-            return;
-        }
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        res.sendStatus(500);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!(await User.isAdmin(dbConnection, current_business_id!, user_id!))) {
+        res.sendStatus(403);
         return;
     }
 
@@ -89,9 +77,12 @@ export const sendInviteController = async (
         if (
             await sendUserInviteEmail(
                 dbConnection,
-                current_business_id,
-                user_id,
-                invitedUserId ?? NaN,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                current_business_id!,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                user_id!,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                invitedUserId!,
                 token
             )
         ) {

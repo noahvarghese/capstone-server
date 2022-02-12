@@ -16,6 +16,7 @@ beforeEach(mockClear);
 let business_id: number, user_id: number, testUserID: number;
 
 let conn: Connection;
+
 beforeAll(async () => {
     await DBConnection.init();
     conn = await DBConnection.get();
