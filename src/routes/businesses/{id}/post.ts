@@ -16,10 +16,7 @@ export const setCurrentBusinessController = async (
 
     if (current_business_id === business_id) {
         res.sendStatus(200);
-        return;
-    }
-
-    if (!business_ids.includes(business_id)) {
+    } else if (!business_ids.includes(business_id)) {
         res.sendStatus(403);
     } else {
         req.session.current_business_id = business_id;
