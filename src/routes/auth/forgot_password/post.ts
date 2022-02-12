@@ -27,39 +27,25 @@ export const forgotPasswordController = async (
         return;
     }
 
-    let user: User;
-
-    try {
-        const u = await dbConnection.manager.findOne(User, {
-            where: { email },
-        });
-
-        if (!u) {
-            res.status(400).send("No account for user " + email);
-            return;
-        }
-
-        user = u;
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
         return;
     }
 
-    try {
-        // gen token
-        await dbConnection.manager.update(
-            User,
-            { email: email },
-            { token: uid(32) }
-        );
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
-        res.status(500);
+    const user = await dbConnection.manager.findOne(User, {
+        where: { email },
+    });
+
+    if (!user) {
+        res.status(400).send("No account for user " + email);
         return;
     }
+
+    await dbConnection.manager.update(
+        User,
+        { email: email },
+        { token: uid(32) }
+    );
 
     try {
         if (await requestResetPasswordEmail(dbConnection, user))
