@@ -11,21 +11,14 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
-    try {
-        const isAdmin = await User.isAdmin(
-            dbConnection,
-            current_business_id ?? NaN,
-            user_id ?? NaN
-        );
-
-        if (!isAdmin) {
-            res.sendStatus(403);
-            return;
-        }
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+    if (!dbConnection || !dbConnection.isConnected) {
         res.sendStatus(500);
+        return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!(await User.isAdmin(dbConnection, current_business_id!, user_id!))) {
+        res.sendStatus(403);
         return;
     }
 
@@ -46,14 +39,12 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    try {
-        await dbConnection.manager.findOneOrFail(Department, {
+    if (
+        !(await dbConnection.manager.findOneOrFail(Department, {
             id: department_id,
             business_id: current_business_id,
-        });
-    } catch (_e) {
-        const { message } = _e as Error;
-        Logs.Error(message);
+        }))
+    ) {
         res.sendStatus(400);
         return;
     }

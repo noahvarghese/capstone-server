@@ -43,43 +43,22 @@ test("bad connection", async () => {
     expect(res.sendStatus).toHaveBeenLastCalledWith(500);
 });
 
-describe("invalid session", () => {
-    const cases = [
-        { user_id: undefined, current_business_id: 1, business_ids: [1] },
-        { user_id: 1, current_business_id: undefined, business_ids: [1] },
-    ];
-    test.each(cases)("%p", async (session) => {
-        await getController(
-            {
-                session,
-                params: {
-                    id: 1,
-                },
-            } as unknown as Request,
-            res
-        );
-        expect(res.sendStatus).toHaveBeenLastCalledWith(500);
-    });
-});
-describe("invalid id", () => {
-    const cases = [{ id: "YOLO" }, { id: 10000 }];
-    test.each(cases)("%p", async ({ id }) => {
-        await getController(
-            {
-                session: {
-                    user_id,
-                    business_ids: [business_id],
-                    current_business_id: business_id,
-                },
-                params: {
-                    id,
-                },
-                dbConnection: conn,
-            } as unknown as Request,
-            res
-        );
-        expect(res.sendStatus).toHaveBeenLastCalledWith(400);
-    });
+test("invalid id", async () => {
+    await getController(
+        {
+            session: {
+                user_id,
+                business_ids: [business_id],
+                current_business_id: business_id,
+            },
+            params: {
+                id: "YOLO",
+            },
+            dbConnection: conn,
+        } as unknown as Request,
+        res
+    );
+    expect(res.sendStatus).toHaveBeenLastCalledWith(400);
 });
 
 describe("permissions", () => {
