@@ -58,6 +58,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         .leftJoin(Role, "r", "r.id = ma.role_id")
         .leftJoin(Department, "d", "d.id = r.department_id")
         .where("d.business_id = :current_business_id", { current_business_id })
+        .andWhere("m.id = :id", { id })
         .getOne();
 
     if (!manual) {

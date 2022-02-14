@@ -1,7 +1,3 @@
--- DROP DATABASE IF EXISTS capstone;
--- CREATE DATABASE capstone;
--- USE capstone;
-
 CREATE TABLE sessions (
     session_id VARCHAR(128) NOT NULL,
     expires INT UNSIGNED NOT NULL,
@@ -53,8 +49,8 @@ CREATE TABLE membership (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (business_id) REFERENCES business(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id),
     UNIQUE(token),
     PRIMARY KEY (business_id, user_id)
@@ -70,7 +66,7 @@ CREATE TABLE department (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (business_id) REFERENCES business(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -86,7 +82,7 @@ CREATE TABLE role (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (department_id) REFERENCES department(id),
+    FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -99,8 +95,8 @@ CREATE TABLE user_role (
     deleted_on DATETIME DEFAULT NULL,
     updated_by_user_id INT NOT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    FOREIGN KEY(user_id) REFERENCES user(id),
-    FOREIGN KEY(role_id) REFERENCES role(id),
+    FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY(role_id) REFERENCES role(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
 
@@ -125,8 +121,8 @@ CREATE TABLE manual_assignment (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (role_id) REFERENCES role(id),
-    FOREIGN KEY (manual_id) REFERENCES manual(id),
+    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
+    FOREIGN KEY (manual_id) REFERENCES manual(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (role_id, manual_id)
 );
@@ -139,7 +135,7 @@ CREATE TABLE manual_section (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (manual_id) REFERENCES manual(id),
+    FOREIGN KEY (manual_id) REFERENCES manual(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -152,7 +148,7 @@ CREATE TABLE policy (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (manual_section_id) REFERENCES manual_section(id),
+    FOREIGN KEY (manual_section_id) REFERENCES manual_section(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -166,7 +162,7 @@ CREATE TABLE content (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (policy_id) REFERENCES policy(id),
+    FOREIGN KEY (policy_id) REFERENCES policy(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -183,7 +179,7 @@ CREATE TABLE quiz (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (manual_id) REFERENCES manual(id),
+    FOREIGN KEY (manual_id) REFERENCES manual(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY(id)
 );
@@ -196,7 +192,7 @@ CREATE TABLE quiz_section (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (quiz_id) REFERENCES quiz(id),
+    FOREIGN KEY (quiz_id) REFERENCES quiz(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY(id)
 );
@@ -221,7 +217,7 @@ CREATE TABLE quiz_question (
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (quiz_question_type_id) REFERENCES quiz_question_type(id),
-    FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id),
+    FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -235,7 +231,7 @@ CREATE TABLE quiz_answer (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
+    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -247,8 +243,8 @@ CREATE TABLE quiz_attempt (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (quiz_id) REFERENCES quiz(id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_id) REFERENCES quiz(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );
 
@@ -261,9 +257,9 @@ CREATE TABLE quiz_result (
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id),
-    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id),
-    FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id),
+    FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id) ON DELETE CASCADE,
     PRIMARY KEY (quiz_attempt_id, quiz_question_id)
 );
 
@@ -273,8 +269,8 @@ CREATE TABLE content_read (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (content_id) REFERENCES content(id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, content_id)
 );
 
@@ -288,7 +284,7 @@ CREATE TABLE event (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES user(id),
-    FOREIGN KEY (business_id) REFERENCES business(id),
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (business_id) REFERENCES business(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
 );

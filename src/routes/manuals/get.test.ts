@@ -77,6 +77,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+    await conn.manager.delete(Manual, () => "");
     await unitTeardown(conn);
     await DBConnection.close();
 });
