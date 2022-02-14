@@ -113,6 +113,13 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .leftJoin(Department, "d", "d.id = r.department_id")
         .where("d.business_id = :current_business_id", { current_business_id });
 
+    if (filter_field && filter_ids) {
+        query = query.andWhere(
+            `${(filter_field as string)[0]}.id IN (:...ids)`,
+            { ids: filter_ids }
+        );
+    }
+
     if (search) {
         const sqlizedSearchItem = `%${search}%`;
         query = query.andWhere(
