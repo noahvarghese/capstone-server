@@ -217,7 +217,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
                         .from(UserRole, "ur")
                         .leftJoin(Role, "r", "r.id = ur.role_id")
                         .leftJoin(Department, "d", "d.id = r.department_id")
-                        .where("ur.user_id = :user_id", { user_id })
+                        .where("ur.user_id = :user_id", { user_id: m.user_id })
                         .getRawMany<{
                             role_id: number;
                             role_name: string;

@@ -310,7 +310,7 @@ describe("requires db connection", () => {
                 });
             });
 
-            describe.skip("filter", () => {
+            describe("filter", () => {
                 test("Filtering", async () => {
                     const conn = await DBConnection.get();
                     const { id: department_id } =
@@ -445,9 +445,15 @@ describe("requires db connection", () => {
                     Logs.Error(send, send[0].roles);
                     expect(status).toBe(200);
                     expect(send.length).toBe(1);
-                    expect(send[0].roles[0].department.name).toBe(
-                        departmentAttributes().name
-                    );
+                    expect(
+                        Array.from(send[0].roles)
+                            .map(
+                                (r) =>
+                                    (r as { department: Department }).department
+                                        .name
+                            )
+                            .includes(departmentAttributes().name)
+                    ).toBe(true);
                 });
             });
 
