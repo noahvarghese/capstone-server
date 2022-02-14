@@ -286,3 +286,110 @@ describe("published", () => {
         });
     });
 });
+
+describe("invalid query params", () => {
+    describe("pagination", () => {
+        const cases = [
+            { limit: "yolo", page: 1 },
+            { limit: " ", page: 1 },
+            { limit: false, page: 1 },
+            { limit: true, page: 1 },
+            { limit: {}, page: 1 },
+            { limit: { test: "" }, page: 1 },
+            { limit: "", page: 1 },
+            { limit: undefined, page: 1 },
+            { limit: null, page: 1 },
+            { page: "yolo", limit: 1 },
+            { page: " ", limit: 1 },
+            { page: false, limit: 1 },
+            { page: true, limit: 1 },
+            { page: {}, limit: 1 },
+            { page: { test: "" }, limit: 1 },
+            { page: "", limit: 1 },
+            { page: undefined, limit: 1 },
+            { page: null, limit: 1 },
+            { limit: 1 },
+            { page: 1 },
+        ];
+
+        test.each(cases)("%p", async ({ limit, page }) => {
+            const conn = await DBConnection.get();
+            await getController(
+                {
+                    query: { limit, page },
+                    session,
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith("Invalid pagination options");
+        });
+    });
+
+    describe("filter", () => {
+        const cases = [
+            { filter_field: "", filter_ids: "[]" },
+            { filter_field: "role", filter_ids: "[]" },
+            { filter_field: "department", filter_ids: "[]" },
+            { filter_field: "test", filter_ids: "[1]" },
+            { filter_field: undefined, filter_ids: "[1]" },
+            { filter_field: null, filter_ids: "[1]" },
+            { filter_field: {}, filter_ids: "[1]" },
+            { filter_field: { test: "" }, filter_ids: "[1]" },
+            { filter_field: 1, filter_ids: "[1]" },
+            { filter_field: NaN, filter_ids: "[1]" },
+            { filter_field: " ", filter_ids: "[1]" },
+            { filter_field: "role", filter_ids: "" },
+            { filter_field: "role", filter_ids: null },
+            { filter_field: "role", filter_ids: undefined },
+            { filter_field: "role", filter_ids: " " },
+            { filter_field: "department", filter_ids: {} },
+            {
+                filter_field: "department",
+                filter_ids: { test: "" },
+            },
+        ];
+        test.each(cases)("%p", async ({ filter_field, filter_ids }) => {
+            const conn = await DBConnection.get();
+            await getController(
+                {
+                    query: { filter_field, filter_ids },
+                    session,
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith("Invalid filter options");
+        });
+    });
+
+    describe("sort", () => {
+        const cases = [
+            { sort_field: "", sort_order: "ASC" },
+            { sort_field: "", sort_order: "DESC" },
+            { sort_field: "", sort_order: "YOLO" },
+            { sort_field: "first_name", sort_order: "" },
+            { sort_field: "last_name", sort_order: " " },
+            { sort_field: "email", sort_order: 1 },
+            { sort_field: "phone", sort_order: NaN },
+            { sort_field: "department", sort_order: null },
+            { sort_field: "role", sort_order: undefined },
+            { sort_field: "yolo", sort_order: "ASC" },
+        ];
+        test.each(cases)("%p", async ({ sort_field, sort_order }) => {
+            const conn = await DBConnection.get();
+            await getController(
+                {
+                    query: { sort_field, sort_order },
+                    session,
+                    dbConnection: conn,
+                } as unknown as Request,
+                res
+            );
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith("Invalid sort options");
+        });
+    });
+});
