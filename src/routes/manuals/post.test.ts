@@ -59,6 +59,7 @@ describe("Permissions", () => {
 
         if (access !== "USER") {
             expect(res.sendStatus).toHaveBeenCalledWith(201);
+
             const mans = await conn.manager.find(Manual);
             expect(mans.length).toBe(1);
             expect(mans[0].published).toBe(false);
