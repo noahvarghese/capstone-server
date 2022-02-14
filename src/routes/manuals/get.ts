@@ -58,6 +58,13 @@ const executeFilterQuery = async (
         return await query.getRawMany<ManualResponse>();
     }
 
+    if (options.filter_field && options.filter_ids) {
+        query = query.andWhere(
+            `${(options.filter_field as string)[0]}.id IN (:...ids)`,
+            { ids: options.filter_ids }
+        );
+    }
+
     if (options.search) {
         const sqlizedSearchItem = `%${options.search}%`;
         query = query.andWhere("m.title like :manual", {
