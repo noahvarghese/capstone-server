@@ -49,7 +49,6 @@ const postController = async (req: Request, res: Response): Promise<void> => {
     );
 
     res.sendStatus(201);
-    return;
 };
 
 export default postController;
