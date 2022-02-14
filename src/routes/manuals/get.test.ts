@@ -10,6 +10,7 @@ import { Request, Response } from "express";
 import { deepClone } from "@util/obj";
 import Manual from "@models/manual/manual";
 import ManualAssignment from "@models/manual/assignment";
+import Department from "@models/department";
 
 const { res, mockClear } = getMockRes();
 
@@ -230,8 +231,22 @@ describe("pagination", () => {
     });
 });
 
-describe("filter", () => {
-    test.todo("");
+test("filter", async () => {
+    const { id } = await conn.manager.findOneOrFail(Department);
+    await getController(
+        {
+            session,
+            query: {
+                filter_field: "department",
+                filter_ids: JSON.stringify([id + 1]),
+            },
+            dbConnection: conn,
+        } as unknown as Request,
+        res
+    );
+    expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ length: 0 })
+    );
 });
 
 describe("published", () => {
