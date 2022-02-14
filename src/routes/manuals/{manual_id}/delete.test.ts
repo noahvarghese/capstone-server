@@ -81,7 +81,7 @@ describe("prevent delete", () => {
             {
                 session,
                 dbConnection: conn,
-                params: { id: manual_id },
+                params: { manual_id },
             } as unknown as Request,
             res
         );
@@ -116,7 +116,7 @@ describe("Permissions", () => {
             {
                 session,
                 dbConnection: conn,
-                params: { id: manual_id },
+                params: { manual_id },
             } as unknown as Request,
             res
         );

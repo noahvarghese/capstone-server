@@ -9,7 +9,7 @@ import { Request, Response } from "express";
 const putController = async (req: Request, res: Response): Promise<void> => {
     const {
         session: { user_id, current_business_id },
-        params: { id },
+        params: { manual_id: id },
         dbConnection,
     } = req;
 

@@ -89,7 +89,7 @@ describe("published", () => {
                 await getController(
                     {
                         session,
-                        params: { id: manual_id },
+                        params: { manual_id },
                         dbConnection: conn,
                     } as unknown as Request,
                     res

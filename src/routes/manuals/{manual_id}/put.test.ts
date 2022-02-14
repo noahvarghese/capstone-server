@@ -80,7 +80,7 @@ describe("prevent edit", () => {
             {
                 session,
                 dbConnection: conn,
-                params: { id: manual_id },
+                params: { manual_id },
                 body: { title: NEW_NAME, prevent_edit },
             } as unknown as Request,
             res
@@ -120,7 +120,7 @@ describe("Permissions", () => {
                 session,
                 dbConnection: conn,
                 body: { title: NEW_NAME },
-                params: { id: manual_id },
+                params: { manual_id },
             } as unknown as Request,
             res
         );

@@ -10,7 +10,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     const {
         session: { user_id, current_business_id },
         dbConnection,
-        params: { id },
+        params: { manual_id: id },
     } = req;
 
     const [isAdmin, isManager] = await Promise.all([

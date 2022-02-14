@@ -1128,8 +1128,16 @@
                 }
             }
         },
-        "/manuals/{id}": {
-            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+        "/manuals/{manual_id}": {
+            "parameters": [
+                {
+                    "name": "manual_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                }
+            ],
             "get": {
                 "tags": ["manual"],
                 "summary": "get individual manual",
@@ -1210,8 +1218,16 @@
                 }
             }
         },
-        "/manuals/{id}/quizzes": {
-            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+        "/manuals/{manual_id}/quizzes": {
+            "parameters": [
+                {
+                    "name": "manual_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                }
+            ],
             "get": {
                 "tags": ["quiz"],
                 "summary": "get the quiz associated with the manual",
@@ -1285,12 +1301,20 @@
                 }
             }
         },
-        "/manuals/{id}/sections": {
+        "/manuals/{manual_id}/sections": {
+            "parameters": [
+                {
+                    "name": "manual_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                }
+            ],
             "get": {
                 "tags": ["manual section"],
                 "summary": "get all sections of manual",
                 "description": "requires permissions, or assignment and published",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1319,7 +1343,6 @@
                 "tags": ["manual section"],
                 "summary": "create a new section",
                 "description": "requires permissions.",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -1769,12 +1792,20 @@
                 }
             }
         },
-        "/manuals/{id}/roles": {
+        "/manuals/{manual_id}/roles": {
+            "parameters": [
+                {
+                    "name": "manual_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                }
+            ],
             "get": {
                 "tags": ["manual assignment"],
                 "summary": "get roles that manual is associated with",
                 "description": "requires permissions",
-                "parameters": [{ "$ref": "#/components/parameters/ID" }],
                 "responses": {
                     "200": {
                         "description": "success",
