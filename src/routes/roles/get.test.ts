@@ -35,7 +35,9 @@ beforeAll(async () => {
         Role,
         new Role({
             name,
-            department_id: (await conn.manager.findOneOrFail(Department)).id,
+            department_id: (
+                await conn.manager.findOneOrFail<Department>(Department)
+            ).id,
             updated_by_user_id: user_id,
         })
     );

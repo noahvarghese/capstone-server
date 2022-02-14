@@ -61,7 +61,7 @@ beforeAll(async () => {
 
     manual_ids.push(id);
 
-    role_id = (await conn.manager.findOneOrFail(Role)).id;
+    role_id = (await conn.manager.findOneOrFail<Role>(Role)).id;
 
     for (const manual_id of manual_ids) {
         await conn.manager.insert(
