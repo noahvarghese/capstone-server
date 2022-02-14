@@ -5,7 +5,6 @@ import Membership from "@models/membership";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import Logs from "@noahvarghese/logger";
 import { departmentAttributes, roleAttributes } from "@test/model/attributes";
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
@@ -401,7 +400,7 @@ describe("requires db connection", () => {
                 });
             });
 
-            describe.skip("search", () => {
+            describe("search", () => {
                 const cases = [
                     {
                         search: "Man",
@@ -436,13 +435,7 @@ describe("requires db connection", () => {
                             },
                         } as Response
                     );
-                    Logs.Error(
-                        await conn.manager.find(User),
-                        await conn.manager.find(UserRole),
-                        await conn.manager.find(Role),
-                        await conn.manager.find(Department)
-                    );
-                    Logs.Error(send, send[0].roles);
+
                     expect(status).toBe(200);
                     expect(send.length).toBe(1);
                     expect(
