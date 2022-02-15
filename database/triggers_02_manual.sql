@@ -100,89 +100,6 @@ END;
 
 //
 
-DROP TRIGGER IF EXISTS policy_insert //
-
-CREATE TRIGGER policy_insert
-BEFORE INSERT 
-ON policy FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    DECLARE prevent_edit TINYINT(1);
-
-    SET prevent_edit = (
-        SELECT m.prevent_edit 
-        FROM manual_section AS ms 
-        JOIN manual AS m 
-        ON m.id = ms.manual_id
-        WHERE ms.id = NEW.manual_section_id
-    );
-
-    IF prevent_edit = 1 THEN
-        SET msg = CONCAT('PolicyInsertError: Cannot insert a policy while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-
-    SET NEW.updated_on = NOW();
-END;
-
-//
-
-DROP TRIGGER IF EXISTS policy_update //
-
-CREATE TRIGGER policy_update
-BEFORE UPDATE
-ON policy FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    DECLARE prevent_edit TINYINT(1);
-
-    SET prevent_edit = (
-        SELECT m.prevent_edit 
-        FROM manual_section AS ms 
-        JOIN manual AS m 
-        ON m.id = ms.manual_id
-        WHERE ms.id = OLD.manual_section_id
-    );
-
-    IF prevent_edit = 1 THEN
-        IF NEW.deleted_on IS NOT NULL THEN
-            SET msg = CONCAT('PolicyDeleteError: Cannot delete a policy while the manual is locked from editing. ', CAST(OLD.id AS CHAR));
-        ELSE
-            SET msg = CONCAT('PolicyUpdateError: Cannot update a policy while the manual is locked from editing. ', CAST(NEW.id AS CHAR));
-        END IF;
-
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-
-    SET NEW.updated_on = NOW();
-END;
-
-//
-
-DROP TRIGGER IF EXISTS policy_delete //
-
-CREATE TRIGGER policy_delete
-BEFORE DELETE 
-ON policy FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    DECLARE prevent_edit TINYINT(1);
-
-    SET prevent_edit = (
-        SELECT m.prevent_edit 
-        FROM manual_section AS ms
-        JOIN manual AS m ON m.id = ms.manual_id
-        WHERE ms.id = OLD.manual_section_id
-    );
-
-    IF (prevent_edit = 1) THEN
-        SET msg = CONCAT('PolicyDeleteError: Cannot delete a policy while the manual is locked from editing. ', CAST(OLD.id AS CHAR));
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-END;
-
-//
-
 DROP TRIGGER IF EXISTS content_insert //
 
 CREATE TRIGGER content_insert
@@ -193,10 +110,9 @@ BEGIN
     DECLARE prevent_edit TINYINT(1);
     SET prevent_edit = (
         SELECT m.prevent_edit
-        FROM policy AS p 
-        JOIN manual_section AS ms ON ms.id = p.manual_section_id
+        FROM manual_section AS ms 
         JOIN manual AS m ON m.id = ms.manual_id
-        WHERE p.id = NEW.policy_id
+        WHERE ms.id = NEW.manual_section_id
     );
 
     IF (prevent_edit = 1) THEN
@@ -219,10 +135,9 @@ BEGIN
     DECLARE prevent_edit TINYINT(1);
     SET prevent_edit = (
         SELECT m.prevent_edit
-        FROM policy AS p 
-        JOIN manual_section AS ms ON ms.id = p.manual_section_id
+        FROM manual_section AS ms 
         JOIN manual AS m ON m.id = ms.manual_id
-        WHERE p.id = OLD.policy_id
+        WHERE ms.id = OLD.manual_section_id
     );
 
     IF (prevent_edit = 1) THEN
@@ -250,10 +165,9 @@ BEGIN
     DECLARE prevent_edit TINYINT(1);
     SET prevent_edit = (
         SELECT m.prevent_edit
-        FROM policy AS p 
-        JOIN manual_section AS ms ON ms.id = p.manual_section_id
+        FROM manual_section AS ms 
         JOIN manual AS m ON m.id = ms.manual_id
-        WHERE p.id = OLD.policy_id
+        WHERE ms.id = OLD.manual_section_id
     );
 
     IF (prevent_edit = 1) THEN
