@@ -3,9 +3,11 @@ import { Router } from "express";
 import getController from "./get";
 import putController from "./put";
 import membersRoute from "./members";
+import manualsRoute from "./manuals";
 
 const router = Router();
 
+router.use("/manuals", manualsRoute);
 router.use("/members", membersRoute);
 
 router.get("/", getController);
