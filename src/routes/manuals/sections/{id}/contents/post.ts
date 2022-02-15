@@ -21,7 +21,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
             content: { type: "string", required: false },
         });
         title = data.title as string;
-        content = data.content as string;
+        content = (data.content as string) ?? "";
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);

@@ -1,7 +1,7 @@
 import { getMockRes } from "@jest-mock/express";
 import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 import ManualSection from "@models/manual/section";
 import Role, { AccessKey } from "@models/role";
 import DBConnection from "@test/support/db_connection";
@@ -17,7 +17,7 @@ let business_id: number,
     manual_id: number,
     section_id: number,
     role_id: number,
-    policy_id: number;
+    content_id: number;
 let conn: Connection;
 let session: Omit<SessionData, "cookie">;
 const NEW_NAME = "NEW_NAME";
@@ -76,10 +76,10 @@ beforeAll(async () => {
     ));
 
     ({
-        identifiers: [{ id: policy_id }],
+        identifiers: [{ id: content_id }],
     } = await conn.manager.insert(
-        Policy,
-        new Policy({
+        Content,
+        new Content({
             title: OLD_NAME,
             manual_section_id: section_id,
             updated_by_user_id: user_id,
@@ -107,13 +107,13 @@ describe("prevent edit", () => {
             {
                 session,
                 dbConnection: conn,
-                params: { id: policy_id },
+                params: { id: content_id },
                 body: { title: NEW_NAME },
             } as unknown as Request,
             res
         );
 
-        const p = await conn.manager.find(Policy);
+        const p = await conn.manager.find(Content);
 
         expect(res.sendStatus).toHaveBeenCalledWith(405);
         expect(p[0].title).toBe(OLD_NAME);
@@ -128,7 +128,7 @@ describe("Permissions", () => {
             access: "ADMIN",
             prevent_edit: true,
         });
-        await conn.manager.update(Policy, policy_id, {
+        await conn.manager.update(Content, content_id, {
             title: OLD_NAME,
         });
     });
@@ -147,12 +147,12 @@ describe("Permissions", () => {
                     session,
                     dbConnection: conn,
                     body: { title: NEW_NAME },
-                    params: { id: policy_id },
+                    params: { id: content_id },
                 } as unknown as Request,
                 res
             );
 
-            const p = await conn.manager.find(Policy);
+            const p = await conn.manager.find(Content);
 
             if (access !== "USER") {
                 expect(res.sendStatus).toHaveBeenCalledWith(200);

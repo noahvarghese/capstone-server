@@ -16,7 +16,6 @@ import {
     EmptyManualAssignmentAttributes,
     ManualAssignmentAttributes,
 } from "@models/manual/assignment";
-import { EmptyPolicyAttributes, PolicyAttributes } from "@models/manual/policy";
 import {
     EmptyContentReadAttributes,
     ContentReadAttributes,
@@ -163,22 +162,12 @@ export const manualSectionAttributes = (): ManualSectionAttributes =>
         EmptyManualSectionAttributes
     );
 
-export const policyAttributes = (): PolicyAttributes =>
-    AttributeFactory(
-        {
-            title: "Policy",
-            manual_section_id: NaN,
-            updated_by_user_id: NaN,
-        },
-        EmptyPolicyAttributes
-    );
-
 export const contentAttributes = (): ContentAttributes =>
     AttributeFactory(
         {
             title: "Content",
             content: "Here are some words",
-            policy_id: NaN,
+            manual_section_id: NaN,
             updated_by_user_id: NaN,
         },
         EmptyContentAttributes
@@ -290,7 +279,6 @@ export default {
     manual: manualAttributes,
     manualAssignment: manualAssignmentAttributes,
     manualSection: manualSectionAttributes,
-    policy: policyAttributes,
     content: contentAttributes,
     contentRead: contentReadAttributes,
     quiz: quizAttributes,

@@ -4,7 +4,6 @@ import Department from "@models/department";
 import Role from "@models/role";
 import Content from "@models/manual/content/content";
 import Manual from "@models/manual/manual";
-import Policy from "@models/manual/policy";
 import ManualSection from "@models/manual/section";
 import ManualAssignment from "@models/manual/assignment";
 import User from "@models/user/user";
@@ -31,7 +30,6 @@ const entities = [
     Manual,
     ManualAssignment,
     ManualSection,
-    Policy,
     Content,
     Quiz,
     QuizSection,

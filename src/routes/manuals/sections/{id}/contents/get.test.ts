@@ -10,7 +10,7 @@ import { Request } from "express";
 import Manual from "@models/manual/manual";
 import ManualAssignment from "@models/manual/assignment";
 import ManualSection from "@models/manual/section";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 
 const { res, mockClear } = getMockRes();
 
@@ -75,8 +75,8 @@ beforeAll(async () => {
     ));
 
     await conn.manager.insert(
-        Policy,
-        new Policy({
+        Content,
+        new Content({
             title: TITLE,
             manual_section_id: section_id,
             updated_by_user_id: user_id,

@@ -129,23 +129,6 @@
                     }
                 }
             },
-            "ManualPolicy": {
-                "description": "Each Section can have multiple policies",
-                "type": "object",
-                "properties": {
-                    "id": { "type": "integer" },
-                    "title": {
-                        "description": "title of policy",
-                        "type": "string"
-                    },
-                    "contents": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ManualContent"
-                        }
-                    }
-                }
-            },
             "ManualSection": {
                 "description": "Each manual can have multiple sections",
                 "type": "object",
@@ -155,9 +138,11 @@
                         "description": "title of section",
                         "type": "string"
                     },
-                    "policies": {
+                    "contents": {
                         "type": "array",
-                        "items": { "$ref": "#/components/schemas/ManualPolicy" }
+                        "items": {
+                            "$ref": "#/components/schemas/ManualContent"
+                        }
                     }
                 }
             },
@@ -487,10 +472,6 @@
         {
             "name": "manual section",
             "description": "Manual Section operations. One Manual has many Sections."
-        },
-        {
-            "name": "policy",
-            "description": "Policy operations. One Manual has many Policies."
         },
         {
             "name": "content",
@@ -1452,155 +1433,11 @@
                 }
             }
         },
-        "/manuals/sections/{id}/policies": {
-            "parameters": [{ "$ref": "#/components/parameters/ID" }],
-            "get": {
-                "tags": ["policy"],
-                "summary": "get all policies in section",
-                "description": "requires permissions, or assignment and published",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ManualPolicy"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "post": {
-                "tags": ["policy"],
-                "summary": "create a new polciy in the given manual section",
-                "description": "requires permissions and that edit lock not be on",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "title": {
-                                        "description": "title of policy"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "405": {
-                        "$ref": "#/components/responses/ResourceLockedError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/manuals/sections/policies/{id}": {
-            "parameters": [{ "$ref": "#/components/parameters/ID" }],
-            "get": {
-                "tags": ["policy"],
-                "summary": "get individual policy",
-                "description": "requires permissions, or assignment and published",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ManualPolicy"
-                                }
-                            }
-                        }
-                    },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "put": {
-                "tags": ["policy"],
-                "summary": "update policy",
-                "description": "requires permissions and that edit lock not be on",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "title": {
-                                        "description": "title of policy"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "405": {
-                        "$ref": "#/components/responses/ResourceLockedError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "delete": {
-                "tags": ["policy"],
-                "summary": "delete policy",
-                "description": "requires permissions and that delete lock not be on",
-                "responses": {
-                    "200": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "405": {
-                        "$ref": "#/components/responses/ResourceLockedError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            }
-        },
-        "/manuals/sections/policies/{id}/contents": {
+        "/manuals/sections/{id}/contents": {
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["content"],
-                "summary": "get all contents of policy",
+                "summary": "get all contents of section",
                 "description": "requires permissions, or assignment and published",
                 "responses": {
                     "200": {
@@ -1628,7 +1465,7 @@
             },
             "post": {
                 "tags": ["content"],
-                "summary": "create new content in the given policy",
+                "summary": "create new content in the given section",
                 "description": "requires permissions and that edit lock not be on",
                 "requestBody": {
                     "content": {
@@ -1637,7 +1474,7 @@
                                 "type": "object",
                                 "properties": {
                                     "title": {
-                                        "description": "title of policy"
+                                        "description": "title of content"
                                     },
                                     "content": {
                                         "description": "the markdown of the content"
@@ -1663,7 +1500,7 @@
                 }
             }
         },
-        "/manuals/sections/policies/contents/{id}": {
+        "/manuals/sections/contents/{id}": {
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
                 "tags": ["content"],
@@ -1746,7 +1583,7 @@
                 }
             }
         },
-        "/manuals/sections/policies/contents/{id}/read": {
+        "/manuals/sections/contents/{id}/read": {
             "description": "requires manual be published and assigned",
             "parameters": [{ "$ref": "#/components/parameters/ID" }],
             "get": {
