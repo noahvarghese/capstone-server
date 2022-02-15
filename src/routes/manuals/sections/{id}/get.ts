@@ -8,8 +8,8 @@ import { Request, Response } from "express";
 const getController = async (req: Request, res: Response): Promise<void> => {
     const {
         session: { user_id, current_business_id },
-        params: { manual_id },
         dbConnection,
+        params: { id },
     } = req;
 
     const [isAdmin, isManager] = await Promise.all([
@@ -29,18 +29,20 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .where("m.business_id = :current_business_id", {
             current_business_id,
         })
-        .andWhere("m.id = :manual_id", { manual_id });
+        .andWhere("ms.id = :id", { id });
 
     if (!(isAdmin || isManager)) {
         query = query
+            .andWhere("ur.user_id = :user_id", { user_id })
             .andWhere("m.published = :published", { published: true })
-            .andWhere("ur.user_id = :user_id", { user_id });
+            .andWhere("m.business_id = :current_business_id", {
+                current_business_id,
+            });
     }
 
     res.status(200).send(
-        await query.getRawMany<{ id: number; title: string }>()
+        await query.getRawOne<{ id: number; title: string }>()
     );
-    return;
 };
 
 export default getController;
