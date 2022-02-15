@@ -39,6 +39,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("m.id = :id", { id })
             .getRawOne();
     } else if (isManager) {
+        // FIXME: This logic needs to make its way to all manual operations
         result = await dbConnection
             .createQueryBuilder()
             .select(

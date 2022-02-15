@@ -45,6 +45,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         User.isManager(dbConnection, current_business_id!, user_id!),
     ]);
 
+    // TODO: If user is a manager, check that user the manual is assigned to the management role
     if (!(isAdmin || isManager)) {
         res.sendStatus(403);
         return;
