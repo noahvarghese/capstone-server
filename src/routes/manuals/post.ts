@@ -1,3 +1,5 @@
+import Business from "@models/business";
+import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
@@ -31,22 +33,66 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         User.isManager(dbConnection, current_business_id!, user_id!),
     ]);
 
-    if (!(isAdmin || isManager)) {
+    let role_id: number;
+    if (isAdmin) {
+        const role = await Business.getAdminRole(
+            dbConnection,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            current_business_id!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            user_id!
+        );
+
+        if (!role) {
+            res.sendStatus(500);
+            return;
+        }
+        role_id = role.id;
+    } else if (isManager) {
+        const role = await Business.getManagerRole(
+            dbConnection,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            current_business_id!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            user_id!
+        );
+
+        if (!role) {
+            res.sendStatus(500);
+            return;
+        }
+        role_id = role.id;
+    } else {
         res.sendStatus(403);
         return;
     }
 
-    //  3.  Create new manual that is not published by default
-    await dbConnection.manager.insert(
-        Manual,
-        new Manual({
-            title,
-            updated_by_user_id: user_id,
-            published: false,
-            prevent_delete: false,
-            prevent_edit: false,
-        })
-    );
+    await dbConnection.transaction(async (tm) => {
+        //  3.  Create new manual that is not published by default
+        const {
+            identifiers: [{ id: manual_id }],
+        } = await tm.insert(
+            Manual,
+            new Manual({
+                title,
+                updated_by_user_id: user_id,
+                published: false,
+                prevent_delete: false,
+                prevent_edit: false,
+            })
+        );
+
+        //  4.  Assign manual to role with owner flag
+        await tm.insert(
+            ManualAssignment,
+            new ManualAssignment({
+                updated_by_user_id: user_id,
+                manual_id,
+                owner: true,
+                role_id,
+            })
+        );
+    });
 
     res.sendStatus(201);
 };
