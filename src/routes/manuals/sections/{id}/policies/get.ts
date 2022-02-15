@@ -9,7 +9,7 @@ import { Request, Response } from "express";
 const getController = async (req: Request, res: Response): Promise<void> => {
     const {
         session: { user_id, current_business_id },
-        params: { manual_id },
+        params: { id },
         dbConnection,
     } = req;
 
@@ -31,7 +31,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .where("m.business_id = :current_business_id", {
             current_business_id,
         })
-        .andWhere("m.id = :manual_id", { manual_id });
+        .andWhere("ms.id = :id", { id });
 
     if (!(isAdmin || isManager)) {
         query = query
