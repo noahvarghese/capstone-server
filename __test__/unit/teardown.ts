@@ -34,7 +34,6 @@ export const unitTeardown = async (conn: Connection): Promise<void> => {
         }),
     ]);
 
-    await conn.manager.delete(Manual, () => "");
     await conn.manager.delete(Business, ALL);
     await conn.manager.delete(User, ALL);
 };

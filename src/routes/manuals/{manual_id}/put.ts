@@ -1,7 +1,4 @@
-import Department from "@models/department";
-import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
-import Role from "@models/role";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import { Request, Response } from "express";
@@ -45,7 +42,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         User.isManager(dbConnection, current_business_id!, user_id!),
     ]);
 
-    // TODO: If user is a manager, check that user the manual is assigned to the management role
     if (!(isAdmin || isManager)) {
         res.sendStatus(403);
         return;
@@ -55,10 +51,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         .createQueryBuilder()
         .select("m")
         .from(Manual, "m")
-        .leftJoin(ManualAssignment, "ma", "m.id = ma.manual_id")
-        .leftJoin(Role, "r", "r.id = ma.role_id")
-        .leftJoin(Department, "d", "d.id = r.department_id")
-        .where("d.business_id = :current_business_id", { current_business_id })
+        .where("m.business_id = :current_business_id", { current_business_id })
         .andWhere("m.id = :id", { id })
         .getOne();
 

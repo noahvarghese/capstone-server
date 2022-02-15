@@ -5,7 +5,6 @@ import User from "@models/user/user";
 import { Request, Response } from "express";
 
 const getController = async (req: Request, res: Response): Promise<void> => {
-    // TODO: If user is a manager, check that user the manual is assigned to the management role
     const {
         params: { manual_id },
         session: { user_id, current_business_id },
