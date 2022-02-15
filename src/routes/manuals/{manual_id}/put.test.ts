@@ -44,6 +44,7 @@ beforeAll(async () => {
             prevent_edit: false,
             published: false,
             title: OLD_NAME,
+            business_id,
         })
     ));
 

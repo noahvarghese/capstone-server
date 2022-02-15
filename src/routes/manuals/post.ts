@@ -77,6 +77,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
                 title,
                 updated_by_user_id: user_id,
                 published: false,
+                business_id: current_business_id,
                 prevent_delete: false,
                 prevent_edit: false,
             })
@@ -88,7 +89,6 @@ const postController = async (req: Request, res: Response): Promise<void> => {
             new ManualAssignment({
                 updated_by_user_id: user_id,
                 manual_id,
-                can_edit: true,
                 role_id,
             })
         );

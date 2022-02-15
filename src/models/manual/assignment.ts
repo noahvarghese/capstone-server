@@ -5,7 +5,6 @@ import { AttributeFactory } from "../abstract/base_model";
 export interface ManualAssignmentAttributes {
     role_id: number;
     manual_id: number;
-    can_edit: boolean;
     updated_by_user_id: number;
 }
 
@@ -13,7 +12,6 @@ export const EmptyManualAssignmentAttributes =
     (): ManualAssignmentAttributes => ({
         role_id: NaN,
         manual_id: NaN,
-        can_edit: false,
         updated_by_user_id: NaN,
     });
 
@@ -26,8 +24,6 @@ export default class ManualAssignment
     public manual_id!: number;
     @PrimaryColumn()
     public role_id!: number;
-    @Column()
-    public can_edit!: boolean;
     @Column()
     public updated_by_user_id!: number;
 

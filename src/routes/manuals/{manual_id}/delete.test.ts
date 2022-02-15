@@ -29,6 +29,7 @@ const genManual = async () => {
             prevent_delete: false,
             prevent_edit: false,
             published: false,
+            business_id,
             title: OLD_NAME,
         })
     ));

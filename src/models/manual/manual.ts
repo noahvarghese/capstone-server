@@ -11,6 +11,7 @@ export interface ManualAttributes {
     prevent_edit: boolean;
     published: boolean;
     updated_by_user_id: number;
+    business_id: number;
 }
 
 export const EmptyManualAttributes = (): ManualAttributes => ({
@@ -19,6 +20,7 @@ export const EmptyManualAttributes = (): ManualAttributes => ({
     prevent_edit: false,
     published: false,
     updated_by_user_id: NaN,
+    business_id: NaN,
 });
 
 @Entity({ name: "manual" })
@@ -34,6 +36,8 @@ export default class Manual
     public prevent_edit!: boolean;
     @Column()
     public published!: boolean;
+    @Column()
+    public business_id!: number;
 
     public constructor(options?: Partial<ManualAttributes>) {
         super();
@@ -55,7 +59,6 @@ export default class Manual
                 .where("ma.manual_id = :manual_id", { manual_id })
                 .andWhere("ur.user_id = :user_id", { user_id })
                 .andWhere("r.access = :access", { access: Not("USER") })
-                .andWhere("ma.can_edit = :can_edit", { can_edit: true })
                 .getOne()
         );
     };

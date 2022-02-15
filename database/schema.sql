@@ -110,6 +110,8 @@ CREATE TABLE manual (
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
+    business_id INT NOT NULL,
+    FOREIGN KEY (business_id) REFERENCES business(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );
@@ -117,7 +119,6 @@ CREATE TABLE manual (
 CREATE TABLE manual_assignment (
     role_id INT NOT NULL,
     manual_id INT NOT NULL,
-    can_edit TINYINT(1) NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),

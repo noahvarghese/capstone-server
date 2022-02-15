@@ -40,6 +40,7 @@ beforeAll(async () => {
             prevent_delete: false,
             prevent_edit: false,
             published: true,
+            business_id,
             updated_by_user_id: user_id,
         })
     ));

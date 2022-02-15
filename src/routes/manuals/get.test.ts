@@ -43,6 +43,7 @@ beforeAll(async () => {
             prevent_edit: false,
             published: true,
             updated_by_user_id: user_id,
+            business_id,
         })
     );
 
@@ -57,6 +58,7 @@ beforeAll(async () => {
             prevent_edit: false,
             published: true,
             updated_by_user_id: user_id,
+            business_id,
         })
     ));
 
