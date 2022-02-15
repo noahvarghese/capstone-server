@@ -1,5 +1,5 @@
 import Manual from "@models/manual/manual";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 import ManualSection from "@models/manual/section";
 import User from "@models/user/user";
 import { Request, Response } from "express";
@@ -28,9 +28,9 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         .select("m")
         .from(Manual, "m")
         .leftJoin(ManualSection, "ms", "ms.manual_id = m.id")
-        .leftJoin(Policy, "p", "p.manual_section_id = ms.id")
+        .leftJoin(Content, "c", "c.manual_section_id = ms.id")
         .where("m.business_id = :current_business_id", { current_business_id })
-        .andWhere("p.id = :id", { id })
+        .andWhere("c.id = :id", { id })
         .getOne();
 
     if (!manual) {
@@ -43,7 +43,7 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    await dbConnection.manager.delete(Policy, id);
+    await dbConnection.manager.delete(Content, id);
 
     res.sendStatus(200);
 };

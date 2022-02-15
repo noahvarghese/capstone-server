@@ -1,6 +1,6 @@
 import { getMockRes } from "@jest-mock/express";
 import Manual from "@models/manual/manual";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 import ManualSection from "@models/manual/section";
 import Role, { AccessKey } from "@models/role";
 import DBConnection from "@test/support/db_connection";
@@ -94,7 +94,7 @@ describe("Permissions", () => {
     const cases = ["ADMIN", "MANAGER", "USER"];
 
     afterEach(async () => {
-        await conn.manager.delete(Policy, { manual_section_id: section_id });
+        await conn.manager.delete(Content, { manual_section_id: section_id });
         await conn.manager.update(Role, role_id, {
             access: "ADMIN",
             prevent_edit: true,
@@ -120,7 +120,7 @@ describe("Permissions", () => {
         if (access !== "USER") {
             expect(res.sendStatus).toHaveBeenCalledWith(201);
 
-            const mans = await conn.manager.find(Policy);
+            const mans = await conn.manager.find(Content);
             expect(mans.length).toBe(1);
         } else {
             expect(res.sendStatus).toHaveBeenCalledWith(403);

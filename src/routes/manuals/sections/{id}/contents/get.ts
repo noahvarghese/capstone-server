@@ -1,6 +1,6 @@
 import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 import ManualSection from "@models/manual/section";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
@@ -22,9 +22,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     let query = dbConnection
         .createQueryBuilder()
-        .select("p.id, p.title")
-        .from(Policy, "p")
-        .leftJoin(ManualSection, "ms", "ms.id = p.manual_section_id")
+        .select("c.id, c.title, c.content")
+        .from(Content, "c")
+        .leftJoin(ManualSection, "ms", "ms.id = c.manual_section_id")
         .leftJoin(Manual, "m", "m.id = ms.manual_id")
         .leftJoin(ManualAssignment, "ma", "ma.manual_id = m.id")
         .leftJoin(UserRole, "ur", "ur.role_id = ma.role_id")
@@ -40,7 +40,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     }
 
     res.status(200).send(
-        await query.getRawMany<{ id: number; title: string }>()
+        await query.getRawMany<{ id: number; title: string; content: string }>()
     );
     return;
 };

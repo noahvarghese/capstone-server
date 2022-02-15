@@ -5,14 +5,14 @@ import EditableContentModel from "@models/abstract/editable_content_model";
 export interface ContentAttributes {
     title: string;
     content: string;
-    policy_id: number;
+    manual_section_id: number;
     updated_by_user_id: number;
 }
 
 export const EmptyContentAttributes = (): ContentAttributes => ({
     title: "",
     content: "",
-    policy_id: NaN,
+    manual_section_id: NaN,
     updated_by_user_id: NaN,
 });
 
@@ -26,7 +26,7 @@ export default class Content
     @Column()
     public content!: string;
     @Column()
-    public policy_id!: number;
+    public manual_section_id!: number;
 
     public constructor(options?: Partial<ContentAttributes>) {
         super();

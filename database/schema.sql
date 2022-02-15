@@ -142,29 +142,16 @@ CREATE TABLE manual_section (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE policy (
+CREATE TABLE content (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
+    content LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
     manual_section_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
     FOREIGN KEY (manual_section_id) REFERENCES manual_section(id) ON DELETE CASCADE,
-    FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
-    PRIMARY KEY (id)
-);
-
-CREATE TABLE content (
-    id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) COLLATE UTF8_GENERAL_CI NOT NULL,
-    content LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
-    policy_id INT NOT NULL,
-    updated_by_user_id INT NOT NULL,
-    created_on DATETIME NOT NULL DEFAULT NOW(),
-    updated_on DATETIME NOT NULL DEFAULT NOW(),
-    deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (policy_id) REFERENCES policy(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)
 );

@@ -10,7 +10,7 @@ import { Request } from "express";
 import Manual from "@models/manual/manual";
 import ManualAssignment from "@models/manual/assignment";
 import ManualSection from "@models/manual/section";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 
 const { res, mockClear } = getMockRes();
 
@@ -21,7 +21,7 @@ let business_id: number,
     role_id: number,
     manual_id: number,
     section_id: number,
-    policy_id: number;
+    content_id: number;
 let conn: Connection;
 let session: Omit<SessionData, "cookie">;
 
@@ -75,10 +75,10 @@ beforeAll(async () => {
     ));
 
     ({
-        identifiers: [{ id: policy_id }],
+        identifiers: [{ id: content_id }],
     } = await conn.manager.insert(
-        Policy,
-        new Policy({
+        Content,
+        new Content({
             title: TITLE,
             manual_section_id: section_id,
             updated_by_user_id: user_id,
@@ -121,7 +121,7 @@ describe("published", () => {
                 await getController(
                     {
                         session,
-                        params: { id: policy_id },
+                        params: { id: content_id },
                         dbConnection: conn,
                     } as unknown as Request,
                     res
@@ -134,7 +134,7 @@ describe("published", () => {
                 } else {
                     expect(res.send).toHaveBeenCalledWith(
                         expect.objectContaining({
-                            id: policy_id,
+                            id: content_id,
                             title: TITLE,
                         })
                     );

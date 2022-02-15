@@ -1,10 +1,10 @@
 import { Router } from "express";
 import idRouter from "./{id}";
-import policyRouter from "./policies";
+import contentRouter from "./contents";
 
 const router = Router();
 
 router.use("/:id", idRouter);
-router.use("/policies", policyRouter);
+router.use("/contents", contentRouter);
 
 export default router;

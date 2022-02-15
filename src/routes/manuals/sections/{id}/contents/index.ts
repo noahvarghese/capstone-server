@@ -1,13 +1,10 @@
 import { Router } from "express";
-import contentRouter from "./contents";
 import getController from "./get";
-import putController from "./put";
+import postController from "./post";
 
 const router = Router();
 
-router.use("/contents", contentRouter);
-
 router.get("/", getController);
-router.put("/", putController);
+router.post("/", postController);
 
 export default router;

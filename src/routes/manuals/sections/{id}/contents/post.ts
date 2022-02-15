@@ -1,11 +1,11 @@
 import Manual from "@models/manual/manual";
-import Policy from "@models/manual/policy";
+import Content from "@models/manual/content/content";
 import ManualSection from "@models/manual/section";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import { Request, Response } from "express";
 
-const putController = async (req: Request, res: Response): Promise<void> => {
+const postController = async (req: Request, res: Response): Promise<void> => {
     const {
         session: { user_id, current_business_id },
         params: { id },
@@ -13,13 +13,15 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     } = req;
 
     let title: string;
+    let content: string;
 
     try {
         const data = getJOpts(req.body, {
             title: { type: "string", required: true },
+            content: { type: "string", required: false },
         });
-
         title = data.title as string;
+        content = data.content as string;
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
@@ -43,9 +45,10 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         .select("m")
         .from(Manual, "m")
         .leftJoin(ManualSection, "ms", "ms.manual_id = m.id")
-        .leftJoin(Policy, "p", "p.manual_section_id = ms.id")
-        .where("m.business_id = :current_business_id", { current_business_id })
-        .andWhere("p.id = :id", { id })
+        .where("ms.id = :id", { id })
+        .andWhere("m.business_id = :current_business_id", {
+            current_business_id,
+        })
         .getOne();
 
     if (!manual) {
@@ -58,12 +61,17 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    await dbConnection.manager.update(Policy, id, {
-        updated_by_user_id: user_id,
-        title: title,
-    });
+    await dbConnection.manager.insert(
+        Content,
+        new Content({
+            title,
+            content,
+            updated_by_user_id: user_id,
+            manual_section_id: Number(id),
+        })
+    );
 
-    res.sendStatus(200);
+    res.sendStatus(201);
 };
 
-export default putController;
+export default postController;
