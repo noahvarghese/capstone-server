@@ -13,8 +13,21 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (!(await User.isAdmin(dbConnection, business_id!, user_id!))) {
+    const [isAdmin, isManager] = await Promise.all([
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        User.isAdmin(dbConnection, business_id!, user_id!),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        User.isManager(dbConnection, business_id!, user_id!),
+    ]);
+
+    const isManagerOfRole = await Role.hasManager(
+        dbConnection,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        user_id!,
+        Number(role_id)
+    );
+
+    if (!(isAdmin || isManager) || (isManager && !isManagerOfRole)) {
         res.sendStatus(403);
         return;
     }
