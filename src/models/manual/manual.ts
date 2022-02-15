@@ -40,7 +40,7 @@ export default class Manual
         Object.assign(this, AttributeFactory(options, EmptyManualAttributes));
     }
 
-    public static isOwner = async (
+    public static canEdit = async (
         conn: Connection,
         user_id: number,
         manual_id: number
@@ -55,7 +55,7 @@ export default class Manual
                 .where("ma.manual_id = :manual_id", { manual_id })
                 .andWhere("ur.user_id = :user_id", { user_id })
                 .andWhere("r.access = :access", { access: Not("USER") })
-                .andWhere("ma.owner = :owner", { owner: true })
+                .andWhere("ma.can_edit = :can_edit", { can_edit: true })
                 .getOne()
         );
     };

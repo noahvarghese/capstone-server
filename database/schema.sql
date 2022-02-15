@@ -117,7 +117,7 @@ CREATE TABLE manual (
 CREATE TABLE manual_assignment (
     role_id INT NOT NULL,
     manual_id INT NOT NULL,
-    owner TINYINT(1) NOT NULL,
+    can_edit TINYINT(1) NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),

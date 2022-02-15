@@ -82,13 +82,13 @@ const postController = async (req: Request, res: Response): Promise<void> => {
             })
         );
 
-        //  4.  Assign manual to role with owner flag
+        //  4.  Assign manual to role
         await tm.insert(
             ManualAssignment,
             new ManualAssignment({
                 updated_by_user_id: user_id,
                 manual_id,
-                owner: true,
+                can_edit: true,
                 role_id,
             })
         );
