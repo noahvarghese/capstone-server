@@ -5,7 +5,7 @@ import ManualSection from "@models/manual/section";
 import User from "@models/user/user";
 import { Request, Response } from "express";
 
-const getController = async (req: Request, res: Response): Promise<void> => {
+const postController = async (req: Request, res: Response): Promise<void> => {
     const {
         params: { id },
         session: { user_id, current_business_id },
@@ -42,11 +42,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const read = await dbConnection.manager.findOne(ContentRead, {
-        where: { content_id: id, user_id },
-    });
+    await dbConnection.manager.insert(
+        ContentRead,
+        new ContentRead({ user_id, content_id: Number(id) })
+    );
 
-    res.status(200).send(Boolean(read));
+    res.sendStatus(200);
 };
 
-export default getController;
+export default postController;
