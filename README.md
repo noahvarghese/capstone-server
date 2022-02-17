@@ -2,13 +2,13 @@
 <br />
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
 <br />
-![Statements](https://img.shields.io/badge/statements-92.59%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-92.7%25-brightgreen.svg?style=flat)
 <br />
-![Lines](https://img.shields.io/badge/lines-92.24%25-brightgreen.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-92.39%25-brightgreen.svg?style=flat)
 <br />
-![Functions](https://img.shields.io/badge/functions-90.69%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-91.06%25-brightgreen.svg?style=flat)
 <br />
-![Branches](https://img.shields.io/badge/branches-83.55%25-yellow.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-85.36%25-yellow.svg?style=flat)
 
 # OnBoard - Backend
 
