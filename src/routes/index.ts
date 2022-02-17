@@ -6,6 +6,7 @@ import manualRouter from "./manuals";
 import businessRouter from "./businesses";
 import departmentRouter from "./departments";
 import roleRouter from "./roles";
+import quizRouter from "./quizzes";
 import userRouter from "./users";
 import Logs from "@noahvarghese/logger";
 
@@ -17,6 +18,7 @@ router.use("/members", memberRouter);
 router.use("/manuals", manualRouter);
 router.use("/departments", departmentRouter);
 router.use("/roles", roleRouter);
+router.use("/quizzes", quizRouter);
 router.use("/users", userRouter);
 
 // Default route handler to serve the website if requests are made
