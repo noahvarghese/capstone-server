@@ -15,11 +15,13 @@ const postController = async (req: Request, res: Response): Promise<void> => {
     let max_attempts: number;
     let prevent_delete: boolean;
     let prevent_edit: boolean;
+    let published: boolean;
 
     try {
         const data = getJOpts(req.body, {
             title: { type: "string", required: true },
             max_attempts: { type: "number", required: true },
+            published: { type: "boolean", required: false },
             prevent_delete: { type: "boolean", required: true },
             prevent_edit: { type: "boolean", required: true },
         });
@@ -28,6 +30,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         max_attempts = data.max_attempts as number;
         prevent_delete = data.prevent_delete as boolean;
         prevent_edit = data.prevent_edit as boolean;
+        published = data.published as boolean;
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
@@ -64,7 +67,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
             max_attempts,
             prevent_delete,
             prevent_edit,
-            published: false,
+            published: published ?? false,
         })
     );
 
