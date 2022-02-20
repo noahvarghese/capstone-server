@@ -62,7 +62,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     await dbConnection.manager.update(QuizSection, id, {
         title,
         updated_by_user_id: user_id,
-        quiz_id: Number(id),
     });
 
     res.sendStatus(200);
