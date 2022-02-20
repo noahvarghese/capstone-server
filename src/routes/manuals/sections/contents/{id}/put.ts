@@ -22,7 +22,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         });
 
         title = data.title as string;
-        content = (data.content as string) ?? "";
+        content = data.content as string;
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
@@ -61,10 +61,17 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    const prevContent = await dbConnection.manager.findOne(Content, id);
+
+    if (!prevContent) {
+        res.sendStatus(400);
+        return;
+    }
+
     await dbConnection.manager.update(Content, id, {
         updated_by_user_id: user_id,
-        title,
-        content,
+        title: title ?? prevContent.title,
+        content: content ?? prevContent.content,
     });
 
     res.sendStatus(200);
