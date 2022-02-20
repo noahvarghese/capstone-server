@@ -147,7 +147,7 @@ describe("assigned", () => {
                             {
                                 session,
                                 dbConnection: conn,
-                                params: { id: quiz_section_id },
+                                params: { id: quiz_id },
                             } as unknown as Request,
                             res
                         );
