@@ -3063,6 +3063,21 @@
                 }
             }
         },
+        "/question_types/{id}": {
+            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+            "get": {
+                "tags": ["quiz question"],
+                "summary": "get quiz type by id",
+                "description": "for displaying quiz questions. requires authentication",
+                "responses": {
+                    "200": { "$ref": "#/components/responses/Success" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/reports/admin": {
             "get": {
                 "tags": ["reports"],
