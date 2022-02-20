@@ -3,7 +3,6 @@ import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
-import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 
 const putController = async (req: Request, res: Response): Promise<void> => {
@@ -37,8 +36,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         res.sendStatus(403);
         return;
     }
-
-    Logs.Error(id);
 
     const quiz = await dbConnection
         .createQueryBuilder()
