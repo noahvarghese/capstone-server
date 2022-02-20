@@ -2,6 +2,7 @@ import { getMockRes } from "@jest-mock/express";
 import Role, { AccessKey } from "@models/role";
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
+import { unitTeardown } from "@test/unit/teardown";
 import { Request } from "express";
 import { SessionData } from "express-session";
 import { Connection } from "typeorm";
@@ -27,9 +28,15 @@ beforeAll(async () => {
         current_business_id: business_id,
     };
 });
+
+afterAll(async () => {
+    await unitTeardown(conn);
+    await DBConnection.close();
+});
+
 // currently only 1 question type
 
-describe.skip("can retrieve all question types", () => {
+describe("can retrieve all question types", () => {
     const cases: AccessKey[] = ["ADMIN", "MANAGER", "USER"];
 
     afterEach(async () => {
