@@ -176,5 +176,6 @@ test("invalid question", async () => {
         res
     );
 
-    expect(res.sendStatus).toHaveBeenCalledWith(400);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith("Requires at least one argument");
 });

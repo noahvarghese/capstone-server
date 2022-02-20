@@ -30,7 +30,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (!question && !quiz_question_type_id) {
-        res.sendStatus(400);
+        res.status(400).send("Requires at least one argument");
         return;
     }
 
@@ -46,17 +46,18 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const quiz = await dbConnection
+    const query = dbConnection
         .createQueryBuilder()
         .select("q")
         .from(Quiz, "q")
         .leftJoin(QuizSection, "qs", "q.id = qs.quiz_id")
+        .leftJoin(QuizQuestion, "qq", "qs.id = qq.quiz_section_id")
         .leftJoin(Manual, "m", "m.id = q.manual_id")
-        .where("qs.id = :id", { id })
+        .where("qq.id = :id", { id })
         .andWhere("m.business_id = :current_business_id", {
             current_business_id,
-        })
-        .getOne();
+        });
+    const quiz = await query.getOne();
 
     if (!quiz) {
         res.sendStatus(400);
@@ -71,7 +72,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     const prevQuestion = await dbConnection.manager.findOne(QuizQuestion, id);
 
     if (!prevQuestion) {
-        res.sendStatus(400);
+        res.status(400).send("No previous question");
         return;
     }
 
