@@ -60,9 +60,7 @@ const setupServer = async (
         server.on("error", Logs.Error);
 
         server.on("listening", () => {
-            console.log("\n");
-            Logs.Log(`Server started on port: ${port} using ${pid}`);
-            console.log("\n");
+            Logs.Log(`\nServer started on port: ${port} using ${pid}\n`);
 
             res(server);
         });
@@ -75,22 +73,21 @@ export const shutdown = async (app: {
     server: Server;
     connection: Connection;
 }): Promise<void> => {
-    await new Promise<void>((res, rej) => {
-        app.server.close((err) => {
-            if (err) Logs.Error(err.message);
+    await Promise.all([
+        new Promise<void>((res, rej) => {
+            app.server.close((err) => {
+                if (err) Logs.Error(err.message);
 
-            console.log("\n");
-            Logs.Log("Server terminated");
-            console.log("\n");
+                Logs.Log("\nServer terminated\n");
 
-            if (err) {
-                rej(err);
-            }
-            res();
-        });
-    });
-
-    await app.connection.close();
+                if (err) {
+                    rej(err);
+                }
+                res();
+            });
+        }),
+        app.connection.close(),
+    ]);
 };
 
 export default setupServer;
