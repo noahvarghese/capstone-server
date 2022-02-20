@@ -164,12 +164,12 @@ describe("assigned", () => {
                                         undefined
                                     );
                                 } else {
-                                    expect.arrayContaining([
+                                    expect(res.send).toHaveBeenCalledWith(
                                         expect.objectContaining({
                                             quiz_id,
                                             id: quiz_section_id,
-                                        }),
-                                    ]);
+                                        })
+                                    );
                                 }
                             }
                         } else {
