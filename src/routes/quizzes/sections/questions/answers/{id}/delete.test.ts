@@ -10,7 +10,7 @@ import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
 import { SessionData } from "express-session";
 import { Connection } from "typeorm";
-import putController from "./put";
+import deleteController from "./delete";
 import { Request } from "express";
 
 let business_id: number,
@@ -23,7 +23,6 @@ let business_id: number,
     quiz_answer_id: number;
 let conn: Connection;
 let session: Omit<SessionData, "cookie">;
-const NEW_ANSWER = "WHOS YOUR DADDY";
 const OLD_ANSWER = "WHO AM I";
 
 const { res, mockClear } = getMockRes();
@@ -122,11 +121,10 @@ describe("prevent edit", () => {
     });
 
     test("", async () => {
-        await putController(
+        await deleteController(
             {
                 session,
                 dbConnection: conn,
-                body: { answer: NEW_ANSWER },
                 params: { id: quiz_answer_id },
             } as unknown as Request,
             res
@@ -139,9 +137,19 @@ describe("Permissions", () => {
     const cases: AccessKey[] = ["ADMIN", "MANAGER", "USER"];
 
     afterEach(async () => {
-        await conn.manager.update(QuizAnswer, quiz_answer_id, {
-            answer: OLD_ANSWER,
-        });
+        if (!(await conn.manager.findOne(QuizAnswer))) {
+            ({
+                identifiers: [{ id: quiz_answer_id }],
+            } = await conn.manager.insert(
+                QuizAnswer,
+                new QuizAnswer({
+                    quiz_question_id,
+                    answer: OLD_ANSWER,
+                    correct: false,
+                    updated_by_user_id: user_id,
+                })
+            ));
+        }
         await conn.manager.update(Role, role_id, {
             access: "ADMIN",
             prevent_edit: true,
@@ -154,39 +162,19 @@ describe("Permissions", () => {
             prevent_edit: false,
         });
 
-        await putController(
+        await deleteController(
             {
                 session,
                 dbConnection: conn,
-                body: { answer: NEW_ANSWER },
                 params: { id: quiz_answer_id },
             } as unknown as Request,
             res
         );
 
-        const qa = await conn.manager.find(QuizAnswer);
-
         if (access !== "USER") {
             expect(res.sendStatus).toHaveBeenCalledWith(200);
-            expect(qa[0].answer).toBe(NEW_ANSWER);
         } else {
             expect(res.sendStatus).toHaveBeenCalledWith(403);
-            expect(qa[0].answer).toBe(OLD_ANSWER);
         }
     });
-});
-
-test("invalid answer", async () => {
-    await putController(
-        {
-            session,
-            dbConnection: conn,
-            body: {},
-            params: { id: quiz_answer_id },
-        } as unknown as Request,
-        res
-    );
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith("Requires at least one argument");
 });
