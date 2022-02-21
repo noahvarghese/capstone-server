@@ -1,8 +1,8 @@
 import { Router } from "express";
-import idRouter from "./{id}";
+import putController from "./put";
 
 const router = Router();
 
-router.use("/:id", idRouter);
+router.put("/", putController);
 
 export default router;
