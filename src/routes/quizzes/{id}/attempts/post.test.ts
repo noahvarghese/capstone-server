@@ -1,6 +1,7 @@
 import { getMockRes } from "@jest-mock/express";
 import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
+import QuizAttempt from "@models/quiz/attempt";
 import Quiz from "@models/quiz/quiz";
 import Role, { AccessKey } from "@models/role";
 import DBConnection from "@test/support/db_connection";
@@ -81,11 +82,140 @@ afterAll(async () => {
     await conn.close();
 });
 
-test.todo("max attempts stops user from going over the max attempts");
-test.todo("user can create a quiz attempt for themselves");
-test.todo("user cannot attempt quiz that is not assigned");
-test.todo("user cannot attempt quiz that is not published");
-test.todo("user cannot attempt quiz whose manual is not published");
+describe("user", () => {
+    beforeAll(async () => {
+        await conn.manager.update(Role, role_id, {
+            access: "USER",
+            prevent_edit: false,
+        });
+    });
+
+    afterAll(async () => {
+        await conn.manager.update(Role, role_id, {
+            access: "ADMIN",
+            prevent_edit: true,
+        });
+    });
+
+    describe("max attempts", () => {
+        beforeAll(async () => {
+            await conn.manager.update(Quiz, quiz_id, { max_attempts: 0 });
+        });
+        afterAll(async () => {
+            await conn.manager.update(Quiz, quiz_id, { max_attempts: 1 });
+        });
+
+        test("stops user from going over the max attempts", async () => {
+            await postController(
+                {
+                    dbConnection: conn,
+                    session,
+                    params: { id: quiz_id },
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(405);
+        });
+    });
+    describe("success", () => {
+        afterAll(async () => {
+            await conn.manager.delete(QuizAttempt, { quiz_id, user_id });
+        });
+
+        test("user can create a quiz attempt for themselves", async () => {
+            await postController(
+                {
+                    dbConnection: conn,
+                    session,
+                    params: { id: quiz_id },
+                } as unknown as Request,
+                res
+            );
+
+            const qa = await conn.manager.find(QuizAttempt);
+
+            expect(qa.length).toBe(1);
+
+            expect(qa[0].user_id).toBe(user_id);
+            expect(qa[0].quiz_id).toBe(quiz_id);
+
+            expect(res.sendStatus).toHaveBeenCalledWith(201);
+        });
+    });
+
+    describe("manual assignment", () => {
+        beforeAll(async () => {
+            await conn.manager.delete(ManualAssignment, { manual_id, role_id });
+        });
+
+        afterAll(async () => {
+            await conn.manager.insert(
+                ManualAssignment,
+                new ManualAssignment({
+                    manual_id,
+                    role_id,
+                    updated_by_user_id: user_id,
+                })
+            );
+        });
+
+        test("user cannot attempt quiz that is not assigned", async () => {
+            await postController(
+                {
+                    dbConnection: conn,
+                    session,
+                    params: { id: quiz_id },
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(405);
+        });
+    });
+
+    describe("quiz published", () => {
+        beforeAll(async () => {
+            await conn.manager.update(Quiz, quiz_id, { published: false });
+        });
+
+        afterAll(async () => {
+            await conn.manager.update(Quiz, quiz_id, { published: true });
+        });
+
+        test("user cannot attempt quiz that is not published", async () => {
+            await postController(
+                {
+                    dbConnection: conn,
+                    session,
+                    params: { id: quiz_id },
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(405);
+        });
+    });
+
+    describe("manual published", () => {
+        beforeAll(async () => {
+            await conn.manager.update(Manual, manual_id, { published: false });
+        });
+
+        afterAll(async () => {
+            await conn.manager.update(Manual, manual_id, { published: true });
+        });
+
+        test("user cannot attempt quiz whose manual is not published", async () => {
+            await postController(
+                {
+                    dbConnection: conn,
+                    session,
+                    params: { id: quiz_id },
+                } as unknown as Request,
+                res
+            );
+            expect(res.sendStatus).toHaveBeenCalledWith(405);
+        });
+    });
+});
 
 describe("permissions", () => {
     const p: AccessKey[] = ["ADMIN", "MANAGER"];
@@ -104,7 +234,7 @@ describe("permissions", () => {
             });
         });
 
-        test.skip("only users can create an attempt", async () => {
+        test("only users can create an attempt", async () => {
             await postController(
                 {
                     dbConnection: conn,
