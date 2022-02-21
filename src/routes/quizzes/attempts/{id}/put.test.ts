@@ -172,3 +172,46 @@ describe("permissions", () => {
         });
     });
 });
+
+describe("keep test coverage up LOL", () => {
+    beforeAll(async () => {
+        await conn.manager.update(Role, role_id, {
+            access: "USER",
+            prevent_edit: false,
+        });
+        await conn.manager.delete(QuizAttempt, () => "");
+    });
+
+    afterAll(async () => {
+        await conn.manager.update(Role, role_id, {
+            access: "ADMIN",
+            prevent_edit: true,
+        });
+    });
+
+    test("non numerical id", async () => {
+        await putController(
+            {
+                session,
+                dbConnection: conn,
+                params: { id: "ASDF" },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(400);
+    });
+
+    test("no quiz attempts exist with id", async () => {
+        await putController(
+            {
+                session,
+                dbConnection: conn,
+                params: { id: 1 },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(400);
+    });
+});
