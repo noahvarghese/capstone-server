@@ -7,6 +7,7 @@ import Role, { AccessKey } from "@models/role";
 import DBConnection from "@test/support/db_connection";
 import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
+import sleep from "@util/sleep";
 import { Request } from "express";
 import { SessionData } from "express-session";
 import { Connection } from "typeorm";
@@ -90,8 +91,72 @@ afterAll(async () => {
 });
 
 describe("finished attempt", () => {
-    test.todo("provides score");
-    test.todo("does not provide score");
+    beforeAll(async () => {
+        await sleep(2000);
+        await conn.manager.update(
+            QuizAttempt,
+            { quiz_id, user_id },
+            { updated_on: new Date() }
+        );
+    });
+
+    afterAll(async () => {
+        await conn.manager.delete(QuizAttempt, {
+            quiz_id,
+            user_id,
+        });
+
+        await conn.manager.insert(
+            QuizAttempt,
+            new QuizAttempt({ quiz_id, user_id })
+        );
+    });
+
+    test("provides score", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+                params: { id: quiz_id },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    quiz_id,
+                }),
+            ])
+        );
+        expect(res.send).not.toHaveBeenCalledWith(
+            expect.arrayContaining([expect.objectContaining({ score: -1 })])
+        );
+    });
+});
+
+describe("unfinished attempt", () => {
+    test("does not provide score", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+                params: { id: quiz_id },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    quiz_id,
+                    score: -1,
+                }),
+            ])
+        );
+    });
 });
 
 describe("permissions", () => {
