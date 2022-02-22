@@ -2745,7 +2745,7 @@
                 }
             }
         },
-        "/quizzes/attempts/{attempt_id}/{user_id}/results/{result_id}": {
+        "/quizzes/attempts/{attempt_id}/{user_id}/results/{question_id}": {
             "parameters": [
                 {
                     "name": "attempt_id",
