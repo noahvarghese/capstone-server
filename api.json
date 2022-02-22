@@ -2760,7 +2760,7 @@
                     "schema": { "type": "integer" }
                 },
                 {
-                    "name": "result_id",
+                    "name": "question_id",
                     "in": "path",
                     "required": true,
                     "schema": { "type": "integer" }

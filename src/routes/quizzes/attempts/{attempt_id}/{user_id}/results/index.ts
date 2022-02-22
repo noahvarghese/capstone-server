@@ -1,10 +1,10 @@
 import { Router } from "express";
 import getController from "./get";
-import resultIdRouter from "./{result_id}";
+import questionIdRouter from "./{question_id}";
 
 const router = Router();
 
-router.use("/:result_id", resultIdRouter);
+router.use("/:question_id", questionIdRouter);
 
 router.get("/", getController);
 
