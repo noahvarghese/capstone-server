@@ -2662,6 +2662,104 @@
                 }
             }
         },
+        "/quizzes/attempts/{attempt_id}/results/{question_id}": {
+            "parameters": [
+                {
+                    "name": "attempt_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "question_id",
+                    "in": "path",
+                    "required": true,
+                    "schema": { "type": "integer" }
+                }
+            ],
+            "post": {
+                "tags": ["quiz result"],
+                "summary": "create user's quiz answer",
+                "description": "can only be done by the same user that is being referenced, quiz attempt must not be over",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "quiz_answer_id": { "type": "integer" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "$ref": "#/components/responses/Success" },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz result"],
+                "summary": "update result for one attempt",
+                "description": "must logged in as the same user, and the quiz attempt not be over",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "quiz_answer_id": { "type": "integer" }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/QuizQuestion"
+                                        },
+                                        "answer": {
+                                            "$ref": "#/components/schemas/QuizAnswer"
+                                        },
+                                        "attempt": {
+                                            "$ref": "#/components/schemas/QuizAttemptResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            }
+        },
         "/quizzes/attempts/{attempt_id}/{user_id}/results": {
             "parameters": [
                 {
@@ -2712,37 +2810,6 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "post": {
-                "tags": ["quiz result"],
-                "summary": "create user's quiz answer",
-                "description": "can only be done by the same user that is being referenced, quiz attempt must not be over",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "user_id": { "type": "integer" }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": { "$ref": "#/components/responses/Success" },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "405": {
-                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
@@ -2801,45 +2868,6 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "500": { "$ref": "#/components/responses/DatabaseError" }
-                }
-            },
-            "put": {
-                "tags": ["quiz result"],
-                "summary": "update result for one attempt",
-                "description": "must logged in as the same user, and the quiz attempt not be over",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "question": {
-                                            "$ref": "#/components/schemas/QuizQuestion"
-                                        },
-                                        "answer": {
-                                            "$ref": "#/components/schemas/QuizAnswer"
-                                        },
-                                        "attempt": {
-                                            "$ref": "#/components/schemas/QuizAttemptResponse"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": { "$ref": "#/components/responses/ArgumentsError" },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationError"
-                    },
-                    "403": {
-                        "$ref": "#/components/responses/PermissionsError"
-                    },
-                    "405": {
-                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
