@@ -29,19 +29,6 @@ END;
 
 //
 
-DROP TRIGGER IF EXISTS quiz_result_update //
-
-CREATE TRIGGER quiz_result_update
-BEFORE UPDATE
-ON quiz_result FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    SET msg = 'QuizResultUpdateError: Cannot update quiz_result';
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-END;
-
-//
-
 /* Don't allow more than the max attempts per user */
 
 DROP TRIGGER IF EXISTS quiz_max_attempts //
