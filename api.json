@@ -2770,14 +2770,42 @@
                 "tags": ["quiz result"],
                 "summary": "get specific result for one attempt",
                 "description": "must logged in as the same user, or have permissions to view reports",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "required": false,
-                        "in": "query",
-                        "schema": { "type": "integer" }
-                    }
-                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "question": {
+                                            "$ref": "#/components/schemas/QuizQuestion"
+                                        },
+                                        "answer": {
+                                            "$ref": "#/components/schemas/QuizAnswer"
+                                        },
+                                        "attempt": {
+                                            "$ref": "#/components/schemas/QuizAttemptResponse"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": { "$ref": "#/components/responses/ArgumentsError" },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationError"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "500": { "$ref": "#/components/responses/DatabaseError" }
+                }
+            },
+            "put": {
+                "tags": ["quiz result"],
+                "summary": "update result for one attempt",
+                "description": "must logged in as the same user, and the quiz attempt not be over",
                 "responses": {
                     "200": {
                         "description": "success",
