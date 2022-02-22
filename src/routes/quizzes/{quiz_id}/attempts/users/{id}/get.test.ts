@@ -11,6 +11,8 @@ import { SessionData } from "express-session";
 import { Connection } from "typeorm";
 import getController from "./get";
 import { Request } from "express";
+import User from "@models/user/user";
+import UserRole from "@models/user/user_role";
 
 const { mockClear, res } = getMockRes();
 
@@ -21,7 +23,7 @@ let business_id: number,
     role_id: number,
     manual_id: number,
     quiz_id: number,
-    quiz_attempt_id: number;
+    quizzedUserId: number;
 let conn: Connection;
 let session: Omit<SessionData, "cookie">;
 
@@ -77,12 +79,31 @@ beforeAll(async () => {
         })
     ));
 
+    // setup secondary user for testing attempt getting
     ({
-        identifiers: [{ id: quiz_attempt_id }],
+        identifiers: [{ id: quizzedUserId }],
     } = await conn.manager.insert(
-        QuizAttempt,
-        new QuizAttempt({ quiz_id, user_id })
+        User,
+        new User({
+            first_name: "TEST123",
+            last_name: "TEST123",
+            email: "TEST123",
+        })
     ));
+
+    await conn.manager.insert(
+        UserRole,
+        new UserRole({
+            role_id,
+            user_id: quizzedUserId,
+            updated_by_user_id: user_id,
+        })
+    );
+
+    await conn.manager.insert(
+        QuizAttempt,
+        new QuizAttempt({ quiz_id, user_id: quizzedUserId })
+    );
 });
 
 afterAll(async () => {
@@ -104,8 +125,43 @@ describe("users can only view their own attempts", () => {
         });
     });
 
-    test.todo("view own attempt");
-    test.todo("view other's attempt");
+    describe("view own attempt", () => {
+        test("success", async () => {
+            await getController(
+                {
+                    session: {
+                        ...session,
+                        user_id: quizzedUserId,
+                    },
+                    dbConnection: conn,
+                    params: { quiz_id, user_id: quizzedUserId },
+                } as unknown as Request,
+                res
+            );
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        quiz_id,
+                        user_id: quizzedUserId,
+                    }),
+                ])
+            );
+        });
+    });
+    test("view other's attempt", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+                params: { quiz_id, user_id: quizzedUserId },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(403);
+    });
 });
 
 describe("admin/managers can view anyones", () => {
@@ -130,12 +186,20 @@ describe("admin/managers can view anyones", () => {
                 {
                     session,
                     dbConnection: conn,
-                    params: { id: quiz_attempt_id },
+                    params: { quiz_id, user_id: quizzedUserId },
                 } as unknown as Request,
                 res
             );
 
-            expect(res.sendStatus).toHaveBeenCalledWith(200);
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        quiz_id,
+                        user_id: quizzedUserId,
+                    }),
+                ])
+            );
         });
     });
 });
