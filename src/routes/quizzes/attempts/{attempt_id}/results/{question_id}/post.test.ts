@@ -15,6 +15,7 @@ import QuizQuestion from "@models/quiz/question/question";
 import QuizSection from "@models/quiz/section";
 import postController from "./post";
 import QuizResult from "@models/quiz/question/result";
+import sleep from "@util/sleep";
 
 const { mockClear, res } = getMockRes();
 
@@ -178,6 +179,7 @@ describe("only works for users", () => {
         });
         describe("quiz attempt finished", () => {
             beforeAll(async () => {
+                await sleep(2000);
                 await conn.manager.update(QuizAttempt, quiz_attempt_id, {
                     updated_on: new Date(),
                 });
