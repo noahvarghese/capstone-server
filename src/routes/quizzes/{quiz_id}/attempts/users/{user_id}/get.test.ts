@@ -110,6 +110,12 @@ afterAll(async () => {
     await unitTeardown(conn);
     await conn.close();
 });
+
+describe("finished attempt", () => {
+    test.todo("provides score");
+    test.todo("does not provide score");
+});
+
 describe("users can only view their own attempts", () => {
     beforeAll(async () => {
         await conn.manager.update(Role, role_id, {

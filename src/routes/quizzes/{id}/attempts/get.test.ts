@@ -89,6 +89,11 @@ afterAll(async () => {
     await conn.close();
 });
 
+describe("finished attempt", () => {
+    test.todo("provides score");
+    test.todo("does not provide score");
+});
+
 describe("permissions", () => {
     const p: AccessKey[] = ["ADMIN", "MANAGER", "USER"];
     describe.each(p)("%p", (access) => {
