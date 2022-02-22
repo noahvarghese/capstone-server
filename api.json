@@ -2954,11 +2954,26 @@
                 }
             }
         },
-        "/quizzes/attempts/user/{id}": {
-            "parameters": [{ "$ref": "#/components/parameters/ID" }],
+        "/quizzes/{quiz_id}/attempts/user/{user_id}": {
+            "parameters": [
+                {
+                    "name": "quiz_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                },
+                {
+                    "name": "user_id",
+                    "in": "path",
+                    "required": true,
+                    "description": "unique identifier",
+                    "schema": { "type": "integer" }
+                }
+            ],
             "get": {
                 "tags": ["quiz attempt"],
-                "summary": "get user's attempts for quiz",
+                "summary": "get user's attempts for specific quiz",
                 "description": "requires permissions, or that the user be looking at their onw",
                 "responses": {
                     "200": {
