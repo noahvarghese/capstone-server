@@ -21,6 +21,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     if (!(isAdmin || isManager)) {
         if (logged_in_user_id !== Number(user_id)) {
             res.sendStatus(403);
+            return;
         }
     }
 
