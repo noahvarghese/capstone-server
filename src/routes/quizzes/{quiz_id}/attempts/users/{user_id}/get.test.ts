@@ -13,6 +13,7 @@ import getController from "./get";
 import { Request } from "express";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
+import sleep from "@util/sleep";
 
 const { mockClear, res } = getMockRes();
 
@@ -112,8 +113,80 @@ afterAll(async () => {
 });
 
 describe("finished attempt", () => {
-    test.todo("provides score");
-    test.todo("does not provide score");
+    beforeAll(async () => {
+        await sleep(2000);
+        await conn.manager.update(
+            QuizAttempt,
+            { quiz_id, user_id: quizzedUserId },
+            { updated_on: new Date() }
+        );
+    });
+
+    afterAll(async () => {
+        await conn.manager.delete(QuizAttempt, {
+            quiz_id,
+            user_id: quizzedUserId,
+        });
+
+        await conn.manager.insert(
+            QuizAttempt,
+            new QuizAttempt({ quiz_id, user_id: quizzedUserId })
+        );
+    });
+
+    test("provides score", async () => {
+        await getController(
+            {
+                session: {
+                    ...session,
+                    user_id: quizzedUserId,
+                },
+                dbConnection: conn,
+                params: { quiz_id, user_id: quizzedUserId },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    quiz_id,
+                    user_id: quizzedUserId,
+                }),
+            ])
+        );
+        expect(res.send).not.toHaveBeenCalledWith(
+            expect.arrayContaining([expect.objectContaining({ score: -1 })])
+        );
+    });
+});
+
+describe("unfinished attempt", () => {
+    test("does not provide score", async () => {
+        await getController(
+            {
+                session: {
+                    ...session,
+                    user_id: quizzedUserId,
+                },
+                dbConnection: conn,
+                params: { quiz_id, user_id: quizzedUserId },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    quiz_id,
+                    user_id: quizzedUserId,
+                    score: -1,
+                }),
+            ])
+        );
+    });
 });
 
 describe("users can only view their own attempts", () => {
