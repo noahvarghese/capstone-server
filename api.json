@@ -2719,7 +2719,7 @@
             "post": {
                 "tags": ["quiz result"],
                 "summary": "create user's quiz answer",
-                "description": "can only be done by the same user that is being referenced",
+                "description": "can only be done by the same user that is being referenced, quiz attempt must not be over",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -2740,6 +2740,9 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
@@ -2834,6 +2837,9 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/ResourceLockedError"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
