@@ -1,8 +1,8 @@
 import { Router } from "express";
-import idRouter from "./{id}";
+import attemptRouter from "./attempts";
 
 const router = Router();
 
-router.use("/:id", idRouter);
+router.use("/attempts", attemptRouter);
 
 export default router;
