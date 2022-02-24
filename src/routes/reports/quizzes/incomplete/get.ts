@@ -4,7 +4,6 @@ import QuizAttempt from "@models/quiz/attempt";
 import Quiz from "@models/quiz/quiz";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 
 const getController = async (req: Request, res: Response): Promise<void> => {
@@ -48,8 +47,6 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             q_title: string;
             q_id: number;
         }>();
-
-    Logs.Error(result, await dbConnection.manager.find(User));
 
     const usersWithUnfinishedQuizzes = result.reduce((prev, curr) => {
         const user = prev.find((p) => {
