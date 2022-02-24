@@ -1,5 +1,5 @@
+import Logs from "@noahvarghese/logger";
 import { Connection, DeepPartial, ObjectLiteral } from "typeorm";
-import Logs from "@util/logs/logs";
 
 export default class Model {
     public static create = async <T>(

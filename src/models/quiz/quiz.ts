@@ -5,19 +5,21 @@ import EditableContentModel from "../abstract/editable_content_model";
 export interface QuizAttributes {
     title: string;
     max_attempts: number;
-    manual_id: number;
     prevent_delete: boolean;
     prevent_edit: boolean;
+    published: boolean;
+    manual_id: number;
     updated_by_user_id: number;
 }
 
 export const EmptyQuizAttributes = (): QuizAttributes => ({
     title: "",
-    max_attempts: -1,
-    manual_id: -1,
+    max_attempts: NaN,
+    manual_id: NaN,
+    published: false,
     prevent_delete: false,
     prevent_edit: false,
-    updated_by_user_id: -1,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "quiz" })
@@ -35,6 +37,8 @@ export default class Quiz
     public prevent_delete!: boolean;
     @Column()
     public prevent_edit!: boolean;
+    @Column()
+    public published!: boolean;
 
     public constructor(options?: Partial<QuizAttributes>) {
         super();

@@ -4,16 +4,16 @@ import EditableContentModel from "../../abstract/editable_content_model";
 
 export interface QuizQuestionAttributes {
     question: string;
-    type: string;
+    quiz_question_type_id: number;
     quiz_section_id: number;
     updated_by_user_id: number;
 }
 
 export const EmptyQuestionAttributes = (): QuizQuestionAttributes => ({
     question: "",
-    type: "",
-    quiz_section_id: -1,
-    updated_by_user_id: -1,
+    quiz_question_type_id: NaN,
+    quiz_section_id: NaN,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "quiz_question" })
@@ -24,7 +24,7 @@ export default class QuizQuestion
     @Column()
     public question!: string;
     @Column()
-    public type!: string;
+    public quiz_question_type_id!: number;
     @Column()
     public quiz_section_id!: number;
 

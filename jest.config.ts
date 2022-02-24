@@ -1,8 +1,8 @@
-import Logs from "@util/logs/logs";
+import Logs from "@noahvarghese/logger";
 import { pathsToModuleNameMapper } from "ts-jest/utils";
 import { compilerOptions } from "./tsconfig.json";
 
-let database = process.env.DB ?? "";
+let database = process.env.DB_NAME ?? "";
 
 if (typeof process.env.DB_ENV !== "string") {
     process.env.DB_ENV = "_test";
@@ -14,21 +14,22 @@ if (process.env.DB_ENV.startsWith("_")) {
     database += `_${process.env.DB_ENV}`;
 }
 
-Logs.Event(`Starting tests using database: ${database}`);
-Logs.Event("Jest config loaded");
+if (process.argv.includes("--listTests") === false) {
+    Logs.Log("Jest config loaded");
+    Logs.Log(`Using database: ${database}`);
+}
 
 export default {
     bail: true,
     collectCoverage: true,
-    coverageDirectory: "./__test__/coverage",
-    collectCoverageFrom: ["src/**/*.ts"],
-    coveragePathIgnorePatterns: [
-        "node_modules",
-        "src/index.ts",
-        "src/util/logs",
-        "src/services",
+    coveragePathIgnorePatterns: ["__test__"],
+    coverageReporters: [
+        "clover",
+        "json",
+        "json-summary",
+        "lcov",
+        ["text", { skipFull: true }],
     ],
-    coverageReporters: ["json-summary", "text", "lcov", "clover"],
     detectOpenHandles: true,
     errorOnDeprecated: true,
     forceExit: true,
@@ -48,8 +49,8 @@ export default {
                 includeConsoleLog: true,
                 includeFailureMsg: true,
                 includeSuiteFailure: true,
-                outputPath: "./__test__/test-report.html",
-                pageTitle: "Test Report",
+                outputPath: "./__test__/report.html",
+                pageTitle: "Unit Test Report",
             },
         ],
     ],

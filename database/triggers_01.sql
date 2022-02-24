@@ -1,8 +1,12 @@
+-- USE capstone;
+
+DROP TRIGGER IF EXISTS business_update;
 CREATE TRIGGER business_update
 BEFORE UPDATE
 ON business FOR EACH ROW
 SET NEW.updated_on = NOW();
 
+DROP TRIGGER IF EXISTS user_update;
 CREATE TRIGGER user_update
 BEFORE UPDATE
 ON user FOR EACH ROW
@@ -10,68 +14,37 @@ SET NEW.updated_on = NOW();
 
 DELIMITER //
 
-CREATE TRIGGER membership_insert
-BEFORE INSERT
-ON membership FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-
-    IF (NEW.business_id IS NULL OR NEW.business_id = '') THEN
-        SET msg = "MembershipInsertError: Business id cannot be null or empty";
-    ELSEIF (NEW.user_id IS NULL OR NEW.user_id = '') THEN
-        SET msg = "MembershipInsertError: User id cannot be null or empty";
-    END IF;
-
-    IF (msg != '') THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-    END IF;
-END;
-
-//
+DROP TRIGGER IF EXISTS membership_update //
 
 CREATE TRIGGER membership_update
-BEFORE UPDATE
+BEFORE UPDATE 
 ON membership FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
-    SET msg = '';
-
-    IF (NEW.business_id IS NULL OR NEW.business_id = '') THEN
-        SET msg = "MembershipUpdateError: Business id cannot be null or empty";
-    ELSEIF (NEW.user_id IS NULL OR NEW.user_id = '') THEN
-        SET msg = "MembershipUpdateError: User id cannot be null or empty";
-    END IF;
-
-    IF (msg != '') THEN
+    IF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('MembershipDeleteError: Cannot delete membership while delete lock is set. business: ', CAST(OLD.business_id AS CHAR), ' user: ', CAST(OLD.user_id AS CHAR));
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
-
-    SET NEW.updated_on = NOW();
 END;
 
 //
 
-CREATE TRIGGER membership_request_insert
-BEFORE INSERT
-ON membership_request FOR EACH ROW
+DROP TRIGGER IF EXISTS membership_delete //
+
+CREATE TRIGGER membership_delete
+BEFORE DELETE
+ON membership FOR EACH ROW
 BEGIN
-    IF NEW.token IS NOT NULL THEN
-        SET NEW.token_expiry = NOW() + INTERVAL 1 DAY;
+    DECLARE msg VARCHAR(128);
+    IF OLD.prevent_delete = 1 THEN
+        SET msg = CONCAT('MembershipDeleteError: Cannot delete membership while delete lock is set. business: ', CAST(OLD.business_id AS CHAR), ' user: ', CAST(OLD.user_id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 END;
 
 //
 
-CREATE TRIGGER membership_request_update
-BEFORE UPDATE 
-ON membership_request FOR EACH ROW
-BEGIN
-    IF NEW.token != OLD.token THEN
-        SET NEW.token_expiry = NOW() + INTERVAL 1 DAY;
-    END IF;
-END;
-
-//
+DROP TRIGGER IF EXISTS users_forgot_password_token_created //
 
 CREATE TRIGGER users_forgot_password_token_created
 BEFORE UPDATE
@@ -83,6 +56,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS department_delete //
 
 CREATE TRIGGER department_delete
 BEFORE DELETE
@@ -98,6 +73,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS department_update //
+
 CREATE TRIGGER department_update
 BEFORE UPDATE 
 ON department FOR EACH ROW
@@ -109,19 +86,17 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
+    IF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('DepartmentDeleteError: Cannot delete department while delete lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
     SET NEW.updated_on = NOW();
 END;
 
 //
 
-DELIMITER ;
-
-CREATE TRIGGER permission_update
-BEFORE UPDATE
-ON permission FOR EACH ROW
-SET NEW.updated_on = NOW();
-
-DELIMITER //
+DROP TRIGGER IF EXISTS role_delete //
 
 CREATE TRIGGER role_delete
 BEFORE DELETE
@@ -137,6 +112,8 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS role_update //
+
 CREATE TRIGGER role_update
 BEFORE UPDATE 
 ON role FOR EACH ROW
@@ -148,10 +125,17 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
     END IF;
 
+    IF OLD.prevent_delete = 1 AND NEW.deleted_on IS NOT NULL THEN
+        SET msg = CONCAT('RoleDeleteError: Cannot delete role while delete lock is set. ', CAST(OLD.id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+
     SET NEW.updated_on = NOW();
 END;
 
 //
+
+DROP TRIGGER IF EXISTS user_role_update //
 
 CREATE TRIGGER user_role_update
 BEFORE UPDATE
@@ -164,39 +148,20 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS content_read_update //
 
-CREATE TRIGGER quiz_attempt_update
+CREATE TRIGGER content_read_update
 BEFORE UPDATE
-ON quiz_attempt FOR EACH ROW
+ON content_read FOR EACH ROW
 BEGIN
     DECLARE msg VARCHAR(128);
-    SET msg = 'QuizAttemptUpdateError: Cannot update quiz_attempt';
+    SET msg = 'ContentReadUpdateError: Cannot update content_read';
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
 END;
 
 //
 
-CREATE TRIGGER quiz_result_update
-BEFORE UPDATE
-ON quiz_result FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    SET msg = 'QuizResultUpdateError: Cannot update quiz_result';
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-END;
-
-//
-
-CREATE TRIGGER policy_read_update
-BEFORE UPDATE
-ON policy_read FOR EACH ROW
-BEGIN
-    DECLARE msg VARCHAR(128);
-    SET msg = 'PolicyReadUpdateError: Cannot update policy_read';
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
-END;
-
-//
+DROP TRIGGER IF EXISTS event_insert //
 
 CREATE TRIGGER event_insert
 BEFORE INSERT
@@ -210,6 +175,8 @@ BEGIN
 END;
 
 //
+
+DROP TRIGGER IF EXISTS event_update //
     
 CREATE TRIGGER event_update
 BEFORE UPDATE
@@ -217,6 +184,18 @@ ON event FOR EACH ROW
 BEGIN
     declare msg varchar(128);
     SET msg = 'EventUpdateError: Cannot update events';
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+END;
+
+//
+
+DROP TRIGGER IF EXISTS event_delete //
+CREATE TRIGGER event_delete
+BEFORE DELETE
+ON event FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+    SET msg = 'EventDeleteError: Cannot delete events';
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
 END;
 

@@ -1,18 +1,18 @@
-import { uid } from "rand-token";
 import bcrypt from "bcryptjs";
-import { Entity, Column } from "typeorm";
+import { Entity, Column, Connection } from "typeorm";
 import BaseModel, { AttributeFactory } from "@models/abstract/base_model";
+import validator from "validator";
+import Business from "@models/business";
+import Membership from "@models/membership";
+import UserRole from "./user_role";
+import Role, { AccessKey } from "@models/role";
+import Logs from "@noahvarghese/logger";
 
 export interface UserAttributes {
     first_name: string;
     last_name: string;
     email: string;
-    phone: string;
-    address: string;
-    city: string;
-    postal_code: string;
-    province: string;
-    country: string;
+    phone: string | null;
     birthday: Date | undefined;
     password: string;
     token?: string | undefined | null;
@@ -24,11 +24,6 @@ export const EmptyUserAttributes = (): UserAttributes => ({
     last_name: "",
     email: "",
     phone: "",
-    address: "",
-    city: "",
-    postal_code: "",
-    province: "",
-    country: "",
     birthday: undefined,
     password: "",
     token: undefined,
@@ -37,25 +32,14 @@ export const EmptyUserAttributes = (): UserAttributes => ({
 
 @Entity({ name: "user" })
 export default class User extends BaseModel implements UserAttributes {
-    public static max_password_length = 8;
     @Column()
     public first_name!: string;
     @Column()
     public last_name!: string;
     @Column()
     public email!: string;
-    @Column()
+    @Column({ nullable: true })
     public phone!: string;
-    @Column()
-    public address!: string;
-    @Column()
-    public city!: string;
-    @Column()
-    public postal_code!: string;
-    @Column()
-    public province!: string;
-    @Column()
-    public country!: string;
     @Column()
     public birthday!: Date;
     @Column()
@@ -69,17 +53,6 @@ export default class User extends BaseModel implements UserAttributes {
         super();
         Object.assign(this, AttributeFactory(options, EmptyUserAttributes));
     }
-
-    // pass reference back so we can chain it within the connection.manager.save method
-    public createToken = (): User => {
-        const tokenExpiry = new Date();
-        tokenExpiry.setHours(tokenExpiry.getHours() + 4);
-
-        this.token = uid(32);
-        this.token_expiry = tokenExpiry;
-
-        return this;
-    };
 
     public compareToken = (_token: string): boolean => {
         if (
@@ -95,6 +68,8 @@ export default class User extends BaseModel implements UserAttributes {
         return await new Promise((res, rej) => {
             bcrypt.compare(_password, this.password, (err, same) => {
                 if (err) {
+                    const { message } = err;
+                    Logs.Error(message);
                     rej(err);
                 }
                 res(same);
@@ -103,10 +78,12 @@ export default class User extends BaseModel implements UserAttributes {
     };
 
     // pass reference back so we can chain it within the connection.manager.save method
-    public hashPassword = async (_password: string): Promise<this> => {
+    public async hashPassword(this: User, _password: string): Promise<User> {
         const hash = await new Promise<string>((res, rej) => {
             bcrypt.hash(_password, 12, (err, hash) => {
                 if (err) {
+                    const { message } = err;
+                    Logs.Error(message);
                     rej(err);
                 }
 
@@ -116,21 +93,56 @@ export default class User extends BaseModel implements UserAttributes {
 
         this.password = hash;
         return this;
+    }
+
+    public resetPassword = async (password: string): Promise<void> => {
+        if (validator.isEmpty(password, { ignore_whitespace: true }))
+            throw new Error("Password cannot be empty");
+        await this.hashPassword(password);
+        this.token = null;
+        this.token_expiry = null;
     };
 
-    public resetPassword = async (
-        password: string,
-        token: string
-    ): Promise<boolean> => {
-        if (this.compareToken(token)) {
-            if (password.length >= User.max_password_length) {
-                await this.hashPassword(password);
-                this.token = null;
-                this.token_expiry = null;
-                return true;
-            }
-        }
+    /**
+     *
+     * @throws when database connection fails
+     */
+    private static async isRole(
+        conn: Connection,
+        business_id: number,
+        user_id: number,
+        access: AccessKey
+    ): Promise<boolean> {
+        const query = conn
+            .createQueryBuilder()
+            .select()
+            .from(Business, "b")
+            .leftJoin(Membership, "m", "m.business_id = b.id")
+            .leftJoin(User, "u", "u.id = m.user_id")
+            .leftJoin(UserRole, "ur", "ur.user_id = u.id")
+            .leftJoin(Role, "r", "r.id = ur.role_id")
+            .where("b.id = :business_id", { business_id })
+            .andWhere("u.id = :user_id", { user_id })
+            .andWhere("r.access = :access", { access });
 
-        return false;
-    };
+        const count = await query.getCount();
+
+        return count > 0;
+    }
+
+    public static async isAdmin(
+        conn: Connection,
+        business_id: number,
+        user_id: number
+    ): Promise<boolean> {
+        return User.isRole(conn, business_id, user_id, "ADMIN");
+    }
+
+    public static async isManager(
+        conn: Connection,
+        business_id: number,
+        user_id: number
+    ): Promise<boolean> {
+        return User.isRole(conn, business_id, user_id, "MANAGER");
+    }
 }

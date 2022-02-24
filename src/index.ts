@@ -1,5 +1,5 @@
-import setupServer, { shutdown as shutdownApp } from "@services/app";
-import multithread from "@services/app/multithreading";
+import setupServer, { shutdown as shutdownApp } from "@config/server";
+import multithread from "@config/multithreading";
 import { Server } from "http";
 import { exit } from "process";
 import { Connection } from "typeorm";
@@ -17,12 +17,11 @@ import { Connection } from "typeorm";
     });
 
     let shutting_down = false;
+
     const shutdown = async () => {
         if (!shutting_down) {
             shutting_down = true;
-            console.log("");
-            await shutdownApp(app);
-            exit();
+            shutdownApp(app).finally(() => exit());
         }
     };
 

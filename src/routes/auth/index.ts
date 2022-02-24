@@ -1,28 +1,21 @@
+import authenticated from "@middleware/authenticated";
 import { Router, Request, Response } from "express";
+import forgotPasswordRoute from "./forgot_password";
 import loginRoute from "./login";
 import logoutRoute from "./logout";
 import registerRoute from "./register";
-import forgotRoute from "./forgot_password";
-import resetRoute from "./reset_password";
+import resetPasswordRoute from "./reset_password/{token}";
 
 const router = Router();
 
+router.use("/forgot_password", forgotPasswordRoute);
 router.use("/login", loginRoute);
+router.use("/logout", authenticated, logoutRoute);
 router.use("/register", registerRoute);
-router.use("/logout", logoutRoute);
-router.use("/forgot_password", forgotRoute);
-router.use("/reset_password", resetRoute);
+router.use("/reset_password", resetPasswordRoute);
 
-router.post("/", (req: Request, res: Response) => {
-    if (
-        req.session.user_id &&
-        req.session.business_ids &&
-        req.session.current_business_id
-    ) {
-        res.sendStatus(200);
-    } else {
-        res.status(400).json({ message: "Not authenticated" });
-    }
+router.post("/", authenticated, (_: Request, res: Response) => {
+    res.sendStatus(200);
 });
 
 export default router;

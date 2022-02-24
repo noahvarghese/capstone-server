@@ -1,15 +1,10 @@
 #!/bin/bash
 
-BRANCH_NAME=$(git branch --show-current)
-BRANCH_NAME=$(echo $BRANCH_NAME | sed -r 's/[-.:]/_/g')
-# Get name
-export DB_ENV=test_"$BRANCH_NAME"_$(date +%s)
-DB_NAME="${DB}${DB_ENV}"
+branch_name=$(git branch --show-current)
+branch_name=$(echo $branch_name | sed -r 's/[-.:]/_/g')
 
-echo "[ Event ]: Initting ${DB_NAME}"
-
-# Setup database
-npm run database:reset:ci -- $DB_ENV
+# Database name extension
+extension="${branch_name}_$(date +%s)"
 
 # Enable ** glob for coverage report
 command -v shopt &>/dev/null
@@ -17,18 +12,41 @@ shopt -s globstar
 
 NODE_ENV=test
 
-./node_modules/.bin/jest --runInBand "$@" ;
+# Setup database
+npm run database:reset -- "-t$extension"
 
-TEST_RESULT=$?
+if [[ $? -gt 0 ]]; then
+    exit $?
+fi
 
-if [ $TEST_RESULT -gt 0 ]; then
+# Set database environment to use for test
+export DB_ENV="_test_$extension"
+
+# Custom test reporting
+./node_modules/.bin/nyc --silent --no-clean ./node_modules/.bin/jest --runInBand "$@" ;
+
+test_result=$?
+
+if [ $test_result -gt 0 ]; then
     # If the database is empty then drop the database
-    npm run database:is_empty -- $DB_ENV --tables business,user
+    npm run database:is_empty -- "-t$extension"
 
     if [ $? -eq 0 ]; then
-        npm run database:drop $DB_ENV
+        npm run database:drop -- "-t$extension"
     fi
+
     exit 1
 else
-    npm run database:drop $DB_ENV
+    # If the tests passed then the database should be empty
+    # We still check to make sure we cleaned up
+    # If the database is empty then drop the database
+    npm run database:is_empty -- "-t$extension"
+
+    if [ $? -eq 0 ]; then
+        npm run database:drop -- "-t$extension"
+        exit 0
+    else
+        echo "[ ERROR ]: Database not empty, perhaps you forgot to cleanup after?" 1>&2
+        exit 1
+    fi
 fi

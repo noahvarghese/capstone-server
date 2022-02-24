@@ -12,8 +12,8 @@ export interface QuizAnswerAttributes {
 export const EmptyAnswerAttributes = (): QuizAnswerAttributes => ({
     answer: "",
     correct: false,
-    quiz_question_id: -1,
-    updated_by_user_id: -1,
+    quiz_question_id: NaN,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "quiz_answer" })

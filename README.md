@@ -2,19 +2,19 @@
 <br />
 ![Continuous Integration](https://github.com/noahvarghese/capstone-server/actions/workflows/ci.yaml/badge.svg)
 <br />
-![Statements](https://img.shields.io/badge/statements-77.76%25-red.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-93.08%25-brightgreen.svg?style=flat)
 <br />
-![Lines](https://img.shields.io/badge/lines-76.04%25-red.svg?style=flat)
+![Lines](https://img.shields.io/badge/lines-92.87%25-brightgreen.svg?style=flat)
 <br />
-![Functions](https://img.shields.io/badge/functions-94.73%25-brightgreen.svg?style=flat)
+![Functions](https://img.shields.io/badge/functions-92.66%25-brightgreen.svg?style=flat)
 <br />
-![Branches](https://img.shields.io/badge/branches-51.82%25-red.svg?style=flat)
+![Branches](https://img.shields.io/badge/branches-85.63%25-yellow.svg?style=flat)
 
 # OnBoard - Backend
 
 ## Development
 
-After cloning the repository it is important to run `npm run init` in order to setup the hooks directory
+After cloning the repository it is important to run `npm run init` in order to setup the hooks directory.
 
 ## About
 
@@ -28,442 +28,34 @@ and each may hold some unit tests and integration tests specific to either the f
 
 Any end to end tests will be located in the tests repo.
 
-Documentation - mockups, ERD, class diagrams are currently in my private DropBox.
+## Documentation
 
+See ./api.json using <a href="https://editor.swagger.io">Swagger Editor</a>.
+./api_spec.json is for development use and is used to generate ./api.json.
+Mockups, ERD, class diagrams are currently in my private DropBox.
 They may be moved into their own repo at the end of this to showcase all parts of this project.
 
-## API Documentation
+## Database
 
-<table>
-    <thead>
-        <th>method</th>
-        <th>route</th>
-        <th>body</th>
-        <th>query</th>
-        <th>include credentials</th>
-        <th>return status</th>
-        <th>return type</th>
-        <th>error status(es)</th>
-        <th>error type(s)</th>
-        <th>description</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>POST</td>
-            <td>/auth/login</td>
-            <td>
-            <pre>{email: string; password: string;}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td>{}</td>
-            <td>400, 401</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>logs user in, sets session variable so that a cookie is returned for use</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/register</td>
-            <td><pre>
-            {
-                first_name: string;
-                last_name: string;
-                email: string;
-                phone: string;
-                address: string;
-                city: string;
-                postal_code: string;
-                province: string;
-                password: string;
-                confirm_password: string;
-                name: string;
-            }</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>201</td>
-            <td><pre>{}</pre></td>
-            <td>400, 500</td>
-            <td><pre>{message?: string; field?: string; }</pre></td>
-            <td>registers new user and new business, I should actually decouple this and make 2 network calls from the frontend</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/logout</td>
-            <td><pre></pre></td>
-            <td></td>
-            <td>true</td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td>Not Implemented</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/forgot_password </td>
-            <td><pre>{email: string;}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>401, 500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>submit email to receive a link to reset password via email</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/auth/reset_password/:token</td>
-            <td><pre>{password: string; confirm_password:string;}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>401, 403, 500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>this is the link sent via email to reset the password</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/members/:id</td>
-            <td><pre></pre></td>
-            <td><pre></pre></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    first_name: string;
-                    last_name: string;
-                    email: string;
-                    phone: string;
-                    birthday: string;
-                    roles: {
-                        default: boolean;
-                        id: number;
-                        name: string;
-                        department: {
-                            id: number;
-                            name: string;
-                        }
-                    }[]
-                }
-                </pre>
-            </td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Get one member</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/members</td>
-            <td><pre></pre></td>
-            <td>
-                <pre>
-                {
-                    search?: string; 
-                    limit: number; 
-                    page: number; 
-                    sortField?: "birthday" | "first_name" | "last_name" | "email" | "phone"; 
-                    sortOrder?: "ASC" | "DESC"; 
-                    filterField?: "department" | "role"; 
-                    filterIds?: number[];
-                }
-                </pre>
-            </td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    first_name: string;
-                    last_name: string;
-                    email: string;
-                    phone: string;
-                    birthday: string;
-                    roles: {
-                        default: boolean;
-                        id: number;
-                        name: string;
-                        department: {
-                            id: number;
-                            name: string;
-                        }
-                    }[]
-                }[]
-                </pre>
-            </td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Allows searching, sorting, filtering, and pagination of members</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/members/invite</td>
-            <td>
-                <pre>
-                {
-                    first_name: string;
-                    last_name: string;
-                    email: string;
-                    phone: string;
-                }
-                </pre>
-            </td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Requires user sending request to have explicit permissions to create user. Checks if user exists before creating. Otherwise will just send the invite.</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/members/role_assignment</td>
-            <td>
-                <pre>
-                {
-                    user_id: number;
-                    role_ids: number[];
-                }
-                </pre>
-            </td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Assigns multiple roles to user</td>
-        </tr>
-        <tr>
-            <td>DELETE</td>
-            <td>/members/role_assignment</td>
-            <td><pre></pre></td>
-            <td>
-                <pre>
-                {
-                    user_id: number;
-                    role_ids: number[];
-                }
-                </pre>
-            </td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Removes multiple roles from user</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/members/invite/:token</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>false</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Checks that token is valid then converts user's link to business from membership_request to membership</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/settings/nav</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    home: boolean;
-                    members: boolean;
-                    departments: boolean;
-                    roles: boolean;
-                    manuals: boolean;
-                    quizzes: boolean;
-                    reports: boolean;
-                    scores: boolean;
-                    logout: boolean;
-                }: Permission
-                </pre>
-            </td>
-            <td>500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>returns the pages the cleint has access to</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/departments/:id</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    name: string;
-                    numMembers: number;
-                    numRoles: number;
-                    ...more
-                }
-                </pre>
-            </td>
-            <td>403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Gets department, not implemented</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/departments</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    name: string;
-                    numMembers: number;
-                    numRoles: number;
-                }[]
-                </pre>
-            </td>
-            <td>403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Gets list of departments</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/departments</td>
-            <td><pre>{name: string;}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>201</td>
-            <td><pre>{}</pre></td>
-            <td>403,405,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Creates department</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/roles</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td>
-                <pre>
-                {
-                    id: number;
-                    name: string;
-                    numMembers: number;
-                    department: string;
-                }[]
-                </pre>
-            </td>
-            <td>403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Gets list of roles</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/roles</td>
-            <td>
-                <pre>
-                {
-                    name: string;
-                    department: number;
-                    home: boolean;
-                    members: boolean;
-                    departments: boolean;
-                    roles: boolean;
-                    manuals: boolean;
-                    quizzes: boolean;
-                    reports: boolean;
-                    scores: boolean;
-                    logout: boolean;
-                }
-                </pre>
-            </td>
-            <td></td>
-            <td>true</td>
-            <td>201</td>
-            <td><pre>{}</pre></td>
-            <td>403,405,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Creates role</td>
-        </tr>
-        <tr>
-            <td>POST</td>
-            <td>/roles/member_assignment</td>
-            <td>
-                <pre>
-                {
-                    user_ids: number[];
-                    role_id: number;
-                }
-                </pre>
-            </td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Assigns multiple users to role</td>
-        </tr>
-        <tr>
-            <td>DELETE</td>
-            <td>/roles/member_assignment</td>
-            <td><pre></pre></td>
-            <td>
-                <pre>
-                {
-                    user_ids: number[];
-                    role_id: number;
-                }
-                </pre>
-            </td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{}</pre></td>
-            <td>400,403,500</td>
-            <td><pre>{message?: string;}</pre></td>
-            <td>Removes multiple users from role</td>
-        </tr>
-        <tr>
-            <td>GET</td>
-            <td>/businesses</td>
-            <td><pre>{}</pre></td>
-            <td></td>
-            <td>true</td>
-            <td>200</td>
-            <td><pre>{id: number; name: string; default: boolean;}[]</pre></td>
-            <td>500</td>
-            <td><pre>{message?: string}</pre></td>
-            <td>Retrieves list of businesses that the user is a member of</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-            <td><pre></pre></td>
-            <td></td>
-        </tr>
-    </tbody>
+Can change the database being used by the server and the tests.
 
-</table>
+Can either pass in argv[2] the extension to be added to the database name, this is just a wrapper that sets the DB_ENV environment variable.
+Or set the DB_ENV environement variable to pass the extension.
+
+## Automated Testing
+
+-   Pre commit hook runs unit tests.
+-   CI job should run any tests that have source files changed specifically (currently just outputs if any tests were affected for all sebsections, but only tests unit tests)
+
+### NPM Test Scripts
+
+Passes preset jest command line arguments that I have arranged into useful snippets
+
+### Bash Test Script
+
+1. Creates temporary database for testing
+2. Passes JEST command line args to test runner
+3. Tears down database if clean run
 
 ## Environment Variables
 
@@ -472,7 +64,7 @@ They may be moved into their own repo at the end of this to showcase all parts o
 
 | name                  | type                       | description                                                                                                                      |
 | --------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| DB                    | string                     | the name of the SQL database to be connected to                                                                                  |
+| DB_NAME               | string                     | the name of the SQL database to be connected to                                                                                  |
 | DB_PORT               | number                     | the port to connect on                                                                                                           |
 | DB_PWD                | string                     | the password to connect to the SQL database                                                                                      |
 | DB_TYPE               | "mysql" \| "postgres"      | the type of SQL database to be connected to                                                                                      |
@@ -491,77 +83,8 @@ They may be moved into their own repo at the end of this to showcase all parts o
 | SESSION_ID            | string                     | id to use for session cookie                                                                                                     |
 | SESSION_SECRET        | string                     | secret to (encrypt or sign?) the cookie with                                                                                     |
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
-| SECONDARY_TEST_EMAIL  | string                     | secondary email to use for regular user tests                                                                                    |
-
-## Tests
-
-### Adding new api tests
-
-1. Create file in \_\_test\_\_/api/actions
-2. Create file in \_\_test\_\_/api/attributes
-3. Add entry to \_\_test\_\_/api/dependencies/setup.ts
-4. Create file in \_\_test\_\_/api/keys
-5. Add entry to \_\_test\_\_/api/urls.ts
-
-### Flow
-
--   Pre commit hook is triggered to run any changed tests
--   Once pushed to GitHub, CI job runs same tests
--   Once branch is complete and pull request created, CI jobs run again with anything that has changed compared to the base branch
-
-#### Notes
-
--   Test script generates a new database name each run using the branch name and timestamp, this allows concurrent tests to run on different machines
--   Since we are testing the whole server instead of just the routes, small changes result in lots of tests (may need to rewrite the \_\_test\_\_/server logic)
-
-### Description
-
-'api' contains API specific helpers
-'model' contains model/database/sql specific helpers
-'server' contains helpers to start/stop the server and configure which database it connects to for testing
-'support' Contains helpful files that are used with each test run.
-'util' Has test specific utilities
-
-### Sample Data
-
-Is contained within each helper folder
-
-### Models
-
-Here the model types, test attributes for each type, and any dependencies are stored in individual objects.
-All of these share the same keys so we can collect all the metadata for a specific test.
-
-### Api
-
-Here we have a few more bits of information. We have test attributes, dependencies for creation, dependencies for teardown, and urls.
-The dependencies to setup for the specific test are done as api calls instead of operating directly on the database as in the models. Also the setup needs to follow how a genuine user would use the site.
-The dependencies to teardown are done by modifying the database directly and skipping the api as not all teardown will be implemented in api calls, and it is faster.
-The urls are either a string or a function that returns a string if url parameters are required
-
-The template for the tests is necessary data is stored in an attribute "body" saved in the BaseWorld state, then an action 'submitForm' is performed that takes the data stored and submits it to the given url.
-
-### About
-
-Now using jest for all tests as it allows filtering of recently changed tests via the <a href="https://jestjs.io/docs/cli#--onlychanged">-o</a> and <a href="https://jestjs.io/docs/cli#--changedsince">--changedSince</a> options.
-
-### Process
-
--   Run tests during development prior to commit.
--   Generate badges prior to commit.
--   Commit changes.
--   Pre-commit hook runs only changed files.
--   On success
-    -   Workflow runs any tests changed between the current and previous commit
-
-#### Stages
-
-1. Setup (Perform any user actions needed before the test can execute)
-2. Run:
-    - Background (Any given steps that are common to all tests in a feature)
-    - Given (May either: alter a model or two, perform an api call, or save data to the global store)
-    - When (Perform an action, in this case an api call, may save results to check in then step)
-    - Then (Compares results saved to expected)
-3. Teardown (Database cleanup)
+| TEST_EMAIL_1  | string                     | secondary email to use for regular user tests                                                                                    |
+| TEST_EMAIL_2  | string                     | secondary email to use for regular user tests                                                                                    |
 
 ## Areas of Focus
 
@@ -581,47 +104,3 @@ since it is possible that a user may have multiple roles
 
 -   make sure to check for the most authorized permission if applicable
 -   make sure to check what parent the resource being requested belongs to, and then retrieve the corresponding most authorized permission applicable
-
-re removing users from roles / departments
-
--   must have at least 1 user in the role/department Admin/Admin
-
-## User management
-
-### Registration
-
-Only businesses can register, registers the admin user at the same time
-business register parameters: name, address
-admin user register parameters: name, email, [phone]
-
-Checks that the user ahs not been created as each business has their own email and the primary user should be registering the business email as their own
-
-### Adding employees
-
-Add name email [phone]
-Email is sent to user asking to "Accept Invitation"
-
-If user has registered previously they are asked to login if the browser doesn't have a cookie, then areadded as a member of the business and sent to the dashboard
-Else they are sent to set a password and on success redirected to the dashboard
-
-### Login
-
-When a user logs in check if a member of any business
-if not an error is shown asking to reach out tho their manager
-if yes they are redirected to the dashboard
-the dashboard will let them choose which business they want to view
-
-## Business Rules
-
-Triggers are added to the database to enforce business rules that do not affect development (ie if items should only be updated by users of a specific business, the triggers will enforce that, but if the item should not be deleted but deactivated instead of deleted then there is no trigger as development tests run cleanup after)
-
-### Items enforced
-
--   Checks that the user accessing a resource is a part of the business that the resource is under
--   Checks that the user has appropriate permissions to modify/view resources (see permissions table)
--   Checks if resources are locked before processinga change
--   Checks that mandatory fields are filled in
-
-## CI/CD
-
-Utilizing GitHub actions for CI currently, can be found in ./github/workflows
