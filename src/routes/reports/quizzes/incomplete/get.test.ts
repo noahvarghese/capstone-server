@@ -136,7 +136,57 @@ afterAll(async () => {
     await conn.close();
 });
 
-test.todo("quiz (not) published");
+describe("manual (not) published", () => {
+    beforeAll(async () => {
+        await conn.manager.update(Manual, manual_id, { published: false });
+    });
+
+    afterAll(async () => {
+        await conn.manager.update(Manual, manual_id, { published: true });
+    });
+
+    test("returns empty array", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+            } as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith([]);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.objectContaining({ length: 0 })
+        );
+    });
+});
+
+describe("quiz (not) published", () => {
+    beforeAll(async () => {
+        await conn.manager.update(Quiz, quiz_id, { published: false });
+    });
+
+    afterAll(async () => {
+        await conn.manager.update(Quiz, quiz_id, { published: true });
+    });
+
+    test("returns empty array", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+            } as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith([]);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.objectContaining({ length: 0 })
+        );
+    });
+});
 
 describe("incomplete", () => {
     test("returns a user with a quiz", async () => {
@@ -281,9 +331,14 @@ describe("returns distinct users", () => {
                 title: "TITLE2",
                 manual_id,
                 max_attempts: 1,
+                published: true,
                 updated_by_user_id: user_id,
             })
         ));
+    });
+
+    afterAll(async () => {
+        await conn.manager.delete(Quiz, secondQuiz);
     });
 
     test("returns array of 1 item", async () => {
