@@ -44,7 +44,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .leftJoin(Manual, "m", "m.id = ma.manual_id")
             .leftJoin(Quiz, "q", "q.manual_id = m.id")
             .leftJoin(QuizSection, "qs", "qs.quiz_id = q.id")
-            .where("qs.id = :id", { id })
+            .leftJoin(QuizQuestion, "qq", "qq.quiz_section_id = qs.id")
+            .leftJoin(QuizAnswer, "qa", "qa.quiz_question_id = qq.id")
+            .where("qa.id = :id", { id })
             .getOne();
 
         if (!isAssigned) {
