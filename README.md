@@ -12,10 +12,6 @@
 
 # OnBoard - Backend
 
-## Development
-
-After cloning the repository it is important to run `npm run init` in order to setup the hooks directory.
-
 ## About
 
 This is my capstone project for college.
@@ -28,28 +24,43 @@ and each may hold some unit tests and integration tests specific to either the f
 
 Any end to end tests will be located in the tests repo.
 
-## Documentation
+### API Documentation
 
 See ./api.json using <a href="https://editor.swagger.io">Swagger Editor</a>.
 ./api_spec.json is for development use and is used to generate ./api.json.
 Mockups, ERD, class diagrams are currently in my private DropBox.
 They may be moved into their own repo at the end of this to showcase all parts of this project.
 
-## Database
+### Target Database
 
 Can change the database being used by the server and the tests.
 
 Can either pass in argv[2] the extension to be added to the database name, this is just a wrapper that sets the DB_ENV environment variable.
 Or set the DB_ENV environement variable to pass the extension.
 
+### Areas of Focus
+
+-   Node / Express
+-   TypeScript
+-   CI/CD
+-   AWS (Elastic Beanstalk, CodeDeploy, CodeBuild, CodePipeline, EC2, ACM)
+-   Automated Testing
+
+
+
+## Development
+
+After cloning the repository it is important to run `npm run init` in order to setup the hooks directory.
+
+## Deployment
+
+Need to manually increment version in package.json before pushing to release branch.
+
+
 ## Automated Testing
 
 -   Pre commit hook runs unit tests.
 -   CI job should run any tests that have source files changed specifically (currently just outputs if any tests were affected for all sebsections, but only tests unit tests)
-
-### NPM Test Scripts
-
-Passes preset jest command line arguments that I have arranged into useful snippets
 
 ### Bash Test Script
 
@@ -85,14 +96,6 @@ Passes preset jest command line arguments that I have arranged into useful snipp
 | LOG_LEVEL             | number                     | view ./src/util/logs/logs.ts for log levels, this is what level of messages to output                                            |
 | TEST_EMAIL_1  | string                     | secondary email to use for regular user tests                                                                                    |
 | TEST_EMAIL_2  | string                     | secondary email to use for regular user tests                                                                                    |
-
-## Areas of Focus
-
--   Node / Express
--   TypeScript
--   CI/CD
--   AWS (Elastic Beanstalk, CodeDeploy, CodeBuild, CodePipeline, EC2, ACM)
--   Automated Testing
 
 ## Notes to self
 
