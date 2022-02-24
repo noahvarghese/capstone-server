@@ -37,6 +37,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .leftJoin(Content, "c", "c.manual_section_id = ms.id")
         .leftJoin(ContentRead, "cr", "cr.content_id = c.id")
         .where("cr.user_id IS NULL")
+        .andWhere("m.published = :published", { published: true })
         .andWhere("m.business_id = :current_business_id", {
             current_business_id,
         })

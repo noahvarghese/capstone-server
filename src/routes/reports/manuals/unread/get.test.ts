@@ -244,6 +244,7 @@ describe("returns distinct users", () => {
                 title: "TITLE2",
                 business_id,
                 updated_by_user_id: user_id,
+                published: true,
             })
         ));
 
@@ -255,6 +256,10 @@ describe("returns distinct users", () => {
                 updated_by_user_id: user_id,
             })
         );
+    });
+
+    afterAll(async () => {
+        await conn.manager.delete(Manual, secondManual);
     });
 
     test("returns array of 1 item", async () => {
@@ -286,4 +291,28 @@ describe("returns distinct users", () => {
     });
 });
 
-test.todo("manual (not) published");
+describe("manual (not) published", () => {
+    beforeAll(async () => {
+        await conn.manager.update(Manual, manual_id, { published: false });
+    });
+
+    afterAll(async () => {
+        await conn.manager.update(Manual, manual_id, { published: true });
+    });
+
+    test("returns empty array", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+            } as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith([]);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.objectContaining({ length: 0 })
+        );
+    });
+});
