@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - uses: actions/setup-node@v2
       - id: version
-        name: Increment version by one
+        name: Get package version
         run: |
           echo '::set-output name=VERSION::$(./bin/files/get_version_from_package_json.sh)'
       - name: cache node modules
