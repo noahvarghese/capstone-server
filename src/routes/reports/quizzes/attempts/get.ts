@@ -2,7 +2,6 @@ import Department from "@models/department";
 import ManualAssignment from "@models/manual/assignment";
 import Role from "@models/role";
 import User from "@models/user/user";
-import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 
 const getController = async (req: Request, res: Response): Promise<void> => {
@@ -70,8 +69,6 @@ const getController = async (req: Request, res: Response): Promise<void> => {
                 total_attempts: number;
             }>(),
     ]);
-
-    Logs.Error(roles, departments);
 
     res.status(200).send({
         role_details: roles.map((m) => ({
