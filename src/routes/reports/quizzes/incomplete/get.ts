@@ -4,6 +4,7 @@ import QuizAttempt from "@models/quiz/attempt";
 import Quiz from "@models/quiz/quiz";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
+import Logs from "@noahvarghese/logger";
 import { Request, Response } from "express";
 
 const getController = async (req: Request, res: Response): Promise<void> => {
@@ -29,7 +30,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select("u")
         .addSelect("q")
         .from(User, "u")
-        .leftJoin(UserRole, "ur", "ur.role_id = u.id")
+        .leftJoin(UserRole, "ur", "ur.user_id = u.id")
         .leftJoin(ManualAssignment, "ma", "ma.role_id = ur.role_id")
         .leftJoin(Manual, "m", "m.id = ma.manual_id")
         .leftJoin(Quiz, "q", "q.manual_id = m.id")
@@ -47,6 +48,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             q_title: string;
             q_id: number;
         }>();
+
+    Logs.Error(result, await dbConnection.manager.find(User));
 
     const usersWithUnfinishedQuizzes = result.reduce((prev, curr) => {
         const user = prev.find((p) => {

@@ -30,7 +30,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select("u")
         .addSelect("m")
         .from(User, "u")
-        .leftJoin(UserRole, "ur", "ur.role_id = u.id")
+        .leftJoin(UserRole, "ur", "ur.user_id = u.id")
         .leftJoin(ManualAssignment, "ma", "ma.role_id = ur.role_id")
         .leftJoin(Manual, "m", "m.id = ma.manual_id")
         .leftJoin(ManualSection, "ms", "ms.manual_id = m.id")
