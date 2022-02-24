@@ -106,17 +106,29 @@ describe("user", () => {
         await conn.manager.delete(QuizAttempt, quiz_attempt_id);
     });
 
-    test("success", async () => {
-        await putController(
-            {
-                session,
-                dbConnection: conn,
-                params: { id: quiz_attempt_id },
-            } as unknown as Request,
-            res
-        );
+    describe("success", () => {
+        afterAll(async () => {
+            await conn.manager.delete(QuizAttempt, quiz_attempt_id);
 
-        expect(res.sendStatus).toHaveBeenCalledWith(200);
+            ({
+                identifiers: [{ id: quiz_attempt_id }],
+            } = await conn.manager.insert(
+                QuizAttempt,
+                new QuizAttempt({ quiz_id, user_id })
+            ));
+        });
+        test("", async () => {
+            await putController(
+                {
+                    session,
+                    dbConnection: conn,
+                    params: { id: quiz_attempt_id },
+                } as unknown as Request,
+                res
+            );
+
+            expect(res.sendStatus).toHaveBeenCalledWith(200);
+        });
     });
 
     describe("already updated", () => {
