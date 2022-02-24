@@ -2,20 +2,19 @@ import { getMockRes } from "@jest-mock/express";
 import Department from "@models/department";
 import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
+import Membership from "@models/membership";
 import Role, { AccessKey } from "@models/role";
 import User from "@models/user/user";
+import UserRole from "@models/user/user_role";
 import DBConnection from "@test/support/db_connection";
-import getController from "./get";
 import { setupAdmin } from "@test/unit/setup";
 import { unitTeardown } from "@test/unit/teardown";
 import { SessionData } from "express-session";
 import { Connection } from "typeorm";
 import { Request } from "express";
-import ManualSection from "@models/manual/section";
-import Content from "@models/manual/content/content";
-import ContentRead from "@models/manual/content/read";
-import UserRole from "@models/user/user_role";
-import Membership from "@models/membership";
+import getController from "./get";
+import QuizAttempt from "@models/quiz/attempt";
+import Quiz from "@models/quiz/quiz";
 
 const { mockClear, res } = getMockRes();
 
@@ -26,7 +25,7 @@ let business_id: number,
     role_id: number,
     manual_id: number,
     department_id: number,
-    content_id: number;
+    quiz_id: number;
 let secondaryUser: number, secondaryRole: number;
 let conn: Connection;
 let session: Omit<SessionData, "cookie">;
@@ -116,24 +115,17 @@ beforeAll(async () => {
         })
     );
 
-    const {
-        identifiers: [{ id: manual_section_id }],
-    } = await conn.manager.insert(
-        ManualSection,
-        new ManualSection({
-            title: "TEST",
-            manual_id,
-            updated_by_user_id: user_id,
-        })
-    );
-
     ({
-        identifiers: [{ id: content_id }],
+        identifiers: [{ id: quiz_id }],
     } = await conn.manager.insert(
-        Content,
-        new Content({
-            title: "TEST",
-            manual_section_id,
+        Quiz,
+        new Quiz({
+            title: "QUIZ",
+            manual_id,
+            max_attempts: 1,
+            prevent_delete: false,
+            prevent_edit: false,
+            published: true,
             updated_by_user_id: user_id,
         })
     ));
@@ -144,8 +136,10 @@ afterAll(async () => {
     await conn.close();
 });
 
-describe("unread", () => {
-    test("returns a user with a manual", async () => {
+test.todo("quiz (not) published");
+
+describe("incomplete", () => {
+    test("returns a user with a quiz", async () => {
         await getController(
             {
                 session,
@@ -159,8 +153,8 @@ describe("unread", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: secondaryUser,
-                    manuals: expect.arrayContaining([
-                        expect.objectContaining({ id: manual_id }),
+                    quizzes: expect.arrayContaining([
+                        expect.objectContaining({ id: quiz_id }),
                     ]),
                 }),
             ])
@@ -168,16 +162,60 @@ describe("unread", () => {
     });
 });
 
-describe("read", () => {
+describe.skip("started but incomplete", () => {
     beforeAll(async () => {
         await conn.manager.insert(
-            ContentRead,
-            new ContentRead({ content_id, user_id: secondaryUser })
+            QuizAttempt,
+            new QuizAttempt({ quiz_id, user_id: secondaryUser })
         );
     });
     afterAll(async () => {
-        await conn.manager.delete(ContentRead, {
-            content_id,
+        await conn.manager.delete(QuizAttempt, {
+            quiz_id,
+            user_id: secondaryUser,
+        });
+    });
+    test("returns a user with a quiz", async () => {
+        await getController(
+            {
+                session,
+                dbConnection: conn,
+            } as Request,
+            res
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    id: secondaryUser,
+                    quizzes: expect.arrayContaining([
+                        expect.objectContaining({ id: quiz_id }),
+                    ]),
+                }),
+            ])
+        );
+    });
+});
+
+describe("complete", () => {
+    beforeAll(async () => {
+        await conn.manager.insert(
+            QuizAttempt,
+            new QuizAttempt({ quiz_id, user_id: secondaryUser })
+        );
+        await conn.manager.update(
+            QuizAttempt,
+            {
+                quiz_id,
+                user_id: secondaryUser,
+            },
+            { updated_on: new Date() }
+        );
+    });
+    afterAll(async () => {
+        await conn.manager.delete(QuizAttempt, {
+            quiz_id,
             user_id: secondaryUser,
         });
     });
@@ -233,28 +271,19 @@ describe("permissions", () => {
 });
 
 describe("returns distinct users", () => {
-    let secondManual: number;
-
+    let secondQuiz: number;
     beforeAll(async () => {
         ({
-            identifiers: [{ id: secondManual }],
+            identifiers: [{ id: secondQuiz }],
         } = await conn.manager.insert(
-            Manual,
-            new Manual({
+            Quiz,
+            new Quiz({
                 title: "TITLE2",
-                business_id,
+                manual_id,
+                max_attempts: 1,
                 updated_by_user_id: user_id,
             })
         ));
-
-        await conn.manager.insert(
-            ManualAssignment,
-            new ManualAssignment({
-                manual_id: secondManual,
-                role_id: secondaryRole,
-                updated_by_user_id: user_id,
-            })
-        );
     });
 
     test("returns array of 1 item", async () => {
@@ -271,9 +300,9 @@ describe("returns distinct users", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: secondaryUser,
-                    manuals: expect.arrayContaining([
-                        expect.objectContaining({ id: manual_id }),
-                        expect.objectContaining({ id: secondManual }),
+                    quizzes: expect.arrayContaining([
+                        expect.objectContaining({ id: quiz_id }),
+                        expect.objectContaining({ id: secondQuiz }),
                     ]),
                 }),
             ])
@@ -285,5 +314,3 @@ describe("returns distinct users", () => {
         );
     });
 });
-
-test.todo("manual (not) published");
