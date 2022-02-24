@@ -1,21 +1,19 @@
+import Email from "email-templates";
 import User from "@models/user/user";
 import Event from "@models/event";
-import { client } from "../../util/permalink";
-import { getConnection } from "typeorm";
 import Business from "@models/business";
-import MembershipRequest from "@models/membership_request";
-import Email from "email-templates";
-import Model from "../../util/model";
-import Logs from "../../util/logs/logs";
+import { client } from "@util/permalink";
+import { Connection } from "typeorm";
+import Logs from "@noahvarghese/logger";
 
 const TEMPLATE_DIR = `${__dirname}/templates`;
 
 const email = new Email({
     message: {
-        from: process.env.MAIL_USER ?? "noreply@onboard.com",
+        from: process.env.MAIL_USER ?? "",
     },
     views: { root: TEMPLATE_DIR },
-    send: true,
+    send: process.env.NODE_ENV !== "test",
     // causes errors due to cherrio
     juice: false,
     transport: {
@@ -38,33 +36,46 @@ export interface MailOpts {
 // '<div><sub><em>Please do not reply to this email. It will not reach the intended recipient. If there are any issues please email <a href="mailto:varghese.noah@gmail.com">Noah Varghese</a></em></sub></div>';
 
 export const sendUserInviteEmail = async (
-    business: Business,
-    membershipRequest: MembershipRequest,
-    sendingUser: User,
-    receivingUser: User
+    connection: Connection,
+    business_id: number,
+    user_id: number,
+    new_user_id: number,
+    token: string
 ): Promise<boolean> => {
-    const url = client(`member/invite/${membershipRequest.token}`);
+    const [
+        { name: businessName },
+        { first_name: sendingUserName },
+        { first_name: newUserName, email: newUserEmail },
+    ] = await Promise.all([
+        connection.manager.findOneOrFail(Business, business_id),
+        connection.manager.findOneOrFail(User, user_id),
+        connection.manager.findOneOrFail(User, new_user_id),
+    ]);
+
+    const url = client(`member/invite/${token}`);
 
     return await sendMail(
         {
             template: "invite_user",
-            message: { to: receivingUser.email },
+            message: { to: newUserEmail },
             locals: {
-                business: business.name,
-                receiver: receivingUser.first_name,
-                sender: sendingUser.first_name,
+                business: businessName,
+                receiver: newUserName,
+                sender: sendingUserName,
                 url,
             },
         },
+        connection,
         new Event({
             name: "User Invite Email",
-            business_id: business.id,
-            user_id: receivingUser.id,
+            business_id: business_id,
+            user_id: new_user_id,
         })
     );
 };
 
 export const requestResetPasswordEmail = async (
+    connection: Connection,
     user: User
 ): Promise<boolean> => {
     const url = client(`resetPassword/${user.token}`);
@@ -74,6 +85,7 @@ export const requestResetPasswordEmail = async (
             message: { to: user.email },
             locals: { url, first_name: user.first_name },
         },
+        connection,
         new Event({
             name: "Request Reset Password",
             user_id: user.id,
@@ -81,19 +93,24 @@ export const requestResetPasswordEmail = async (
     );
 };
 
-export const resetPasswordEmail = async (user: User): Promise<boolean> => {
+export const resetPasswordEmail = async (
+    connection: Connection,
+    user: User
+): Promise<boolean> => {
     return await sendMail(
         {
             template: "reset_password",
             message: { to: user.email },
             locals: { first_name: user.first_name },
         },
+        connection,
         new Event({ name: "Password Reset", user_id: user.id })
     );
 };
 
 export const sendMail = async (
     options: Email.EmailOptions,
+    connection: Connection,
     event: Event
 ): Promise<boolean> => {
     try {
@@ -105,6 +122,6 @@ export const sendMail = async (
         event.reason = JSON.stringify(e);
     }
 
-    await Model.create<Event>(getConnection(), Event, event);
+    await connection.manager.insert(Event, event);
     return event.status === "PASS";
 };

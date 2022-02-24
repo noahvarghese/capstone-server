@@ -5,15 +5,23 @@ import EventDates from "./abstract/event_dates";
 export interface MembershipAttributes {
     user_id: number | null;
     business_id: number | null;
-    updated_by_user_id: number | null;
-    default: boolean;
+    accepted: boolean;
+    token: string | null;
+    token_expiry: Date | null;
+    updated_by_user_id: number;
+    default_option: boolean;
+    prevent_delete: boolean;
 }
 
 export const EmptyMembershipAttributes = (): MembershipAttributes => ({
-    user_id: -1,
-    business_id: -1,
-    updated_by_user_id: null,
-    default: false,
+    user_id: NaN,
+    business_id: NaN,
+    updated_by_user_id: NaN,
+    accepted: false,
+    token: null,
+    token_expiry: null,
+    default_option: false,
+    prevent_delete: false,
 });
 
 @Entity()
@@ -25,10 +33,18 @@ export default class Membership
     public user_id!: number;
     @PrimaryColumn()
     public business_id!: number;
-    @Column({ nullable: true, type: "int" })
-    public updated_by_user_id!: number | null;
-    @Column({ name: "default_option" })
-    public default!: boolean;
+    @Column()
+    public accepted!: boolean;
+    @Column()
+    public updated_by_user_id!: number;
+    @Column({ unique: true, nullable: true, type: "text" })
+    public token!: string | null;
+    @Column({ nullable: true, type: "datetime" })
+    public token_expiry!: Date | null;
+    @Column()
+    public default_option!: boolean;
+    @Column()
+    public prevent_delete!: boolean;
 
     public constructor(options?: Partial<MembershipAttributes>) {
         super();

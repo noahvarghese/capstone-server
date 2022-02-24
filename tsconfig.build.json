@@ -21,8 +21,11 @@
         "sourceMap": true,
         "outDir": "./build",
         "rootDir": "./src",
+        "resolveJsonModule": true,
         "paths": {
             "@config/*": ["config/*"],
+            "@controllers/*": ["controllers/*"],
+            "@handlers/*": ["handlers/*"],
             "@middleware/*": ["middleware/*"],
             "@models/*": ["models/*"],
             "@routes/*": ["routes/*"],

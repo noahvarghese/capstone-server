@@ -11,10 +11,10 @@ export interface DepartmentAttributes {
 
 export const EmptyDeparmentAttributes = (): DepartmentAttributes => ({
     name: "",
-    business_id: -1,
+    business_id: NaN,
     prevent_delete: false,
     prevent_edit: false,
-    updated_by_user_id: -1,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "department" })

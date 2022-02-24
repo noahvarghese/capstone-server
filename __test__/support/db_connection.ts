@@ -8,7 +8,7 @@ export default abstract class DBConnection {
     public static init = async (): Promise<void> => {
         DBConnection._connection = await createConnection({
             name: DBConnection._connectionName,
-            ...connectionOptions("_test"),
+            ...connectionOptions(),
             logging: false,
         });
     };

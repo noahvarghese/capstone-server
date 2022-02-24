@@ -12,6 +12,10 @@ runs:
       uses: "./.github/actions/changed"
     - id: cache-node-modules
       uses: ./.github/actions/cache-node-modules
+    - name: "List changed unit tests"
+      run: |
+        npm run jest:list:changed:branch -- "${{ steps.changed.outputs.changed }}"
+      shell: bash
     - name: test
       run: |
         npm run test -- --changedSince "${{ steps.changed.outputs.changed }}"

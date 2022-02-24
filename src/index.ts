@@ -1,5 +1,5 @@
-import setupServer, { shutdown as shutdownApp } from "@services/app";
-import multithread from "@services/app/multithreading";
+import setupServer, { shutdown as shutdownApp } from "@config/server";
+import multithread from "@config/multithreading";
 import { Server } from "http";
 import { exit } from "process";
 import { Connection } from "typeorm";
@@ -8,23 +8,20 @@ import { Connection } from "typeorm";
     let app: { server: Server; connection: Connection };
 
     await multithread(async () => {
-        if (
-            process.argv.length > 2 &&
-            ["test", "dev"].includes(process.argv[2])
-        ) {
-            app = await setupServer(false, process.argv[2] as "test" | "dev");
+        if (process.argv.length > 2) {
+            process.env["DB_ENV"] = "_" + process.argv[2];
+            app = await setupServer(false);
         } else {
             app = await setupServer();
         }
     });
 
     let shutting_down = false;
+
     const shutdown = async () => {
         if (!shutting_down) {
             shutting_down = true;
-            console.log("");
-            await shutdownApp(app);
-            exit();
+            shutdownApp(app).finally(() => exit());
         }
     };
 

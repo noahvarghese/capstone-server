@@ -10,8 +10,8 @@ export interface ManualSectionAttributes {
 
 export const EmptyManualSectionAttributes = (): ManualSectionAttributes => ({
     title: "",
-    manual_id: -1,
-    updated_by_user_id: -1,
+    manual_id: NaN,
+    updated_by_user_id: NaN,
 });
 
 @Entity({ name: "manual_section" })

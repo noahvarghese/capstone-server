@@ -10,20 +10,16 @@ import {
 import {
     ContentAttributes,
     EmptyContentAttributes,
-} from "@models/manual/content";
+} from "@models/manual/content/content";
 import { EmptyManualAttributes, ManualAttributes } from "@models/manual/manual";
 import {
     EmptyManualAssignmentAttributes,
     ManualAssignmentAttributes,
 } from "@models/manual/assignment";
 import {
-    EmptyPolicyAttributes,
-    PolicyAttributes,
-} from "@models/manual/policy/policy";
-import {
-    EmptyPolicyReadAttributes,
-    PolicyReadAttributes,
-} from "@models/manual/policy/read";
+    EmptyContentReadAttributes,
+    ContentReadAttributes,
+} from "@models/manual/content/read";
 import {
     EmptyManualSectionAttributes,
     ManualSectionAttributes,
@@ -32,10 +28,6 @@ import {
     EmptyQuizSectionAttributes,
     QuizSectionAttributes,
 } from "@models/quiz/section";
-import {
-    EmptyPermissionAttributes,
-    PermissionAttributes,
-} from "@models/permission";
 import {
     EmptyQuestionAttributes,
     QuizQuestionAttributes,
@@ -58,13 +50,13 @@ import {
 import {
     EmptyResultAttributes,
     QuizResultAttributes,
-} from "@models/quiz/result";
+} from "@models/quiz/question/result";
 import { EmptyEventAttributes, EventAttributes } from "@models/event";
 import { AttributeFactory } from "@models/abstract/base_model";
 import {
-    EmptyMembershipRequestAttributes,
-    MembershipRequestAttributes,
-} from "@models/membership_request";
+    EmptyQuizQuestionTypeAttributes,
+    QuizQuestionTypeAttributes,
+} from "@models/quiz/question/question_type";
 
 // Configuration
 export const businessAttributes = (): BusinessAttributes =>
@@ -83,23 +75,12 @@ export const businessAttributes = (): BusinessAttributes =>
 export const membershipAttributes = (): MembershipAttributes =>
     AttributeFactory(
         {
-            user_id: -1,
-            business_id: -1,
-            updated_by_user_id: null,
-            default: false,
+            accepted: false,
+            user_id: NaN,
+            business_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyMembershipAttributes
-    );
-
-export const membershipRequestAttributes = (): MembershipRequestAttributes =>
-    AttributeFactory(
-        {
-            business_id: -1,
-            token: "",
-            user_id: -1,
-            updated_by_user_id: -1,
-        },
-        EmptyMembershipRequestAttributes
     );
 
 export const userAttributes = (): UserAttributes =>
@@ -107,13 +88,8 @@ export const userAttributes = (): UserAttributes =>
         {
             first_name: "Noah",
             last_name: "Varghese",
-            email: "varghese.noah@gmail.com",
+            email: process.env.TEST_EMAIL_1 ?? "",
             phone: "9053393294",
-            address: "207 Elderwood Trail",
-            city: "Oakville",
-            postal_code: "L6H1X1",
-            province: "ON",
-            country: "CA",
             birthday: new Date("1996-08-07"),
             password: "password",
         },
@@ -127,42 +103,20 @@ export const departmentAttributes = (): DepartmentAttributes =>
             prevent_delete: false,
             prevent_edit: false,
             business_id: 1,
-            updated_by_user_id: -1,
+            updated_by_user_id: NaN,
         },
         EmptyDeparmentAttributes
-    );
-
-export const permissionAttributes = (): PermissionAttributes =>
-    AttributeFactory(
-        {
-            global_crud_users: true,
-            global_crud_department: true,
-            global_crud_role: true,
-            global_crud_resources: true,
-            global_assign_users_to_department: true,
-            global_assign_users_to_role: true,
-            global_assign_resources_to_department: true,
-            global_assign_resources_to_role: true,
-            global_view_reports: true,
-            dept_crud_role: true,
-            dept_crud_resources: true,
-            dept_assign_users_to_role: true,
-            dept_assign_resources_to_role: true,
-            dept_view_reports: true,
-            updated_by_user_id: -1,
-        },
-        EmptyPermissionAttributes
     );
 
 export const roleAttributes = (): RoleAttributes =>
     AttributeFactory(
         {
-            name: "Admin",
+            name: "General",
             prevent_delete: false,
             prevent_edit: false,
-            department_id: -1,
-            permission_id: -1,
-            updated_by_user_id: -1,
+            department_id: NaN,
+            access: "USER",
+            updated_by_user_id: NaN,
         },
         EmptyRoleAttributes
     );
@@ -170,10 +124,9 @@ export const roleAttributes = (): RoleAttributes =>
 export const userRoleAttributes = (): UserRoleAttributes =>
     AttributeFactory(
         {
-            user_id: -1,
-            role_id: -1,
-            primary_role_for_user: true,
-            updated_by_user_id: -1,
+            user_id: NaN,
+            role_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyUserRoleAttributes
     );
@@ -184,7 +137,7 @@ export const manualAttributes = (): ManualAttributes =>
             title: "Manual",
             prevent_edit: false,
             prevent_delete: false,
-            updated_by_user_id: -1,
+            updated_by_user_id: NaN,
         },
         EmptyManualAttributes
     );
@@ -192,10 +145,9 @@ export const manualAttributes = (): ManualAttributes =>
 export const manualAssignmentAttributes = (): ManualAssignmentAttributes =>
     AttributeFactory(
         {
-            department_id: -1,
-            manual_id: -1,
-            role_id: -1,
-            updated_by_user_id: -1,
+            manual_id: NaN,
+            role_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyManualAssignmentAttributes
     );
@@ -204,20 +156,10 @@ export const manualSectionAttributes = (): ManualSectionAttributes =>
     AttributeFactory(
         {
             title: "Section",
-            manual_id: -1,
-            updated_by_user_id: -1,
+            manual_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyManualSectionAttributes
-    );
-
-export const policyAttributes = (): PolicyAttributes =>
-    AttributeFactory(
-        {
-            title: "Policy",
-            manual_section_id: -1,
-            updated_by_user_id: -1,
-        },
-        EmptyPolicyAttributes
     );
 
 export const contentAttributes = (): ContentAttributes =>
@@ -225,19 +167,19 @@ export const contentAttributes = (): ContentAttributes =>
         {
             title: "Content",
             content: "Here are some words",
-            policy_id: -1,
-            updated_by_user_id: -1,
+            manual_section_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyContentAttributes
     );
 
-export const policyReadAttributes = (): PolicyReadAttributes =>
+export const contentReadAttributes = (): ContentReadAttributes =>
     AttributeFactory(
         {
-            policy_id: -1,
-            user_id: -1,
+            content_id: NaN,
+            user_id: NaN,
         },
-        EmptyPolicyReadAttributes
+        EmptyContentReadAttributes
     );
 
 export const quizAttributes = (): QuizAttributes =>
@@ -245,10 +187,10 @@ export const quizAttributes = (): QuizAttributes =>
         {
             title: "Quiz",
             max_attempts: 5,
-            manual_id: -1,
+            manual_id: NaN,
             prevent_edit: false,
             prevent_delete: false,
-            updated_by_user_id: -1,
+            updated_by_user_id: NaN,
         },
         EmptyQuizAttributes
     );
@@ -257,8 +199,8 @@ export const quizSectionAttributes = (): QuizSectionAttributes =>
     AttributeFactory(
         {
             title: "Section",
-            updated_by_user_id: -1,
-            quiz_id: -1,
+            updated_by_user_id: NaN,
+            quiz_id: NaN,
         },
         EmptyQuizSectionAttributes
     );
@@ -267,11 +209,21 @@ export const quizQuestionAttributes = (): QuizQuestionAttributes =>
     AttributeFactory(
         {
             question: "Question",
-            type: "radio",
-            quiz_section_id: -1,
-            updated_by_user_id: -1,
+            quiz_question_type_id: NaN,
+            quiz_section_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyQuestionAttributes
+    );
+
+export const quizQuestionTypeAttributes = (): QuizQuestionTypeAttributes =>
+    AttributeFactory(
+        {
+            question_type: "multiple choice",
+            html_attributes: '{"type": "checkbox"}',
+            html_tag: "inpute",
+        },
+        EmptyQuizQuestionTypeAttributes
     );
 
 export const quizAnswerAttributes = (): QuizAnswerAttributes =>
@@ -279,8 +231,8 @@ export const quizAnswerAttributes = (): QuizAnswerAttributes =>
         {
             answer: "Answer",
             correct: false,
-            quiz_question_id: -1,
-            updated_by_user_id: -1,
+            quiz_question_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyAnswerAttributes
     );
@@ -288,8 +240,8 @@ export const quizAnswerAttributes = (): QuizAnswerAttributes =>
 export const quizAttemptAttributes = (): QuizAttemptAttributes =>
     AttributeFactory(
         {
-            quiz_id: -1,
-            user_id: -1,
+            quiz_id: NaN,
+            user_id: NaN,
         },
         EmptyAttemptAttributes
     );
@@ -297,10 +249,10 @@ export const quizAttemptAttributes = (): QuizAttemptAttributes =>
 export const resultAttributes = (): QuizResultAttributes =>
     AttributeFactory(
         {
-            quiz_answer_id: -1,
-            quiz_attempt_id: -1,
-            quiz_question_id: -1,
-            updated_by_user_id: -1,
+            quiz_answer_id: NaN,
+            quiz_attempt_id: NaN,
+            quiz_question_id: NaN,
+            updated_by_user_id: NaN,
         },
         EmptyResultAttributes
     );
@@ -320,21 +272,19 @@ export const eventAttributes = (): EventAttributes =>
 export default {
     business: businessAttributes,
     membership: membershipAttributes,
-    membershipRequest: membershipRequestAttributes,
     user: userAttributes,
-    permission: permissionAttributes,
     department: departmentAttributes,
     role: roleAttributes,
     userRole: userRoleAttributes,
     manual: manualAttributes,
     manualAssignment: manualAssignmentAttributes,
     manualSection: manualSectionAttributes,
-    policy: policyAttributes,
     content: contentAttributes,
-    policyRead: policyReadAttributes,
+    contentRead: contentReadAttributes,
     quiz: quizAttributes,
     quizSection: quizSectionAttributes,
     quizQuestion: quizQuestionAttributes,
+    quizQuestionType: quizQuestionTypeAttributes,
     quizAnswer: quizAnswerAttributes,
     quizResult: resultAttributes,
     event: eventAttributes,
