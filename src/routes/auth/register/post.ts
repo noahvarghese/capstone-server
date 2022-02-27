@@ -176,6 +176,7 @@ export const registerController = async (
                         updated_by_user_id: user_id,
                         prevent_delete: true,
                         default_option: true,
+                        accepted: true,
                     })
                 ),
             ]);
@@ -212,5 +213,5 @@ export const registerController = async (
     req.session.current_business_id = business_id;
     req.session.user_id = user_id;
 
-    res.status(201).send(user_id);
+    res.status(201).send({ user_id });
 };
