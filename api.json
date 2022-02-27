@@ -594,7 +594,19 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Created business, user, admin department, admin role, and assigned user to business and role."
+                        "description": "Created business, user, admin department, admin role, and assigned user to business and role.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Missing or invalid request body."
@@ -637,8 +649,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer",
-                                    "description": "the user id"
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1993,6 +2009,14 @@
                                             "name": {
                                                 "type": "string",
                                                 "description": "role name"
+                                            },
+                                            "access": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "ADMIN",
+                                                    "MANAGER",
+                                                    "USER"
+                                                ]
                                             }
                                         }
                                     }
