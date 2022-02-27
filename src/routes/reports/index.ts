@@ -4,7 +4,7 @@ import adminRouter from "./admin";
 import manualRouter from "./manuals";
 import quizRouter from "./quizzes";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 

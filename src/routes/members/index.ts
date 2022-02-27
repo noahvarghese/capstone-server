@@ -4,7 +4,7 @@ import idRouter from "./{user_id}";
 import inviteRouter from "./invite";
 import authenticated from "@middleware/authenticated";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.get("/", authenticated, getController);
 router.use("/:user_id", authenticated, idRouter);

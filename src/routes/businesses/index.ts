@@ -3,7 +3,7 @@ import idRoutes from "./{id}";
 import { getBusinessController } from "./get";
 import authenticated from "@middleware/authenticated";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 

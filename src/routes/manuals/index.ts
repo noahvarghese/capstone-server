@@ -5,7 +5,7 @@ import sectionRouter from "./sections";
 import getController from "./get";
 import postController from "./post";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 

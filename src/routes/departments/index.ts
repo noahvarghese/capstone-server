@@ -4,7 +4,7 @@ import getController from "./get";
 import postController from "./post";
 import idRouter from "./{id}";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 

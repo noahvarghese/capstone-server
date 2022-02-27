@@ -3,7 +3,7 @@ import { Router } from "express";
 import tokenRouter from "./{token}";
 import { sendInviteController } from "./post";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.post("/", authenticated, sendInviteController);
 router.use("/:token", tokenRouter);

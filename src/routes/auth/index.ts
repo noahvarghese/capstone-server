@@ -6,7 +6,7 @@ import logoutRoute from "./logout";
 import registerRoute from "./register";
 import resetPasswordRoute from "./reset_password/{token}";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/forgot_password", forgotPasswordRoute);
 router.use("/login", loginRoute);

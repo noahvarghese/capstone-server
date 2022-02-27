@@ -1,7 +1,7 @@
 import { Router } from "express";
 import unreadRouter from "./unread";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/unread", unreadRouter);
 

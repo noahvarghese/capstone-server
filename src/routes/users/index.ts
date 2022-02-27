@@ -2,7 +2,7 @@ import { Router } from "express";
 import authenticated from "@middleware/authenticated";
 import idRouter from "./{id}";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 

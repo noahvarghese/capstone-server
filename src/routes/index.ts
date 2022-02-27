@@ -12,7 +12,7 @@ import quizRouter from "./quizzes";
 import userRouter from "./users";
 import Logs from "@noahvarghese/logger";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/auth", authRouter);
 router.use("/businesses", businessRouter);

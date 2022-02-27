@@ -3,7 +3,7 @@ import contentRouter from "./contents";
 import getController from "./get";
 import putController from "./put";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/contents", contentRouter);
 

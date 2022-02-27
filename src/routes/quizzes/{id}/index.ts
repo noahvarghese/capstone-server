@@ -5,7 +5,7 @@ import deleteController from "./delete";
 import getController from "./get";
 import putController from "./put";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/sections", sectionRouter);
 router.use("/attempts", attemptRouter);
