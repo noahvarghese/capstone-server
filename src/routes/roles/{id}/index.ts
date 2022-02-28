@@ -1,7 +1,7 @@
-import deleteController from "@routes/members/{user_id}/delete";
 import { Router } from "express";
 import getController from "./get";
 import putController from "./put";
+import deleteController from "./delete";
 import membersRoute from "./members";
 import manualsRoute from "./manuals";
 
