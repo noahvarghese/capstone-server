@@ -44,7 +44,7 @@ export const sendInviteController = async (
 
     let invitedUserId = (
         await dbConnection.manager.findOne(User, {
-            where: { email: email },
+            where: { email },
         })
     )?.id;
 
@@ -55,6 +55,15 @@ export const sendInviteController = async (
             User,
             new User({ email, phone })
         ));
+    }
+
+    const m = await dbConnection.manager.findOne(Membership, {
+        where: { user_id: invitedUserId, business_id: current_business_id },
+    });
+
+    if (m && m.accepted) {
+        res.sendStatus(400);
+        return;
     }
 
     const token = uid(32);
