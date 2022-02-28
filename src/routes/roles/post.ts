@@ -1,5 +1,5 @@
 import Department from "@models/department";
-import Role from "@models/role";
+import Role, { AccessKey } from "@models/role";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import Logs from "@noahvarghese/logger";
@@ -19,14 +19,24 @@ const postController = async (req: Request, res: Response): Promise<void> => {
 
     let name = "";
     let department_id = NaN;
+    let access: AccessKey = "USER";
 
     try {
-        const data = getJOpts(req.body, {
-            name: { type: "string", required: true },
-            department_id: { type: "number", required: true },
-        });
+        const data = getJOpts(
+            req.body,
+            {
+                name: { type: "string", required: true },
+                department_id: { type: "number", required: true },
+                access: { type: "string", required: true, format: "access" },
+            },
+            {
+                access: (v?: unknown) =>
+                    ["MANAGER", "ADMIN", "USER"].includes(v as string),
+            }
+        ) as { name: string; department_id: number; access: AccessKey };
         name = data.name as string;
         department_id = Number(data.department_id);
+        access = data.access as AccessKey;
     } catch (_e) {
         const { message } = _e as Error;
         Logs.Error(message);
@@ -46,7 +56,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
 
     await dbConnection.manager.insert(
         Role,
-        new Role({ updated_by_user_id: user_id, department_id, name })
+        new Role({ updated_by_user_id: user_id, department_id, name, access })
     );
 
     res.sendStatus(201);

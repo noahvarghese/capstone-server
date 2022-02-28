@@ -91,6 +91,7 @@ describe("permissions", () => {
                         department_id: (
                             await conn.manager.findOneOrFail(Department)
                         ).id,
+                        access: "USER",
                     },
                     dbConnection: conn,
                 } as unknown as Request,
