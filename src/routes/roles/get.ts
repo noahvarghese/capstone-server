@@ -1,5 +1,5 @@
 import Department from "@models/department";
-import Role from "@models/role";
+import Role, { AccessKey } from "@models/role";
 import User from "@models/user/user";
 import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { isJson } from "@util/obj";
@@ -103,6 +103,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .createQueryBuilder()
         .select("r.id", "id")
         .addSelect("r.name", "name")
+        .addSelect("r.access", "access")
         .addSelect("d.name", "department_name")
         .addSelect("d.id", "department_id")
         .addSelect(
@@ -145,6 +146,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     const result = await query.getRawMany<{
         id: number;
         name: string;
+        access: AccessKey;
         department_id: number;
         department_name: string;
         num_members: number;
@@ -152,9 +154,17 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).send(
         result.map(
-            ({ id, department_id, department_name, name, num_members }) => ({
+            ({
+                id,
+                department_id,
+                department_name,
+                name,
+                num_members,
+                access,
+            }) => ({
                 id,
                 name,
+                access,
                 num_members,
                 department: { id: department_id, name: department_name },
             })
