@@ -149,6 +149,21 @@ describe("manager of wrong role", () => {
     });
 });
 
+describe("owner cannot be removed", () => {
+    test("", async () => {
+        await deleteController(
+            {
+                session,
+                dbConnection: conn,
+                params: { user_id, role_id: adminRoleId },
+            } as unknown as Request,
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenLastCalledWith(405);
+    });
+});
+
 describe("permissions", () => {
     const cases: AccessKey[] = ["MANAGER", "ADMIN", "USER"];
 
