@@ -27,7 +27,7 @@ router.use("/users", userRouter);
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {
-    Logs.Error("Invalid request to", req.originalUrl);
+    Logs.Error("Invalid request to", req.originalUrl, req.method);
 
     let redirectURL = client();
 

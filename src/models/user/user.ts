@@ -99,8 +99,6 @@ export default class User extends BaseModel implements UserAttributes {
         if (validator.isEmpty(password, { ignore_whitespace: true }))
             throw new Error("Password cannot be empty");
         await this.hashPassword(password);
-        this.token = null;
-        this.token_expiry = null;
     };
 
     /**

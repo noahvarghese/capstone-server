@@ -46,6 +46,8 @@ export const resetPasswordController = async (
 
     await connection.manager.update(User, user.id, {
         password: user.password,
+        token: null,
+        token_expiry: null,
     });
 
     if (await resetPasswordEmail(connection, user)) res.sendStatus(200);
