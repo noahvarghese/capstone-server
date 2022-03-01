@@ -40,17 +40,17 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     }
 
     if ((limit && !page) || (!limit && page)) {
-        res.status(400).send("Invalid pagination options");
+        res.status(400).send("Mismatched pagination options");
         return;
     }
 
-    if (limit && !isNumber(limit)) {
-        res.status(400).send("Invalid pagination options");
+    if (limit && !isNumber(Number(limit))) {
+        res.status(400).send("Invalid pagination option: limit");
         return;
     }
 
-    if (page && !isNumber(page)) {
-        res.status(400).send("Invalid pagination options");
+    if (page && !isNumber(Number(page))) {
+        res.status(400).send("Invalid pagination option: page");
         return;
     }
 
