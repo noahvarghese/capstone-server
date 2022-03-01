@@ -52,7 +52,7 @@ export const sendUserInviteEmail = async (
         connection.manager.findOneOrFail(User, new_user_id),
     ]);
 
-    const url = client(`member/invite/${token}`);
+    const url = client(`members/invite/${token}`);
 
     return await sendMail(
         {
