@@ -28,10 +28,10 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     const result = await dbConnection
         .createQueryBuilder()
         .select("u")
-        .addSelect("r")
-        .addSelect("d")
-        .from(Membership, "m")
-        .leftJoin(User, "u", "m.user_id = u.id")
+        .addSelect("m.accepted")
+        .distinct(true)
+        .from(User, "u")
+        .leftJoin(Membership, "m", "m.user_id = u.id")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
         .leftJoin(Role, "r", "ur.role_id = r.id")
         .leftJoin(Department, "d", "d.id = r.department_id")
@@ -39,56 +39,56 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             business_id: current_business_id,
         })
         .andWhere("u.id = :id", { id })
-        .getRawMany();
+        .getRawOne<{
+            u_id: number;
+            u_first_name: string;
+            u_last_name: string;
+            u_email: string;
+            u_phone: string;
+            u_birthday?: Date;
+            m_accepted: boolean;
+        }>();
 
-    const members: Member[] = result.reduce((prev, curr) => {
-        const el = (prev as Member[]).find((e) => {
-            e.id === curr.u_id;
-        });
-
-        if (!el) {
-            prev.push({
-                id: curr.u_id,
-                first_name: curr.u_first_name,
-                last_name: curr.u_last_name,
-                email: curr.u_email,
-                phone: curr.u_phone,
-                birthday: curr.u_birthday,
-                accepted: curr.m_accepted,
-                roles:
-                    curr.r_id && curr.r_name
-                        ? [
-                              {
-                                  id: curr.r_id,
-                                  name: curr.r_name,
-                                  department: {
-                                      id: curr.d_id,
-                                      name: curr.d_name,
-                                  },
-                              },
-                          ]
-                        : [],
-            } as Member[][keyof Member[]]);
-        } else {
-            el.roles.push({
-                id: curr.r_id,
-                name: curr.r_name,
-                department: {
-                    id: curr.d_id,
-                    name: curr.d_name,
-                },
-            });
-        }
-
-        return prev;
-    }, [] as Member[]);
-
-    if (members.length !== 1) {
-        res.sendStatus(500);
+    if (!result) {
+        res.sendStatus(400);
         return;
     }
 
-    res.status(200).send(members[0]);
+    const member: Member = {
+        id: result.u_id,
+        first_name: result.u_first_name,
+        last_name: result.u_last_name,
+        email: result.u_email,
+        phone: result.u_phone,
+        birthday: result.u_birthday,
+        accepted: result.m_accepted,
+        roles: (
+            await dbConnection
+                .createQueryBuilder()
+                .select(
+                    "r.id AS role_id, r.name AS role_name, d.id AS department_id, d.name AS department_name"
+                )
+                .from(UserRole, "ur")
+                .leftJoin(Role, "r", "r.id = ur.role_id")
+                .leftJoin(Department, "d", "d.id = r.department_id")
+                .where("ur.user_id = :user_id", { user_id: result.u_id })
+                .getRawMany<{
+                    role_id: number;
+                    role_name: string;
+                    department_id: number;
+                    department_name: string;
+                }>()
+        ).map((r) => ({
+            id: r.role_id,
+            name: r.role_name,
+            department: {
+                id: r.department_id,
+                name: r.department_name,
+            },
+        })),
+    };
+
+    res.status(200).send(member);
     return;
 };
 
