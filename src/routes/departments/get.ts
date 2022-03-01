@@ -1,4 +1,3 @@
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import User from "@models/user/user";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
@@ -40,17 +39,17 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     }
 
     if ((limit && !page) || (!limit && page)) {
-        res.status(400).send("Mismatched pagination options");
+        res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (limit && !isNumber(Number(limit))) {
-        res.status(400).send("Invalid pagination option: limit");
+    if (limit && (isNaN(Number(limit)) || !/^\d+$/.test(limit as string))) {
+        res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (page && !isNumber(Number(page))) {
-        res.status(400).send("Invalid pagination option: page");
+    if (page && (isNaN(Number(page)) || !/^\d+$/.test(page as string))) {
+        res.status(400).send("Invalid pagination options");
         return;
     }
 
