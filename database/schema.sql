@@ -90,6 +90,7 @@ CREATE TABLE role (
 CREATE TABLE user_role (
     user_id INT NOT NULL,
     role_id INT NOT NULL,
+    prevent_delete TINYINT(1) NOT NULL DEFAULT 0,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,

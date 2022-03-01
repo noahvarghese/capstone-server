@@ -199,7 +199,12 @@ export const registerController = async (
 
             await tm.insert(
                 UserRole,
-                new UserRole({ updated_by_user_id: user_id, user_id, role_id })
+                new UserRole({
+                    updated_by_user_id: user_id,
+                    user_id,
+                    role_id,
+                    prevent_delete: true,
+                })
             );
         });
     } catch (_e) {
