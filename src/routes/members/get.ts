@@ -127,6 +127,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select(
             "first_name, last_name, email, phone, birthday, m.user_id, accepted"
         )
+        .distinct(true)
         .from(User, "u")
         .leftJoin(Membership, "m", "m.user_id = u.id")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
