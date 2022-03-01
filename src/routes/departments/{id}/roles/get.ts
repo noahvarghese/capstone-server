@@ -38,6 +38,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .createQueryBuilder()
         .select("r.id", "id")
         .addSelect("r.name", "name")
+        .addSelect("r.access", "access")
         .addSelect(
             "(SELECT COUNT(DISTINCT(ur.user_id)) FROM user_role ur JOIN role r2 ON r2.id = ur.role_id WHERE r2.id = r.id)",
             "num_members"

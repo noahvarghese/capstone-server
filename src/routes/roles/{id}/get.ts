@@ -1,5 +1,5 @@
 import Department from "@models/department";
-import Role from "@models/role";
+import Role, { AccessKey } from "@models/role";
 import User from "@models/user/user";
 import { Request, Response } from "express";
 
@@ -22,10 +22,11 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    const roles = await dbConnection
+    const role = await dbConnection
         .createQueryBuilder()
         .select("r.id", "id")
         .addSelect("r.name", "name")
+        .addSelect("r.access", "access")
         .addSelect("d.name", "department_name")
         .addSelect("d.id", "department_id")
         .addSelect(
@@ -36,9 +37,29 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .leftJoin(Department, "d", "d.id = r.department_id")
         .where("d.business_id = :current_business_id", { current_business_id })
         .andWhere("r.id = :id", { id })
-        .getRawOne();
+        .getRawOne<{
+            id: number;
+            name: string;
+            access: AccessKey;
+            department_name: string;
+            department_id: number;
+            num_members: number;
+        }>();
 
-    res.status(200).send(roles);
+    res.status(200).send(
+        role
+            ? {
+                  id: role.id,
+                  name: role.name,
+                  access: role.access,
+                  department: {
+                      id: role.department_id,
+                      name: role.department_name,
+                  },
+                  num_members: role.num_members,
+              }
+            : {}
+    );
     return;
 };
 
