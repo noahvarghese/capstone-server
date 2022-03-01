@@ -24,8 +24,14 @@ export const updateUserController = async (
 ): Promise<void> => {
     const {
         session: { user_id },
+        params: { id },
         dbConnection,
     } = req;
+
+    if (user_id !== Number(id)) {
+        res.sendStatus(403);
+        return;
+    }
 
     let data: UpdatedUser;
 

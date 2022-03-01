@@ -36,9 +36,10 @@ test("invalid phone", async () => {
     await updateUserController(
         {
             body: updateUser,
-            session: { user_id: NaN },
+            params: { id: user_id },
+            session: { user_id },
             dbConnection: connection,
-        } as Request,
+        } as unknown as Request,
         res
     );
 
@@ -54,9 +55,10 @@ test("invalid email", async () => {
     await updateUserController(
         {
             body: updateUser,
-            session: { user_id: NaN },
+            params: { id: user_id },
+            session: { user_id },
             dbConnection: connection,
-        } as Request,
+        } as unknown as Request,
         res
     );
 
@@ -74,9 +76,10 @@ test("undefined values do not remove values", async () => {
     await updateUserController(
         {
             body: updateUser,
+            params: { id: user_id },
             session: { user_id },
             dbConnection: connection,
-        } as Request,
+        } as unknown as Request,
         res
     );
 
