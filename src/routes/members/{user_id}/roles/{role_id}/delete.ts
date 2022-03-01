@@ -47,6 +47,11 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    if (ur.prevent_delete) {
+        res.sendStatus(405);
+        return;
+    }
+
     await dbConnection.manager.delete(UserRole, {
         user_id: Number(id),
         role_id: Number(role_id),
