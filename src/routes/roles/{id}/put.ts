@@ -1,5 +1,5 @@
 import Department from "@models/department";
-import Role from "@models/role";
+import Role, { AccessKey } from "@models/role";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import { Request, Response } from "express";
@@ -12,12 +12,23 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     } = req;
 
     let name = "";
+    let access: AccessKey = "USER";
 
     try {
-        const data = getJOpts(req.body, {
-            name: { type: "string", required: true },
-        });
+        const data = getJOpts(
+            req.body,
+            {
+                name: { type: "string", required: true },
+                access: { type: "string", required: false, format: "access" },
+            },
+
+            {
+                access: (v?: unknown) =>
+                    ["MANAGER", "ADMIN", "USER"].includes(v as string),
+            }
+        ) as { name: string; department_id: number; access: AccessKey };
         name = data.name as string;
+        access = data.access as AccessKey;
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
@@ -55,6 +66,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         {
             name,
             updated_by_user_id: user_id,
+            access,
         }
     );
 
