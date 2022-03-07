@@ -12,6 +12,7 @@ const options: ExpectedBody = {
     first_name: { required: false, type: "string" },
     last_name: { required: false, type: "string" },
     phone: { required: false, type: "string", format: "phone" },
+    birthday: { required: false, type: "string", format: "date" },
 };
 
 type UpdatedUser = Partial<

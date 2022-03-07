@@ -5,7 +5,13 @@ import { isPhone, isPostalCode } from ".";
 /**
  * different types that will have their own format validators
  */
-const bodyTypes = ["email", "postal_code", "province", "phone"] as const;
+const bodyTypes = [
+    "email",
+    "postal_code",
+    "province",
+    "phone",
+    "date",
+] as const;
 type BodyKey = typeof bodyTypes[number];
 type BodyMap = ValidatorMap<BodyKey>;
 export type ExpectedBody = Expected<BodyKey>;
@@ -15,4 +21,5 @@ export const bodyValidators: BodyMap = {
     phone: (v: unknown) => isPhone(v as string),
     postal_code: (v: unknown) => isPostalCode(v as string),
     province: (v: unknown) => (v as string).length === 2,
+    date: (v: unknown) => validator.isDate(v as string),
 };
