@@ -12,7 +12,10 @@ import Membership from "@models/membership";
 import { SessionData } from "express-session";
 import UserRole from "@models/user/user_role";
 
-let business_id: number, user_id: number, adminRoleId: number;
+let business_id: number,
+    user_id: number,
+    adminRoleId: number,
+    department_id: number;
 let conn: Connection;
 let session: Omit<SessionData, "cookie">;
 
@@ -36,10 +39,12 @@ beforeAll(async () => {
         current_business_id: business_id,
     };
 
+    department_id = (await conn.manager.findOneOrFail(Department)).id;
+
     const role = new Role({
         updated_by_user_id: user_id,
         name: "TEST",
-        department_id: (await conn.manager.findOneOrFail(Department)).id,
+        department_id,
     });
 
     [
@@ -78,13 +83,25 @@ afterAll(async () => {
 });
 
 describe("manager of wrong role", () => {
-    let newRoleID: number, deptId: number;
+    let newRoleID: number, deptId: number, newUserId: number;
 
     beforeAll(async () => {
         await conn.manager.update(Role, adminRoleId, {
             access: "MANAGER",
             prevent_edit: false,
         });
+
+        ({
+            identifiers: [{ id: newUserId }],
+        } = await conn.manager.insert(
+            User,
+            new User({
+                email: "test@test.com",
+                first_name: "test",
+                last_name: "test",
+                password: "test",
+            })
+        ));
 
         ({
             identifiers: [{ id: deptId }],
@@ -119,7 +136,6 @@ describe("manager of wrong role", () => {
             access: "ADMIN",
             prevent_edit: true,
         });
-
         await conn.manager.delete(Department, deptId);
         await conn.manager.delete(Role, newRoleID);
     });
@@ -130,7 +146,7 @@ describe("manager of wrong role", () => {
                 session,
                 dbConnection: conn,
                 params: {
-                    user_id,
+                    user_id: newUserId,
                     role_id: newRoleID,
                 },
             } as unknown as Request,
