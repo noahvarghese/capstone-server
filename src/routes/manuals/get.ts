@@ -4,7 +4,6 @@ import Manual from "@models/manual/manual";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { isJson } from "@util/obj";
 import { Request, Response } from "express";
 
@@ -79,12 +78,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (limit && !isNumber(limit)) {
+    if (limit && (isNaN(Number(limit)) || !/^\d+$/.test(limit as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (page && !isNumber(page)) {
+    if (page && (isNaN(Number(page)) || !/^\d+$/.test(page as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
