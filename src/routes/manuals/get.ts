@@ -141,7 +141,15 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .offset(Number(page) * Number(limit) - Number(limit));
     }
 
-    res.status(200).send(await query.getRawMany());
+    const data = await query.getRawMany();
+    res.status(200).send(
+        data.map((d) => ({
+            ...d,
+            prevent_edit: d.prevent_edit === 1,
+            prevent_delete: d.prevent_delete === 1,
+            published: d.published === 1,
+        }))
+    );
     return;
 };
 
