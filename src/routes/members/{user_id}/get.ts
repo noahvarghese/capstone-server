@@ -21,8 +21,10 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     ]);
 
     if (!(isAdmin || isManager)) {
-        res.sendStatus(403);
-        return;
+        if (Number(id) !== user_id) {
+            res.sendStatus(403);
+            return;
+        }
     }
 
     const result = await dbConnection
