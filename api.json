@@ -1016,20 +1016,6 @@
                 "description": "Retrieves combination of manuals that are assigned to user's role/department. Check user's permissions to determine if the user is allowed to edit the manual. If manual is assigned to same role as the user they are not allowed to edit. requires permissions, or assignment and published",
                 "parameters": [
                     {
-                        "name": "published",
-                        "description": "whether to get manuals that are published or not",
-                        "in": "query",
-                        "required": false,
-                        "schema": { "type": "string" }
-                    },
-                    {
-                        "name": "editable",
-                        "description": "whether to get manuals that are editable by the user or not",
-                        "in": "query",
-                        "required": false,
-                        "schema": { "type": "string" }
-                    },
-                    {
                         "name": "filter_field",
                         "description": "fields to filter by",
                         "in": "query",
