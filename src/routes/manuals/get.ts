@@ -135,6 +135,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
+    const count = await query.getCount();
+
     if (page && limit) {
         query = query
             .limit(Number(limit))
@@ -142,14 +144,15 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     }
 
     const data = await query.getRawMany();
-    res.status(200).send(
-        data.map((d) => ({
+    res.status(200).send({
+        data: data.map((d) => ({
             ...d,
             prevent_edit: d.prevent_edit === 1,
             prevent_delete: d.prevent_delete === 1,
             published: d.published === 1,
-        }))
-    );
+        })),
+        count,
+    });
     return;
 };
 

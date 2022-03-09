@@ -187,6 +187,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
+    const count = await query.getCount();
+
     if (page && limit) {
         query = query
             .limit(Number(limit))
@@ -236,7 +238,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         })
     );
 
-    res.status(200).send(members);
+    res.status(200).send({ data: members, count });
 };
 
 export default getController;
