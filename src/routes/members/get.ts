@@ -202,14 +202,16 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         email: string;
         phone: string;
         birthday: Date | null;
-        accepted: boolean;
+        accepted: 1 | 0;
     }>();
 
     const members = await Promise.all(
         memberResult.map(async (m) => {
             return {
-                id: m.user_id,
                 ...m,
+                user_id: undefined,
+                id: m.user_id,
+                accepted: m.accepted === 1,
                 roles: (
                     await dbConnection
                         .createQueryBuilder()

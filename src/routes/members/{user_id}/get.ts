@@ -48,7 +48,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             u_email: string;
             u_phone: string;
             u_birthday?: Date;
-            m_accepted: boolean;
+            m_accepted: 0 | 1;
         }>();
 
     if (!result) {
@@ -63,7 +63,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         email: result.u_email,
         phone: result.u_phone,
         birthday: result.u_birthday,
-        accepted: result.m_accepted,
+        accepted: result.m_accepted === 1,
         roles: (
             await dbConnection
                 .createQueryBuilder()
