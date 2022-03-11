@@ -35,7 +35,17 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             });
     }
 
-    res.status(200).send(await query.getRawOne());
+    const manual = await query.getRawOne();
+    res.status(200).send(
+        manual
+            ? {
+                  ...manual,
+                  prevent_edit: manual.prevent_edit === 1,
+                  prevent_delete: manual.prevent_delete === 1,
+                  published: manual.published === 1,
+              }
+            : undefined
+    );
 };
 
 export default getController;
