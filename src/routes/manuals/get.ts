@@ -100,6 +100,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     let query = dbConnection
         .createQueryBuilder()
         .select("m.id, m.title, m.published, m.prevent_delete, m.prevent_edit")
+        .distinct(true)
         .from(Manual, "m")
         // Joins are for filtering
         .leftJoin(ManualAssignment, "ma", "ma.manual_id = m.id")
