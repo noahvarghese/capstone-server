@@ -40,10 +40,18 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("ur.user_id = :user_id", { user_id });
     }
 
-    res.status(200).send(
-        await query.getRawMany<{ id: number; title: string; content: string }>()
-    );
-    return;
+    const results = (
+        await query.getRawMany<{
+            id: number;
+            title: string;
+            content: string;
+        }>()
+    ).map((c) => ({
+        ...c,
+        content: c.content ? JSON.parse(c.content) : undefined,
+    }));
+
+    res.status(200).send(results);
 };
 
 export default getController;

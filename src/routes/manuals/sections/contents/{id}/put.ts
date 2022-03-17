@@ -18,11 +18,11 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     try {
         const data = getJOpts(req.body, {
             title: { type: "string", required: false },
-            content: { type: "string", required: false },
+            content: { type: "object", required: false },
         });
 
         title = data.title as string;
-        content = data.content as string;
+        content = data.content ? JSON.stringify(data.content) : "";
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
