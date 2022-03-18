@@ -5,7 +5,7 @@ import idRouter from "./{id}";
 import quizRouter from "./{quiz_id}";
 import attemptRouter from "./attempts";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 

@@ -135,6 +135,22 @@ END;
 
 //
 
+DROP TRIGGER IF EXISTS user_role_delete //
+
+CREATE TRIGGER user_role_delete
+BEFORE UPDATE
+ON user_role FOR EACH ROW
+BEGIN
+    DECLARE msg VARCHAR(128);
+
+    IF OLD.prevent_delete = 1 THEN
+        SET msg = CONCAT('UserRoleDeleteError: Cannot delete user role. user_id: ', CAST(OLD.user_id AS CHAR), ' role_id: ', CAST(OLD.role_id AS CHAR));
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = msg;
+    END IF;
+END;
+
+//
+
 DROP TRIGGER IF EXISTS user_role_update //
 
 CREATE TRIGGER user_role_update

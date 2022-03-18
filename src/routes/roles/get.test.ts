@@ -72,15 +72,21 @@ describe("sort", () => {
                 {
                     status: () => {
                         return {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            send: (u: { [x: string]: any }[]) => {
-                                data = u;
+                            send: (u: {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                data: { [x: string]: any }[];
+                                count: number;
+                            }) => {
+                                data = u.data;
                             },
                         };
                     },
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    send: (u: { [x: string]: any }[]) => {
-                        data = u;
+                    send: (u: {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        data: { [x: string]: any }[];
+                        count: number;
+                    }) => {
+                        data = u.data;
                     },
                 } as unknown as Response
             );
@@ -135,8 +141,8 @@ describe("search", () => {
             } as Response
         );
         expect(status).toBe(200);
-        expect(send.length).toBe(1);
-        expect((send[0].name as string).toLowerCase()).toContain(
+        expect(send.data.length).toBe(1);
+        expect((send.data[0].name as string).toLowerCase()).toContain(
             search.toLowerCase()
         );
     });
@@ -160,7 +166,9 @@ describe("pagination", () => {
             );
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.send).toHaveBeenCalledWith(
-                expect.objectContaining({ length: 1 })
+                expect.objectContaining({
+                    data: expect.objectContaining({ length: 1 }),
+                })
             );
         });
     });
@@ -196,7 +204,7 @@ describe("pagination", () => {
                 } as Response
             );
             expect(status).toBe(200);
-            expect(send.length).toBe(limit);
+            expect(send.data.length).toBe(limit);
         });
     });
 });
@@ -215,7 +223,9 @@ test("filter", async () => {
         res
     );
     expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ length: 0 })
+        expect.objectContaining({
+            data: expect.objectContaining({ length: 0 }),
+        })
     );
 });
 

@@ -11,6 +11,11 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
     } = req;
 
+    if (Number(id) === user_id) {
+        res.sendStatus(405);
+        return;
+    }
+
     const [isAdmin, isManager] = await Promise.all([
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         User.isAdmin(dbConnection, business_id!, user_id!),
@@ -44,6 +49,11 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
 
     if (!ur) {
         res.sendStatus(400);
+        return;
+    }
+
+    if (ur.prevent_delete) {
+        res.sendStatus(405);
         return;
     }
 

@@ -5,7 +5,6 @@ import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { isJson } from "@util/obj";
 
 const filterFields = ["department", "role"] as const;
@@ -101,12 +100,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (limit && !isNumber(limit)) {
+    if (limit && (isNaN(Number(limit)) || !/^\d+$/.test(limit as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (page && !isNumber(page)) {
+    if (page && (isNaN(Number(page)) || !/^\d+$/.test(page as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
@@ -128,6 +127,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select(
             "first_name, last_name, email, phone, birthday, m.user_id, accepted"
         )
+        .distinct(true)
         .from(User, "u")
         .leftJoin(Membership, "m", "m.user_id = u.id")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
@@ -187,6 +187,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
+    const count = await query.getCount();
+
     if (page && limit) {
         query = query
             .limit(Number(limit))
@@ -200,14 +202,16 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         email: string;
         phone: string;
         birthday: Date | null;
-        accepted: boolean;
+        accepted: 1 | 0;
     }>();
 
     const members = await Promise.all(
         memberResult.map(async (m) => {
             return {
-                id: m.user_id,
                 ...m,
+                user_id: undefined,
+                id: m.user_id,
+                accepted: m.accepted === 1,
                 roles: (
                     await dbConnection
                         .createQueryBuilder()
@@ -236,7 +240,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         })
     );
 
-    res.status(200).send(members);
+    res.status(200).send({ data: members, count });
 };
 
 export default getController;

@@ -12,7 +12,7 @@ import quizRouter from "./quizzes";
 import userRouter from "./users";
 import Logs from "@noahvarghese/logger";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/auth", authRouter);
 router.use("/businesses", businessRouter);
@@ -27,7 +27,7 @@ router.use("/users", userRouter);
 
 // Default route handler to serve the website if requests are made
 router.use("/*", (req: Request, res: Response) => {
-    Logs.Error("Invalid request to", req.originalUrl);
+    Logs.Error("Invalid request to", req.originalUrl, req.method);
 
     let redirectURL = client();
 

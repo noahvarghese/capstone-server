@@ -264,7 +264,9 @@ describe("requires db connection", () => {
                         );
                         expect(res.status).toHaveBeenCalledWith(200);
                         expect(res.send).toHaveBeenCalledWith(
-                            expect.objectContaining({ length: 1 })
+                            expect.objectContaining({
+                                data: expect.objectContaining({ length: 1 }),
+                            })
                         );
                     });
                 });
@@ -304,7 +306,7 @@ describe("requires db connection", () => {
                             } as Response
                         );
                         expect(status).toBe(200);
-                        expect(send.length).toBe(limit);
+                        expect(send.data.length).toBe(limit);
                     });
                 });
             });
@@ -346,8 +348,8 @@ describe("requires db connection", () => {
                     );
 
                     // Because we are only creating one extra user
-                    expect(data.length).toBe(1);
-                    expect(data[0].roles[0].department.name).toBe(
+                    expect(data.data.length).toBe(1);
+                    expect(data.data[0].roles[0].department.name).toBe(
                         departmentAttributes().name
                     );
                 });
@@ -437,9 +439,9 @@ describe("requires db connection", () => {
                     );
 
                     expect(status).toBe(200);
-                    expect(send.length).toBe(1);
+                    expect(send.data.length).toBe(1);
                     expect(
-                        Array.from(send[0].roles)
+                        Array.from(send.data[0].roles)
                             .map(
                                 (r) =>
                                     (r as { department: Department }).department
@@ -481,15 +483,21 @@ describe("requires db connection", () => {
                             {
                                 status: () => {
                                     return {
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        send: (u: { [x: string]: any }[]) => {
-                                            data = u;
+                                        send: (u: {
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                            data: { [x: string]: any }[];
+                                            count: number;
+                                        }) => {
+                                            data = u.data;
                                         },
                                     };
                                 },
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                send: (u: { [x: string]: any }[]) => {
-                                    data = u;
+                                send: (u: {
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    data: { [x: string]: any }[];
+                                    count: number;
+                                }) => {
+                                    data = u.data;
                                 },
                             } as unknown as Response
                         );

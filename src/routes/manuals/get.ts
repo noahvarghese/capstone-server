@@ -4,7 +4,6 @@ import Manual from "@models/manual/manual";
 import Role from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { isJson } from "@util/obj";
 import { Request, Response } from "express";
 
@@ -79,12 +78,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (limit && !isNumber(limit)) {
+    if (limit && (isNaN(Number(limit)) || !/^\d+$/.test(limit as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (page && !isNumber(page)) {
+    if (page && (isNaN(Number(page)) || !/^\d+$/.test(page as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
@@ -101,6 +100,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     let query = dbConnection
         .createQueryBuilder()
         .select("m.id, m.title, m.published, m.prevent_delete, m.prevent_edit")
+        .distinct(true)
         .from(Manual, "m")
         // Joins are for filtering
         .leftJoin(ManualAssignment, "ma", "ma.manual_id = m.id")
@@ -136,13 +136,24 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
+    const count = await query.getCount();
+
     if (page && limit) {
         query = query
             .limit(Number(limit))
             .offset(Number(page) * Number(limit) - Number(limit));
     }
 
-    res.status(200).send(await query.getRawMany());
+    const data = await query.getRawMany();
+    res.status(200).send({
+        data: data.map((d) => ({
+            ...d,
+            prevent_edit: d.prevent_edit === 1,
+            prevent_delete: d.prevent_delete === 1,
+            published: d.published === 1,
+        })),
+        count,
+    });
     return;
 };
 

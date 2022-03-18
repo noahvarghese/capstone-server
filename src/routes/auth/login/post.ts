@@ -72,7 +72,5 @@ export const loginController = async (
     req.session.current_business_id = defaultBusinessId;
     req.session.user_id = user.id;
 
-    res.status(200).send(user.id);
-
-    return;
+    res.status(200).send({ user_id: user.id });
 };

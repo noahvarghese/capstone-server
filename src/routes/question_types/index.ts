@@ -3,7 +3,7 @@ import { Router } from "express";
 import idRouter from "./{id}";
 import getController from "./get";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use(authenticated);
 router.use("/:id", idRouter);

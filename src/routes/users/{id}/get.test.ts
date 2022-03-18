@@ -15,9 +15,10 @@ describe("db connection required", () => {
     test("invalid user id", async () => {
         await getUserController(
             {
+                params: { id: 1 },
                 session: { user_id: 1 },
                 dbConnection: await DBConnection.get(),
-            } as Request,
+            } as unknown as Request,
             res
         );
         expect(res.sendStatus).toHaveBeenCalledWith(400);
@@ -47,19 +48,22 @@ describe("db connection required", () => {
         test("success", async () => {
             await getUserController(
                 {
+                    params: { id: user.id },
                     session: { user_id: user.id },
                     dbConnection: await DBConnection.get(),
-                } as Request,
+                } as unknown as Request,
                 res
             );
 
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith({
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                phone: user.phone,
-            });
+            expect(res.send).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    email: user.email,
+                    phone: user.phone,
+                })
+            );
         });
     });
 });

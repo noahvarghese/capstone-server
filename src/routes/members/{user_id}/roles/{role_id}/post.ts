@@ -20,6 +20,11 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         User.isManager(dbConnection, business_id!, user_id!),
     ]);
 
+    if (Number(id) === user_id) {
+        res.sendStatus(405);
+        return;
+    }
+
     const isManagerOfRole = await Role.hasManager(
         dbConnection,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -1,5 +1,6 @@
 import Membership from "@models/membership";
 import User from "@models/user/user";
+import UserRole from "@models/user/user_role";
 import { Request, Response } from "express";
 
 const deleteController = async (req: Request, res: Response): Promise<void> => {
@@ -29,6 +30,9 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // delete content read ??
+    // delete quiz attempts/results ??
+    await dbConnection.manager.delete(UserRole, { user_id: id });
     await dbConnection.manager.delete(Membership, membership);
 
     res.sendStatus(200);

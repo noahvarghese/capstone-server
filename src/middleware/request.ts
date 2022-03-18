@@ -42,7 +42,9 @@ export const parseParamToJSON = (
 ): void => {
     try {
         req.params =
-            typeof req.params === "string" ? JSON.parse(req.params) : req.query;
+            typeof req.params === "string"
+                ? JSON.parse(req.params)
+                : req.params;
 
         next();
     } catch (_e) {

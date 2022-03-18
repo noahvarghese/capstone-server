@@ -12,6 +12,7 @@ const options: ExpectedBody = {
     first_name: { required: false, type: "string" },
     last_name: { required: false, type: "string" },
     phone: { required: false, type: "string", format: "phone" },
+    birthday: { required: false, type: "string", format: "date" },
 };
 
 type UpdatedUser = Partial<
@@ -24,8 +25,14 @@ export const updateUserController = async (
 ): Promise<void> => {
     const {
         session: { user_id },
+        params: { id },
         dbConnection,
     } = req;
+
+    if (user_id !== Number(id)) {
+        res.sendStatus(403);
+        return;
+    }
 
     let data: UpdatedUser;
 

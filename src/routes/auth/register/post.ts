@@ -176,6 +176,7 @@ export const registerController = async (
                         updated_by_user_id: user_id,
                         prevent_delete: true,
                         default_option: true,
+                        accepted: true,
                     })
                 ),
             ]);
@@ -198,7 +199,12 @@ export const registerController = async (
 
             await tm.insert(
                 UserRole,
-                new UserRole({ updated_by_user_id: user_id, user_id, role_id })
+                new UserRole({
+                    updated_by_user_id: user_id,
+                    user_id,
+                    role_id,
+                    prevent_delete: true,
+                })
             );
         });
     } catch (_e) {
@@ -212,5 +218,5 @@ export const registerController = async (
     req.session.current_business_id = business_id;
     req.session.user_id = user_id;
 
-    res.status(201).send(user_id);
+    res.status(201).send({ user_id });
 };

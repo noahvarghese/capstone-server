@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { logoutController } from "./post";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.post("/", logoutController);
 

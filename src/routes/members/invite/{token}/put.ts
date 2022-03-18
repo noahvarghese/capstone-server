@@ -104,11 +104,21 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         });
     }
 
+    // get all memberships for user
+    const count = await dbConnection.manager.count(Membership, {
+        where: { user_id: m.user_id },
+    });
+
     // confirm accepted, remove token
     await dbConnection.manager.update(
         Membership,
         { token },
-        { token: null, token_expiry: null, accepted: true }
+        {
+            token: null,
+            token_expiry: null,
+            accepted: true,
+            default_option: count === 1,
+        }
     );
 
     res.sendStatus(200);

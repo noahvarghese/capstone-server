@@ -22,6 +22,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     let query = dbConnection
         .createQueryBuilder()
         .select("ms.id, ms.title")
+        .distinct(true)
         .from(ManualSection, "ms")
         .leftJoin(Manual, "m", "m.id = ms.manual_id")
         .leftJoin(ManualAssignment, "ma", "ma.manual_id = m.id")
@@ -37,9 +38,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("ur.user_id = :user_id", { user_id });
     }
 
-    res.status(200).send(
-        await query.getRawMany<{ id: number; title: string }>()
-    );
+    const result = await query.getRawMany<{ id: number; title: string }>();
+    res.status(200).send(result);
     return;
 };
 

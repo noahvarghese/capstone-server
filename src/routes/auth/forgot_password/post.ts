@@ -36,10 +36,11 @@ export const forgotPasswordController = async (
         return;
     }
 
+    user.token = uid(32);
     await dbConnection.manager.update(
         User,
         { email: email },
-        { token: uid(32) }
+        { token: user.token }
     );
 
     try {

@@ -1,4 +1,3 @@
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import User from "@models/user/user";
 import { Request, Response } from "express";
 import { Brackets, WhereExpressionBuilder } from "typeorm";
@@ -44,12 +43,12 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    if (limit && !isNumber(limit)) {
+    if (limit && (isNaN(Number(limit)) || !/^\d+$/.test(limit as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
 
-    if (page && !isNumber(page)) {
+    if (page && (isNaN(Number(page)) || !/^\d+$/.test(page as string))) {
         res.status(400).send("Invalid pagination options");
         return;
     }
@@ -69,6 +68,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     let query = dbConnection
         .createQueryBuilder()
         .select("d.name", "name")
+        .distinct(true)
         .addSelect("d.id", "id")
         .addSelect(
             "(SELECT COUNT(DISTINCT(ur.user_id)) FROM user_role ur JOIN role r ON r.id = ur.role_id JOIN department d2 ON d2.id = r.department_id WHERE r.access = 'MANAGER' AND d2.id = d.id)",
@@ -105,6 +105,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
+    const count = await query.getCount();
+
     if (page && limit) {
         query = query
             .limit(Number(limit))
@@ -113,7 +115,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     const result = await query.getRawMany();
 
-    res.status(200).send(result);
+    res.status(200).send({ data: result, count });
     return;
 };
 

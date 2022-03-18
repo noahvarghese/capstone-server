@@ -11,12 +11,19 @@ const postController = async (req: Request, res: Response): Promise<void> => {
 
     //  1.  Parse args
     let title: string;
+    let prevent_delete: boolean, prevent_edit: boolean, published: boolean;
 
     try {
         const data = getJOpts(req.body, {
             title: { type: "string", required: true },
+            prevent_edit: { type: "boolean", required: false },
+            prevent_delete: { type: "boolean", required: false },
+            published: { type: "boolean", required: false },
         });
         title = data.title as string;
+        prevent_edit = data.prevent_edit as boolean;
+        prevent_delete = data.prevent_delete as boolean;
+        published = data.published as boolean;
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
@@ -39,12 +46,12 @@ const postController = async (req: Request, res: Response): Promise<void> => {
     await dbConnection.manager.insert(
         Manual,
         new Manual({
-            title,
             updated_by_user_id: user_id,
-            published: false,
             business_id: current_business_id,
-            prevent_delete: false,
-            prevent_edit: false,
+            title,
+            published,
+            prevent_delete,
+            prevent_edit,
         })
     );
 

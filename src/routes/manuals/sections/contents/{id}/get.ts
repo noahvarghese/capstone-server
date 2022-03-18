@@ -42,9 +42,20 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             });
     }
 
-    res.status(200).send(
-        await query.getRawOne<{ id: number; title: string }>()
-    );
+    let result = await query.getRawOne<{
+        id: number;
+        title: string;
+        content: string;
+    }>();
+
+    result = result
+        ? {
+              ...result,
+              content: result.content ? JSON.parse(result.content) : undefined,
+          }
+        : undefined;
+
+    res.status(200).send(result);
 };
 
 export default getController;

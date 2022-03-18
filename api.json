@@ -594,7 +594,19 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Created business, user, admin department, admin role, and assigned user to business and role."
+                        "description": "Created business, user, admin department, admin role, and assigned user to business and role.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Missing or invalid request body."
@@ -637,8 +649,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer",
-                                    "description": "the user id"
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -828,9 +844,15 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Department"
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Department"
+                                            }
+                                        },
+                                        "count": { "type": "integer" }
                                     }
                                 }
                             }
@@ -994,20 +1016,6 @@
                 "description": "Retrieves combination of manuals that are assigned to user's role/department. Check user's permissions to determine if the user is allowed to edit the manual. If manual is assigned to same role as the user they are not allowed to edit. requires permissions, or assignment and published",
                 "parameters": [
                     {
-                        "name": "published",
-                        "description": "whether to get manuals that are published or not",
-                        "in": "query",
-                        "required": false,
-                        "schema": { "type": "string" }
-                    },
-                    {
-                        "name": "editable",
-                        "description": "whether to get manuals that are editable by the user or not",
-                        "in": "query",
-                        "required": false,
-                        "schema": { "type": "string" }
-                    },
-                    {
                         "name": "filter_field",
                         "description": "fields to filter by",
                         "in": "query",
@@ -1042,9 +1050,15 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ManualResponse"
+                                    "type": "object",
+                                    "properties": {
+                                        "count": { "type": "integer" },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ManualResponse"
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1783,36 +1797,42 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "id": { "type": "integer" },
-                                            "first_name": {
-                                                "description": "The user's first name",
-                                                "type": "string"
-                                            },
-                                            "last_name": {
-                                                "description": "The user's last name",
-                                                "type": "string"
-                                            },
-                                            "email": {
-                                                "description": "The user's email",
-                                                "type": "string",
-                                                "format": "email"
-                                            },
-                                            "phone": {
-                                                "description": "The user's phone number",
-                                                "type": "string"
-                                            },
-                                            "status": {
-                                                "description": "Whether the user has accepted their membership yet",
-                                                "type": "boolean"
-                                            },
-                                            "roles": {
-                                                "type": "array",
-                                                "items": {
-                                                    "$ref": "#/components/schemas/Role"
+                                    "type": "object",
+                                    "properties": {
+                                        "count": { "type": "integer" },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": { "type": "integer" },
+                                                    "first_name": {
+                                                        "description": "The user's first name",
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "description": "The user's last name",
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "description": "The user's email",
+                                                        "type": "string",
+                                                        "format": "email"
+                                                    },
+                                                    "phone": {
+                                                        "description": "The user's phone number",
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "description": "Whether the user has accepted their membership yet",
+                                                        "type": "boolean"
+                                                    },
+                                                    "roles": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "$ref": "#/components/schemas/Role"
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -1993,6 +2013,14 @@
                                             "name": {
                                                 "type": "string",
                                                 "description": "role name"
+                                            },
+                                            "access": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "ADMIN",
+                                                    "MANAGER",
+                                                    "USER"
+                                                ]
                                             }
                                         }
                                     }
@@ -2041,6 +2069,9 @@
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
                     },
+                    "405": {
+                        "description": "User cannot assign themselves"
+                    },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
             },
@@ -2072,6 +2103,9 @@
                     },
                     "403": {
                         "$ref": "#/components/responses/PermissionsError"
+                    },
+                    "405": {
+                        "description": "User cannot assign themselves"
                     },
                     "500": { "$ref": "#/components/responses/DatabaseError" }
                 }
@@ -3660,9 +3694,15 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/RoleResponse"
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/RoleResponse"
+                                            }
+                                        },
+                                        "count": { "type": "integer" }
                                     }
                                 }
                             }

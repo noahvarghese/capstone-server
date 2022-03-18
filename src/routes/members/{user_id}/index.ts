@@ -3,7 +3,7 @@ import rolesRouter from "./roles";
 import deleteController from "./delete";
 import getController from "./get";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/roles", rolesRouter);
 

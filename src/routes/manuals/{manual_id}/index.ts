@@ -6,7 +6,7 @@ import deleteController from "./delete";
 import getController from "./get";
 import putController from "./put";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.use("/quizzes", quizRouter);
 router.use("/roles", roleRouter);

@@ -1,4 +1,5 @@
 import { createConnection, ConnectionOptions, Connection } from "typeorm";
+import Logs from "@noahvarghese/logger";
 import Business from "@models/business";
 import Department from "@models/department";
 import Role from "@models/role";
@@ -52,6 +53,8 @@ export const connectionOptions = (): ConnectionOptions => {
             database += `_${process.env.DB_ENV}`;
         }
     }
+
+    Logs.Log(`Using database: ${database}`);
 
     return {
         database,

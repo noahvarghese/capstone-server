@@ -1,5 +1,5 @@
 import Department from "@models/department";
-import Role from "@models/role";
+import Role, { AccessKey } from "@models/role";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
 import { Request, Response } from "express";
@@ -29,6 +29,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .createQueryBuilder()
         .select("r.id", "id")
         .addSelect("r.name", "name")
+        .addSelect("r.access", "access")
         .addSelect("d.name", "department_name")
         .addSelect("d.id", "department_id")
         .from(Role, "r")
@@ -37,18 +38,20 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .where("d.business_id = :current_business_id", {
             current_business_id,
         })
-        .andWhere("ur.user_id = :id", { id })
+        .andWhere("ur.user_id = :id", { id: Number(id) })
         .getRawMany<{
             id: number;
             name: string;
+            access: AccessKey;
             department_id: number;
             department_name: string;
         }>();
 
     res.status(200).send(
-        result.map(({ id, name, ...rest }) => ({
+        result.map(({ id, name, access, ...rest }) => ({
             id,
             name,
+            access,
             department: {
                 id: rest.department_id,
                 name: rest.department_name,
