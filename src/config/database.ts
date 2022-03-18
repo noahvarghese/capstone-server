@@ -54,7 +54,7 @@ export const connectionOptions = (): ConnectionOptions => {
         }
     }
 
-	Logs.Log(`Using database: ${database}`);
+    Logs.Log(`Using database: ${database}`);
 
     return {
         database,
