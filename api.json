@@ -2160,7 +2160,7 @@
                                         "properties": {
                                             "id": { "type": "integer" },
                                             "title": { "type": "string" },
-                                            "attempt_number": {
+                                            "max_attempts": {
                                                 "type": "integer"
                                             },
                                             "published": { "type": "boolean" },
