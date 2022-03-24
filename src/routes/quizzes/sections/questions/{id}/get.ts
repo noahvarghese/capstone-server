@@ -1,6 +1,7 @@
 import ManualAssignment from "@models/manual/assignment";
 import Manual from "@models/manual/manual";
 import QuizQuestion from "@models/quiz/question/question";
+import QuizQuestionType from "@models/quiz/question/question_type";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
 import User from "@models/user/user";
@@ -23,8 +24,11 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     let query = dbConnection
         .createQueryBuilder()
-        .select("qq")
+        .select(
+            "qq.id, qq.question, qq.quiz_section_id, qq.quiz_question_type_id, qqt.question_type"
+        )
         .from(QuizQuestion, "qq")
+        .leftJoin(QuizQuestionType, "qqt", "qqt.id = qq.quiz_question_type_id")
         .leftJoin(QuizSection, "qs", "qs.id = qq.quiz_section_id")
         .leftJoin(Quiz, "q", "q.id = qs.quiz_id")
         .leftJoin(Manual, "m", "m.id = q.manual_id")
@@ -36,7 +40,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     if (!(isAdmin || isManager)) {
         const isAssigned = await query
             .andWhere("ur.user_id = :user_id", { user_id })
-            .getOne();
+            .getRawOne();
 
         if (!isAssigned) {
             res.sendStatus(403);
@@ -51,7 +55,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("m.published = :mPublished", { mPublished: true });
     }
 
-    const result = await query.getOne();
+    const result = await query.getRawOne();
 
     res.status(200).send(result);
 };
