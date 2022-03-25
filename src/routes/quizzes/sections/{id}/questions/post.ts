@@ -14,15 +14,19 @@ const postController = async (req: Request, res: Response): Promise<void> => {
     } = req;
 
     let question: string;
-    let quiz_question_type_id: number;
+    let question_type:
+        | "multiple correct - multiple choice"
+        | "single correct - multiple choice";
 
     try {
         const data = getJOpts(req.body, {
             question: { type: "string", required: true },
-            quiz_question_type_id: { type: "number", required: true },
+            question_type: { type: "string", required: true },
         });
         question = data.question as string;
-        quiz_question_type_id = data.quiz_question_type_id as number;
+        question_type = data.question_type as
+            | "multiple correct - multiple choice"
+            | "single correct - multiple choice";
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
@@ -69,7 +73,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
             question,
             updated_by_user_id: user_id,
             quiz_section_id: Number(id),
-            quiz_question_type_id,
+            question_type,
         })
     );
 

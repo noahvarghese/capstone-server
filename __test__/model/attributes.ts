@@ -53,10 +53,6 @@ import {
 } from "@models/quiz/question/result";
 import { EmptyEventAttributes, EventAttributes } from "@models/event";
 import { AttributeFactory } from "@models/abstract/base_model";
-import {
-    EmptyQuizQuestionTypeAttributes,
-    QuizQuestionTypeAttributes,
-} from "@models/quiz/question/question_type";
 
 // Configuration
 export const businessAttributes = (): BusinessAttributes =>
@@ -209,21 +205,11 @@ export const quizQuestionAttributes = (): QuizQuestionAttributes =>
     AttributeFactory(
         {
             question: "Question",
-            quiz_question_type_id: NaN,
+            question_type: "multiple correct - multiple choice",
             quiz_section_id: NaN,
             updated_by_user_id: NaN,
         },
         EmptyQuestionAttributes
-    );
-
-export const quizQuestionTypeAttributes = (): QuizQuestionTypeAttributes =>
-    AttributeFactory(
-        {
-            question_type: "multiple choice",
-            html_attributes: '{"type": "checkbox"}',
-            html_tag: "inpute",
-        },
-        EmptyQuizQuestionTypeAttributes
     );
 
 export const quizAnswerAttributes = (): QuizAnswerAttributes =>
@@ -284,7 +270,6 @@ export default {
     quiz: quizAttributes,
     quizSection: quizSectionAttributes,
     quizQuestion: quizQuestionAttributes,
-    quizQuestionType: quizQuestionTypeAttributes,
     quizAnswer: quizAnswerAttributes,
     quizResult: resultAttributes,
     event: eventAttributes,

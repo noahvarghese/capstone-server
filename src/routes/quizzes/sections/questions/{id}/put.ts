@@ -14,7 +14,9 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     } = req;
 
     let question: string;
-    let quiz_question_type_id: number;
+    let question_type:
+        | "multiple correct - multiple choice"
+        | "single correct - multiple choice";
 
     try {
         const data = getJOpts(req.body, {
@@ -22,14 +24,16 @@ const putController = async (req: Request, res: Response): Promise<void> => {
             quiz_question_type_id: { type: "number", required: false },
         });
         question = data.question as string;
-        quiz_question_type_id = data.quiz_question_type_id as number;
+        question_type = data.question_type as
+            | "multiple correct - multiple choice"
+            | "single correct - multiple choice";
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
         return;
     }
 
-    if (!question && !quiz_question_type_id) {
+    if (!question && !question_type) {
         res.status(400).send("Requires at least one argument");
         return;
     }
@@ -79,8 +83,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     await dbConnection.manager.update(QuizQuestion, id, {
         question: question ?? prevQuestion.question,
         updated_by_user_id: user_id,
-        quiz_question_type_id:
-            quiz_question_type_id ?? prevQuestion.quiz_question_type_id,
+        question_type: question_type ?? prevQuestion.question_type,
     });
 
     res.sendStatus(200);

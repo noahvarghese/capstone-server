@@ -98,7 +98,10 @@ describe("prevent edit", () => {
             {
                 session,
                 dbConnection: conn,
-                body: { question: "TEST", quiz_question_type_id: 1 },
+                body: {
+                    question: "TEST",
+                    question_type: "multiple correct - multiple choice",
+                },
                 params: { id: quiz_section_id },
             } as unknown as Request,
             res
@@ -130,7 +133,7 @@ describe("Permissions", () => {
                 dbConnection: conn,
                 body: {
                     question: "WHO AM I",
-                    quiz_question_type_id: 1,
+                    question_type: "multiple correct - multiple choice",
                 },
                 params: { id: quiz_section_id },
             } as unknown as Request,
@@ -156,7 +159,7 @@ test("invalid question", async () => {
             session,
             dbConnection: conn,
             body: {
-                quiz_question_type_id: 1,
+                question_type: "multiple correct - multiple choice",
             },
             params: { id: quiz_section_id },
         } as unknown as Request,

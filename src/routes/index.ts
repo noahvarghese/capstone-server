@@ -7,7 +7,6 @@ import businessRouter from "./businesses";
 import departmentRouter from "./departments";
 import reportRouter from "./reports";
 import roleRouter from "./roles";
-import questionTypeRouter from "./question_types";
 import quizRouter from "./quizzes";
 import userRouter from "./users";
 import Logs from "@noahvarghese/logger";
@@ -21,7 +20,6 @@ router.use("/manuals", manualRouter);
 router.use("/departments", departmentRouter);
 router.use("/reports", reportRouter);
 router.use("/roles", roleRouter);
-router.use("/question_types", questionTypeRouter);
 router.use("/quizzes", quizRouter);
 router.use("/users", userRouter);
 

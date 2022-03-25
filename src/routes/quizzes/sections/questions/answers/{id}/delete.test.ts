@@ -89,7 +89,7 @@ beforeAll(async () => {
         new QuizQuestion({
             quiz_section_id,
             question: "WHO AM I",
-            quiz_question_type_id: 1,
+            question_type: "multiple correct - multiple choice",
             updated_by_user_id: user_id,
         })
     ));
