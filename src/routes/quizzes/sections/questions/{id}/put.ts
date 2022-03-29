@@ -117,7 +117,8 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     // If question type CHANGES to 'true or false'
     if (
         prevQuestion.question_type !== "true or false" &&
-        question_type === "true or false"
+        question_type === "true or false" &&
+        question_type
     ) {
         await dbConnection.manager.delete(QuizAnswer, { quiz_question_id: id });
         await dbConnection.manager.insert(QuizAnswer, [
@@ -136,7 +137,13 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         ]);
     }
 
-    // TODO: If question changes from 'true or false' -> Delete all answers
+    if (
+        prevQuestion.question_type === "true or false" &&
+        question_type !== "true or false" &&
+        question_type
+    ) {
+        await dbConnection.manager.delete(QuizAnswer, { quiz_question_id: id });
+    }
     // TODO: If question changes from 'multiple correct - multiple choice' to 'single correct - multiple choice' -> Unset all correct
 
     res.sendStatus(200);
