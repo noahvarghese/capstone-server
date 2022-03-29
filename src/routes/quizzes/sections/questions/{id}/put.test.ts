@@ -285,3 +285,47 @@ describe("changing question from 'tru or false' deletes answers", () => {
         expect(answers.length).toBe(0);
     });
 });
+
+describe("changing from multiple correct multiple choice to single correct", () => {
+    beforeEach(async () => {
+        await conn.manager.update(QuizQuestion, quiz_question_id, {
+            question: "what is this?",
+            question_type: "multiple correct - multiple choice",
+        });
+        await conn.manager.delete(QuizAnswer, { quiz_question_id });
+        await conn.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                updated_by_user_id: user_id,
+                quiz_question_id,
+                answer: "a test",
+                correct: true,
+            }),
+            new QuizAnswer({
+                updated_by_user_id: user_id,
+                quiz_question_id,
+                answer: "a quiz",
+                correct: true,
+            }),
+        ]);
+    });
+
+    test("sets all answers as incorrect", async () => {
+        await putController(
+            {
+                session,
+                dbConnection: conn,
+                body: { question_type: "single correct - multiple choice" },
+                params: { id: quiz_question_id },
+            } as unknown as Request,
+            res
+        );
+
+        const answers = await conn.manager.find(QuizAnswer, {
+            where: { quiz_question_id },
+        });
+
+        expect(answers.length).toBe(2);
+        expect(answers[0].correct).toBe(false);
+        expect(answers[1].correct).toBe(false);
+    });
+});
