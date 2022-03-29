@@ -45,6 +45,8 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // TODO: If quiz type === 'true or false' -> Create quiz answers [{answer: true, correct: false}, {answer: false, correct: false}]
+
     const quiz = await dbConnection
         .createQueryBuilder()
         .select("q")

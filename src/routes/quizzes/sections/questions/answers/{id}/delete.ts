@@ -50,6 +50,8 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // TODO: If question type === 'true or false' return 405
+
     await dbConnection.manager.delete(QuizAnswer, id);
 
     res.sendStatus(200);

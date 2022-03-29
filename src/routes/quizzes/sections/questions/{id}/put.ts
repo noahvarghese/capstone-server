@@ -50,6 +50,12 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // TODO: If question type is 'true or false' and is not changing and answer text is being changed return 405
+
+    // TODO: If question type changes to 'true or false'
+    //          -> DELETE ALL ANSWERS
+    //          -> Create quiz answers [{answer: true, correct: false}, {answer: false, correct: false}]
+
     const query = dbConnection
         .createQueryBuilder()
         .select("q")

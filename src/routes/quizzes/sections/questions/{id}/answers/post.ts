@@ -42,6 +42,12 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // TODO: If question type === 'true or false' -> return 405
+    // TODO: Else If question type === 'single correct - multiple choice'
+    //          -> Check if there is a correct answer set
+    //          -> If there is one (that is not this one), check that the new answer is not correct
+    //          -> If it is correct return 405
+
     const quiz = await dbConnection
         .createQueryBuilder()
         .select("q")
