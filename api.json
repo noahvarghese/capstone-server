@@ -2439,7 +2439,7 @@
             "post": {
                 "tags": ["quiz question"],
                 "summary": "create quiz question",
-                "description": "requires crud permissions, and editable",
+                "description": "requires crud permissions, and editable, when 'true or false' answers are auto generated",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -2447,9 +2447,13 @@
                                 "type": "object",
                                 "properties": {
                                     "question": { "type": "string" },
-                                    "question_type_id": {
-                                        "type": "integer",
-                                        "description": "retrieved from list via GET /question_types"
+                                    "question_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "true or false",
+                                            "single correct - multiple choice",
+                                            "multiple correct - multiple choice"
+                                        ]
                                     }
                                 }
                             }
@@ -2587,7 +2591,7 @@
             "post": {
                 "tags": ["quiz answer"],
                 "summary": "create quiz answer",
-                "description": "requires crud permissions, and editable",
+                "description": "requires crud permissions, and editable, cannot create new answers for 'true or false' question types",
                 "requestBody": {
                     "content": {
                         "application/json": {

@@ -174,3 +174,21 @@ test("invalid answer", async () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
 });
+
+test("true or false questions cannot add new answers", async () => {
+    await conn.manager.update(QuizQuestion, quiz_question_id, {
+        question_type: "true or false",
+    });
+
+    await postController(
+        {
+            session,
+            dbConnection: conn,
+            body: { answer: "test", correct: false },
+            params: { id: quiz_question_id },
+        } as unknown as Request,
+        res
+    );
+
+    expect(res.sendStatus).toHaveBeenCalledWith(405);
+});
