@@ -192,7 +192,7 @@ CREATE TABLE quiz_question (
     id INT NOT NULL AUTO_INCREMENT,
     question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
     quiz_section_id INT NOT NULL,
-    question_type ENUM("multiple correct - multiple choice", "single correct - multiple choice") COLLATE UTF8_GENERAL_CI NOT NULL,
+    question_type ENUM("multiple correct - multiple choice", "single correct - multiple choice", "true or false") COLLATE UTF8_GENERAL_CI NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
