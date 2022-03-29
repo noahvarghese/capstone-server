@@ -71,6 +71,10 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
+    // TODO: If question type is 'true or false' and answer text is being changed return 405
+
+    // TODO: If question type === 'single correct - multiple choice' unset the previously correct and update the new one to correct
+
     const prevAnswer = await dbConnection.manager.findOne(QuizAnswer, id);
 
     if (!prevAnswer) {
