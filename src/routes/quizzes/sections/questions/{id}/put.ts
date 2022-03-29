@@ -15,6 +15,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
 
     let question: string;
     let question_type:
+        | "true or false"
         | "multiple correct - multiple choice"
         | "single correct - multiple choice";
 
@@ -25,6 +26,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         });
         question = data.question as string;
         question_type = data.question_type as
+            | "true or false"
             | "multiple correct - multiple choice"
             | "single correct - multiple choice";
     } catch (_e) {
