@@ -192,3 +192,56 @@ test("true or false questions cannot add new answers", async () => {
 
     expect(res.sendStatus).toHaveBeenCalledWith(405);
 });
+
+describe("adding a new correct answer to signle correct multiple choice", () => {
+    let answerOneId: number;
+
+    beforeEach(async () => {
+        await conn.manager.update(QuizQuestion, quiz_question_id, {
+            question_type: "single correct - multiple choice",
+        });
+
+        ({
+            identifiers: [{ id: answerOneId }],
+        } = await conn.manager.insert(
+            QuizAnswer,
+            new QuizAnswer({
+                quiz_question_id,
+                updated_by_user_id: user_id,
+                answer: "First answer",
+                correct: true,
+            })
+        ));
+    });
+    test("Unsets previously correct answer", async () => {
+        await postController(
+            {
+                session,
+                dbConnection: conn,
+                body: { answer: "second answer", correct: true },
+                params: { id: quiz_question_id },
+            } as unknown as Request,
+            res
+        );
+
+        const answers = await conn.manager.find(QuizAnswer, {
+            where: { quiz_question_id },
+        });
+
+        expect(answers.length).toBe(2);
+
+        const correctAnswer = answers.find((a) => a.correct);
+
+        if (!correctAnswer) fail();
+
+        expect(correctAnswer.id).not.toBe(answerOneId);
+
+        const previouslyCorrectAnswer = answers.find(
+            (a) => a.id === answerOneId
+        );
+
+        if (!previouslyCorrectAnswer) fail();
+
+        expect(previouslyCorrectAnswer.correct).toBe(false);
+    });
+});

@@ -67,15 +67,23 @@ const postController = async (req: Request, res: Response): Promise<void> => {
 
     const question = await dbConnection.manager.findOne(QuizQuestion, id);
 
+    // Answers are pre-created for true/false question types
     if (question?.question_type === "true or false") {
         res.sendStatus(405);
         return;
     }
 
-    // TODO: Else If question type === 'single correct - multiple choice'
-    //          -> Check if there is a correct answer set
-    //          -> If there is one (that is not this one), check that the new answer is not correct
-    //          -> If it is correct return 405
+    // Unset previously correct answer for signle correct question types
+    if (
+        question?.question_type === "single correct - multiple choice" &&
+        correct
+    ) {
+        await dbConnection.manager.update(
+            QuizAnswer,
+            { quiz_question_id: id },
+            { correct: false }
+        );
+    }
 
     await dbConnection.manager.insert(
         QuizAnswer,
