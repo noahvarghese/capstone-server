@@ -1,10 +1,23 @@
 import Manual from "@models/manual/manual";
+import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import { Request, Response } from "express";
+
+const formatter = {
+    // FIXME: Bug in getJOpts requires formats to be defined for all keys if formatter provided
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    question: (_?: unknown) => true,
+    question_type: (v?: unknown) =>
+        [
+            "true or false",
+            "multiple correct - multiple choice",
+            "single correct - multiple choice",
+        ].includes(v as string),
+};
 
 const postController = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -20,10 +33,22 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         | "single correct - multiple choice";
 
     try {
-        const data = getJOpts(req.body, {
-            question: { type: "string", required: true },
-            question_type: { type: "string", required: true },
-        });
+        const data = getJOpts(
+            req.body,
+            {
+                question: {
+                    type: "string",
+                    required: true,
+                    format: "question",
+                },
+                question_type: {
+                    type: "string",
+                    required: true,
+                    format: "question_type",
+                },
+            },
+            formatter
+        );
         question = data.question as string;
         question_type = data.question_type as
             | "true or false"
@@ -47,8 +72,6 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    // TODO: If quiz type === 'true or false' -> Create quiz answers [{answer: true, correct: false}, {answer: false, correct: false}]
-
     const quiz = await dbConnection
         .createQueryBuilder()
         .select("q")
@@ -71,7 +94,9 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    await dbConnection.manager.insert(
+    const {
+        identifiers: [{ id: quiz_question_id }],
+    } = await dbConnection.manager.insert(
         QuizQuestion,
         new QuizQuestion({
             question,
@@ -81,8 +106,24 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         })
     );
 
+    if (question_type === "true or false") {
+        await dbConnection.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                quiz_question_id,
+                answer: "true",
+                correct: false,
+                updated_by_user_id: user_id,
+            }),
+            new QuizAnswer({
+                quiz_question_id,
+                answer: "false",
+                correct: false,
+                updated_by_user_id: user_id,
+            }),
+        ]);
+    }
+
     res.sendStatus(201);
-    return;
 };
 
 export default postController;
