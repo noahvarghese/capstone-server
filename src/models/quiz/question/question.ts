@@ -5,6 +5,7 @@ import EditableContentModel from "../../abstract/editable_content_model";
 export interface QuizQuestionAttributes {
     question: string;
     question_type:
+        | "true or false"
         | "multiple correct - multiple choice"
         | "single correct - multiple choice";
     quiz_section_id: number;
@@ -27,6 +28,7 @@ export default class QuizQuestion
     public question!: string;
     @Column()
     public question_type!:
+        | "true or false"
         | "multiple correct - multiple choice"
         | "single correct - multiple choice";
     @Column()
