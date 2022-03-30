@@ -113,7 +113,10 @@ describe("sort", () => {
         "given sort field %p and sort order %p, the results will match",
         async ({ sort_field, sort_order }) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let data: { [x: string]: any }[] = [];
+            let data: { count: number; data: { [x: string]: any }[] } = {
+                count: 0,
+                data: [],
+            };
 
             await getController(
                 {
@@ -124,20 +127,26 @@ describe("sort", () => {
                 {
                     status: () => {
                         return {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            send: (u: { [x: string]: any }[]) => {
+                            send: (u: {
+                                count: number;
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                data: { [x: string]: any }[];
+                            }) => {
                                 data = u;
                             },
                         };
                     },
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    send: (u: { [x: string]: any }[]) => {
+                    send: (u: {
+                        count: number;
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        data: { [x: string]: any }[];
+                    }) => {
                         data = u;
                     },
                 } as unknown as Response
             );
-            expect(data.length).toBeGreaterThan(1);
-            const dataCopy = deepClone(data);
+            expect(data.data.length).toBeGreaterThan(1);
+            const dataCopy = deepClone(data.data);
             expect(dataCopy).toBeInstanceOf(Array);
             const sortedData = dataCopy.sort((a, b): number => {
                 const aVal = JSON.stringify(a[sort_field]);
@@ -150,7 +159,7 @@ describe("sort", () => {
                 }
             });
 
-            expect(JSON.stringify(data)).toBe(JSON.stringify(sortedData));
+            expect(JSON.stringify(data.data)).toBe(JSON.stringify(sortedData));
         }
     );
 });
@@ -163,33 +172,28 @@ describe("search", () => {
     ];
 
     test.each(cases)("%p", async ({ search }) => {
-        let status;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let send: any;
         await getController(
             {
                 query: { search },
                 session,
                 dbConnection: conn,
             } as unknown as Request,
-            {
-                send: (v: unknown) => {
-                    send = v;
-                },
-                status: (v: unknown) => {
-                    status = v;
-                    return {
-                        send: (v: unknown) => {
-                            send = v;
-                        },
-                    };
-                },
-            } as Response
+            res
         );
-        expect(status).toBe(200);
-        expect(send.length).toBe(1);
-        expect((send[0].title as string).toLowerCase()).toContain(
-            search.toLowerCase()
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.send).toHaveBeenCalledWith({
+            count: expect.any(Number),
+            data: expect.objectContaining({ length: 1 }),
+        });
+        expect(res.send).toHaveBeenCalledWith(
+            expect.objectContaining({
+                count: expect.any(Number),
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        title: expect.stringContaining(search.toLowerCase()),
+                    }),
+                ]),
+            })
         );
     });
 });
@@ -211,9 +215,10 @@ describe("pagination", () => {
                 res
             );
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.send).toHaveBeenCalledWith(
-                expect.objectContaining({ length: 1 })
-            );
+            expect(res.send).toHaveBeenCalledWith({
+                count: expect.any(Number),
+                data: expect.objectContaining({ length: 1 }),
+            });
         });
     });
 
@@ -248,7 +253,7 @@ describe("pagination", () => {
                 } as Response
             );
             expect(status).toBe(200);
-            expect(send.length).toBe(limit);
+            expect(send.data.length).toBeLessThanOrEqual(limit);
         });
     });
 });
@@ -273,7 +278,7 @@ describe("filter", () => {
         );
         expect(res.send).toHaveBeenCalledWith(
             // FIXME: Not sure why it returns an empty array
-            expect.objectContaining({ length: 0 })
+            expect.objectContaining({ count: 0 })
         );
     });
 });
@@ -314,7 +319,7 @@ describe("user not assigned", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({ length: 0 })
+            expect.objectContaining({ count: 0 })
         );
     });
 });
@@ -366,11 +371,11 @@ describe("manual published", () => {
 
                     if (access === "USER" && (p === false || mP === false)) {
                         expect(res.send).toHaveBeenCalledWith(
-                            expect.objectContaining({ length: 0 })
+                            expect.objectContaining({ count: 0 })
                         );
                     } else {
                         expect(res.send).toHaveBeenCalledWith(
-                            expect.objectContaining({ length: 2 })
+                            expect.objectContaining({ count: 2 })
                         );
                     }
                 });

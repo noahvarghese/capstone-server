@@ -151,10 +151,15 @@ describe("assigned", () => {
                                         undefined
                                     );
                                 } else {
-                                    expect.objectContaining({
-                                        id: quiz_id,
-                                        manual_id,
-                                    });
+                                    expect(
+                                        res.sendStatus
+                                    ).not.toHaveBeenCalled();
+                                    expect(res.send).toHaveBeenCalledWith(
+                                        expect.objectContaining({
+                                            id: quiz_id,
+                                            manual_id,
+                                        })
+                                    );
                                 }
                             }
                         } else {

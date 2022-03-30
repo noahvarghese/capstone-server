@@ -100,7 +100,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     //  3.  Perform action
     let query = dbConnection
         .createQueryBuilder()
-        .select("q.id, q.title, q.published, q.prevent_delete, q.prevent_edit")
+        .select(
+            "q.id, q.title, q.published, q.prevent_delete, q.prevent_edit, q.max_attempts"
+        )
         .from(Quiz, "q")
         .leftJoin(Manual, "m", "m.id = q.manual_id")
         // Joins are for filtering
@@ -140,13 +142,25 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         (sort_order as SortOrderKey) ?? "DESC"
     );
 
+    const count = await query.getCount();
+
     if (page && limit) {
         query = query
             .limit(Number(limit))
             .offset(Number(page) * Number(limit) - Number(limit));
     }
 
-    res.status(200).send(await query.getRawMany());
+    const data = await query.getRawMany();
+
+    res.status(200).send({
+        data: data.map((d) => ({
+            ...d,
+            prevent_edit: d.prevent_edit === 1,
+            prevent_delete: d.prevent_delete === 1,
+            published: d.published === 1,
+        })),
+        count,
+    });
 };
 
 export default getController;

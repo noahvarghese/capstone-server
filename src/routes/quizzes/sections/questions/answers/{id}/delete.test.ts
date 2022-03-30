@@ -1,4 +1,4 @@
-import { getMockRes } from "@jest-mock/express";
+import { getMockReq, getMockRes } from "@jest-mock/express";
 import Manual from "@models/manual/manual";
 import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
@@ -89,7 +89,7 @@ beforeAll(async () => {
         new QuizQuestion({
             quiz_section_id,
             question: "WHO AM I",
-            quiz_question_type_id: 1,
+            question_type: "multiple correct - multiple choice",
             updated_by_user_id: user_id,
         })
     ));
@@ -176,5 +176,48 @@ describe("Permissions", () => {
         } else {
             expect(res.sendStatus).toHaveBeenCalledWith(403);
         }
+    });
+});
+
+describe("question of type 'true or false'", () => {
+    let answerOneId: number;
+
+    beforeAll(async () => {
+        await Promise.all([
+            conn.manager.delete(QuizAnswer, { quiz_question_id }),
+            conn.manager.update(QuizQuestion, quiz_question_id, {
+                question_type: "true or false",
+            }),
+        ]);
+
+        ({
+            identifiers: [{ id: answerOneId }],
+        } = await conn.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                quiz_question_id,
+                updated_by_user_id: user_id,
+                answer: "false",
+                correct: false,
+            }),
+            new QuizAnswer({
+                quiz_question_id,
+                updated_by_user_id: user_id,
+                answer: "true",
+                correct: true,
+            }),
+        ]));
+    });
+
+    test("Does not allow deleting of answers", async () => {
+        await deleteController(
+            getMockReq({
+                session,
+                dbConnection: conn,
+                params: { id: answerOneId },
+            }),
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(405);
     });
 });

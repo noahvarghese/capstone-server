@@ -4,14 +4,17 @@ import EditableContentModel from "../../abstract/editable_content_model";
 
 export interface QuizQuestionAttributes {
     question: string;
-    quiz_question_type_id: number;
+    question_type:
+        | "true or false"
+        | "multiple correct - multiple choice"
+        | "single correct - multiple choice";
     quiz_section_id: number;
     updated_by_user_id: number;
 }
 
 export const EmptyQuestionAttributes = (): QuizQuestionAttributes => ({
     question: "",
-    quiz_question_type_id: NaN,
+    question_type: "multiple correct - multiple choice",
     quiz_section_id: NaN,
     updated_by_user_id: NaN,
 });
@@ -24,7 +27,10 @@ export default class QuizQuestion
     @Column()
     public question!: string;
     @Column()
-    public quiz_question_type_id!: number;
+    public question_type!:
+        | "true or false"
+        | "multiple correct - multiple choice"
+        | "single correct - multiple choice";
     @Column()
     public quiz_section_id!: number;
 

@@ -11,6 +11,7 @@ import { Request } from "express";
 import QuizSection from "@models/quiz/section";
 import QuizQuestion from "@models/quiz/question/question";
 import putController from "./put";
+import QuizAnswer from "@models/quiz/question/answer";
 
 let business_id: number,
     user_id: number,
@@ -88,7 +89,7 @@ beforeAll(async () => {
         new QuizQuestion({
             quiz_section_id,
             question: OLD_QUESTION,
-            quiz_question_type_id: 1,
+            question_type: "multiple correct - multiple choice",
             updated_by_user_id: user_id,
         })
     ));
@@ -178,4 +179,153 @@ test("invalid question", async () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith("Requires at least one argument");
+});
+
+describe("changing question type to 'true or false' resets questions", () => {
+    beforeEach(async () => {
+        const question = await conn.manager.findOne(
+            QuizQuestion,
+            quiz_question_id
+        );
+
+        // unset question type
+        if (question?.question_type === "true or false") {
+            await conn.manager.update(QuizQuestion, quiz_question_id, {
+                question_type: "multiple correct - multiple choice",
+            });
+        }
+
+        const answers = await conn.manager.find(QuizAnswer, {
+            where: { quiz_question_id },
+        });
+
+        // ensure at least one answer
+        if (answers.length === 0) {
+            await conn.manager.insert(
+                QuizAnswer,
+                new QuizAnswer({
+                    answer: "test",
+                    correct: true,
+                    updated_by_user_id: user_id,
+                    quiz_question_id,
+                })
+            );
+        }
+    });
+
+    test("success", async () => {
+        await putController(
+            {
+                session,
+                dbConnection: conn,
+                body: { question_type: "true or false" },
+                params: { id: quiz_question_id },
+            } as unknown as Request,
+            res
+        );
+
+        const answers = await conn.manager.find(QuizAnswer, {
+            where: { quiz_question_id },
+        });
+
+        expect(answers.length).toBe(2);
+
+        expect(answers[0].correct).toBe(false);
+        expect(answers[1].correct).toBe(false);
+
+        expect(answers.find((a) => a.answer === "true")).not.toBe(undefined);
+        expect(answers.find((a) => a.answer === "false")).not.toBe(undefined);
+    });
+});
+
+describe("changing question from 'tru or false' deletes answers", () => {
+    beforeAll(async () => {
+        const question = await conn.manager.findOne(
+            QuizQuestion,
+            quiz_question_id
+        );
+
+        if (question?.question_type !== "true or false") {
+            await conn.manager.update(QuizQuestion, quiz_question_id, {
+                question_type: "true or false",
+            });
+            await conn.manager.delete(QuizAnswer, { quiz_question_id });
+            await conn.manager.insert(QuizAnswer, [
+                new QuizAnswer({
+                    updated_by_user_id: user_id,
+                    quiz_question_id,
+                    answer: "true",
+                    correct: false,
+                }),
+                new QuizAnswer({
+                    updated_by_user_id: user_id,
+                    quiz_question_id,
+                    answer: "false",
+                    correct: false,
+                }),
+            ]);
+        }
+    });
+
+    test("no answers on change", async () => {
+        await putController(
+            {
+                session,
+                dbConnection: conn,
+                body: { question_type: "multiple correct - multiple choice" },
+                params: { id: quiz_question_id },
+            } as unknown as Request,
+            res
+        );
+
+        const answers = await conn.manager.find(QuizAnswer, {
+            where: { quiz_question_id },
+        });
+
+        expect(answers.length).toBe(0);
+    });
+});
+
+describe("changing from multiple correct multiple choice to single correct", () => {
+    beforeEach(async () => {
+        await conn.manager.update(QuizQuestion, quiz_question_id, {
+            question: "what is this?",
+            question_type: "multiple correct - multiple choice",
+        });
+        await conn.manager.delete(QuizAnswer, { quiz_question_id });
+        await conn.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                updated_by_user_id: user_id,
+                quiz_question_id,
+                answer: "a test",
+                correct: true,
+            }),
+            new QuizAnswer({
+                updated_by_user_id: user_id,
+                quiz_question_id,
+                answer: "a quiz",
+                correct: true,
+            }),
+        ]);
+    });
+
+    test("sets all answers as incorrect", async () => {
+        await putController(
+            {
+                session,
+                dbConnection: conn,
+                body: { question_type: "single correct - multiple choice" },
+                params: { id: quiz_question_id },
+            } as unknown as Request,
+            res
+        );
+
+        const answers = await conn.manager.find(QuizAnswer, {
+            where: { quiz_question_id },
+        });
+
+        expect(answers.length).toBe(2);
+        expect(answers[0].correct).toBe(false);
+        expect(answers[1].correct).toBe(false);
+    });
 });

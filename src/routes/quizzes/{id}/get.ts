@@ -21,7 +21,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     let query = dbConnection
         .createQueryBuilder()
-        .select("q")
+        .select(
+            "q.id, q.title, q.published, q.prevent_delete, q.prevent_edit, q.max_attempts, q.manual_id"
+        )
         .from(Quiz, "q")
         .leftJoin(Manual, "m", "m.id = q.manual_id")
         .leftJoin(ManualAssignment, "ma", "ma.manual_id = m.id")
@@ -32,7 +34,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     if (!(isAdmin || isManager)) {
         const isAssigned = await query
             .andWhere("ur.user_id = :user_id", { user_id })
-            .getOne();
+            .getRawOne();
 
         if (!isAssigned) {
             res.sendStatus(403);
@@ -47,9 +49,18 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("m.published = :mPublished", { mPublished: true });
     }
 
-    const result = await query.getOne();
+    const quiz = await query.getRawOne();
 
-    res.status(200).send(result);
+    res.status(200).send(
+        quiz
+            ? {
+                  ...quiz,
+                  prevent_edit: quiz.prevent_edit === 1,
+                  prevent_delete: quiz.prevent_delete === 1,
+                  published: quiz.published === 1,
+              }
+            : undefined
+    );
 };
 
 export default getController;

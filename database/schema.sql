@@ -187,26 +187,16 @@ CREATE TABLE quiz_section (
     PRIMARY KEY(id)
 );
 
-CREATE TABLE quiz_question_type (
-    id INT NOT NULL AUTO_INCREMENT,
-    question_type ENUM("multiple choice", "single choice") COLLATE UTF8_GENERAL_CI NOT NULL,
-    html_tag VARCHAR(50) COLLATE UTF8_GENERAL_CI NOT NULL,
-    html_attributes LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
-    PRIMARY KEY (id)
-);
-
-INSERT INTO quiz_question_type (question_type, html_tag, html_attributes) VALUES ("multiple choice", "input", '{"type": "checkbox"}');
 
 CREATE TABLE quiz_question (
     id INT NOT NULL AUTO_INCREMENT,
     question LONGTEXT COLLATE UTF8_GENERAL_CI NOT NULL,
     quiz_section_id INT NOT NULL,
-    quiz_question_type_id INT NOT NULL,
+    question_type ENUM("multiple correct - multiple choice", "single correct - multiple choice", "true or false") COLLATE UTF8_GENERAL_CI NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
     deleted_on DATETIME DEFAULT NULL,
-    FOREIGN KEY (quiz_question_type_id) REFERENCES quiz_question_type(id),
     FOREIGN KEY (quiz_section_id) REFERENCES quiz_section(id) ON DELETE CASCADE,
     FOREIGN KEY (updated_by_user_id) REFERENCES user(id),
     PRIMARY KEY (id)

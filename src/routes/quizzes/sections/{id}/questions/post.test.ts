@@ -1,5 +1,6 @@
 import { getMockRes } from "@jest-mock/express";
 import Manual from "@models/manual/manual";
+import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
@@ -98,7 +99,10 @@ describe("prevent edit", () => {
             {
                 session,
                 dbConnection: conn,
-                body: { question: "TEST", quiz_question_type_id: 1 },
+                body: {
+                    question: "TEST",
+                    question_type: "multiple correct - multiple choice",
+                },
                 params: { id: quiz_section_id },
             } as unknown as Request,
             res
@@ -130,7 +134,7 @@ describe("Permissions", () => {
                 dbConnection: conn,
                 body: {
                     question: "WHO AM I",
-                    quiz_question_type_id: 1,
+                    question_type: "multiple correct - multiple choice",
                 },
                 params: { id: quiz_section_id },
             } as unknown as Request,
@@ -156,7 +160,7 @@ test("invalid question", async () => {
             session,
             dbConnection: conn,
             body: {
-                quiz_question_type_id: 1,
+                question_type: "multiple correct - multiple choice",
             },
             params: { id: quiz_section_id },
         } as unknown as Request,
@@ -164,4 +168,33 @@ test("invalid question", async () => {
     );
 
     expect(res.status).toHaveBeenCalledWith(400);
+});
+
+test("true or false question type auto creates answers", async () => {
+    await postController(
+        {
+            session,
+            dbConnection: conn,
+            body: {
+                question: "The sky is blue",
+                question_type: "true or false",
+            },
+            params: { id: quiz_section_id },
+        } as unknown as Request,
+        res
+    );
+
+    const quiz_question_id = (await conn.manager.findOne(QuizQuestion))?.id;
+
+    const answers = await conn.manager.find(QuizAnswer, {
+        where: { quiz_question_id },
+    });
+
+    expect(answers.length).toBe(2);
+
+    expect(answers[0].correct).toBe(false);
+    expect(answers[1].correct).toBe(false);
+
+    expect(answers.find((a) => a.answer === "true")).not.toBe(undefined);
+    expect(answers.find((a) => a.answer === "false")).not.toBe(undefined);
 });

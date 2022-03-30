@@ -1,10 +1,23 @@
 import Manual from "@models/manual/manual";
+import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
 import Quiz from "@models/quiz/quiz";
 import QuizSection from "@models/quiz/section";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
 import { Request, Response } from "express";
+
+const formatter = {
+    // FIXME: Bug in getJOpts requires formats to be defined for all keys if formatter provided
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    question: (_?: unknown) => true,
+    question_type: (v?: unknown) =>
+        [
+            "true or false",
+            "multiple correct - multiple choice",
+            "single correct - multiple choice",
+        ].includes(v as string),
+};
 
 const putController = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -14,22 +27,40 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     } = req;
 
     let question: string;
-    let quiz_question_type_id: number;
+    let question_type:
+        | "true or false"
+        | "multiple correct - multiple choice"
+        | "single correct - multiple choice";
 
     try {
-        const data = getJOpts(req.body, {
-            question: { type: "string", required: false },
-            quiz_question_type_id: { type: "number", required: false },
-        });
+        const data = getJOpts(
+            req.body,
+            {
+                question: {
+                    type: "string",
+                    required: false,
+                    format: "question",
+                },
+                question_type: {
+                    type: "string",
+                    required: false,
+                    format: "question_type",
+                },
+            },
+            formatter
+        );
         question = data.question as string;
-        quiz_question_type_id = data.quiz_question_type_id as number;
+        question_type = data.question_type as
+            | "true or false"
+            | "multiple correct - multiple choice"
+            | "single correct - multiple choice";
     } catch (_e) {
         const { message } = _e as Error;
         res.status(400).send(message);
         return;
     }
 
-    if (!question && !quiz_question_type_id) {
+    if (!question && !question_type) {
         res.status(400).send("Requires at least one argument");
         return;
     }
@@ -57,6 +88,7 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         .andWhere("m.business_id = :current_business_id", {
             current_business_id,
         });
+
     const quiz = await query.getOne();
 
     if (!quiz) {
@@ -79,9 +111,50 @@ const putController = async (req: Request, res: Response): Promise<void> => {
     await dbConnection.manager.update(QuizQuestion, id, {
         question: question ?? prevQuestion.question,
         updated_by_user_id: user_id,
-        quiz_question_type_id:
-            quiz_question_type_id ?? prevQuestion.quiz_question_type_id,
+        question_type: question_type ?? prevQuestion.question_type,
     });
+
+    // If question type CHANGES to 'true or false'
+    if (
+        prevQuestion.question_type !== "true or false" &&
+        question_type === "true or false"
+    ) {
+        await dbConnection.manager.delete(QuizAnswer, { quiz_question_id: id });
+        await dbConnection.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                updated_by_user_id: user_id,
+                quiz_question_id: Number(id),
+                answer: "true",
+                correct: false,
+            }),
+            new QuizAnswer({
+                updated_by_user_id: user_id,
+                quiz_question_id: Number(id),
+                answer: "false",
+                correct: false,
+            }),
+        ]);
+    }
+
+    // If question is changing FROM true or false, delete true/false answers
+    if (
+        prevQuestion.question_type === "true or false" &&
+        question_type !== "true or false" &&
+        question_type
+    ) {
+        await dbConnection.manager.delete(QuizAnswer, { quiz_question_id: id });
+    }
+
+    if (
+        prevQuestion.question_type === "multiple correct - multiple choice" &&
+        question_type === "single correct - multiple choice"
+    ) {
+        await dbConnection.manager.update(
+            QuizAnswer,
+            { quiz_question_id: id },
+            { correct: false }
+        );
+    }
 
     res.sendStatus(200);
 };
