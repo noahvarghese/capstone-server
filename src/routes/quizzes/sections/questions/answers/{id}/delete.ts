@@ -49,8 +49,22 @@ const deleteController = async (req: Request, res: Response): Promise<void> => {
         res.sendStatus(405);
         return;
     }
+    const answer = await dbConnection.manager.findOne(QuizAnswer, id);
 
-    // TODO: If question type === 'true or false' return 405
+    if (!answer) {
+        res.sendStatus(200);
+        return;
+    }
+    const question = await dbConnection.manager.findOne(
+        QuizQuestion,
+        answer.quiz_question_id
+    );
+
+    // cannot delete answers for true or false questions (NOT ALLOWED)
+    if (question?.question_type === "true or false") {
+        res.sendStatus(405);
+        return;
+    }
 
     await dbConnection.manager.delete(QuizAnswer, id);
 
