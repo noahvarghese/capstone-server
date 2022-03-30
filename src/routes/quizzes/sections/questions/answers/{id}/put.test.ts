@@ -1,4 +1,4 @@
-import { getMockRes } from "@jest-mock/express";
+import { getMockRes, getMockReq } from "@jest-mock/express";
 import Manual from "@models/manual/manual";
 import QuizAnswer from "@models/quiz/question/answer";
 import QuizQuestion from "@models/quiz/question/question";
@@ -22,7 +22,7 @@ let business_id: number,
     quiz_question_id: number,
     quiz_answer_id: number;
 let conn: Connection;
-let session: Omit<SessionData, "cookie">;
+let session: Partial<SessionData>;
 const NEW_ANSWER = "WHOS YOUR DADDY";
 const OLD_ANSWER = "WHO AM I";
 
@@ -189,4 +189,140 @@ test("invalid answer", async () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith("Requires at least one argument");
+});
+
+describe("updating answer for 'true or false' question type", () => {
+    let answerOneId: number, answerTwoId: number;
+
+    beforeAll(async () => {
+        await conn.manager.delete(QuizAnswer, quiz_answer_id);
+        await conn.manager.update(QuizQuestion, quiz_question_id, {
+            question_type: "true or false",
+        });
+
+        ({
+            identifiers: [{ id: answerOneId }, { id: answerTwoId }],
+        } = await conn.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                answer: "true",
+                correct: false,
+                updated_by_user_id: user_id,
+                quiz_question_id,
+            }),
+            new QuizAnswer({
+                answer: "false",
+                correct: false,
+                updated_by_user_id: user_id,
+                quiz_question_id,
+            }),
+        ]));
+    });
+
+    afterAll(async () => {
+        await conn.manager.delete(QuizAnswer, [answerOneId, answerTwoId]);
+    });
+
+    test("cannot change answer text", async () => {
+        await putController(
+            getMockReq({
+                session,
+                dbConnection: conn,
+                body: { answer: "WRONG" },
+                params: { id: answerOneId },
+            }),
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(405);
+    });
+
+    describe("one answer is set to correct", () => {
+        beforeAll(async () => {
+            await conn.manager.update(QuizAnswer, answerOneId, {
+                correct: true,
+            });
+        });
+
+        test("changing correct answer unsets previous correct answer", async () => {
+            await putController(
+                getMockReq({
+                    session,
+                    dbConnection: conn,
+                    body: { correct: true },
+                    params: { id: answerTwoId },
+                }),
+                res
+            );
+
+            expect(res.sendStatus).toHaveBeenCalledWith(200);
+
+            const [answerOne, answerTwo] = await Promise.all([
+                conn.manager.findOneOrFail(QuizAnswer, {
+                    where: { id: answerOneId },
+                }),
+                conn.manager.findOneOrFail(QuizAnswer, {
+                    where: { id: answerTwoId },
+                }),
+            ]);
+
+            expect(answerOne?.correct).toBe(false);
+            expect(answerTwo?.correct).toBe(true);
+        });
+    });
+});
+
+describe("updating answer for 'single correct - multiple choice", () => {
+    let answerOneId: number, answerTwoId: number;
+
+    beforeAll(async () => {
+        await Promise.all([
+            conn.manager.delete(QuizAnswer, { quiz_question_id }),
+            conn.manager.update(QuizQuestion, quiz_question_id, {
+                question_type: "single correct - multiple choice",
+            }),
+        ]);
+
+        ({
+            identifiers: [{ id: answerOneId }, { id: answerTwoId }],
+        } = await conn.manager.insert(QuizAnswer, [
+            new QuizAnswer({
+                quiz_question_id,
+                updated_by_user_id: user_id,
+                answer: "test",
+                correct: true,
+            }),
+            new QuizAnswer({
+                quiz_question_id,
+                updated_by_user_id: user_id,
+                answer: "quiz",
+                correct: false,
+            }),
+        ]));
+    });
+
+    test("changing correct answer unsets previous correct answer", async () => {
+        await putController(
+            getMockReq({
+                session,
+                dbConnection: conn,
+                body: { correct: true },
+                params: { id: answerTwoId },
+            }),
+            res
+        );
+
+        expect(res.sendStatus).toHaveBeenCalledWith(200);
+
+        const [answerOne, answerTwo] = await Promise.all([
+            conn.manager.findOneOrFail(QuizAnswer, {
+                where: { id: answerOneId },
+            }),
+            conn.manager.findOneOrFail(QuizAnswer, {
+                where: { id: answerTwoId },
+            }),
+        ]);
+
+        expect(answerOne?.correct).toBe(false);
+        expect(answerTwo?.correct).toBe(true);
+    });
 });

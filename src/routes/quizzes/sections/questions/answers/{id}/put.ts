@@ -71,15 +71,47 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    // TODO: If question type is 'true or false' and answer text is being changed return 405
-
-    // TODO: If question type === 'single correct - multiple choice' unset the previously correct and update the new one to correct
-
     const prevAnswer = await dbConnection.manager.findOne(QuizAnswer, id);
 
     if (!prevAnswer) {
         res.status(400).send("No previous question");
         return;
+    }
+
+    const question = await dbConnection.manager.findOne(
+        QuizQuestion,
+        prevAnswer.quiz_question_id
+    );
+
+    if (question?.question_type === "true or false") {
+        // cannot change answer text from defaults: 'true' or 'false'
+        if (answer && answer !== prevAnswer.answer) {
+            res.sendStatus(405);
+            return;
+        }
+    }
+
+    if (
+        question?.question_type === "single correct - multiple choice" ||
+        question?.question_type === "true or false"
+    ) {
+        // if changing correct answer
+        if (correct && !prevAnswer.correct) {
+            const answers = await dbConnection.manager.find(QuizAnswer, {
+                where: { quiz_question_id: question.id },
+            });
+
+            const correctAnswer = answers.find((a) => a.correct);
+
+            // if correct is already set, unset it
+            if (correctAnswer) {
+                await dbConnection.manager.update(
+                    QuizAnswer,
+                    correctAnswer.id,
+                    { correct: false }
+                );
+            }
+        }
     }
 
     await dbConnection.manager.update(QuizAnswer, id, {
