@@ -70,6 +70,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select("d.name", "name")
         .distinct(true)
         .addSelect("d.id", "id")
+        .addSelect("d.created_on", "created_on")
         .addSelect(
             "(SELECT COUNT(DISTINCT(ur.user_id)) FROM user_role ur JOIN role r ON r.id = ur.role_id JOIN department d2 ON d2.id = r.department_id WHERE r.access = 'MANAGER' AND d2.id = d.id)",
             "num_managers"

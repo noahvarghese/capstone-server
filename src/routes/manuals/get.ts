@@ -99,7 +99,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     //  3.  Perform action
     let query = dbConnection
         .createQueryBuilder()
-        .select("m.id, m.title, m.published, m.prevent_delete, m.prevent_edit")
+        .select(
+            "m.id, m.title, m.published, m.prevent_delete, m.prevent_edit, m.created_on"
+        )
         .distinct(true)
         .from(Manual, "m")
         // Joins are for filtering
