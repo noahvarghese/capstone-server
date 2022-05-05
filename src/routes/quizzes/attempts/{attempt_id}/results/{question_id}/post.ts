@@ -2,8 +2,12 @@ import QuizAttempt from "@models/quiz/attempt";
 import QuizResult from "@models/quiz/question/result";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Request, Response } from "express";
+
+// TODO: Allow multiple quiz_answer_ids
+// To do this, we add the answer id as a concatenated primary key
+// But add a check in the application to see if the question is multiple choice.
+// If so we allow multiple answers
 
 const postController = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -11,11 +15,7 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         params: { attempt_id, question_id },
         dbConnection,
     } = req;
-
-    if (!isNumber(attempt_id) || !isNumber(question_id)) {
-        res.sendStatus(400);
-        return;
-    }
+    1;
 
     let quiz_answer_id: number;
 
