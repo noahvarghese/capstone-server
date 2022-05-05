@@ -4,7 +4,6 @@ import QuizAttempt from "@models/quiz/attempt";
 import Quiz from "@models/quiz/quiz";
 import User from "@models/user/user";
 import UserRole from "@models/user/user_role";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Request, Response } from "express";
 
 const postController = async (req: Request, res: Response): Promise<void> => {
@@ -13,11 +12,6 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         session: { user_id, current_business_id },
         params: { id },
     } = req;
-
-    if (!isNumber(id)) {
-        res.sendStatus(400);
-        return;
-    }
 
     const [isAdmin, isManager] = await Promise.all([
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -66,12 +60,14 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         return;
     }
 
-    await dbConnection.manager.insert(
+    const {
+        identifiers: [{ id: quizAttemptId }],
+    } = await dbConnection.manager.insert(
         QuizAttempt,
         // We can force the cast as we check if it is a number above
         new QuizAttempt({ user_id, quiz_id: Number(id) })
     );
 
-    res.sendStatus(201);
+    res.status(201).send({ quizAttemptId });
 };
 export default postController;

@@ -139,7 +139,7 @@ describe("user", () => {
             expect(qa[0].user_id).toBe(user_id);
             expect(qa[0].quiz_id).toBe(quiz_id);
 
-            expect(res.sendStatus).toHaveBeenCalledWith(201);
+            expect(res.status).toHaveBeenCalledWith(201);
         });
     });
 

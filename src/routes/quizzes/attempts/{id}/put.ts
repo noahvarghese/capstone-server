@@ -1,6 +1,5 @@
 import QuizAttempt from "@models/quiz/attempt";
 import User from "@models/user/user";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Request, Response } from "express";
 
 const putController = async (req: Request, res: Response): Promise<void> => {
@@ -9,11 +8,6 @@ const putController = async (req: Request, res: Response): Promise<void> => {
         dbConnection,
         params: { id },
     } = req;
-
-    if (!isNumber(id)) {
-        res.sendStatus(400);
-        return;
-    }
 
     const [isAdmin, isManager] = await Promise.all([
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
