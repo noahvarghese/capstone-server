@@ -152,12 +152,7 @@ describe("not attempted", () => {
                     }),
                 ]),
 
-                department_details: expect.arrayContaining([
-                    expect.objectContaining({
-                        id: department_id,
-                        total_attempts: 0,
-                    }),
-                ]),
+                department_details: [],
             })
         );
     });
@@ -190,12 +185,7 @@ describe("attempted", () => {
                         total_attempts: 1,
                     }),
                 ]),
-                department_details: expect.arrayContaining([
-                    expect.objectContaining({
-                        id: department_id,
-                        total_attempts: 1,
-                    }),
-                ]),
+                department_details: [],
             })
         );
     });

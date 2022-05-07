@@ -63,6 +63,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .where("d.business_id = :current_business_id", {
                 current_business_id,
             })
+            .andWhere("d.name != 'Admin'")
             .getRawMany<{
                 d_id: number;
                 d_name: string;
