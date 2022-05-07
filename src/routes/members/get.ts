@@ -125,7 +125,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     let query = dbConnection
         .createQueryBuilder()
         .select(
-            "first_name, last_name, email, phone, birthday, m.user_id, accepted"
+            "first_name, last_name, email, phone, birthday, m.user_id, accepted, m.created_on"
         )
         .distinct(true)
         .from(User, "u")

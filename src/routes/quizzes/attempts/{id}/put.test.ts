@@ -185,7 +185,7 @@ describe("permissions", () => {
     });
 });
 
-describe("keep test coverage up LOL", () => {
+describe("keep test coverage up", () => {
     beforeAll(async () => {
         await conn.manager.update(Role, role_id, {
             access: "USER",
@@ -199,19 +199,6 @@ describe("keep test coverage up LOL", () => {
             access: "ADMIN",
             prevent_edit: true,
         });
-    });
-
-    test("non numerical id", async () => {
-        await putController(
-            {
-                session,
-                dbConnection: conn,
-                params: { id: "ASDF" },
-            } as unknown as Request,
-            res
-        );
-
-        expect(res.sendStatus).toHaveBeenCalledWith(400);
     });
 
     test("no quiz attempts exist with id", async () => {

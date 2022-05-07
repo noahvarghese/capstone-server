@@ -1,9 +1,14 @@
 import QuizAttempt from "@models/quiz/attempt";
+import QuizQuestion from "@models/quiz/question/question";
 import QuizResult from "@models/quiz/question/result";
 import User from "@models/user/user";
 import getJOpts from "@noahvarghese/get_j_opts";
-import isNumber from "@noahvarghese/get_j_opts/build/lib/isNumber";
 import { Request, Response } from "express";
+
+// TODO: Allow multiple quiz_answer_ids
+// To do this, we add the answer id as a concatenated primary key
+// But add a check in the application to see if the question is multiple choice.
+// If so we allow multiple answers
 
 const postController = async (req: Request, res: Response): Promise<void> => {
     const {
@@ -11,11 +16,6 @@ const postController = async (req: Request, res: Response): Promise<void> => {
         params: { attempt_id, question_id },
         dbConnection,
     } = req;
-
-    if (!isNumber(attempt_id) || !isNumber(question_id)) {
-        res.sendStatus(400);
-        return;
-    }
 
     let quiz_answer_id: number;
 
@@ -52,6 +52,30 @@ const postController = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (quizAttempt.created_on.getTime() !== quizAttempt.updated_on.getTime()) {
+        res.sendStatus(405);
+        return;
+    }
+
+    const quizQuestion = await dbConnection.manager.findOne(QuizQuestion, {
+        where: { id: question_id },
+    });
+
+    if (!quizQuestion) {
+        res.sendStatus(400);
+        return;
+    }
+
+    const quizResults = await dbConnection.manager.find(QuizResult, {
+        where: {
+            quiz_attempt_id: attempt_id,
+            quiz_question_id: question_id,
+        },
+    });
+
+    if (
+        quizQuestion.question_type !== "multiple correct - multiple choice" &&
+        quizResults.length > 0
+    ) {
         res.sendStatus(405);
         return;
     }

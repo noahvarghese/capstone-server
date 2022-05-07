@@ -61,7 +61,14 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("m.published = :mPublished", { mPublished: true });
     }
 
-    const result = await query.getMany();
+    const answers = await query.getMany();
+
+    let result: Partial<QuizAnswer>[] = [];
+
+    if (answers.length > 0) {
+        if (isAdmin || isManager) result = answers;
+        else result = answers.map((a) => ({ ...a, correct: undefined }));
+    }
 
     res.status(200).send(result);
 };

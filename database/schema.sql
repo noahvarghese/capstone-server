@@ -231,7 +231,7 @@ CREATE TABLE quiz_attempt (
 CREATE TABLE quiz_result (
     quiz_attempt_id INT NOT NULL,
     quiz_question_id INT NOT NULL,
-    quiz_answer_id INT DEFAULT NULL,
+    quiz_answer_id INT NOT NULL,
     updated_by_user_id INT NOT NULL,
     created_on DATETIME NOT NULL DEFAULT NOW(),
     updated_on DATETIME NOT NULL DEFAULT NOW(),
@@ -240,7 +240,7 @@ CREATE TABLE quiz_result (
     FOREIGN KEY (quiz_attempt_id) REFERENCES quiz_attempt(id) ON DELETE CASCADE,
     FOREIGN KEY (quiz_question_id) REFERENCES quiz_question(id) ON DELETE CASCADE,
     FOREIGN KEY (quiz_answer_id) REFERENCES quiz_answer(id) ON DELETE CASCADE,
-    PRIMARY KEY (quiz_attempt_id, quiz_question_id)
+    PRIMARY KEY (quiz_attempt_id, quiz_question_id, quiz_answer_id)
 );
 
 CREATE TABLE content_read (

@@ -62,8 +62,16 @@ const getController = async (req: Request, res: Response): Promise<void> => {
             .andWhere("m.published = :mPublished", { mPublished: true });
     }
 
-    const result = await query.getOne();
+    const answer = await query.getOne();
 
+    let result: Partial<QuizAnswer> | undefined = undefined;
+
+    if (answer) {
+        if (isAdmin || isManager) result = answer;
+        else result = { ...answer, correct: undefined };
+    }
+
+    // Do not pass correct value to user
     res.status(200).send(result);
 };
 
