@@ -26,6 +26,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         dbConnection
             .createQueryBuilder()
             .select("r")
+            .distinct(true)
             .addSelect("d")
             .addSelect(
                 "(SELECT COUNT(*) FROM quiz_attempt qa " +
