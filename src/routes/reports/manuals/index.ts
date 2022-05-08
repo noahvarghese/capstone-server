@@ -1,8 +1,8 @@
 import { Router } from "express";
-import unreadRouter from "./unread";
+import getController from "./get";
 
 const router = Router({ mergeParams: true });
 
-router.use("/unread", unreadRouter);
+router.get("/", getController);
 
 export default router;
