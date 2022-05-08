@@ -148,6 +148,7 @@ describe("unread", () => {
     test("returns a user with a manual", async () => {
         await getController(
             {
+                query: {},
                 session,
                 dbConnection: conn,
             } as Request,
@@ -156,14 +157,15 @@ describe("unread", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: secondaryUser,
-                    manuals: expect.arrayContaining([
-                        expect.objectContaining({ id: manual_id }),
-                    ]),
-                }),
-            ])
+            expect.objectContaining({
+                count: 1,
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        user_id: secondaryUser,
+                        manual_id,
+                    }),
+                ]),
+            })
         );
     });
 });
@@ -181,9 +183,10 @@ describe("read", () => {
             user_id: secondaryUser,
         });
     });
-    test("returns empty array", async () => {
+    test("returns a user with a manual", async () => {
         await getController(
             {
+                query: {},
                 session,
                 dbConnection: conn,
             } as Request,
@@ -191,9 +194,16 @@ describe("read", () => {
         );
 
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith([]);
         expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({ length: 0 })
+            expect.objectContaining({
+                count: 1,
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        user_id: secondaryUser,
+                        manual_id,
+                    }),
+                ]),
+            })
         );
     });
 });
@@ -217,6 +227,7 @@ describe("permissions", () => {
         test("", async () => {
             await getController(
                 {
+                    query: {},
                     session,
                     dbConnection: conn,
                 } as Request,
@@ -232,7 +243,7 @@ describe("permissions", () => {
     });
 });
 
-describe("returns distinct users", () => {
+describe("returns distinct user and manual combinations", () => {
     let secondManual: number;
 
     beforeAll(async () => {
@@ -262,9 +273,10 @@ describe("returns distinct users", () => {
         await conn.manager.delete(Manual, secondManual);
     });
 
-    test("returns array of 1 item", async () => {
+    test("", async () => {
         await getController(
             {
+                query: {},
                 session,
                 dbConnection: conn,
             } as Request,
@@ -273,19 +285,18 @@ describe("returns distinct users", () => {
 
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: secondaryUser,
-                    manuals: expect.arrayContaining([
-                        expect.objectContaining({ id: manual_id }),
-                        expect.objectContaining({ id: secondManual }),
-                    ]),
-                }),
-            ])
-        );
-        expect(res.send).toHaveBeenCalledWith(
             expect.objectContaining({
-                length: 1,
+                count: 2,
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        user_id: secondaryUser,
+                        manual_id,
+                    }),
+                    expect.objectContaining({
+                        user_id: secondaryUser,
+                        manual_id: secondManual,
+                    }),
+                ]),
             })
         );
     });
@@ -303,6 +314,7 @@ describe("manual (not) published", () => {
     test("returns empty array", async () => {
         await getController(
             {
+                query: {},
                 session,
                 dbConnection: conn,
             } as Request,
@@ -310,9 +322,8 @@ describe("manual (not) published", () => {
         );
 
         expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith([]);
         expect(res.send).toHaveBeenCalledWith(
-            expect.objectContaining({ length: 0 })
+            expect.objectContaining({ count: 0, data: [] })
         );
     });
 });
