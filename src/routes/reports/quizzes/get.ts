@@ -109,7 +109,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select(
             "u.id AS u_id, u.first_name, u.last_name, q.id as q_id, q.title"
         )
-        .addSelect("COUNT(qa.id) AS number_of_attempts")
+        .addSelect(
+            "COUNT(CASE WHEN qa.user_id = u.id THEN 1 END) AS number_of_attempts"
+        )
         .from(User, "u")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
         .leftJoin(ManualAssignment, "ma", "ma.role_id = ur.role_id")

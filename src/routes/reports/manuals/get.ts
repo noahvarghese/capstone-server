@@ -110,7 +110,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         )
         .addSelect("COUNT(c.id) AS total_contents")
         .addSelect(
-            "COUNT(CASE WHEN cr.user_id IS NOT NULL THEN 1 END) AS contents_read"
+            "COUNT(CASE WHEN cr.user_id IS NOT NULL AND cr.user_id = u.id THEN 1 END) AS contents_read"
         )
         .from(User, "u")
         .leftJoin(UserRole, "ur", "ur.user_id = u.id")
