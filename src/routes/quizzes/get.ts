@@ -101,7 +101,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
     let query = dbConnection
         .createQueryBuilder()
         .select(
-            "q.id, q.title, q.published, q.prevent_delete, q.prevent_edit, q.max_attempts"
+            "q.id, q.title, q.published, q.prevent_delete, q.prevent_edit, q.max_attempts, q.created_on"
         )
         .distinct(true)
         .from(Quiz, "q")
