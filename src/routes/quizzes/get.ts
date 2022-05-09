@@ -103,8 +103,8 @@ const getController = async (req: Request, res: Response): Promise<void> => {
         .select(
             "q.id, q.title, q.published, q.prevent_delete, q.prevent_edit, q.max_attempts"
         )
-        .from(Quiz, "q")
         .distinct(true)
+        .from(Quiz, "q")
         .leftJoin(Manual, "m", "m.id = q.manual_id")
         // Joins are for filtering
         .leftJoin(ManualAssignment, "ma", "ma.manual_id = m.id")
