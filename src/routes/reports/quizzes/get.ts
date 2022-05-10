@@ -152,7 +152,9 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     if (complete !== undefined) {
         query = query.having(
-            `COUNT(qa.id) ${complete === "true" ? ">" : "="} 0`
+            `COUNT(CASE WHEN qa.user_id = u.id THEN 1 END) ${
+                complete === "true" ? ">" : "="
+            } 0`
         );
     }
 

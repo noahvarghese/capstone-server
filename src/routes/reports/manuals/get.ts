@@ -152,7 +152,7 @@ const getController = async (req: Request, res: Response): Promise<void> => {
 
     if (read !== undefined) {
         query = query.having(
-            `COUNT(CASE WHEN cr.user_id IS NOT NULL THEN 1 END) ${
+            `COUNT(CASE WHEN cr.user_id IS NOT NULL AND cr.user_id = u.id THEN 1 END) ${
                 read === "true" ? "=" : "<"
             } COUNT(c.id)`
         );
